@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/Vanigam.CRM/bin/Debug/net9.0
+/Vanigam.CRM/obj
+/Vanigam.CRM.Blazor/bin/Debug/net9.0
+/Vanigam.CRM.Blazor/obj
+/Vanigam.CRM.Shared/bin/Debug/net9.0
+/Vanigam.CRM.Shared/obj
+/Vanigam.CRM.Shared.Blazor/bin/Debug/net9.0
+/Vanigam.CRM.Shared.Blazor/obj
