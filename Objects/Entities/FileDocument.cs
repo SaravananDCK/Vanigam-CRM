@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
 using Vanigam.CRM.Objects.Enums;
@@ -7,9 +8,14 @@ namespace Vanigam.CRM.Objects.Entities;
 public class FileDocument: BaseClass
 {
 
+    [Required]
+    [StringLength(255)]
     public string FileName { get; set; }
+
     public long? FileSize { get; set; }
+
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+    [StringLength(50)]
     public string FileSizeStr { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public FileTypes FileType { get; set; }
@@ -18,6 +24,7 @@ public class FileDocument: BaseClass
     public FileCategory Category { get; set; }
     public Guid? CategoryId { get; set; }
     //[NotMapped]
+    [Required]
     public string Content { get; set; }
 
     public void RefreshFileType()

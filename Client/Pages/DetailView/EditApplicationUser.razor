@@ -1,9 +1,9 @@
 @page "/edit-application-user/{Id}"
-@using Vanigam.Accounting.Objects
-@using Vanigam.Accounting.Client.Validators
-@using Vanigam.AccountingValidators
+@using Vanigam.CRM.Objects
+@using Vanigam.CRM.Client.Validators
+@using Vanigam.CRMValidators
 @inject Microsoft.Extensions.Localization.IStringLocalizer<EditApplicationUser> Localizer
-@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
 <RadzenRow>
     <RadzenColumn SizeMD="12">

@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="Radzen.Blazor" Version="5.9.6" />
+    <PackageReference Include="Radzen.Blazor" Version="*" />
     <PackageReference Include="RestSharp" Version="112.0.0" />
     <PackageReference Include="Serilog" Version="4.0.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
@@ -54,6 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\js\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Objects\Vanigam.CRM.Objects.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>

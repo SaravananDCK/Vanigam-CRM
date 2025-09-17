@@ -1,10 +1,10 @@
 ﻿@page "/permissions"
-@* @inherits Vanigam.Accounting.Client.Components.BaseCustomListView<AuthorizationPermission>
- *@@using Vanigam.Accounting.Objects.DTOs
-@using Vanigam.Accounting.Objects
-@using Vanigam.Accounting.Client.Pages.DetailView
+@* @inherits Vanigam.CRM.Client.Components.BaseCustomListView<AuthorizationPermission>
+ *@@using Vanigam.CRM.Objects.DTOs
+@using Vanigam.CRM.Objects
+@using Vanigam.CRM.Client.Pages.DetailView
 @inject Microsoft.Extensions.Localization.IStringLocalizer<AuthorizationPermission> Localizer
-@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsSuperUser)]
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsSuperUser)]
 
 <RadzenRow>
     <RadzenColumn SizeMD=12>

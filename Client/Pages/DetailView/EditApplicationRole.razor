@@ -1,8 +1,8 @@
 @page "/edit-application-role"
-@using Vanigam.Accounting.Objects
-@using Vanigam.Accounting.Client.Validators
+@using Vanigam.CRM.Objects
+@using Vanigam.CRM.Client.Validators
 @inject Microsoft.Extensions.Localization.IStringLocalizer<EditApplicationRole> Localizer
-@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
 <RadzenRow>
     <RadzenColumn SizeMD="12">

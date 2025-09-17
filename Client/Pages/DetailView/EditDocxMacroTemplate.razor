@@ -1,10 +1,10 @@
 ﻿@page "/edit-docx-macro-template"
 @using DevExpress.Blazor.RichEdit
-@using Vanigam.Accounting.Client.Services
-@using Vanigam.Accounting.Objects.Entities
-@using Vanigam.Accounting.Objects
-@using Vanigam.Accounting.Client.Validators
-@inherits Vanigam.Accounting.Client.Components.BaseDetailView<DocxMacroTemplate, EditDocxMacroTemplate>
+@using Vanigam.CRM.Client.Services
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Objects
+@using Vanigam.CRM.Client.Validators
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<DocxMacroTemplate, EditDocxMacroTemplate>
 @attribute [Authorize(Policy = ApplicationPolicy.IsAdministrator)]
 @inject DocxMacroTemplateApiService DocxMacroTemplateApiService
 

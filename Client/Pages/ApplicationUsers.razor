@@ -1,9 +1,9 @@
 @page "/application-users"
-@inherits Vanigam.Accounting.Client.Components.BaseCustomListView<ApplicationUser>
-@using Vanigam.Accounting.Objects
-@using Vanigam.Accounting.Client.Pages.DetailView
+@inherits Vanigam.CRM.Client.Components.BaseCustomListView<ApplicationUser>
+@using Vanigam.CRM.Objects
+@using Vanigam.CRM.Client.Pages.DetailView
 @inject Microsoft.Extensions.Localization.IStringLocalizer<ApplicationUsers> Localizer
-@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
 <RadzenStack>
     <ListPageTitleComponent TitleText=@Localizer["Users"] ShowAdd="false"  ShowSearch="false" />

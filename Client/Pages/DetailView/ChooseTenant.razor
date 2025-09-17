@@ -1,7 +1,7 @@
 @page "/ChooseTenant"
-@using Vanigam.Accounting.Client.Validators
-@using Vanigam.Accounting.Objects
-@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsSuperUser)]
+@using Vanigam.CRM.Client.Validators
+@using Vanigam.CRM.Objects
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsSuperUser)]
 @inject Microsoft.Extensions.Localization.IStringLocalizer<ChooseTenant> Localizer
 <PageTitle>@Localizer["ChooseTenant"]</PageTitle>
 <RadzenStack>

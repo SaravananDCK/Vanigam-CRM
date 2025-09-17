@@ -1,13 +1,13 @@
 @page "/edit-application-Tenant/{Id}"
-@using Vanigam.Accounting.Objects
+@using Vanigam.CRM.Objects
 @inject Microsoft.Extensions.Localization.IStringLocalizer<EditApplicationTenant> Localizer
-@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
 <RadzenRow>
     <RadzenColumn SizeMD="12">
         <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="ApplicationTenant" Data="@CurrentObject" Visible="@(CurrentObject != null)" Submit="@FormSubmit">
             <RadzenAlert Title=@Localizer["CannotCreateTenant"] Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Error</RadzenAlert>
-            <FluentValidationValidator Validator="new Vanigam.Accounting.Client.Validators.ApplicationTenantValidator(Localizer)" />
+            <FluentValidationValidator Validator="new Vanigam.CRM.Client.Validators.ApplicationTenantValidator(Localizer)" />
             <ValidationSummary />
             <RadzenStack Style="margin-bottom: 1rem;">
                 <VanigamAccountingFormField Text=@Localizer["Name"]>

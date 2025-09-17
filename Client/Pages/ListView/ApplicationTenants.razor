@@ -1,8 +1,8 @@
 @page "/application-tenants"
-@inherits Vanigam.Accounting.Client.Components.BaseCustomListView<ApplicationTenant>
-@using Vanigam.Accounting.Objects
+@inherits Vanigam.CRM.Client.Components.BaseCustomListView<ApplicationTenant>
+@using Vanigam.CRM.Objects
 @inject Microsoft.Extensions.Localization.IStringLocalizer<ApplicationTenants> Localizer
-@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
 <RadzenStack>
     <ListPageTitleComponent TitleText=@Localizer["Tenants"] AddButtonClick=@AddClick ShowSearch="false" />

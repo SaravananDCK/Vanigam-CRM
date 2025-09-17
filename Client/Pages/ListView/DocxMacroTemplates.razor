@@ -1,8 +1,8 @@
 @page "/docx-macro-templates"
-@using Vanigam.Accounting.Client.Services
-@using Vanigam.Accounting.Objects.Entities
-@inherits Vanigam.Accounting.Client.Components.BaseListView<DocxMacroTemplate, DocxMacroTemplates>
-@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+@using Vanigam.CRM.Client.Services
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<DocxMacroTemplate, DocxMacroTemplates>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject DocxMacroTemplateApiService DocxMacroTemplateApiService
 
 <RadzenStack>

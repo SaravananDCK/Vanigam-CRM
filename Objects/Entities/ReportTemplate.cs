@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Vanigam.CRM.Objects.Contracts;
 using Vanigam.CRM.Objects.Entities;
 
@@ -27,7 +28,12 @@ public class PdfField : BaseClass
     public Guid? TemplateId { get; set; }
     public PdfTemplate Template { get; set; }
 
+    [Required]
+    [StringLength(100)]
     public string FieldName { get; set; }
+
+    [Required]
+    [StringLength(200)]
     public string MappedProperty { get; set; }
 }
 public class SignPdfField : BaseClass
@@ -36,6 +42,8 @@ public class SignPdfField : BaseClass
     public Guid? TemplateId { get; set; }
     public PdfTemplate Template { get; set; }
 
+    [Required]
+    [StringLength(200)]
     public string MappedProperty { get; set; }
     public int Top { get; set; }
     public int Left { get; set; }

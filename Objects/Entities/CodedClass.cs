@@ -16,8 +16,13 @@ public abstract class CodedClass : BaseClass, IName
     public string DisplayName => $"{Code}-{Name}";
 
     [Required]
+    [StringLength(50)]
     public string? Code { get; set; }
+
     [Required]
+    [StringLength(200)]
     public string? Name { get; set; }
+
+    [StringLength(1000)]
     public string? Description { get; set; }
 }
