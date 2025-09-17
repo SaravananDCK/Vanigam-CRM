@@ -1,0 +1,282 @@
+@using Vanigam.Accounting.Objects.Enums
+@using Vanigam.Accounting.Objects
+@using Vanigam.Accounting.Objects.Services
+@inherits BaseLayout
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MainLayout> Localizer
+<RadzenComponents />
+
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start"
+            JustifyContent="JustifyContent.SpaceBetween" Gap="0">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
+                JustifyContent="JustifyContent.Start" Gap="0">
+                @if (Security.LayoutMode == LayoutMode.SideBar)
+                {
+                    <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+                }
+                @* <RadzenImage Path="@GetLogoPath()"></RadzenImage> *@
+                @if (Security.LayoutMode == LayoutMode.TopBar)
+                {
+                    <div class="rz-ml-10 rz-mr-10"></div>
+                    <RadzenMenu Style="color: var(--rz-primary)">
+                        @foreach (var menuItem in GetMenuItems())
+                        {
+                            <RadzenMenuItem Text="@menuItem.Text" Path="@menuItem.Path">
+                                <Template>
+                                    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center"
+                                        AlignItems="AlignItems.Center">
+                                        <RadzenIcon Icon="@menuItem.Icon"></RadzenIcon>
+                                        <RadzenText>@menuItem.Text</RadzenText>
+                                    </RadzenStack>
+
+                                </Template>
+                                <ChildContent>
+                                    @if (menuItem.ChildItems.Any())
+                                    {
+                                        @foreach (var childItem in menuItem.ChildItems)
+                                        {
+                                            @RenderMenuItem(childItem)
+                                        }
+                                    }
+                                </ChildContent>
+                            </RadzenMenuItem>
+                        }
+                    </RadzenMenu>
+
+                }
+            </RadzenStack>
+            <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal"
+                JustifyContent="JustifyContent.End" Style="height: 70px;">
+                <AuthorizeView Roles="@ApplicationRole.SuperUserRole">
+                    <RadzenButton Click="@SwapTenantClick" Icon="@FadIcon("fa-starship")"
+                        ButtonStyle="ButtonStyle.Primary" Style="margin-right:5px" />
+                </AuthorizeView>
+             
+                <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick"
+                    Style="background-color:transparent !important">
+                    <ChildContent>
+                        <RadzenProfileMenuItem Path="profile" Icon="@FaIcon("fa-user-cog")" Text=@Localizer["Profile"]
+                            Visible="@(Security.IsAuthenticated() || Security.User?.Name == ApplicationUser.TenantsAdmin)" />
+                        <RadzenProfileMenuItem Path="changepassword" Icon="@FaIcon("fa-key")"
+                            Text=@Localizer["ChangePassword"]
+                            Visible="@(Security.IsAuthenticated() || Security.User?.Name == ApplicationUser.TenantsAdmin)" />
+                        <AuthorizeView Roles="@string.Join(",", ApplicationRole.AdministratorRoles)">
+                            <RadzenProfileMenuItem Path="application-users" Icon="@FaIcon("fa-user")"
+                                Text=@Localizer["Users"]
+                                Visible="@(Security.IsAuthenticated() && Security.Tenant != null)" />
+                        </AuthorizeView>
+                        <RadzenProfileMenuItem Path="application-roles" Icon="@FaIcon("fa-user-shield")"
+                            Text=@Localizer["Roles"]
+                            Visible="@(Security.IsAuthenticated() && Security.Tenant != null)" />
+                        <AuthorizeView Roles="@ApplicationRole.SuperUserRole">
+                            <RadzenProfileMenuItem Path="permissions" Icon="@FaIcon("fa-user-unlock")"
+                                Text=@Localizer["Permission"]
+                                Visible="@(Security.IsAuthenticated() && Security.Tenant != null)" />
+                        </AuthorizeView>
+                        <RadzenProfileMenuItem Path="application-tenants" Icon="account_balance_wallet"
+                            Text=@Localizer["Tenants"]
+                            Visible="@(Security.User?.Name == ApplicationUser.TenantsAdmin)" />
+                        <RadzenProfileMenuItem Text=@Localizer["Logout"] Value="Logout"
+                            Icon="@FaIcon("fa-power-off")" />
+                    </ChildContent>
+                    <Template>
+                        <RadzenText TextStyle="TextStyle.H6"><b>@Security.User?.Name</b>
+                            <RadzenGravatar Email="@(Security.User?.Name.ToLower())" />
+                        </RadzenText>
+                    </Template>
+                </RadzenProfileMenu>
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenHeader>
+    @if (Security.LayoutMode == LayoutMode.SideBar)
+    {
+        <RadzenSidebar @bind-Expanded="@sidebarExpanded" Style="width:250px">
+            <RadzenPanelMenu Style="color: var(--rz-primary)">
+                @foreach (var menuItem in GetMenuItems())
+                {
+                    <RadzenPanelMenuItem Text="@menuItem.Text" Path="@menuItem.Path" Icon="@menuItem.Icon">
+                        @if (menuItem.ChildItems.Any())
+                        {
+                            @foreach (var childItem in menuItem.ChildItems)
+                            {
+                                @* <RadzenPanelMenuItem Text="@childItem.Text" Path="@childItem.Path" Icon="@childItem.Icon" class="rz-ml-5" /> *@
+                                @RenderPanelMenuItem(childItem)
+                            }
+                        }
+                    </RadzenPanelMenuItem>
+                }
+            </RadzenPanelMenu>
+        </RadzenSidebar>
+    }
+    <RadzenBody class="@(Security.LayoutMode == LayoutMode.SideBar ? "rz-mr-5" : "rz-ml-5 rz-mr-5")">
+        <div>
+                @Body
+        </div>
+    </RadzenBody>
+    <RadzenFooter>
+        <RadzenStack AlignItems="Radzen.AlignItems.Stretch" Orientation="Orientation.Horizontal" Gap="10px"
+            JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack AlignItems="Radzen.AlignItems.Start" Orientation="Orientation.Horizontal" Gap="10px"
+                Style="padding: var(--rz-panel-menu-item-padding);margin-left:75px"
+                JustifyContent="JustifyContent.Left">
+                <RadzenImage Path="images\Logo.svg" style="width: 100px; height: 25px;"></RadzenImage>
+                @* <RadzenText Text=@($"v.{BlazorVersion} Build:{BlazorBuild}") TextStyle="Radzen.Blazor.TextStyle.Caption" Style="color: var(--rz-text-disabled-color);" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" /> *@
+                <RadzenText Text=@($"Copyright TekSpear Solutions Ⓒ" + @DateTimeNowYear)
+                    TextStyle="Radzen.Blazor.TextStyle.Caption" class="rz-mb-0"
+                    Style="color: var(--rz-text-disabled-color);" TagName="Radzen.Blazor.TagName.P"
+                    TextAlign="Radzen.TextAlign.Center" />
+                <RadzenText Text=@($"v{AppVersion.ToString()}, Build:{BuildInfo}, Components:{ComponentsInfo}")
+                    TextStyle="Radzen.Blazor.TextStyle.Caption" class="rz-mb-0"
+                    Style="color: var(--rz-text-disabled-color);" TagName="Radzen.Blazor.TagName.P"
+                    TextAlign="Radzen.TextAlign.Center" />
+            </RadzenStack>
+            <RadzenStack AlignItems="Radzen.AlignItems.End" Orientation="Orientation.Horizontal" Gap="10px"
+                Style="padding: var(--rz-panel-menu-item-padding);" JustifyContent="JustifyContent.Right">
+                <RadzenImage Path="images\TekSpear Logo.svg" style="width: 100px; height: 25px;"></RadzenImage>
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenFooter>
+</RadzenLayout>
+
+<style>
+    .notification-button-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .notification-btn {
+        /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; */
+        border: none !important;
+        border-radius: 50% !important;
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+        transition: all 0.3s ease !important;
+        position: relative !important;
+        overflow: visible !important;
+    }
+
+    .notification-btn:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+    }
+
+    .notification-btn:active {
+        transform: translateY(0) !important;
+    }
+
+    .notification-icon {
+        color: white !important;
+        font-size: 16px !important;
+    }
+
+    .notification-icon-unread {
+        color: rgb(239, 107, 107) !important;
+        filter: drop-shadow(0 0 3px rgba(255, 68, 68, 0.8));
+    }
+
+    /* Notification Badge Styles */
+    .notification-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(255, 107, 107, 0.4);
+        animation: notificationBadgePulse 2s infinite;
+    }
+
+    .badge-count {
+        color: white;
+        font-size: 10px;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    /* Pulse Ring Animation */
+    .notification-pulse-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        border: 2px solid #ff6b6b;
+        border-radius: 50%;
+        animation: notificationPulseRing 2s infinite;
+    }
+
+    /* Blinking Animation for Button */
+    .notification-button-container.has-unread .notification-btn {
+        animation: notificationButtonBlink 3s infinite;
+        /* background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important; */
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4) !important;
+    }
+
+    /* Keyframe Animations */
+    @@keyframes notificationBadgePulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+    }
+
+    @@keyframes notificationPulseRing {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0;
+        }
+
+    }
+
+    @@keyframes notificationButtonBlink {
+
+        0%,
+        90%,
+        100% {
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        95% {
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.6), 0 0 15px rgba(255, 107, 107, 0.4);
+        }
+
+    }
+
+    /* Hover Effects */
+    .notification-button-container:hover .notification-btn {
+        transform: translateY(-1px) scale(1.05);
+    }
+
+    .notification-button-container:hover .notification-badge {
+        animation: notificationBadgePulse 0.5s infinite;
+    }
+
+    /* Focus States for Accessibility */
+    .notification-btn:focus {
+        outline: 2px solid rgba(102, 126, 234, 0.5);
+        outline-offset: 2px;
+    }
+</style>

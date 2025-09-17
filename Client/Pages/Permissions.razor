@@ -1,0 +1,50 @@
+﻿@page "/permissions"
+@* @inherits Vanigam.Accounting.Client.Components.BaseCustomListView<AuthorizationPermission>
+ *@@using Vanigam.Accounting.Objects.DTOs
+@using Vanigam.Accounting.Objects
+@using Vanigam.Accounting.Client.Pages.DetailView
+@inject Microsoft.Extensions.Localization.IStringLocalizer<AuthorizationPermission> Localizer
+@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsSuperUser)]
+
+<RadzenRow>
+    <RadzenColumn SizeMD=12>
+        <RadzenStack Style="margin-bottom: 1rem;">
+            <VanigamAccountingFormField Text=@Localizer["Roles"] Variant="Variant.Outlined" Style="width: 20%">
+                <ChildContent>
+                    <RadzenDropDown Data="@Roles" TextProperty="Name" @bind-Value="@(UserRole)" ValueProperty="Id" Name="Roles" Change="RolesChange" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+        </RadzenStack>
+    </RadzenColumn>
+        <RadzenColumn SizeMD="12">
+        <RadzenDataGrid @ref="GridControl" AllowAlternatingRows="false" AllowPaging="true" PageSize="15" AllowFiltering ="true" AllowSorting="true" EditMode="@editMode"
+                        FilterMode="FilterMode.Simple" Data="@DataSource" TItem="AuthorizationPermission" RowUpdate="@OnUpdateRow" ColumnWidth="50px" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive">
+            <EmptyTemplate>
+                <NoRecordComponent EmptyText="@Localizer["No Records to Display"]" ShowAddButton="false" />
+            </EmptyTemplate>
+               <Columns>
+                <RadzenDataGridColumn Property="@nameof(AuthorizationPermission.ClaimType)" Title="@Localizer["Claim Types"]" Width="50px" Frozen="true" />
+                <RadzenDataGridColumn Property="@nameof(AuthorizationPermission.Read)" Title="@Localizer["Read"]" Filterable="false" Sortable="false">
+                    <EditTemplate Context="data">
+                        <RadzenCheckBox @bind-Value="data.Read" Name="Read" aria-label="Enter Read" Change="@((bool args) => CancelChange(data, nameof(AuthorizationPermission.Read)))" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn Property="@nameof(AuthorizationPermission.Create)" Title="@Localizer["Create"]" Filterable="false" Sortable="false">
+                    <EditTemplate Context="data">
+                        <RadzenCheckBox @bind-Value="data.Create" Name="Create" aria-label="Enter Create" Change="@((bool args) => CancelChange(data, nameof(AuthorizationPermission.Create)))"  />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn Property="@nameof(AuthorizationPermission.Update)" Title="@Localizer["Update"]" Filterable="false" Sortable="false">
+                    <EditTemplate Context="data">
+                        <RadzenCheckBox @bind-Value="data.Update" Name="Update" aria-label="Enter Update" Change="@((bool args) => CancelChange(data,nameof(AuthorizationPermission.Update)))"  />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn Property="@nameof(AuthorizationPermission.Delete)" Title="@Localizer["Delete"]" Filterable="false" Sortable="false">
+                    <EditTemplate Context="data">
+                        <RadzenCheckBox @bind-Value="data.Delete" Name="Delete" aria-label="Enter Delete" Change="@((bool args) => CancelChange(data,nameof(AuthorizationPermission.Delete)))"  />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenColumn>
+</RadzenRow>

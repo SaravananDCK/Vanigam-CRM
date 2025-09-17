@@ -1,0 +1,27 @@
+﻿@using Microsoft.Extensions.Localization;
+@inject IStringLocalizer<ListPageTitleComponent> Localizer;
+<PageTitle>@TitleText</PageTitle>
+<RadzenRow AlignItems="AlignItems.Center">
+    <RadzenColumn Size="@Size" SizeMD=@FirstSizeMD>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Class="material-symbols">
+            <RadzenIcon Visible="!string.IsNullOrEmpty(Icon)" Icon="@Icon" Style="font-size:1.5rem" IconColor="var(--rz-primary)"></RadzenIcon>
+            <VanigamAccountingTitleText Text=@TitleText />
+            @CustomTitles
+            @CustomBadge
+        </RadzenStack>
+    </RadzenColumn>
+    <RadzenColumn Size="@Size" SizeMD=@MiddleSizeMD>
+        <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+            @RadioButtons
+        </RadzenStack>
+    </RadzenColumn>
+    <RadzenColumn Size="@Size" SizeMD=@LastSizeMD>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <VanigamAccountingTextBox Visible="ShowSearch" Placeholder=@Localizer["Search"] @oninput="@SearchButtonClick" Style="width: 350px;" />
+            @DropDowns
+            <RadzenButton Visible="ShowAdd" Icon="add_circle_outline" @bind-Text=@AddButtonText @bind-IsBusy="IsBusy" Click=@AddButtonClick Variant="Variant.Flat" ButtonStyle="@AddButtonStyle"/>
+            @CustomButtons
+        </RadzenStack>
+    </RadzenColumn>
+</RadzenRow>
+

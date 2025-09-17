@@ -1,0 +1,22 @@
+@page "/CleanLocalStorage"
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
+<p>Cleaning preferences from browser storage...</p>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("localStorage.clear");
+            }
+            finally
+            {
+                NavigationManager.NavigateTo("/", true);
+            }
+        }
+    }
+}

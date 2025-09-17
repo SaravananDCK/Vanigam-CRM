@@ -1,0 +1,312 @@
+/* Global Layout System - Height Management
+   ========================================
+   This file provides a centralized solution for viewport height calculations
+   throughout the application, eliminating the need for manual calc() values
+   on each page.
+*/
+
+/* ============================================================================
+   CSS Custom Properties for Layout Heights
+   ============================================================================ */
+
+:root {
+    /* Base layout measurements */
+    --app-header-height: 60px;
+    --app-navigation-height: 50px;
+    --app-breadcrumb-height: 40px;
+    --app-footer-height: 30px;
+    --app-toolbar-height: 50px;
+    --app-filter-height: 80px;
+    --app-pagination-height: 60px;
+    --app-spacing-standard: 20px;
+    --app-spacing-large: 40px;
+
+    /* Common subtract values converted to semantic names */
+    --layout-offset-minimal: 140px;
+    /* Basic header + nav */
+    --layout-offset-standard: 280px;
+    /* Most common - header + nav + toolbar + spacing */
+    --layout-offset-compact: 278px;
+    /* Slightly smaller variant */
+    --layout-offset-with-filters: 370px;
+    /* With filter section */
+    --layout-offset-with-breadcrumbs: 320px;
+    /* With breadcrumb navigation */
+    --layout-offset-popup-view: 440px;
+    /* For popup/modal views */
+    --layout-offset-extended: 420px;
+    /* For pages with extra controls */
+    --layout-offset-scheduler: 310px;
+    /* For calendar/scheduler views */
+    --layout-offset-summary-page: 480px;
+
+    /* Responsive adjustments */
+    --layout-mobile-adjustment: 20px;
+    --layout-tablet-adjustment: 10px;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    :root {
+        --app-header-height: 50px;
+        --app-navigation-height: 45px;
+        --app-toolbar-height: 45px;
+        --layout-offset-standard: 260px;
+        --layout-offset-with-filters: 340px;
+        --layout-offset-popup-view: 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --app-header-height: 45px;
+        --app-navigation-height: 40px;
+        --app-toolbar-height: 40px;
+        --layout-offset-standard: 240px;
+        --layout-offset-with-filters: 320px;
+        --layout-offset-popup-view: 380px;
+    }
+}
+
+/* ============================================================================
+   Utility Classes for Viewport Heights
+   ============================================================================ */
+
+/* Standard viewport height utilities */
+.vh-full-minimal {
+    height: calc(100vh - var(--layout-offset-minimal)) !important;
+}
+
+.vh-full-standard {
+    height: calc(100vh - var(--layout-offset-standard)) !important;
+}
+
+.vh-full-compact {
+    height: calc(100vh - var(--layout-offset-compact)) !important;
+}
+
+.vh-full-with-filters {
+    height: calc(100vh - var(--layout-offset-with-filters)) !important;
+}
+
+.vh-full-with-breadcrumbs {
+    height: calc(100vh - var(--layout-offset-with-breadcrumbs)) !important;
+}
+
+.vh-full-popup {
+    height: calc(100vh - var(--layout-offset-popup-view)) !important;
+}
+
+.vh-full-extended {
+    height: calc(100vh - var(--layout-offset-extended)) !important;
+}
+
+.vh-full-scheduler {
+    height: calc(100vh - var(--layout-offset-scheduler)) !important;
+}
+
+/* Conditional height classes for different view types */
+.vh-conditional-popup {
+    height: calc(100vh - var(--layout-offset-popup-view)) !important;
+}
+
+.vh-conditional-standard {
+    height: calc(100vh - var(--layout-offset-standard)) !important;
+}
+
+/* ============================================================================
+   Flex-based Auto Height System
+   ============================================================================ */
+
+/* Modern flex-based layout containers that automatically calculate heights */
+.app-layout-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-header-section {
+    flex-shrink: 0;
+    height: var(--app-header-height);
+}
+
+.app-navigation-section {
+    flex-shrink: 0;
+    height: var(--app-navigation-height);
+}
+
+.app-toolbar-section {
+    flex-shrink: 0;
+    height: var(--app-toolbar-height);
+}
+
+.app-content-section {
+    flex: 1;
+    overflow: auto;
+    min-height: 0;
+    /* Important for flex child scrolling */
+}
+
+.app-footer-section {
+    flex-shrink: 0;
+    height: var(--app-footer-height);
+}
+
+/* ============================================================================
+   Data Grid Specific Heights
+   ============================================================================ */
+
+/* Common data grid container heights */
+.datagrid-container-standard {
+    height: calc(100vh - var(--layout-offset-standard)) !important;
+}
+
+.datagrid-container-with-filters {
+    height: calc(100vh - var(--layout-offset-with-filters)) !important;
+}
+
+.datagrid-container-popup {
+    height: calc(100vh - var(--layout-offset-popup-view)) !important;
+}
+
+.datagrid-container-extended {
+    height: calc(100vh - var(--layout-offset-extended)) !important;
+}
+
+.datagrid-container-summary {
+    height: calc(100vh - var(--layout-offset-summary-page)) !important;
+}
+
+/* ============================================================================
+   Tab and Modal Specific Heights
+   ============================================================================ */
+
+.tab-content-standard {
+    height: calc(100vh - var(--layout-offset-minimal)) !important;
+}
+
+.modal-content-standard {
+    max-height: calc(100vh - var(--layout-offset-standard)) !important;
+}
+
+/* ============================================================================
+   Custom Height Calculation Helpers
+   ============================================================================ */
+
+/* For cases where you need custom calculations */
+.vh-custom-small {
+    height: calc(100vh - 200px) !important;
+}
+
+.vh-custom-medium {
+    height: calc(100vh - 300px) !important;
+}
+
+.vh-custom-large {
+    height: calc(100vh - 400px) !important;
+}
+
+/* ============================================================================
+   Scrollable Content Areas
+   ============================================================================ */
+
+.scrollable-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 51, 153, 0.3) rgba(255, 255, 255, 0.1);
+}
+
+.scrollable-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 51, 153, 0.3);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 51, 153, 0.5);
+}
+
+/* ============================================================================
+   Debug Helpers (remove in production)
+   ============================================================================ */
+
+.debug-height {
+    border: 2px dashed red;
+    position: relative;
+}
+
+.debug-height::before {
+    content: 'Height: ' attr(data-height);
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: red;
+    color: white;
+    padding: 2px 6px;
+    font-size: 12px;
+    z-index: 9999;
+}
+
+/* ============================================================================
+   Print Styles
+   ============================================================================ */
+
+@media print {
+
+    .vh-full-standard,
+    .vh-full-compact,
+    .vh-full-with-filters,
+    .vh-full-popup,
+    .vh-full-extended {
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    .scrollable-content {
+        overflow: visible !important;
+    }
+}
+
+/* ============================================================================
+   Legacy Support (for gradual migration)
+   ============================================================================ */
+
+/* Classes that can be used to replace inline styles gradually */
+.legacy-height-280 {
+    height: calc(100vh - 280px) !important;
+}
+
+.legacy-height-278 {
+    height: calc(100vh - 278px) !important;
+}
+
+.legacy-height-370 {
+    height: calc(100vh - 370px) !important;
+}
+
+.legacy-height-420 {
+    height: calc(100vh - 420px) !important;
+}
+
+.legacy-height-440 {
+    height: calc(100vh - 440px) !important;
+}
+
+.legacy-height-310 {
+    height: calc(100vh - 310px) !important;
+}
+
+.legacy-height-320 {
+    height: calc(100vh - 320px) !important;
+}

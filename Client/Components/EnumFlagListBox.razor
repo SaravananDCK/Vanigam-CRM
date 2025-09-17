@@ -1,0 +1,66 @@
+﻿@using System.Text.RegularExpressions
+@using System.Linq.Expressions
+@typeparam T where T :  struct, Enum?
+<RadzenListBox TValue="List<T?>" AllowClear="true" AllowFiltering="false" Multiple="true" Class="w-50"
+               Value=@SelectedOptions ValueChanged="OnValueChanged" Data=@enumList />
+@code {
+    IEnumerable<T> enumList = GetOptions().ToList();
+    [CascadingParameter]
+    public EditContext EditContext { get; set; }
+    [Parameter]
+    public T? Value
+    {
+        get
+        {
+            if (SelectedOptions.Count == 0)
+            {
+                return null;
+            }
+            int aggregatedValue = SelectedOptions
+                .Select(o => Convert.ToInt32(o))
+                .Aggregate(0, (current, intValue) => current | intValue);
+            
+            return (T)Enum.ToObject(typeof(T), aggregatedValue);
+        }
+        set
+        {
+            SelectedOptions.Clear();
+            var values = (T[])Enum.GetValues(typeof(T));
+            foreach (var val in values)
+            {
+                if (value.HasValue && value.Value.HasFlag(val))
+                {
+                    SelectedOptions.Add(val);
+                }
+            }
+        }
+    }
+    [Parameter]
+    public EventCallback<T?> ValueChanged { get; set; }
+    [Parameter]
+    public Expression<Func<T?>> ValueExpression { get; set; }
+    public FieldIdentifier FieldIdentifier { get; private set; }
+    [Parameter]
+    public List<T?> SelectedOptions { get; set; } = new List<T?>() { };
+
+    private static List<T> GetOptions()
+    {
+        var values = (T[])Enum.GetValues(typeof(T));
+        return values.ToList();
+    }
+
+    private async Task OnValueChanged(List<T?> obj)
+    {
+        SelectedOptions = obj;
+        await ValueChanged.InvokeAsync(Value);
+        if (EditContext != null && ValueExpression != null)
+        {
+            if (FieldIdentifier.Model != EditContext.Model)
+            {
+                FieldIdentifier = FieldIdentifier.Create(ValueExpression);    
+            }
+            EditContext.NotifyFieldChanged(EditContext.Field(FieldIdentifier.FieldName));
+        }
+    }
+
+}

@@ -1,0 +1,45 @@
+@page "/edit-application-user/{Id}"
+@using Vanigam.Accounting.Objects
+@using Vanigam.Accounting.Client.Validators
+@using Vanigam.AccountingValidators
+@inject Microsoft.Extensions.Localization.IStringLocalizer<EditApplicationUser> Localizer
+@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+
+<RadzenRow>
+    <RadzenColumn SizeMD="12">
+        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="ApplicationUser" Data="@CurrentObject" Visible="@(CurrentObject != null)" Submit="@FormSubmit">
+            <RadzenAlert Title=@Localizer["SaveAlert"] Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Error</RadzenAlert>
+            <FluentValidationValidator Validator="new ApplicationUserValidator(Localizer,ShowResetPassword)" />
+            <ValidationSummary />
+            <RadzenStack Style="margin-bottom: 1rem;">
+                <VanigamAccountingFormField Text=@Localizer["UserName"] Visible=ShowResetPassword>
+                    <ChildContent>
+                        <VanigamAccountingTextBox Disabled="true" @bind-Value="@(CurrentObject.UserName)" Name="UserName" />
+                    </ChildContent>
+                </VanigamAccountingFormField>                
+                <VanigamAccountingFormField Text=@Localizer["Roles"] Variant="Variant.Outlined" Visible=ShowResetPassword>
+                    <ChildContent>
+                        <RadzenDropDown Data="@Roles" Multiple="true" Style="width: 100%" TextProperty="Name" @bind-Value="@(UserRoles)" ValueProperty="Id" Name="Roles" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
+                @if(!ShowResetPassword)
+                {
+                 <VanigamAccountingFormField Text=@Localizer["Password"] Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenPassword @bind-Value="@(CurrentObject.Password)" Style="display: block; width: 100%" Name="Password" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
+                <VanigamAccountingFormField Text=@Localizer["ConfirmPassword"] Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenPassword Style="display: block; width: 100%" @bind-Value="@(CurrentObject.ConfirmPassword)" Name="ConfirmPassword" />
+                    </ChildContent>
+                </VanigamAccountingFormField> 
+                }
+            </RadzenStack>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelClick" />
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+</RadzenRow>

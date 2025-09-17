@@ -1,0 +1,38 @@
+﻿@inherits BaseLayout
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CloseableLayout> L
+<RadzenDialog />
+<RadzenNotification />
+<RadzenTooltip />
+<RadzenContextMenu />
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.SpaceBetween" Gap="0">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start" Gap="0">
+                <div class="ms-5" />
+                <RadzenImage Path="@GetLogoPath()"></RadzenImage>
+            </RadzenStack>
+            <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
+                <RadzenButton Click=@OnCloseClick Icon="close" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" class="rz-mt-2 rz-mr-2" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenHeader>
+    <RadzenBody>
+        <CascadingValue Name="Layout" Value="@this">
+            @Body
+        </CascadingValue>
+
+    </RadzenBody>
+    <RadzenFooter>
+        <RadzenStack AlignItems="Radzen.AlignItems.Stretch" Orientation="Orientation.Horizontal" Gap="10px" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack AlignItems="Radzen.AlignItems.Start" Orientation="Orientation.Horizontal" Gap="10px" Style="padding: var(--rz-panel-menu-item-padding);margin-left:75px" JustifyContent="JustifyContent.Left">
+                <RadzenImage Path="images\Logo.svg"></RadzenImage>
+                @* <RadzenText Text=@($"v.{BlazorVersion} Build:{BlazorBuild}") TextStyle="Radzen.Blazor.TextStyle.Caption" Style="color: var(--rz-text-disabled-color);" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" /> *@
+                <RadzenText Text=@($"Copyright TekSpear Solutions Ⓒ" + @DateTimeNowYear) TextStyle="Radzen.Blazor.TextStyle.Caption" class="rz-mb-0" Style="color: var(--rz-text-disabled-color);" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
+                <RadzenText Text=@($"v{AppVersion.ToString()}, Build:{BuildInfo}") TextStyle="Radzen.Blazor.TextStyle.Caption" class="rz-mb-0" Style="color: var(--rz-text-disabled-color);" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
+            </RadzenStack>
+            <RadzenStack AlignItems="Radzen.AlignItems.End" Orientation="Orientation.Horizontal" Gap="10px" Style="padding: var(--rz-panel-menu-item-padding);" JustifyContent="JustifyContent.Right">
+                <RadzenImage Path="images\TekSpear Logo.svg" style="width: 100px; height: 25px;"></RadzenImage>
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenFooter>
+</RadzenLayout>

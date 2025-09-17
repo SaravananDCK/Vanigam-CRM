@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Allergies" xml:space="preserve">
+    <value>Allergies</value>
+  </data>
+  <data name="AllergyCategories" xml:space="preserve">
+    <value>Allergy Categories</value>
+  </data>
+  <data name="AllergyExposureRoutes" xml:space="preserve">
+    <value>Allergy Exposure Routes</value>
+  </data>
+  <data name="AllergyReactions" xml:space="preserve">
+    <value>Allergy Reactions</value>
+  </data>
+  <data name="AllergySeverities" xml:space="preserve">
+    <value>Allergy Severities</value>
+  </data>
+  <data name="AllergySubstances" xml:space="preserve">
+    <value>Allergy Substances</value>
+  </data>
+  <data name="AllergyTypes" xml:space="preserve">
+    <value>Allergy Types</value>
+  </data>
+  <data name="Appointments" xml:space="preserve">
+    <value>Appointments</value>
+  </data>
+  <data name="Authorizations" xml:space="preserve">
+    <value>Authorizations</value>
+  </data>
+  <data name="CCM" xml:space="preserve">
+    <value>CCM</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="ContactPoints" xml:space="preserve">
+    <value>Contact Points</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Devices" xml:space="preserve">
+    <value>Devices</value>
+  </data>
+  <data name="DeviceTypes" xml:space="preserve">
+    <value>Device Types</value>
+  </data>
+  <data name="Drugs" xml:space="preserve">
+    <value>Drugs</value>
+  </data>
+  <data name="EncounterReasons" xml:space="preserve">
+    <value>Encounter Reasons</value>
+  </data>
+  <data name="Encounters" xml:space="preserve">
+    <value>Encounters</value>
+  </data>
+  <data name="Enterprises" xml:space="preserve">
+    <value>Enterprises</value>
+  </data>
+  <data name="Ethnicities" xml:space="preserve">
+    <value>Ethnicities</value>
+  </data>
+  <data name="Genders" xml:space="preserve">
+    <value>Genders</value>
+  </data>
+  <data name="Guarantors" xml:space="preserve">
+    <value>Guarantors</value>
+  </data>
+  <data name="GuarantorsPatients" xml:space="preserve">
+    <value>Guarantors Patients</value>
+  </data>
+  <data name="Hangfire" xml:space="preserve">
+    <value>Hang fire</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="HomeHealthEnterprises" xml:space="preserve">
+    <value>Home Health Enterprises</value>
+  </data>
+  <data name="HomeHealthLocations" xml:space="preserve">
+    <value>Home Health Locations</value>
+  </data>
+  <data name="Immunizations" xml:space="preserve">
+    <value>Immunizations</value>
+  </data>
+  <data name="InsuranceTypes" xml:space="preserve">
+    <value>Insurance Types</value>
+  </data>
+  <data name="LabResults" xml:space="preserve">
+    <value>Lab Results</value>
+  </data>
+  <data name="Languages" xml:space="preserve">
+    <value>Languages</value>
+  </data>
+  <data name="Locations" xml:space="preserve">
+    <value>Locations</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="MaritalStatuses" xml:space="preserve">
+    <value>Marital Statuses</value>
+  </data>
+  <data name="Medications" xml:space="preserve">
+    <value>Medications</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="Observations" xml:space="preserve">
+    <value>Observations</value>
+  </data>
+  <data name="Organization" xml:space="preserve">
+    <value>Organization</value>
+  </data>
+  <data name="PatientDevices" xml:space="preserve">
+    <value>Patient Devices</value>
+  </data>
+  <data name="PatientInsurances" xml:space="preserve">
+    <value>Patient Insurances</value>
+  </data>
+  <data name="PatientNotes" xml:space="preserve">
+    <value>Patient Notes</value>
+  </data>
+  <data name="PatientPrograms" xml:space="preserve">
+    <value>Patient Programs</value>
+  </data>
+  <data name="PatientRelationships" xml:space="preserve">
+    <value>Patient Relationships</value>
+  </data>
+  <data name="Patients" xml:space="preserve">
+    <value>Patients</value>
+  </data>
+  <data name="Practice" xml:space="preserve">
+    <value>Practice</value>
+  </data>
+  <data name="Problems" xml:space="preserve">
+    <value>Diagnosis</value>
+  </data>
+  <data name="ProblemTypes" xml:space="preserve">
+    <value>Problem Types</value>
+  </data>
+  <data name="ProcedureCategories" xml:space="preserve">
+    <value>Procedure Categories</value>
+  </data>
+  <data name="Procedures" xml:space="preserve">
+    <value>Procedures</value>
+  </data>
+  <data name="ProcedureTypes" xml:space="preserve">
+    <value>Procedure Types</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="ProgramStatus" xml:space="preserve">
+    <value>Program Status</value>
+  </data>
+  <data name="ProgramStatusHistory" xml:space="preserve">
+    <value>Program Status History</value>
+  </data>
+  <data name="Providers" xml:space="preserve">
+    <value>Providers</value>
+  </data>
+  <data name="ProviderTypes" xml:space="preserve">
+    <value>Provider Types</value>
+  </data>
+  <data name="Qualifications" xml:space="preserve">
+    <value>Qualifications</value>
+  </data>
+  <data name="Races" xml:space="preserve">
+    <value>Races</value>
+  </data>
+  <data name="RelationshipTypes" xml:space="preserve">
+    <value>Relationship Types</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
+  <data name="RPM" xml:space="preserve">
+    <value>RPM</value>
+  </data>
+  <data name="RPMAnalysis" xml:space="preserve">
+    <value>RPM Analysis</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="ServiceTypes" xml:space="preserve">
+    <value>Service Types</value>
+  </data>
+  <data name="Setup" xml:space="preserve">
+    <value>Setup</value>
+  </data>
+  <data name="SmokingStatuses" xml:space="preserve">
+    <value>Smoking Statuses</value>
+  </data>
+  <data name="Speciality" xml:space="preserve">
+    <value>Speciality</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="Tenants" xml:space="preserve">
+    <value>Tenants</value>
+  </data>
+  <data name="TenantSetup" xml:space="preserve">
+    <value>Tenant Setup</value>
+  </data>
+  <data name="TypeSearch" xml:space="preserve">
+    <value>Type Search</value>
+  </data>
+  <data name="UnsolicitedReadings" xml:space="preserve">
+    <value>Unsolicited Readings</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Vaccinations" xml:space="preserve">
+    <value>Vaccinations</value>
+  </data>
+  <data name="Vitals" xml:space="preserve">
+    <value>Vitals</value>
+  </data>
+  <data name="VitalSignTypes" xml:space="preserve">
+    <value>Vital Sign Types</value>
+  </data>
+  <data name="OutboundNotificationMessage" xml:space="preserve">
+    <value>Outbound Notification Message</value>
+  </data>
+  <data name="TaskBoard" xml:space="preserve">
+    <value>TaskBoard</value>
+  </data>
+  <data name="Inventory" xml:space="preserve">
+    <value>Inventory</value>
+  </data>
+  <data name="DirectorOfNursing" xml:space="preserve">
+    <value>Director Of Nursing</value>
+  </data>
+  <data name="Billing" xml:space="preserve">
+    <value>Billing</value>
+  </data>
+  <data name="ProgramBillings" xml:space="preserve">
+    <value>Program Billings</value>
+  </data>
+  <data name="RemoteSupport" xml:space="preserve">
+    <value>Remote Support</value>
+  </data>
+  <data name="HomeHealthRegions" xml:space="preserve">
+    <value>Home Health Regions</value>
+  </data>
+  <data name="DeviceReadings" xml:space="preserve">
+    <value>Device Readings</value>
+  </data>
+  <data name="ChooseTenant" xml:space="preserve">
+    <value>Choose Tenant</value>
+  </data>
+  <data name="AnswerTemplates" xml:space="preserve">
+    <value>Answer Templates</value>
+  </data>
+  <data name="PatientSurveys" xml:space="preserve">
+    <value>Patient Surveys</value>
+  </data>
+  <data name="QuestionAnswerTemplates" xml:space="preserve">
+    <value>Question Answer Templates</value>
+  </data>
+  <data name="SurveyGroupTemplates" xml:space="preserve">
+    <value>Survey Group Templates</value>
+  </data>
+  <data name="SurveyTemplates" xml:space="preserve">
+    <value>Survey Templates</value>
+  </data>
+  <data name="QuestionTemplates" xml:space="preserve">
+    <value>Question Templates</value>
+  </data>
+  <data name="Survey" xml:space="preserve">
+    <value>Survey</value>
+  </data>
+  <data name="AnswerTemplateLinks" xml:space="preserve">
+    <value>Answer Template Link</value>
+  </data>
+  <data name="QuestionTemplateLinks" xml:space="preserve">
+    <value>Question Template Link</value>
+  </data>
+</root>

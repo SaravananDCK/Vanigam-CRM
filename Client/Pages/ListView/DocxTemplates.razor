@@ -1,0 +1,43 @@
+@page "/docx-templates"
+@using Vanigam.Accounting.Client.Services
+@using Vanigam.Accounting.Objects.Entities
+@inherits Vanigam.Accounting.Client.Components.BaseListView<DocxTemplate, DocxTemplates>
+@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+@inject DocxTemplateApiService DocxTemplateApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["DocxTemplates"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="DocxTemplate"
+                              VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="DocxTemplate" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="docxTemplate">
+                            <OpenPageCommonComponent T="DocxTemplate" OpenObject="@docxTemplate" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="DocxTemplate" UsingObject="@docxTemplate" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b> </FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="DocxTemplate" Property="@nameof(DocxTemplate.Name)" Title="@Localizer["Name"]">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="DocxTemplate" Property="@nameof(DocxTemplate.Content)" Title="@Localizer["Content"]">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="DocxTemplate" Property="@nameof(DocxTemplate.FileName)" Title="@Localizer["FileName"]">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="DocxTemplate" Property=@(PropertyExtensions.GetPropertyFullPath((DocxTemplate a) => a.FileCategory.Name)) Title=@Localizer["Category"] Width="120px">
+                        <Template Context="data">
+                            @data?.FileCategory?.Name
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="DocxTemplate" Property="@nameof(DocxTemplate.Oid)" Title="@Localizer["Oid"]" Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>
+

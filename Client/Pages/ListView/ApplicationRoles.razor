@@ -1,0 +1,27 @@
+@page "/application-roles"
+@inherits Vanigam.Accounting.Client.Components.BaseCustomListView<ApplicationRole>
+@using Vanigam.Accounting.Objects
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ApplicationRoles> Localizer
+@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Roles"] AddButtonClick=@AddClick ShowSearch="false" />
+    <RadzenRow>
+        <RadzenColumn SizeMD="12">
+            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete role" Visible="@errorVisible">@error</RadzenAlert>
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="false" Data="@DataSource" TItem="Vanigam.Accounting.Objects.ApplicationRole" 
+                              @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">                
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="ApplicationRole" Property=@nameof(ApplicationRole.Name) Title=@Localizer["Name"]>
+                        <Template Context="data">
+                            @Localizer[$"{data?.Name}"]
+                        </Template>
+                    </RadzenDataGridColumn>                   
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

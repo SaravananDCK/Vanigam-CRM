@@ -1,0 +1,50 @@
+﻿@page "/edit-docx-template"
+@using DevExpress.Blazor.RichEdit
+@using Vanigam.Accounting.Client.Services
+@using Vanigam.Accounting.Objects.Entities
+@using Vanigam.Accounting.Objects
+@using Vanigam.Accounting.Client.Validators
+@inherits Vanigam.Accounting.Client.Components.BaseDetailView<DocxTemplate, EditDocxTemplate>
+@attribute [Authorize(Policy = ApplicationPolicy.IsAdministrator)]
+@inject DocxTemplateApiService DocxTemplateApiService
+
+<DetailPageCommonComponent TitleText="@Localizer["EditDocxTemplate"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" ReloadButtonClick="@ReloadButtonClick" CurrentOid="@Oid" />
+<RadzenColumn SizeMD=12>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["NameMust"]</RadzenAlert>
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="DocxTemplate" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <VanigamAccountingFormField Text=@Localizer["Name"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["FileName"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.FileName" Name="txt_FileName" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+
+        </RadzenStack>
+        <VanigamAccountingFormField Text=@Localizer["Expands"]>
+            <ChildContent>
+                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Expands" Name="txt_Expands" />
+            </ChildContent>
+        </VanigamAccountingFormField>
+        <VanigamAccountingFormField Text=@Localizer["Content"]>
+            <ChildContent>
+                <DxRichEdit @ref="@DxRichEdit" CssClass="myRichTextEditor" DocumentContentChanged="OnDocumentContentChanged" />
+            </ChildContent>
+        </VanigamAccountingFormField>
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenColumn>
+<style>
+    .myRichTextEditor {
+        height: 90% !important;
+        width: 100% !important;
+    }
+</style>

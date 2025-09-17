@@ -1,0 +1,24 @@
+@page "/ChooseTenant"
+@using Vanigam.Accounting.Client.Validators
+@using Vanigam.Accounting.Objects
+@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsSuperUser)]
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ChooseTenant> Localizer
+<PageTitle>@Localizer["ChooseTenant"]</PageTitle>
+<RadzenStack>
+    <RadzenRow>
+        <RadzenColumn SizeMD="12">
+            <RadzenTemplateForm @ref=Form EditContext="EditContext" Method="post" Submit="@FormSubmit" TItem="ApplicationUser" Data="@User"
+                                Visible="@(User != null)">
+                <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title=@Localizer["CannotChooseTenant"] Visible="@errorVisible">@error</RadzenAlert>               
+                <ValidationSummary />
+                <div class="rz-p-sm-12 rz-text-align-center">
+                    <RadzenListBox @bind-Value=@SelectedTenantId Data=@Tenants TextProperty="@nameof(ApplicationTenant.Name)" ValueProperty="@nameof(ApplicationTenant.Id)" Style="width: 100%; max-width: 400px; height: 200px"
+                                   InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select tenant" }})" />
+                </div>
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                    <VanigamAccountingSaveButton Id="btn_ChooseTenant" Text="@Localizer["ChooseTenant"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                </RadzenStack>
+            </RadzenTemplateForm>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

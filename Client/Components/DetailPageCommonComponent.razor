@@ -1,0 +1,25 @@
+﻿@using Microsoft.Extensions.Localization;
+
+@inject IStringLocalizer<DetailPageCommonComponent> Localizer;
+
+<PageTitle>@TitleText</PageTitle>
+@if (CurrentOid != Guid.Empty)
+{
+    <RadzenRow>
+        <RadzenColumn SizeMD="9">
+        <RadzenLabel Style="font-weight: bold" Text="@Localizer["ItemAvailable"]" Visible="@(!CanEdit)" />
+        </RadzenColumn>
+        <RadzenColumn SizeMD="3">
+            <RadzenButton ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 20px" Text="@Localizer["Close"]" Visible="@(!CanEdit)" Click="@CancelButtonClick" />
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+        <RadzenColumn SizeMD="9">
+            <RadzenLabel Style="font-weight: bold" Text="@Localizer["ConflictText"]" Visible="@HasChanges" />
+        </RadzenColumn>
+        <RadzenColumn SizeMD="3">
+            <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="autorenew" Style="margin-bottom: 20px" Text="@Localizer["Reload"]" Visible="@HasChanges" Click="@ReloadButtonClick" />
+        </RadzenColumn>
+    </RadzenRow>
+}
+

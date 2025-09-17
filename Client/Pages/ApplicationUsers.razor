@@ -1,0 +1,29 @@
+@page "/application-users"
+@inherits Vanigam.Accounting.Client.Components.BaseCustomListView<ApplicationUser>
+@using Vanigam.Accounting.Objects
+@using Vanigam.Accounting.Client.Pages.DetailView
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ApplicationUsers> Localizer
+@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Users"] ShowAdd="false"  ShowSearch="false" />
+    <RadzenRow>
+        <RadzenColumn SizeMD="12">
+            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title=@Localizer["Cannot delete user"] Visible="@errorVisible">@error</RadzenAlert>
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="false" Data="@DataSource" TItem="ApplicationUser" 
+                              RowDoubleClick="@RowSelect" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <Columns>
+                        <RadzenDataGridColumn TItem="ApplicationUser" Filterable="false" Sortable="false" Width="70px" Title="@Localizer["Actions"]">
+                            <Template Context="user">
+                                <OpenPageCommonComponent T="ApplicationUser" OpenObject="@user" Open="@Open"></OpenPageCommonComponent>
+                                <VanigamAccountingButton Tooltip="Reset Password" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Medium" Icon="password"
+                                              Variant="Variant.Flat" Shade="Shade.Lighter" Click="@(() => ClickReset(user))" @onclick:stopPropagation="true" /> 
+                            </Template>
+                        </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ApplicationUser" Property=@nameof(ApplicationUser.UserName) Title=@Localizer["UserName"] />
+                    <RadzenDataGridColumn TItem="ApplicationUser" Property=@nameof(ApplicationUser.Email) Title=@Localizer["Email"] />
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

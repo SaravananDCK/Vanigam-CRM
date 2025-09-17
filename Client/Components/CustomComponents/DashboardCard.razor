@@ -1,0 +1,505 @@
+﻿<div class="glassmorphic-dashboard-card-container">
+    <RadzenCard Variant="Variant.Flat" 
+                class=@($"modern-dashboard-card rz-background-color-{ColorStyle.ToString().ToLower()}-lighter") 
+                @onclick="async ()=> await SelectedValue()"
+                Style=@($"height: {Height}px")>
+        <div class="dashboard-card-content-wrapper">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceAround" Gap="2px" class="dashboard-content-stack">
+                <div class="dashboard-value-section">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="2px">
+                        <RadzenText TextStyle="TextStyle.H2" Class=@($"dashboard-value rz-color-{ColorStyle.ToString().ToLower()}-dark")><b>@Value</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6" Class=@($"dashboard-title rz-color-{ColorStyle.ToString().ToLower()}")>@Title</RadzenText>
+                    </RadzenStack>
+                </div>
+                <div class="dashboard-icon-section">
+                    <div class="dashboard-icon-container">
+                        <RadzenIcon Icon="@Icon" Style="font-size:1.8rem" IconColor=@($"var(--rz-{ColorStyle.ToString().ToLower()})")></RadzenIcon>
+                        <div class="dashboard-icon-glow"></div>
+                    </div>
+                </div>
+            </RadzenStack>
+        </div>
+        <div class="dashboard-card-overlay"></div>
+        <div class="dashboard-card-shimmer"></div>
+    </RadzenCard>
+</div>
+
+<style>
+    /* Import modern font stack */
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    /* Root variables for consistent theming */
+    :root {
+        --dashboard-glass-bg: rgba(255, 255, 255, 0.25);
+        --dashboard-glass-border: rgba(255, 255, 255, 0.18);
+        --dashboard-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        --dashboard-glass-backdrop: blur(8.5px);
+        --dashboard-border-radius: 5px;
+        --dashboard-border-radius-sm: 2px;
+        --dashboard-spacing-xs: 0.25rem;
+        --dashboard-spacing-sm: 0.5rem;
+        --dashboard-spacing-md: 0.75rem;
+        --dashboard-spacing-lg: 1rem;
+        --dashboard-spacing-xl: 1.5rem;
+        --dashboard-transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --dashboard-transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --dashboard-text-primary: #1e293b;
+        --dashboard-text-secondary: #64748b;
+        --dashboard-text-muted: #94a3b8;
+    }
+
+    /* Main container */
+    .glassmorphic-dashboard-card-container {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        position: relative;
+        height: 100%;
+        display: flex;
+        align-items: stretch;
+    }
+
+    /* Enhanced card styling with glassmorphism */
+    .modern-dashboard-card {
+        backdrop-filter: var(--dashboard-glass-backdrop) !important;
+        -webkit-backdrop-filter: var(--dashboard-glass-backdrop) !important;
+        border: 1px solid var(--dashboard-glass-border) !important;
+        border-radius: var(--dashboard-border-radius) !important;
+        box-shadow: var(--dashboard-glass-shadow) !important;
+        padding: var(--dashboard-spacing-xs) !important;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        transition: var(--dashboard-transition-smooth);
+        width: 100%;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Color-specific gradient backgrounds */
+    .modern-dashboard-card.rz-background-color-primary-lighter {
+        background: linear-gradient(135deg, 
+                    rgba(0, 51, 153, 0.15) 0%, 
+                    rgba(0, 102, 204, 0.1) 50%, 
+                    rgba(0, 51, 153, 0.05) 100%) !important;
+        border-color: rgba(0, 51, 153, 0.2) !important;
+    }
+
+    .modern-dashboard-card.rz-background-color-secondary-lighter {
+        background: linear-gradient(135deg, 
+                    rgba(108, 117, 125, 0.15) 0%, 
+                    rgba(134, 142, 150, 0.1) 50%, 
+                    rgba(108, 117, 125, 0.05) 100%) !important;
+        border-color: rgba(108, 117, 125, 0.2) !important;
+    }
+
+    .modern-dashboard-card.rz-background-color-success-lighter {
+        background: linear-gradient(135deg, 
+                    rgba(40, 167, 69, 0.15) 0%, 
+                    rgba(72, 180, 97, 0.1) 50%, 
+                    rgba(40, 167, 69, 0.05) 100%) !important;
+        border-color: rgba(40, 167, 69, 0.2) !important;
+    }
+
+    .modern-dashboard-card.rz-background-color-danger-lighter {
+        background: linear-gradient(135deg, 
+                    rgba(220, 53, 69, 0.15) 0%, 
+                    rgba(225, 83, 97, 0.1) 50%, 
+                    rgba(220, 53, 69, 0.05) 100%) !important;
+        border-color: rgba(220, 53, 69, 0.2) !important;
+    }
+
+    .modern-dashboard-card.rz-background-color-warning-lighter {
+        background: linear-gradient(135deg, 
+                    rgba(255, 193, 7, 0.15) 0%, 
+                    rgba(255, 205, 57, 0.1) 50%, 
+                    rgba(255, 193, 7, 0.05) 100%) !important;
+        border-color: rgba(255, 193, 7, 0.2) !important;
+    }
+
+    .modern-dashboard-card.rz-background-color-info-lighter {
+        background: linear-gradient(135deg, 
+                    rgba(23, 162, 184, 0.15) 0%, 
+                    rgba(58, 176, 195, 0.1) 50%, 
+                    rgba(23, 162, 184, 0.05) 100%) !important;
+        border-color: rgba(23, 162, 184, 0.2) !important;
+    }
+
+    .modern-dashboard-card.rz-background-color-light-lighter {
+        background: linear-gradient(135deg, 
+                    rgba(248, 249, 250, 0.25) 0%, 
+                    rgba(255, 255, 255, 0.15) 50%, 
+                    rgba(248, 249, 250, 0.1) 100%) !important;
+        border-color: rgba(248, 249, 250, 0.3) !important;
+    }
+
+    .modern-dashboard-card.rz-background-color-dark-lighter {
+        background: linear-gradient(135deg, 
+                    rgba(52, 58, 64, 0.15) 0%, 
+                    rgba(73, 80, 87, 0.1) 50%, 
+                    rgba(52, 58, 64, 0.05) 100%) !important;
+        border-color: rgba(52, 58, 64, 0.2) !important;
+    }
+
+    .modern-dashboard-card:hover {
+        transform: translateY(-6px) scale(1.03);
+        box-shadow: 0 20px 40px 0 rgba(31, 38, 135, 0.25), 
+                    0 8px 24px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced hover effects for each color */
+    .modern-dashboard-card.rz-background-color-primary-lighter:hover {
+        background: linear-gradient(135deg, 
+                    rgba(0, 51, 153, 0.25) 0%, 
+                    rgba(0, 102, 204, 0.15) 50%, 
+                    rgba(0, 51, 153, 0.1) 100%) !important;
+        border-color: rgba(0, 51, 153, 0.4) !important;
+        box-shadow: 0 20px 40px 0 rgba(0, 51, 153, 0.3), 
+                    0 8px 24px 0 rgba(0, 51, 153, 0.15);
+    }
+
+    .modern-dashboard-card.rz-background-color-secondary-lighter:hover {
+        background: linear-gradient(135deg, 
+                    rgba(108, 117, 125, 0.25) 0%, 
+                    rgba(134, 142, 150, 0.15) 50%, 
+                    rgba(108, 117, 125, 0.1) 100%) !important;
+        border-color: rgba(108, 117, 125, 0.4) !important;
+        box-shadow: 0 20px 40px 0 rgba(108, 117, 125, 0.3), 
+                    0 8px 24px 0 rgba(108, 117, 125, 0.15);
+    }
+
+    .modern-dashboard-card.rz-background-color-success-lighter:hover {
+        background: linear-gradient(135deg, 
+                    rgba(40, 167, 69, 0.25) 0%, 
+                    rgba(72, 180, 97, 0.15) 50%, 
+                    rgba(40, 167, 69, 0.1) 100%) !important;
+        border-color: rgba(40, 167, 69, 0.4) !important;
+        box-shadow: 0 20px 40px 0 rgba(40, 167, 69, 0.3), 
+                    0 8px 24px 0 rgba(40, 167, 69, 0.15);
+    }
+
+    .modern-dashboard-card.rz-background-color-danger-lighter:hover {
+        background: linear-gradient(135deg, 
+                    rgba(220, 53, 69, 0.25) 0%, 
+                    rgba(225, 83, 97, 0.15) 50%, 
+                    rgba(220, 53, 69, 0.1) 100%) !important;
+        border-color: rgba(220, 53, 69, 0.4) !important;
+        box-shadow: 0 20px 40px 0 rgba(220, 53, 69, 0.3), 
+                    0 8px 24px 0 rgba(220, 53, 69, 0.15);
+    }
+
+    .modern-dashboard-card.rz-background-color-warning-lighter:hover {
+        background: linear-gradient(135deg, 
+                    rgba(255, 193, 7, 0.25) 0%, 
+                    rgba(255, 205, 57, 0.15) 50%, 
+                    rgba(255, 193, 7, 0.1) 100%) !important;
+        border-color: rgba(255, 193, 7, 0.4) !important;
+        box-shadow: 0 20px 40px 0 rgba(255, 193, 7, 0.3), 
+                    0 8px 24px 0 rgba(255, 193, 7, 0.15);
+    }
+
+    .modern-dashboard-card.rz-background-color-info-lighter:hover {
+        background: linear-gradient(135deg, 
+                    rgba(23, 162, 184, 0.25) 0%, 
+                    rgba(58, 176, 195, 0.15) 50%, 
+                    rgba(23, 162, 184, 0.1) 100%) !important;
+        border-color: rgba(23, 162, 184, 0.4) !important;
+        box-shadow: 0 20px 40px 0 rgba(23, 162, 184, 0.3), 
+                    0 8px 24px 0 rgba(23, 162, 184, 0.15);
+    }
+
+    .modern-dashboard-card.rz-background-color-light-lighter:hover {
+        background: linear-gradient(135deg, 
+                    rgba(248, 249, 250, 0.35) 0%, 
+                    rgba(255, 255, 255, 0.25) 50%, 
+                    rgba(248, 249, 250, 0.15) 100%) !important;
+        border-color: rgba(248, 249, 250, 0.5) !important;
+        box-shadow: 0 20px 40px 0 rgba(248, 249, 250, 0.3), 
+                    0 8px 24px 0 rgba(248, 249, 250, 0.15);
+    }
+
+    .modern-dashboard-card.rz-background-color-dark-lighter:hover {
+        background: linear-gradient(135deg, 
+                    rgba(52, 58, 64, 0.25) 0%, 
+                    rgba(73, 80, 87, 0.15) 50%, 
+                    rgba(52, 58, 64, 0.1) 100%) !important;
+        border-color: rgba(52, 58, 64, 0.4) !important;
+        box-shadow: 0 20px 40px 0 rgba(52, 58, 64, 0.3), 
+                    0 8px 24px 0 rgba(52, 58, 64, 0.15);
+    }
+
+    .modern-dashboard-card:active {
+        transform: translateY(-3px) scale(1.02);
+        transition: var(--dashboard-transition-fast);
+    }
+
+    /* Card content wrapper */
+    .dashboard-card-content-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        z-index: 2;
+        padding: 0;
+    }
+
+    /* Content stack */
+    .dashboard-content-stack {
+        width: 100%;
+        flex-wrap: nowrap;
+    }
+
+    /* Value section with enhanced typography */
+    .dashboard-value-section {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+    }
+
+    .dashboard-value {
+        font-weight: 800 !important;
+        letter-spacing: -0.025em !important;
+        line-height: 1.1 !important;
+        margin: 0 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        transition: var(--dashboard-transition-smooth);
+    }
+
+    .dashboard-title {
+        font-weight: 600 !important;
+        letter-spacing: -0.015em !important;
+        line-height: 1.2 !important;
+        margin: 0 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        transition: var(--dashboard-transition-smooth);
+        text-align: center;
+    }
+
+    .modern-dashboard-card:hover .dashboard-value,
+    .modern-dashboard-card:hover .dashboard-title {
+        transform: translateY(-1px);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Icon section with enhanced effects */
+    .dashboard-icon-section {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: var(--dashboard-spacing-xs);
+    }
+
+    .dashboard-icon-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--dashboard-transition-smooth);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dashboard-icon-glow {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120%;
+        height: 120%;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        opacity: 0;
+        transition: var(--dashboard-transition-smooth);
+        pointer-events: none;
+    }
+
+    .modern-dashboard-card:hover .dashboard-icon-glow {
+        opacity: 1;
+        animation: dashboardIconGlow 2s infinite;
+    }
+
+    .modern-dashboard-card:hover .dashboard-icon-container {
+        transform: scale(1.1) rotate(5deg);
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Card overlay for additional glassmorphic effect */
+    .dashboard-card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, 
+                    rgba(255, 255, 255, 0.1) 0%, 
+                    rgba(255, 255, 255, 0.05) 50%, 
+                    rgba(255, 255, 255, 0.1) 100%);
+        border-radius: var(--dashboard-border-radius);
+        opacity: 0;
+        transition: var(--dashboard-transition-smooth);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .modern-dashboard-card:hover .dashboard-card-overlay {
+        opacity: 1;
+    }
+
+    /* Shimmer effect for modern touch */
+    .dashboard-card-shimmer {
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, 
+                    transparent 30%, 
+                    rgba(255, 255, 255, 0.2) 50%, 
+                    transparent 70%);
+        border-radius: var(--dashboard-border-radius);
+        opacity: 0;
+        transform: translateX(-100%);
+        transition: var(--dashboard-transition-smooth);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .modern-dashboard-card:hover .dashboard-card-shimmer {
+        opacity: 1;
+        transform: translateX(100%);
+        transition: transform 0.6s ease-in-out;
+    }
+
+    /* Keyframe animations */
+    @@keyframes dashboardIconGlow {
+        0%, 100% {
+            opacity: 0.3;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+            opacity: 0.6;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+    }
+
+    /* Focus states for accessibility */
+    .modern-dashboard-card:focus {
+        outline: 2px solid rgba(59, 130, 246, 0.5) !important;
+        outline-offset: 2px !important;
+    }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .modern-dashboard-card {
+            padding: var(--dashboard-spacing-sm) !important;
+            border-radius: var(--dashboard-border-radius-sm) !important;
+        }
+
+        .dashboard-value {
+            font-size: 1.5rem !important;
+        }
+
+        .dashboard-title {
+            font-size: 0.9rem !important;
+        }
+
+        .dashboard-icon-container {
+            width: 50px;
+            height: 50px;
+        }
+
+        .dashboard-content-stack {
+            gap: 6px !important;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .modern-dashboard-card {
+            border-radius: 10px !important;
+        }
+
+        .modern-dashboard-card:hover {
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .dashboard-value {
+            font-size: 1.3rem !important;
+        }
+
+        .dashboard-title {
+            font-size: 0.8rem !important;
+        }
+
+        .dashboard-icon-container {
+            width: 45px;
+            height: 45px;
+        }
+
+        .dashboard-content-stack {
+            gap: 4px !important;
+        }
+    }
+
+    /* Dark mode support */
+    @@media (prefers-color-scheme: dark) {
+        :root {
+            --dashboard-glass-bg: rgba(0, 0, 0, 0.25);
+            --dashboard-glass-border: rgba(255, 255, 255, 0.1);
+            --dashboard-text-primary: #f1f5f9;
+            --dashboard-text-secondary: #cbd5e1;
+            --dashboard-text-muted: #64748b;
+        }
+
+        .modern-dashboard-card {
+            background: var(--dashboard-glass-bg) !important;
+            border: 1px solid var(--dashboard-glass-border) !important;
+        }
+
+        .dashboard-card-overlay {
+            background: linear-gradient(135deg, 
+                        rgba(255, 255, 255, 0.05) 0%, 
+                        rgba(255, 255, 255, 0.02) 50%, 
+                        rgba(255, 255, 255, 0.05) 100%);
+        }
+
+        .dashboard-icon-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .modern-dashboard-card:hover .dashboard-icon-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public string Value { get; set; }
+    [Parameter]
+    public string Icon { get; set; }
+
+    [Parameter] public string ColorStyle { get; set; } = "primary";
+    [Parameter]
+    public EventCallback OnCardClick { get; set; }
+    [Parameter] public int Height { get; set; } = 100;
+
+    public async Task SelectedValue()
+    {
+        await OnCardClick.InvokeAsync();
+    }
+
+}

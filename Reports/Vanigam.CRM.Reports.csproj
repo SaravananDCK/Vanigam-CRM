@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+		<UserSecretsId>2f36100d-b2a4-4b0a-84c8-32617e4860f4</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="appsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Alexinea.FastMember.Extensions" Version="1.5.2" />
+		<PackageReference Include="DevExpress.Win.BonusSkins" Version="23.1.*-*" />
+		<PackageReference Include="DevExpress.Win.Design" Version="23.1.*-*" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+		<PackageReference Include="EFCore.BulkExtensions.PostgreSql" Version="8.1.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Objects\Vanigam.CRM.Objects.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Properties\DataSources\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+	</ItemGroup>
+</Project>

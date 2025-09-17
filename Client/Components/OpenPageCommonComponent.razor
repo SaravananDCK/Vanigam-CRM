@@ -1,0 +1,20 @@
+﻿@using Vanigam.Accounting.Objects
+@typeparam T
+
+<VanigamAccountingButton Tooltip="Open"  ButtonStyle="ButtonStyle.Info" Icon="folder_open" Size="ButtonSize.Medium"
+              Shade="Shade.Lighter" Variant="Variant.Flat"
+              Click=@(args => SelectedValue(OpenObject) ) @onclick:stopPropagation="true" />
+
+@code
+{  
+    [Parameter] public T OpenObject { get; set; }
+
+    [Parameter] public EventCallback<T> Open { get; set; }
+
+    [Parameter] public Shade Shade { get; set; } = Shade.Lighter;
+
+    public async Task SelectedValue(T currentObject)
+    {
+        await Open.InvokeAsync(currentObject);
+    }
+}

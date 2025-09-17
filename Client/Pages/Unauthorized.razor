@@ -1,0 +1,9 @@
+@page "/unauthorized"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Unauthorized> Localizer
+
+<RadzenRow>
+    <RadzenColumn Size="12" Style="margin-top: 5rem; margin-bottom: 5rem">
+        <RadzenText Text=@Localizer["Unauthorized"] TextStyle="TextStyle.DisplayH1" Style="margin: 0; margin-bottom: 2rem" TextAlign="TextAlign.Center" />
+        <RadzenText Text=@Localizer["NotAuthorized"] TextStyle="TextStyle.H6" Style="margin: 0" TextAlign="TextAlign.Center" TagName="Radzen.Blazor.TagName.P" />
+    </RadzenColumn>
+</RadzenRow>

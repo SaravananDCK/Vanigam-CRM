@@ -1,0 +1,103 @@
+@inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="@NavigationManager.BaseUri" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    @if (Configuration["RenderMode"] == "InteractiveWebAssembly")
+    {
+        <RadzenTheme @rendermode="@InteractiveWebAssembly" Theme="material3" />
+    }
+    else if (Configuration["RenderMode"] == "InteractiveServer")
+    {
+        <RadzenTheme @rendermode="@InteractiveServer" Theme="material3" />
+    }
+    else if (Configuration["RenderMode"] == "InteractiveAuto")
+    {
+        <RadzenTheme @rendermode="@InteractiveAuto" Theme="material3" />
+    }
+    else
+    {
+        <RadzenTheme @rendermode="@InteractiveWebAssembly" Theme="material3" />
+    }
+
+
+    <link rel="stylesheet" href="css/site.css" />
+    <link rel="icon" href="favicon.ico" />
+    <link href="manifest.json" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="stylesheet" href="fontawesome/css/all.min.css" />
+
+    <script src="js/utils_1.0.js"></script>
+    <script src="fontawesome/js/all.min.js" async></script>
+
+    @if (Configuration["RenderMode"] == "InteractiveWebAssembly")
+    {
+        <HeadOutlet @rendermode="@InteractiveWebAssembly" />
+    }
+    else if (Configuration["RenderMode"] == "InteractiveServer")
+    {
+        <HeadOutlet @rendermode="@InteractiveServer" />
+    }
+    else if (Configuration["RenderMode"] == "InteractiveAuto")
+    {
+        <HeadOutlet @rendermode="@InteractiveAuto" />
+    }
+    else
+    {
+        <HeadOutlet @rendermode="@InteractiveWebAssembly" />
+    }
+</head>
+
+<body>
+    @if (Configuration["RenderMode"] == "InteractiveWebAssembly")
+    {
+        <Routes @rendermode="@InteractiveWebAssembly" />
+    }
+    else if (Configuration["RenderMode"] == "InteractiveServer")
+    {
+        <Routes @rendermode="@InteractiveServer" />
+    }
+    else if (Configuration["RenderMode"] == "InteractiveAuto")
+    {
+        <Routes @rendermode="@InteractiveAuto" />
+    }
+    else
+    {
+        <Routes @rendermode="@InteractiveWebAssembly" />
+    }
+    <script src="_framework/blazor.web.js"></script>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+</body>
+
+</html>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; }
+
+    [Inject]
+    private ThemeService ThemeService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        if (HttpContext != null)
+        {
+            var theme = HttpContext.Request.Cookies["VanigamTheme"];
+
+            if (!string.IsNullOrEmpty(theme))
+            {
+                ThemeService.SetTheme(theme, false);
+            }
+        }
+    }
+}

@@ -1,0 +1,40 @@
+﻿@using Microsoft.Extensions.Localization;
+@inject IStringLocalizer<CustomDate> Localizer;
+
+<PageTitle>@Localizer["CustomDate"]</PageTitle>
+<RadzenStack Style="margin: 1rem">
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn SizeMD="12">
+            <RadzenFormField Text="@Localizer["From"]" Variant="Variant.Outlined" Style="width:100%">
+                <ChildContent>
+                    @if (ShowDays)
+                    {
+                        <RadzenDatePicker Value="@FromDate" ValueChanged="FromDateChanged" Name="From" TValue="DateTime" Min=DateTime.Now.AddDays(-180) Max="DateTime.Now" ShowDays="@ShowDays" DateFormat="MM/dd/yyyy" ParseInput="@ParseDate" />
+                    }
+                    else
+                    {
+                        <RadzenDatePicker Value="@FromDate" CurrentDateChanged="FromDateChanged" Name="From" TValue="DateTime" ShowDays="ShowDays" DateFormat="MM/yyyy" ParseInput="@ParseDate" />
+                    }
+                </ChildContent>
+            </RadzenFormField>
+        </RadzenColumn>
+        <RadzenColumn SizeMD="12">
+            <RadzenFormField Text="@Localizer["To"]" Variant="Variant.Outlined" Style="width:100%">
+                <ChildContent>
+                    @if (ShowDays)
+                    {
+                        <RadzenDatePicker Value="@ToDate" ValueChanged="ToDateChanged" Name="To" TValue="DateTime" Min=@FromDate.Date Max="DateTime.Now" ShowDays="@ShowDays" DateFormat="MM/dd/yyyy" ParseInput="@ParseDate" />
+                    }
+                    else
+                    {
+                        <RadzenDatePicker Value="@ToDate" CurrentDateChanged="ToDateChanged" Name="To" TValue="DateTime" ShowDays="ShowDays" DateFormat="MM/yyyy" ParseInput="@ParseDate" />
+                    }
+                </ChildContent>
+            </RadzenFormField>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="0.5rem">
+        <VanigamAccountingSaveButton Id="btn_Submit" Text="@Localizer["Submit"]" Click="@FormSubmit" />
+        <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+    </RadzenStack>
+</RadzenStack>

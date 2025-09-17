@@ -1,0 +1,26 @@
+@page "/edit-application-role"
+@using Vanigam.Accounting.Objects
+@using Vanigam.Accounting.Client.Validators
+@inject Microsoft.Extensions.Localization.IStringLocalizer<EditApplicationRole> Localizer
+@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+
+<RadzenRow>
+    <RadzenColumn SizeMD="12">
+        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="ApplicationRole" Data="@CurrentObject" Visible="@(CurrentObject != null)" Submit="@FormSubmit">
+            <RadzenAlert Title=@Localizer["CannotCreateRole"] Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Error</RadzenAlert>
+            <FluentValidationValidator Validator="new ApplicationRoleValidator(Localizer)" />
+            <ValidationSummary />
+            <RadzenStack Style="margin-bottom: 1rem;">
+                <VanigamAccountingFormField Text=@Localizer["Name"]>
+                    <ChildContent>
+                        <VanigamAccountingTextBox @bind-Value="@(CurrentObject.Name)" Name="txt_Name" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
+            </RadzenStack>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelClick" />
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+</RadzenRow>

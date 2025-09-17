@@ -1,0 +1,8 @@
+﻿@using Vanigam.Accounting.Objects.Redis
+@typeparam T where T:class
+@inject Microsoft.Extensions.Localization.IStringLocalizer<T> Localizer
+<RedisPermissionAuthorizeView T="T" PermissionType="PermissionType.Delete">
+    <VanigamAccountingButton Tooltip="@Localizer["Delete"]" Icon="delete" Size="ButtonSize.Medium" Shade="@Shade"
+                    IconColor="var(--rz-danger)" @onclick:stopPropagation="true"
+                    Click=@(args => SelectedValue(args,UsingObject)) />
+</RedisPermissionAuthorizeView>

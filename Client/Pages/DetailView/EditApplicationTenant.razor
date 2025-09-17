@@ -1,0 +1,36 @@
+@page "/edit-application-Tenant/{Id}"
+@using Vanigam.Accounting.Objects
+@inject Microsoft.Extensions.Localization.IStringLocalizer<EditApplicationTenant> Localizer
+@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+
+<RadzenRow>
+    <RadzenColumn SizeMD="12">
+        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="ApplicationTenant" Data="@CurrentObject" Visible="@(CurrentObject != null)" Submit="@FormSubmit">
+            <RadzenAlert Title=@Localizer["CannotCreateTenant"] Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Error</RadzenAlert>
+            <FluentValidationValidator Validator="new Vanigam.Accounting.Client.Validators.ApplicationTenantValidator(Localizer)" />
+            <ValidationSummary />
+            <RadzenStack Style="margin-bottom: 1rem;">
+                <VanigamAccountingFormField Text=@Localizer["Name"]>
+                    <ChildContent>
+                        <VanigamAccountingTextBox @bind-Value="@(CurrentObject.Name)" Name="txt_Name" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
+                <VanigamAccountingFormField Text=@Localizer["Hosts"]>
+                    <ChildContent>
+                        <VanigamAccountingTextBox @bind-Value="@(CurrentObject.Hosts)" Name="txt_Hosts" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
+                <VanigamAccountingFormField Text=@Localizer["Users"]>
+                    <ChildContent>
+                        <RadzenDropDown @bind-Value=selectedValues Data=@users LoadData=@LoadData Count="@count" AllowVirtualization="true" AllowClear="true" Name="DropDownVirtualizationLoadData"
+                                        AllowFiltering="true" TextProperty="@nameof(ApplicationUser.UserName)" ValueProperty="@nameof(ApplicationUser.Id)" Style="width: 100%; max-width: 400px;" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
+            </RadzenStack>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelClick" />
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+</RadzenRow>

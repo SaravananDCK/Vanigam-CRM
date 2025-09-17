@@ -1,0 +1,36 @@
+@page "/application-tenants"
+@inherits Vanigam.Accounting.Client.Components.BaseCustomListView<ApplicationTenant>
+@using Vanigam.Accounting.Objects
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ApplicationTenants> Localizer
+@attribute [Authorize(Policy = Vanigam.Accounting.Objects.ApplicationPolicy.IsAdministrator)]
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Tenants"] AddButtonClick=@AddClick ShowSearch="false" />
+    <RadzenRow>
+        <RadzenColumn SizeMD="12">
+            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title=@Localizer["CannotDelete"] Visible="@errorVisible">@error</RadzenAlert>
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="false" Data="@DataSource" TItem="ApplicationTenant" RowDoubleClick="@RowSelect" RowRender="@RowRender"
+                              @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="ApplicationTenant" Property=@nameof(ApplicationTenant.Name) Title=@Localizer["Name"] />
+                    <RadzenDataGridColumn TItem="ApplicationTenant" Property=@nameof(ApplicationTenant.Hosts) Title=@Localizer["Hosts"] />
+                    <RadzenDataGridColumn TItem="ApplicationTenant" Filterable="false" Sortable="false" Width="60px">
+                        <Template Context="tenant">
+                            <RadzenButton Disabled="@(tenant.Id == Security.Tenant?.Id)" Icon="account_balance_wallet" Click="@((args) => SetDefaultTenant(args, tenant))" title="Switch application to this tenant" @onclick:stopPropagation="true">
+                            </RadzenButton>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ApplicationTenant" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                        <Template Context="tenant">
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small"
+                                          Variant="Variant.Flat" Shade="Shade.Lighter" Click="@(() => DeleteClick(tenant))" @onclick:stopPropagation="true" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

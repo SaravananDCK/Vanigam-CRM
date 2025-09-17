@@ -1,0 +1,96 @@
+﻿@inherits RadzenComponent
+
+<div class="icon-stack material-symbols-outlined">
+    <RadzenIcon Icon="@BaseIcon" IconStyle="IconStyle.Primary" class="base-icon"></RadzenIcon>
+    @if (TopIcon is not null)
+    {
+        <RadzenIcon Icon="@TopIcon" IconStyle="IconStyle.Success" class=@($"top-icon {TopIconCssClass}") style="@TopIconStyle"></RadzenIcon>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string BaseIcon { get; set; }
+
+    [Parameter]
+    public string TopIcon { get; set; }
+
+    [Parameter]
+    public IconPosition Position { get; set; } = IconPosition.TopLeft;
+
+    private string TopIconCssClass => Position switch
+    {
+        IconPosition.TopRight => "top-icon-right",
+        IconPosition.BottomLeft => "bottom-icon-left",
+        IconPosition.BottomRight => "bottom-icon-right",
+        _ => ""
+    };
+
+    private string TopIconStyle
+    {
+        get
+        {
+            var style = new Dictionary<string, string>();
+
+            switch (Position)
+            {
+                case IconPosition.TopRight:
+                    style.Add("top", "10px");
+                    style.Add("left", "auto");
+                    style.Add("right", "10px");
+                    break;
+                case IconPosition.BottomLeft:
+                    style.Add("top", "auto");
+                    style.Add("left", "10px");
+                    style.Add("bottom", "10px");
+                    break;
+                case IconPosition.BottomRight:
+                    style.Add("top", "auto");
+                    style.Add("left", "auto");
+                    style.Add("right", "10px");
+                    style.Add("bottom", "10px");
+                    break;
+                case IconPosition.Center:
+                    style.Add("top", "50%");
+                    style.Add("left", "50%");
+                    style.Add("transform", "translate(-50%, -50%)");
+                    break;
+            };
+
+            return string.Join("; ", style.Select(kvp => $"{kvp.Key}: {kvp.Value}"));
+        }
+    }
+    public enum IconPosition
+    {
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight,
+        Center
+    }
+}
+<style>
+    .icon-stack {
+        position: relative;
+        width: 50px;
+        height: 50px;
+    }
+    .top-icon-right {
+        left: auto;
+        right: 10px;
+    }
+
+    .bottom-icon-left {
+        top: auto;
+        left: 10px;
+        bottom: 10px;
+    }
+
+    .bottom-icon-right {
+        top: auto;
+        left: auto;
+        right: 10px;
+        bottom: 10px;
+    }
+
+</style>

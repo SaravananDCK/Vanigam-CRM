@@ -1,0 +1,10 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<LoadingComponent> Localizer
+
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" class="rz-m-12">
+    <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+        <Template>
+            <RadzenLabel class="rz-color-primary" Style="font-weight: bolder; font-style: italic">@Localizer["Loading"]</RadzenLabel>
+        </Template>
+    </RadzenProgressBarCircular>
+</RadzenStack>

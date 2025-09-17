@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AssemblyVersion>25.1.1.0</AssemblyVersion>
+		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+		<Deterministic>false</Deterministic>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn>1701;1702;CS8632;SQL80001</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <NoWarn>1701;1702;CS8632;SQL80001</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="MultiTenancyUserStore.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Azure.Identity" Version="1.12.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
+		<PackageReference Include="FileHelpers" Version="3.5.2" />
+		<PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.8" />
+		<PackageReference Include="NodaTime" Version="3.1.12" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+		<PackageReference Include="OData.Fluent.QueryBuilder" Version="1.0.3" />
+		<PackageReference Include="Radzen.Blazor" Version="5.9.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
+		<PackageReference Include="RestSharp" Version="112.0.0" />
+		<PackageReference Include="StackExchange.Redis" Version="2.8.12" />
+		<PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="ApplicationUser.cs~RF10f81cc.TMP" />
+		<None Remove="Migrations\fn_GetMissedReadingSummary.sql" />
+		<None Remove="Migrations\fn_GetMissedReadingSummaryByPatient.sql" />
+		<None Remove="Migrations\fn_GetPatientProgramSummary.sql" />
+		<None Remove="Migrations\fn_GetProgramStatus.sql" />
+		<None Remove="Migrations\PostGreSQL\fn_is_device_assigned.sql" />
+		<None Remove="Migrations\SQLFunctions_AfterUpdate.sql" />
+		<None Remove="Migrations\SQLFunctions_BeforeUpdate.sql" />
+	</ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Data\Reports\RPMReadingsPatientSummary.repx">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Migrations\MSSQL\" />
+	  <Folder Include="Migrations\PostGreSQL\Functions\" />
+	  <Folder Include="Migrations\PostGreSQL\Triggers\" />
+	</ItemGroup>
+</Project>
