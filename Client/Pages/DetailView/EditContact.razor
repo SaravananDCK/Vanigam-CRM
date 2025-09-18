@@ -3,6 +3,12 @@
 @using Vanigam.CRM.Client.Validators
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<Contact, EditContact>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject CustomerApiService CustomerApiService
+
+@code {
+    [Parameter] public Guid? CustomerId { get; set; }
+    private IEnumerable<Customer>? Customers { get; set; }
+}
 
 <DetailPageCommonComponent TitleText="@Localizer["EditContact"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
 <RadzenColumn SizeMD=12>
@@ -12,10 +18,21 @@
         <RadzenStack>
             <FluentValidationValidator Validator="new ContactValidator(Localizer)" />
             <ValidationSummary />
+            <VanigamAccountingFormField Text=@Localizer["Customer"]>
+                <ChildContent>
+                    <RadzenDropDown @bind-Value="@CurrentObject.CustomerId"
+                                    Data="@Customers"
+                                    TextProperty="Name"
+                                    ValueProperty="Oid"
+                                    Placeholder="@Localizer["Select Customer"]"
+                                    AllowClear="true"
+                                    Name="dropdown_Customer" />
+                </ChildContent>
+            </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["Type"]>
                 <ChildContent>
                     <RadzenDropDown @bind-Value="@CurrentObject.Type" Data="@(Enum.GetValues<ContactType>())" Name="dropdown_Type" />
-                                                                                                                                </ChildContent>
+                </ChildContent>
             </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["FirstName"]>
                 <ChildContent>

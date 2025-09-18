@@ -1,6 +1,7 @@
 @page "/edit-customer"
 @using Vanigam.CRM.Objects.Entities
 @using Vanigam.CRM.Client.Validators
+@using Vanigam.CRM.Client.Pages.ListView
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<Customer, EditCustomer>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
@@ -37,7 +38,16 @@
                     <VanigamAccountingTextBox @bind-Value="@CurrentObject.Phone" Name="txt_Phone" />
                 </ChildContent>
             </VanigamAccountingFormField>
+            @if (CurrentObject != null && Oid != Guid.Empty)
+            {
+                <RadzenCard class="mt-4">
+                    <Contacts CustomerId="@Oid"
+                              IsEmbeddedMode="true"
+                              EmbeddedTitle="@Localizer["Customer Contacts"]" />
+                </RadzenCard>
+            }
         </RadzenStack>
+        
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
             <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
             <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />

@@ -4,8 +4,18 @@
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject ContactApiService ContactApiService
 
+@* Parameters for embedded mode *@
+@code {
+    [Parameter] public Guid? CustomerId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}
+
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["Contacts"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Customer Contacts"] : Localizer["Contacts"])
+                                AddButtonClick=@AddButtonClick
+                                SearchButtonClick=@Search
+                                ShowAdd=@(!IsEmbeddedMode || CustomerId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Contact" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -20,6 +30,15 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    @* Show Customer column only in standalone mode *@
+                    @if (!IsEmbeddedMode)
+                    {
+                        <RadzenDataGridColumn TItem="Contact" Property="Customer.Name" Title=@Localizer["Customer"]>
+                            <Template Context="contact">
+                                @contact.Customer?.Name
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
                     <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.FirstName) Title=@Localizer["FirstName"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.LastName) Title=@Localizer["LastName"]>

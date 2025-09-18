@@ -25,20 +25,37 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Contact>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
+            var filter = new ODataFilter<Contact>()
+                .FilterByAnd(args.Filter);
+
+            // Add customer filter if in embedded mode
+            if (IsEmbeddedMode && CustomerId.HasValue)
+            {
+                filter = filter.FilterByAnd(c => c.CustomerId == CustomerId.Value);
+            }
+
+            // Add search filter
+            filter = filter.BeginGroup()
                 .ContainsOr(u => u.FirstName, SearchString)
                 .ContainsOr(u => u.LastName, SearchString)
                 .ContainsOr(u => u.Email, SearchString)
                 .ContainsOr(u => u.Phone, SearchString)
-                .EndGroup()
-                .Build();
+                .EndGroup();
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditContact>(Localizer["AddContact"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+
+            // If in embedded mode with a customer, pre-set the CustomerId
+            if (IsEmbeddedMode && CustomerId.HasValue)
+            {
+                parameters.Add("CustomerId", CustomerId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditContact>(Localizer["AddContact"], parameters.Any() ? parameters : null, 30, 50);
             await GridReload();
         }
 

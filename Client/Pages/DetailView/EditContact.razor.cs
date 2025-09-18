@@ -9,12 +9,26 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditContact
     {
         [Inject] private ContactApiService ContactApiService { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
+            // Load customers for dropdown
+            var customerResult = await CustomerApiService.Get(top: 1000); // Load all customers
+            Customers = customerResult.Value?.AsODataEnumerable();
+
             if (Oid == Guid.Empty)
+            {
                 CurrentObject = new();
+                // If CustomerId is provided via parameter, set it
+                if (CustomerId.HasValue)
+                {
+                    CurrentObject.CustomerId = CustomerId.Value;
+                }
+            }
             else
+            {
                 CurrentObject = await ContactApiService.GetByOid(oid: Oid);
+            }
 
             await InitEditContext();
         }

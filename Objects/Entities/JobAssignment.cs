@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities
@@ -17,6 +18,7 @@ namespace Vanigam.CRM.Objects.Entities
         [ForeignKey(nameof(TechnicianId))]
         public Technician? Technician { get; set; }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public AssignmentStatus Status { get; set; } = AssignmentStatus.Pending;
         public DateTime? AssignedAt { get; set; }
         public DateTime? AcceptedAt { get; set; }

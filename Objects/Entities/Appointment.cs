@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities
@@ -20,6 +21,7 @@ namespace Vanigam.CRM.Objects.Entities
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Scheduled;
     }
 }

@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities
 {
     public class Contact : BaseClass
     {
-        public ContactType Type { get; set; } = ContactType.Individual;
         [StringLength(100)]
         public string? FirstName { get; set; }
 
@@ -20,6 +20,9 @@ namespace Vanigam.CRM.Objects.Entities
         [StringLength(20)]
         [Phone]
         public string? Phone { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ContactType Type { get; set; } = ContactType.Individual;
 
         public Guid? CustomerId { get; set; }
 

@@ -69,16 +69,6 @@ namespace Vanigam.CRM.Objects
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // enums -> string
-            modelBuilder.Entity<Lead>().Property(l => l.Status).HasConversion<string>().IsRequired();
-            modelBuilder.Entity<Opportunity>().Property(o => o.Stage).HasConversion<string>().IsRequired();
-            modelBuilder.Entity<Job>().Property(j => j.Status).HasConversion<string>().IsRequired();
-            modelBuilder.Entity<Appointment>().Property(a => a.Status).HasConversion<string>().IsRequired();
-            modelBuilder.Entity<JobAssignment>().Property(a => a.Status).HasConversion<string>().IsRequired();
-            modelBuilder.Entity<Technician>().Property(t => t.Status).HasConversion<string>().IsRequired();
-            modelBuilder.Entity<Invoice>().Property(i => i.Status).HasConversion<string>().IsRequired();
-
             modelBuilder.Entity<ApplicationUser>()
           .HasMany(u => u.Roles)
           .WithMany(r => r.Users)

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities
@@ -12,7 +13,11 @@ namespace Vanigam.CRM.Objects.Entities
 
         [StringLength(2000)]
         public string? Description { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public JobStatus Status { get; set; } = JobStatus.New;
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Priority Priority { get; set; } = Priority.Normal;
         public Guid? CustomerId { get; set; }
 

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities
@@ -14,6 +15,8 @@ namespace Vanigam.CRM.Objects.Entities
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Amount { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
         public DateTime PaidAt { get; set; }
         [StringLength(100)]

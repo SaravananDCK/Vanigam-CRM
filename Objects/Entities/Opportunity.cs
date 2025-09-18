@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities;
@@ -18,6 +19,8 @@ public class Opportunity : BaseClass
 
     [Column(TypeName = "decimal(18,2)")]
     public decimal EstimatedValue { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public OpportunityStage Stage { get; set; } = OpportunityStage.Prospecting;
     public DateTime ExpectedCloseDate { get; set; }
 
