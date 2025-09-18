@@ -1,0 +1,35 @@
+@page "/slas"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Sla, Slas>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject SlaApiService SlaApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Slas"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Sla" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Sla" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="sla">
+                            <OpenPageCommonComponent T="Sla" OpenObject="@sla" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Sla" UsingObject="@sla" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Sla" Property=@nameof(Sla.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Sla" Property=@nameof(Sla.ResponseHours) Title=@Localizer["ResponseHours"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Sla" Property=@nameof(Sla.ResolutionHours) Title=@Localizer["ResolutionHours"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Sla" Property=@nameof(Sla.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

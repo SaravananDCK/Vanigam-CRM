@@ -1,0 +1,37 @@
+@page "/payments"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Payment, Payments>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject PaymentApiService PaymentApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Payments"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Payment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Payment" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="payment">
+                            <OpenPageCommonComponent T="Payment" OpenObject="@payment" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Payment" UsingObject="@payment" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Amount) Title=@Localizer["Amount"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Status) Title=@Localizer["Status"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.PaidAt) Title=@Localizer["PaidAt"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.ProviderReference) Title=@Localizer["ProviderReference"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

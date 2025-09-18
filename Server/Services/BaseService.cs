@@ -14,7 +14,7 @@ using Vanigam.CRM.Objects.Attributes;
 
 namespace Vanigam.CRM.Server.Services
 {
-    public abstract class BaseService<T> : IDisposable where T : class, ITenant, IHasId
+    public abstract class BaseService<T> : IDisposable where T : class, ITenant, IHasId<Guid>
     {
         public abstract DbSet<T> GetDbSet();
         public VanigamAccountingDbContext Context { get; private set; }

@@ -20,7 +20,7 @@ namespace Vanigam.CRM.Server.Permissions
 
                 foreach (var roleId in roles)
                 {
-                    var role = await roleManager.FindByIdAsync(roleId);
+                    var role = await roleManager.FindByIdAsync(roleId.ToString());
                     if (role != null)
                     {
                         var claims = await roleManager.GetClaimsAsync(role);

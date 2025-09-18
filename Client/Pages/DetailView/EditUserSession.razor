@@ -1,0 +1,62 @@
+@page "/edit-usersession"
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Validators
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<UserSession, EditUserSession>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+
+<DetailPageCommonComponent TitleText="@Localizer["EditUserSession"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
+<RadzenColumn SizeMD=12>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="UserSession" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+        <RadzenStack>
+            <FluentValidationValidator Validator="new UserSessionValidator(Localizer)" />
+            <ValidationSummary />
+            <VanigamAccountingFormField Text=@Localizer["UserId"]>
+                <ChildContent>
+                    @CurrentObject.Oid
+                    @* <VanigamAccountingTextBox @bind-Value="@CurrentObject.UserId" Name="txt_UserId" /> *@
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["UserName"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.UserName" Name="txt_UserName" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["LoginTime"]>
+                <ChildContent>
+                    <RadzenDatePicker @bind-Value="@CurrentObject.LoginTime" Name="date_LoginTime" ShowTime="true" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["LogoutTime"]>
+                <ChildContent>
+                    <RadzenDatePicker @bind-Value="@CurrentObject.LogoutTime" Name="date_LogoutTime" ShowTime="true" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["IsActive"]>
+                <ChildContent>
+                    <RadzenCheckBox @bind-Value="@CurrentObject.IsActive" Name="checkbox_IsActive" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["DeviceInfo"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.DeviceInfo" Name="txt_DeviceInfo" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["IpAddress"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.IpAddress" Name="txt_IpAddress" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["Location"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Location" Name="txt_Location" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+        </RadzenStack>
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenColumn>

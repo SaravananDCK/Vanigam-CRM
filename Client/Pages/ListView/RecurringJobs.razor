@@ -1,0 +1,33 @@
+@page "/recurringjobs"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<RecurringJob, RecurringJobs>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject RecurringJobApiService RecurringJobApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["RecurringJobs"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="RecurringJob" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="RecurringJob" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="recurringjob">
+                            <OpenPageCommonComponent T="RecurringJob" OpenObject="@recurringjob" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="RecurringJob" UsingObject="@recurringjob" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RecurringJob" Property=@nameof(RecurringJob.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RecurringJob" Property=@nameof(RecurringJob.CronExpression) Title=@Localizer["CronExpression"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="RecurringJob" Property=@nameof(RecurringJob.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

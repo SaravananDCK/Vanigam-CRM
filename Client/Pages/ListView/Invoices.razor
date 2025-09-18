@@ -1,0 +1,35 @@
+@page "/invoices"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Invoice, Invoices>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject InvoiceApiService InvoiceApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Invoices"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Invoice" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Invoice" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="invoice">
+                            <OpenPageCommonComponent T="Invoice" OpenObject="@invoice" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Invoice" UsingObject="@invoice" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.Number) Title=@Localizer["Number"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.Status) Title=@Localizer["Status"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.TotalAmount) Title=@Localizer["TotalAmount"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

@@ -5,7 +5,7 @@ using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Objects;
 
-public class ApplicationRole : IdentityRole
+public class ApplicationRole : IdentityRole<Guid>
 {
     public const string SuperUserRole = nameof(SuperUserRole);
     public const string AdminRole = nameof(AdminRole);

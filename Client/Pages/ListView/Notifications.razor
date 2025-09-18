@@ -1,0 +1,35 @@
+@page "/notifications"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Notification, Notifications>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject NotificationApiService NotificationApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Notifications"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Notification" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Notification" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="notification">
+                            <OpenPageCommonComponent T="Notification" OpenObject="@notification" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Notification" UsingObject="@notification" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Notification" Property=@nameof(Notification.Type) Title=@Localizer["Type"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Notification" Property=@nameof(Notification.Message) Title=@Localizer["Message"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Notification" Property=@nameof(Notification.Sent) Title=@Localizer["Sent"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Notification" Property=@nameof(Notification.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

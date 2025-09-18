@@ -58,7 +58,7 @@ namespace Vanigam.CRM.Server.Controllers
         [HttpGet("{Id}")]
         public SingleResult<ApplicationUser> GetApplicationUser(string key)
         {
-            var user = context.Users.Where(i => i.Id == key);
+            var user = context.Users.Where(i => i.Id.ToString() == key);
 
             return SingleResult.Create(user);
         }

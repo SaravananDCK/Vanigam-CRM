@@ -1,0 +1,41 @@
+@page "/edit-contract"
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Validators
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<Contract, EditContract>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+
+<DetailPageCommonComponent TitleText="@Localizer["EditContract"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
+<RadzenColumn SizeMD=12>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Contract" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+        <RadzenStack>
+            <FluentValidationValidator Validator="new ContractValidator(Localizer)" />
+            <ValidationSummary />
+            <VanigamAccountingFormField Text=@Localizer["Title"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["StartDate"]>
+                <ChildContent>
+                    <RadzenDatePicker @bind-Value="@CurrentObject.StartDate" Name="date_StartDate" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["EndDate"]>
+                <ChildContent>
+                    <RadzenDatePicker @bind-Value="@CurrentObject.EndDate" Name="date_EndDate" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["Terms"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Terms" Name="txt_Terms" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+        </RadzenStack>
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenColumn>

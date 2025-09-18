@@ -1,0 +1,35 @@
+@page "/quotes"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Quote, Quotes>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject QuoteApiService QuoteApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Quotes"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Quote" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Quote" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="quote">
+                            <OpenPageCommonComponent T="Quote" OpenObject="@quote" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Quote" UsingObject="@quote" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Title) Title=@Localizer["Title"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Status) Title=@Localizer["Status"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.TotalAmount) Title=@Localizer["TotalAmount"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

@@ -7,7 +7,7 @@ using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Client.Components
 {
-    public abstract class BaseListView<T, K> : BaseView<T, K> where T : BaseClass where K : ComponentBase
+    public abstract class BaseListView<T, K> : BaseView<T, K> where T : IHasId<Guid> where K : ComponentBase
     {
 
         protected int Count { get; set; }

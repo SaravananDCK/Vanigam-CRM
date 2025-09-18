@@ -1,0 +1,36 @@
+@page "/edit-sla"
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Validators
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<Sla, EditSla>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+
+<DetailPageCommonComponent TitleText="@Localizer["EditSla"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
+<RadzenColumn SizeMD=12>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Sla" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+        <RadzenStack>
+            <FluentValidationValidator Validator="new SlaValidator(Localizer)" />
+            <ValidationSummary />
+            <VanigamAccountingFormField Text=@Localizer["Name"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["ResponseHours"]>
+                <ChildContent>
+                    <RadzenNumeric @bind-Value="@CurrentObject.ResponseHours" Name="numeric_ResponseHours" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["ResolutionHours"]>
+                <ChildContent>
+                    <RadzenNumeric @bind-Value="@CurrentObject.ResolutionHours" Name="numeric_ResolutionHours" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+        </RadzenStack>
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenColumn>

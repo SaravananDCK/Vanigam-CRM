@@ -85,7 +85,7 @@ namespace Vanigam.CRM.Client
             //#endif
             var userId = Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (userId != null && User?.Id != userId)
+            if (userId != null && User?.Id.ToString() != userId)
             {
                 User = await GetUserById(userId);
                 UserType = User?.UserType;

@@ -1,0 +1,37 @@
+@page "/opportunities"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Opportunity, Opportunities>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject OpportunityApiService OpportunityApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Opportunities"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Opportunity" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Opportunity" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="opportunity">
+                            <OpenPageCommonComponent T="Opportunity" OpenObject="@opportunity" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Opportunity" UsingObject="@opportunity" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Title) Title=@Localizer["Title"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.EstimatedValue) Title=@Localizer["EstimatedValue"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Stage) Title=@Localizer["Stage"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.ExpectedCloseDate) Title=@Localizer["ExpectedCloseDate"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

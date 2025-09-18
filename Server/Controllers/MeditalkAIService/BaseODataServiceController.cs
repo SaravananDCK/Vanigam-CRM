@@ -26,7 +26,7 @@ namespace Vanigam.CRM.Server.Controllers;
 //[Route("odata/MeditalkAIService/{Controller}")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 //[JwtTokenLifetimeAuthorize]
-public abstract class BaseODataServiceController<T, K> : ODataController where T : BaseClass where K : BaseService<T>
+public abstract class BaseODataServiceController<T, K> : ODataController where T : class, ITenant, IHasId<Guid> where K : BaseService<T>
 {
     public LoginUserType? UserType { get; private set; }
     public int? TenantId { get; private set; }

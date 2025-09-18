@@ -1,7 +1,7 @@
 ﻿namespace Vanigam.CRM.Objects.Contracts
 {
-    public interface IHasId
+    public interface IHasId<T>
     {
-        Guid Oid { get; set; }
+        T Oid { get; set; }
     }
 }

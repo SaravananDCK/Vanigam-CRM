@@ -1,0 +1,33 @@
+@page "/feedbacks"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Feedback, Feedbacks>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject FeedbackApiService FeedbackApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Feedbacks"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Feedback" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Feedback" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="feedback">
+                            <OpenPageCommonComponent T="Feedback" OpenObject="@feedback" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Feedback" UsingObject="@feedback" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Feedback" Property=@nameof(Feedback.Rating) Title=@Localizer["Rating"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Feedback" Property=@nameof(Feedback.Comments) Title=@Localizer["Comments"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Feedback" Property=@nameof(Feedback.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

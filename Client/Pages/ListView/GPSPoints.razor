@@ -1,0 +1,37 @@
+@page "/gpspoints"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<GPSPoint, GPSPoints>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject GPSPointApiService GPSPointApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["GPSPoints"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="GPSPoint" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="GPSPoint" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="gpspoint">
+                            <OpenPageCommonComponent T="GPSPoint" OpenObject="@gpspoint" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="GPSPoint" UsingObject="@gpspoint" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="GPSPoint" Property=@nameof(GPSPoint.Latitude) Title=@Localizer["Latitude"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="GPSPoint" Property=@nameof(GPSPoint.Longitude) Title=@Localizer["Longitude"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="GPSPoint" Property=@nameof(GPSPoint.RecordedAt) Title=@Localizer["RecordedAt"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="GPSPoint" Property=@nameof(GPSPoint.Speed) Title=@Localizer["Speed"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="GPSPoint" Property=@nameof(GPSPoint.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

@@ -152,13 +152,97 @@ a:focus {
 .validation-message {
     color: var(--rz-danger-dark);
 }
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: 100 700;
+    src: url('../fonts/material-symbols-outlined.woff2') format('woff2');
+}
+
+.material-symbols {
+    --rz-icon-font-family: 'Material Symbols Outlined';
+}
+
+.validation-message {
+    color: var(--rz-danger-dark);
+}
+
+.wrap-text {
+    white-space: pre-wrap !important;
+}
+
+.rounded-icon-background {
+    background-color: white;
+    border-radius: 50%;
+    padding: 0.8rem; /* Adjust padding as needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 25px 0 rgb(0 0 0 / 10%);
+}
+
+.font-thick {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.font-thicker {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+
+.font-thickest {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 1000;
+}
+
+.rz-text-note {
+    font-style: italic !important;
+    font-family: var(--rz-text-font-family);
+    font-size: var(--rz-text-body2-font-size);
+    line-height: var(--rz-text-body2-line-height);
+    font-weight: var(--rz-text-body2-font-weight);
+    letter-spacing: var(--rz-text-body2-letter-spacing);
+    color: var(--rz-success-dark);
+    margin-block-start: var(--rz-text-body2-margin-block-start);
+    margin-block-end: var(--rz-text-body2-margin-block-end);
+}
+
+@font-face {
+    font-family: 'MeditalkFaSolid';
+    font-display: block;
+    font-weight: 400;
+    src: url("../fontawesome/webfonts/fa-solid-900.woff2") format("woff2"), url("../fontawesome/webfonts/fa-solid-900.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: 'MeditalkFaDuo';
+    font-style: normal;
+    font-weight: 900;
+    font-display: block;
+    src: url("../fontawesome/webfonts/fa-duotone-900.woff2") format("woff2"), url("../fontawesome/webfonts/fa-duotone-900.ttf") format("truetype");
+    /*src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2') format('woff2');*/
+}
 
 .fa {
-    --rz-icon-font-family: "Font Awesome 5 Pro";
+    --rz-icon-font-family: "MeditalkFaSolid";
 }
+
+.fa-small {
+    --rz-icon-font-family: "MeditalkFaSolid";
+    font-size: 0.875em;
+    line-height: 0.07143em;
+    vertical-align: 0.05357em;
+}
+
 .fad {
-    --rz-icon-font-family: "Font Awesome 5 Duotone";
+    --rz-icon-font-family: "MeditalkFaDuo";
 }
-.vanigam-button {
-    --rz-icon-font-family: "Font Awesome 5 Pro";
+
+.rz-navigation-item-icon {
+    --rz-icon-font-family: "MeditalkFaSolid";
+}
+
+.rz-tabview-nav {
+    --rz-icon-font-family: "MeditalkFaSolid";
 }

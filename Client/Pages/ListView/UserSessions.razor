@@ -1,0 +1,40 @@
+@page "/usersessions"
+@using Vanigam.CRM.Client.Services
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<UserSession, UserSessions>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject UserSessionApiService UserSessionApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["UserSessions"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="UserSession" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="UserSession" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="usersession">
+                            <OpenPageCommonComponent T="UserSession" OpenObject="@usersession" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="UserSession" UsingObject="@usersession" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="UserSession" Property=@nameof(UserSession.UserName) Title=@Localizer["UserName"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="UserSession" Property=@nameof(UserSession.LoginTime) Title=@Localizer["LoginTime"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="UserSession" Property=@nameof(UserSession.LogoutTime) Title=@Localizer["LogoutTime"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="UserSession" Property=@nameof(UserSession.IsActive) Title=@Localizer["IsActive"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="UserSession" Property=@nameof(UserSession.IpAddress) Title=@Localizer["IpAddress"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="UserSession" Property=@nameof(UserSession.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

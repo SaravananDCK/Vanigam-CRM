@@ -1,0 +1,35 @@
+@page "/activities"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Activity, Activities>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject ActivityApiService ActivityApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Activities"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Activity" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Activity" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="activity">
+                            <OpenPageCommonComponent T="Activity" OpenObject="@activity" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Activity" UsingObject="@activity" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Type) Title=@Localizer["Type"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Notes) Title=@Localizer["Notes"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Date) Title=@Localizer["Date"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

@@ -1,0 +1,35 @@
+@page "/filedocuments"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<FileDocument, FileDocuments>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject FileDocumentApiService FileDocumentApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["FileDocuments"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="FileDocument" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="FileDocument" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="filedocument">
+                            <OpenPageCommonComponent T="FileDocument" OpenObject="@filedocument" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="FileDocument" UsingObject="@filedocument" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FileDocument" Property=@nameof(FileDocument.FileName) Title=@Localizer["FileName"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FileDocument" Property=@nameof(FileDocument.FileType) Title=@Localizer["FileType"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FileDocument" Property=@nameof(FileDocument.FileSizeStr) Title=@Localizer["FileSize"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FileDocument" Property=@nameof(FileDocument.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

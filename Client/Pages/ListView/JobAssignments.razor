@@ -1,0 +1,35 @@
+@page "/jobassignments"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<JobAssignment, JobAssignments>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject JobAssignmentApiService JobAssignmentApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["JobAssignments"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="JobAssignment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="JobAssignment" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="jobassignment">
+                            <OpenPageCommonComponent T="JobAssignment" OpenObject="@jobassignment" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="JobAssignment" UsingObject="@jobassignment" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.Status) Title=@Localizer["Status"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.AssignedAt) Title=@Localizer["AssignedAt"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.AcceptedAt) Title=@Localizer["AcceptedAt"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

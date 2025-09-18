@@ -8,7 +8,7 @@ using Vanigam.CRM.Helpers;
 
 namespace Vanigam.CRM.Client.Components
 {
-    public class BaseDetailView<T, K> : BaseView<T, K> where T : BaseClass where K : ComponentBase
+    public class BaseDetailView<T, K> : BaseView<T, K> where T : IHasId<Guid> where K : ComponentBase
     {
 
         [Parameter]

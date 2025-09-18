@@ -1,3 +1,4 @@
+@using Vanigam.CRM.Client.Services
 @using Vanigam.CRM.Objects.Enums
 @using Vanigam.CRM.Objects
 @using Vanigam.CRM.Objects.Services
@@ -26,7 +27,7 @@
                                 <Template>
                                     <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center"
                                         AlignItems="AlignItems.Center">
-                                        <RadzenIcon Icon="@menuItem.Icon"></RadzenIcon>
+                                        <RadzenIcon Icon="@menuItem.Icon" class="fa"></RadzenIcon>
                                         <RadzenText>@menuItem.Text</RadzenText>
                                     </RadzenStack>
 
@@ -95,7 +96,7 @@
             <RadzenPanelMenu Style="color: var(--rz-primary)">
                 @foreach (var menuItem in GetMenuItems())
                 {
-                    <RadzenPanelMenuItem Text="@menuItem.Text" Path="@menuItem.Path" Icon="@menuItem.Icon">
+                    <RadzenPanelMenuItem Text="@menuItem.Text" Path="@menuItem.Path" Icon="@(FontAwesomeIconMapping.GetUnicode(menuItem.Icon))">
                         @if (menuItem.ChildItems.Any())
                         {
                             @foreach (var childItem in menuItem.ChildItems)

@@ -73,9 +73,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             try
             {
                 User.TenantId = SelectedTenantId;
-                await Security.UpdateUserTenant(User.Id,SelectedTenantId);
+                await Security.UpdateUserTenant(User.Id.ToString(),SelectedTenantId);
                 DialogService.CloseDialog();
-                await Security.SwitchTenantAndReAuthenticate(User.Id, SelectedTenantId);
+                await Security.SwitchTenantAndReAuthenticate(User.Id.ToString(), SelectedTenantId);
                 NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
             }
             catch (Exception ex)

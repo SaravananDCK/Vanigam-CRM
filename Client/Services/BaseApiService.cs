@@ -12,7 +12,7 @@ using Vanigam.CRM.Objects.Helpers;
 
 namespace Vanigam.CRM.Client;
 
-public abstract class BaseApiService<T> where T : BaseClass
+public abstract class BaseApiService<T> where T : IETag
 {
     public string ControllerName { get; }
     protected readonly HttpClient HttpClient;

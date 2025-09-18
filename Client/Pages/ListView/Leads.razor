@@ -1,0 +1,39 @@
+@page "/leads"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Lead, Leads>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject LeadApiService LeadApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Leads"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Lead" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Lead" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="lead">
+                            <OpenPageCommonComponent T="Lead" OpenObject="@lead" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Lead" UsingObject="@lead" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Email) Title=@Localizer["Email"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Phone) Title=@Localizer["Phone"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Source) Title=@Localizer["Source"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Status) Title=@Localizer["Status"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

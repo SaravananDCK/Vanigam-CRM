@@ -1,0 +1,35 @@
+@page "/vehicles"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Vehicle, Vehicles>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject VehicleApiService VehicleApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Vehicles"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Vehicle" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Vehicle" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="vehicle">
+                            <OpenPageCommonComponent T="Vehicle" OpenObject="@vehicle" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Vehicle" UsingObject="@vehicle" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vehicle" Property=@nameof(Vehicle.RegistrationNumber) Title=@Localizer["RegistrationNumber"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vehicle" Property=@nameof(Vehicle.Make) Title=@Localizer["Make"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vehicle" Property=@nameof(Vehicle.Model) Title=@Localizer["Model"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vehicle" Property=@nameof(Vehicle.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

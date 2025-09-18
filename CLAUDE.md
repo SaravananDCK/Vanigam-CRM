@@ -156,6 +156,262 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
 **Route Pattern**: `odata/VanigamAccountingService/{nameof(VanigamAccountingDbContext.{EntityName}s)}`
 **Required**: Every entity must have a corresponding OData controller for API access
 
+#### Blazor ListView Pattern
+- **Base**: Components inherit from `BaseListView<T, TPage>`
+- **Location**: `Client/Pages/ListView/{EntityName}s.razor` (plural)
+- **Code-behind**: `Client/Pages/ListView/{EntityName}s.razor.cs`
+- **Authentication**: Use appropriate `[Authorize]` attributes
+- **Grid**: Uses `VanigamAccountingDataGrid` with standard columns
+
+**ListView Template** (follow this exact pattern):
+```razor
+@page "/{entityname}s"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<{EntityName}, {EntityName}s>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject {EntityName}ApiService {EntityName}ApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["{EntityName}s"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="{EntityName}" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="{EntityName}" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="{entityname}">
+                            <OpenPageCommonComponent T="{EntityName}" OpenObject="@{entityname}" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="{EntityName}" UsingObject="@{entityname}" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <!-- Add entity-specific columns here -->
+                    <RadzenDataGridColumn TItem="{EntityName}" Property=@nameof({EntityName}.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>
+```
+
+**ListView Code-behind Template** (follow this exact pattern):
+```csharp
+using Microsoft.AspNetCore.Components.Web;
+using Radzen;
+using Vanigam.CRM.Objects.OData;
+using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Client.Pages.DetailView;
+
+namespace Vanigam.CRM.Client.Pages.ListView
+{
+    public partial class {EntityName}s
+    {
+        protected async Task GridLoadData(LoadDataArgs args)
+        {
+            try
+            {
+                var result = await {EntityName}ApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                DataSource = result.Value.AsODataEnumerable();
+                Count = result.Count;
+            }
+            catch (Exception ex)
+            {
+                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = Localizer[$"Load"] });
+            }
+        }
+
+        protected override string GetFilterString(LoadDataArgs args)
+        {
+            return new ODataFilter<{EntityName}>()
+                .FilterByAnd(args.Filter)
+                .BeginGroup()
+                // Add searchable properties here
+                .ContainsOr(u => u.Name, SearchString) // Example
+                .EndGroup()
+                .Build();
+        }
+
+        protected async Task AddButtonClick(MouseEventArgs args)
+        {
+            await DialogService.OpenDialogAsync<Edit{EntityName}>(Localizer["Add{EntityName}"], null, 30, 50);
+            await GridReload();
+        }
+
+        protected async Task EditRow(DataGridRowMouseEventArgs<{EntityName}> args)
+        {
+            await Open(args.Data);
+        }
+
+        private async Task Open({EntityName} {entityname})
+        {
+            await DialogService.OpenDialogAsync<Edit{EntityName}>(Localizer["Edit{EntityName}"], new Dictionary<string, object> { { "Oid", {entityname}.Oid } }, 30, 50);
+            await GridReload();
+        }
+
+        protected async Task GridDeleteButtonClick({EntityName} {entityname})
+        {
+            try
+            {
+                if (await DialogService.Confirm(Localizer["DeleteRecord"]) == true)
+                {
+                    var deleteResult = await {EntityName}ApiService.Delete(oid:{entityname}.Oid);
+
+                    if (deleteResult != null)
+                    {
+                        await GridReload();
+                        NotificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Success,
+                            Summary = Localizer[$"Success"],
+                            Detail = Localizer[$"SuccessfullyDeleted"]
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer[$"Error"],
+                    Detail = Localizer[$"UnableDelete"]
+                });
+            }
+        }
+    }
+}
+```
+
+#### Blazor DetailView Pattern
+- **Base**: Components inherit from `BaseDetailView<T, TPage>`
+- **Location**: `Client/Pages/DetailView/Edit{EntityName}.razor`
+- **Code-behind**: `Client/Pages/DetailView/Edit{EntityName}.razor.cs`
+- **Validator**: `Client/Validators/{EntityName}Validator.cs` (required)
+- **Authentication**: Use appropriate `[Authorize]` attributes
+- **Validation**: Uses FluentValidation with entity-specific validators
+
+**DetailView Template** (follow this exact pattern):
+```razor
+@page "/edit-{entityname}"
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Validators
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<{EntityName}, Edit{EntityName}>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+
+<DetailPageCommonComponent TitleText="@Localizer["Edit{EntityName}"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
+<RadzenColumn SizeMD=12>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="{EntityName}" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+        <RadzenStack>
+            <FluentValidationValidator Validator="new {EntityName}Validator(Localizer)" />
+            <ValidationSummary />
+            <!-- Add entity-specific form fields here -->
+        </RadzenStack>
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenColumn>
+```
+
+**DetailView Code-behind Template** (follow this exact pattern):
+```csharp
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Radzen;
+using System.Net;
+using Vanigam.CRM.Helpers;
+
+namespace Vanigam.CRM.Client.Pages.DetailView
+{
+    public partial class Edit{EntityName}
+    {
+        [Inject] private {EntityName}ApiService {EntityName}ApiService { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            if (Oid == Guid.Empty)
+                CurrentObject = new();
+            else
+                CurrentObject = await {EntityName}ApiService.GetByOid(oid: Oid);
+
+            await InitEditContext();
+        }
+
+        protected async Task FormSubmit()
+        {
+            IsBusy = true;
+            try
+            {
+                if (Oid == Guid.Empty)
+                {
+                    CurrentObject = await {EntityName}ApiService.Create(CurrentObject);
+                }
+                else
+                {
+                    var result = await {EntityName}ApiService.Update(oid: Oid, CurrentObject);
+                    if(result.IsPreconditionFailed())
+                    {
+                        HasChanges = true;
+                        CanEdit = false;
+                        return;
+                    }
+                }
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["SavedSuccessfully!"] });
+                DialogService.CloseDialog(CurrentObject);
+            }
+            catch (HttpRequestException ex)
+            {
+                if (ex.StatusCode == HttpStatusCode.Conflict)
+                {
+                    ShowNotUniqueAlert = true;
+                }
+                else
+                {
+                    ErrorVisible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorVisible = true;
+            }
+            IsBusy = false;
+        }
+    }
+}
+```
+
+**FluentValidation Validator Template** (required for DetailView):
+```csharp
+using FluentValidation;
+using Microsoft.Extensions.Localization;
+using Vanigam.CRM.Objects.Entities;
+
+namespace Vanigam.CRM.Client.Validators
+{
+    public class {EntityName}Validator : AbstractValidator<{EntityName}>
+    {
+        public {EntityName}Validator(IStringLocalizer localizer)
+        {
+            // Add validation rules for required fields
+            RuleFor(c => c.Name).NotEmpty().WithMessage(localizer["NameRequired"]); // Example
+            // Add additional validation rules as needed
+        }
+    }
+}
+```
+
+**Page Naming Conventions**:
+- **ListView**: `{EntityName}s.razor` (plural, e.g., `Customers.razor`, `Jobs.razor`)
+- **DetailView**: `Edit{EntityName}.razor` (e.g., `EditCustomer.razor`, `EditJob.razor`)
+- **Route**: ListView uses `/{entityname}s`, DetailView uses `/edit-{entityname}` (lowercase)
+
 ### OData Configuration
 OData endpoints configured in `Server/Extensions/ODataExtensions.cs`:
 - **Route**: `/odata/VanigamAccountingService/`

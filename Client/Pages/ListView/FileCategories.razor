@@ -1,0 +1,33 @@
+@page "/filecategories"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<FileCategory, FileCategories>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject FileCategoryApiService FileCategoryApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["FileCategories"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="FileCategory" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="FileCategory" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="filecategory">
+                            <OpenPageCommonComponent T="FileCategory" OpenObject="@filecategory" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="FileCategory" UsingObject="@filecategory" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FileCategory" Property=@nameof(FileCategory.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FileCategory" Property=@nameof(FileCategory.Description) Title=@Localizer["Description"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="FileCategory" Property=@nameof(FileCategory.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

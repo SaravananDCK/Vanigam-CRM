@@ -1,0 +1,33 @@
+@page "/locations"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Location, Locations>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject LocationApiService LocationApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Locations"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Location" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Location" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="location">
+                            <OpenPageCommonComponent T="Location" OpenObject="@location" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Location" UsingObject="@location" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Location" Property=@nameof(Location.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Location" Property=@nameof(Location.Address) Title=@Localizer["Address"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Location" Property=@nameof(Location.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

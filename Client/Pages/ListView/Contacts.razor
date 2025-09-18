@@ -1,0 +1,39 @@
+@page "/contacts"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Contact, Contacts>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject ContactApiService ContactApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Contacts"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Contact" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Contact" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="contact">
+                            <OpenPageCommonComponent T="Contact" OpenObject="@contact" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Contact" UsingObject="@contact" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.FirstName) Title=@Localizer["FirstName"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.LastName) Title=@Localizer["LastName"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Email) Title=@Localizer["Email"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Phone) Title=@Localizer["Phone"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Type) Title=@Localizer["Type"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

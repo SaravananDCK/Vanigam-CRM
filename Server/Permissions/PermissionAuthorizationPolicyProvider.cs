@@ -5,22 +5,28 @@ using System.Threading.Tasks;
 
 namespace Vanigam.CRM.Server.Permissions
 {
-    public class PermissionAuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
+    public class PermissionAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
+        : DefaultAuthorizationPolicyProvider(options)
     {
-        public PermissionAuthorizationPolicyProvider(
-            IOptions<AuthorizationOptions> options) : base(options) { }
-
         public override async Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
         {
-            if (!policyName.StartsWith("Is", StringComparison.OrdinalIgnoreCase))
-                return await base.GetPolicyAsync(policyName);
+            // Handle permission-based policies (e.g., "Permission.Customers")
+            if (policyName.StartsWith("Permission.", StringComparison.OrdinalIgnoreCase))
+            {
+                var requirement = new PermissionRequirement(policyName);
+                return new AuthorizationPolicyBuilder()
+                    .AddRequirements(requirement).Build();
+            }
 
-            // Here we create the instance of our requirement
-            var requirement = new PermissionRequirement(policyName);
+            // Handle legacy "Is" policies
+            if (policyName.StartsWith("Is", StringComparison.OrdinalIgnoreCase))
+            {
+                var requirement = new PermissionRequirement(policyName);
+                return new AuthorizationPolicyBuilder()
+                    .AddRequirements(requirement).Build();
+            }
 
-            // Now we use the builder to create a policy, adding our requirement
-            return new AuthorizationPolicyBuilder()
-                .AddRequirements(requirement).Build();
+            return await base.GetPolicyAsync(policyName);
         }
     }
 }

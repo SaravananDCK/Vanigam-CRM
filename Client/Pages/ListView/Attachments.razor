@@ -1,0 +1,35 @@
+@page "/attachments"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Attachment, Attachments>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject AttachmentApiService AttachmentApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Attachments"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Attachment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Attachment" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="attachment">
+                            <OpenPageCommonComponent T="Attachment" OpenObject="@attachment" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Attachment" UsingObject="@attachment" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Attachment" Property=@nameof(Attachment.FileName) Title=@Localizer["FileName"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Attachment" Property=@nameof(Attachment.ContentType) Title=@Localizer["ContentType"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Attachment" Property=@nameof(Attachment.Url) Title=@Localizer["Url"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Attachment" Property=@nameof(Attachment.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

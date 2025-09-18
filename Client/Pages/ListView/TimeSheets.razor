@@ -1,0 +1,35 @@
+@page "/timesheets"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<TimeSheet, TimeSheets>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject TimeSheetApiService TimeSheetApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["TimeSheets"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="TimeSheet" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="TimeSheet" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="timesheet">
+                            <OpenPageCommonComponent T="TimeSheet" OpenObject="@timesheet" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="TimeSheet" UsingObject="@timesheet" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TimeSheet" Property=@nameof(TimeSheet.StartAt) Title=@Localizer["StartAt"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TimeSheet" Property=@nameof(TimeSheet.EndAt) Title=@Localizer["EndAt"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TimeSheet" Property=@nameof(TimeSheet.Hours) Title=@Localizer["Hours"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TimeSheet" Property=@nameof(TimeSheet.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

@@ -70,7 +70,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             else
             {
                 CurrentObject = await Security.GetUserById($"{Id}");
-                UserRoles = CurrentObject.Roles.Select(role => role.Id);
+                UserRoles = CurrentObject.Roles.Select(role => role.Id.ToString());
             }
 
             Roles = await Security.GetRoles();
@@ -82,7 +82,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             IsBusy = true;
             try
             {
-                user.Roles = Roles.Where(role => UserRoles.Contains(role.Id)).ToList();
+                user.Roles = Roles.Where(role => UserRoles.Contains(role.Id.ToString())).ToList();
                 if (string.IsNullOrEmpty(Id))
                     await Security.CreateUser(user);
                 else

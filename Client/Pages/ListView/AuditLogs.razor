@@ -1,0 +1,35 @@
+@page "/auditlogs"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<AuditLog, AuditLogs>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject AuditLogApiService AuditLogApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["AuditLogs"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="AuditLog" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="AuditLog" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="auditlog">
+                            <OpenPageCommonComponent T="AuditLog" OpenObject="@auditlog" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="AuditLog" UsingObject="@auditlog" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AuditLog" Property=@nameof(AuditLog.EntityName) Title=@Localizer["EntityName"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AuditLog" Property=@nameof(AuditLog.Action) Title=@Localizer["Action"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AuditLog" Property=@nameof(AuditLog.EntityId) Title=@Localizer["EntityId"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AuditLog" Property=@nameof(AuditLog.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

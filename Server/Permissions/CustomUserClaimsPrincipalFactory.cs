@@ -9,8 +9,8 @@ public class CustomUserClaimsPrincipalFactory<TUser, TRole>(
     RoleManager<TRole> roleManager,
     IOptions<IdentityOptions> optionsAccessor)
     : UserClaimsPrincipalFactory<TUser, TRole>(userManager, roleManager, optionsAccessor)
-    where TUser : IdentityUser
-    where TRole : IdentityRole
+    where TUser : IdentityUser<Guid>
+    where TRole : IdentityRole<Guid>
 {
     protected override async Task<ClaimsIdentity> GenerateClaimsAsync(TUser user)
     {

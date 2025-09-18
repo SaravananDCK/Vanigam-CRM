@@ -1,0 +1,35 @@
+@page "/inventoryitems"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<InventoryItem, InventoryItems>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject InventoryItemApiService InventoryItemApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["InventoryItems"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="InventoryItem" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="InventoryItem" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="inventoryitem">
+                            <OpenPageCommonComponent T="InventoryItem" OpenObject="@inventoryitem" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="InventoryItem" UsingObject="@inventoryitem" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(InventoryItem.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(InventoryItem.SKU) Title=@Localizer["SKU"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(InventoryItem.QuantityOnHand) Title=@Localizer["QuantityOnHand"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(InventoryItem.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

@@ -1,0 +1,35 @@
+@page "/contracts"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Contract, Contracts>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject ContractApiService ContractApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Contracts"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Contract" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Contract" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="contract">
+                            <OpenPageCommonComponent T="Contract" OpenObject="@contract" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Contract" UsingObject="@contract" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.Title) Title=@Localizer["Title"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.StartDate) Title=@Localizer["StartDate"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.EndDate) Title=@Localizer["EndDate"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

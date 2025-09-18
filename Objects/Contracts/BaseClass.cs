@@ -10,7 +10,7 @@ namespace Vanigam.CRM.Objects.Contracts
         int? TenantId { get; set; }
     }
     
-    public abstract class BaseClass : IHasId, IHasAudit, IHasSoftDelete, ITenant
+    public abstract class BaseClass : IHasId<Guid>, IHasAudit, IHasSoftDelete, ITenant,IETag
     {
         [NotMapped]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -41,6 +41,9 @@ namespace Vanigam.CRM.Objects.Contracts
                      
     }
 
-
+    public interface IETag
+    {
+        string ETag { get; set; }
+    }
 }
 

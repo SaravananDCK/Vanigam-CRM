@@ -9,8 +9,7 @@ namespace Vanigam.CRM.Objects.Entities
         // Using Oid from BaseClass as primary key
 
         [Required]
-        [MaxLength(450)]
-        public string UserId { get; set; } = string.Empty;
+        public Guid UserId { get; set; }
 
         [MaxLength(256)]
         public string? UserName { get; set; }

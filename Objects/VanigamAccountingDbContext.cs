@@ -8,10 +8,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Vanigam.CRM.Objects.Contracts;
 using Vanigam.CRM.Objects.Helpers;
 using Vanigam.CRM.Objects.Services;
+using System.Reflection;
 
 namespace Vanigam.CRM.Objects
 {
-    public partial class VanigamAccountingDbContext(DbContextOptions<VanigamAccountingDbContext> options) : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
+    public partial class VanigamAccountingDbContext(DbContextOptions<VanigamAccountingDbContext> options) : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>(options)
     {
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
@@ -131,6 +132,7 @@ namespace Vanigam.CRM.Objects
             {
                 await this.Database.EnsureCreatedAsync();
                 await this.SeedTenantsAdmin();
+                await this.SeedRoleClaims();
                 //foreach (var fn in beforeUpdate)
                 //{
                 //    await using var stream = typeof(Party).Assembly.GetManifestResourceStream(fn);
@@ -180,9 +182,12 @@ namespace Vanigam.CRM.Objects
             Tenants.Add(demoTenant);
             await this.SaveChangesAsync();
 
-            var roleStore = new RoleStore<ApplicationRole>(this);
-            await roleStore.CreateAsync(new ApplicationRole { Name = ApplicationRole.SuperUserRole, NormalizedName = ApplicationRole.SuperUserRole.ToUpper() });
-            await roleStore.CreateAsync(new ApplicationRole { Name = ApplicationRole.AdminRole, NormalizedName = ApplicationRole.AdminRole.ToUpper() });
+            var roleStore = new RoleStore<ApplicationRole, VanigamAccountingDbContext,Guid>(this);
+            var superUserRole = new ApplicationRole { Name = ApplicationRole.SuperUserRole, NormalizedName = ApplicationRole.SuperUserRole.ToUpper() };
+            var adminRole = new ApplicationRole { Name = ApplicationRole.AdminRole, NormalizedName = ApplicationRole.AdminRole.ToUpper() };
+
+            await roleStore.CreateAsync(superUserRole);
+            await roleStore.CreateAsync(adminRole);
 
             await this.SaveChangesAsync();
 
@@ -202,8 +207,11 @@ namespace Vanigam.CRM.Objects
                 var password = new Microsoft.AspNetCore.Identity.PasswordHasher<ApplicationUser>();
                 var hashed = password.HashPassword(tenantsAdmin, ApplicationUser.TenantsAdmin + "@123");
                 tenantsAdmin.PasswordHash = hashed;
-                var userStore = new UserStore<SuperUser>(this);
+                var userStore = new UserStore<SuperUser,ApplicationRole,VanigamAccountingDbContext,Guid>(this);
                 await userStore.CreateAsync(tenantsAdmin);
+
+                // Add role claim to tenantsAdmin
+                await userStore.AddToRoleAsync(tenantsAdmin, ApplicationRole.SuperUserRole.ToUpper());
             }
             var admin = new SuperUser()
             {
@@ -219,19 +227,20 @@ namespace Vanigam.CRM.Objects
                 LockoutEnabled = false,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
-            admin.Roles = new List<ApplicationRole>();
-            admin.Roles.Add(Roles.FirstOrDefault(r => r.Name == ApplicationRole.SuperUserRole));
             if (!this.Users.Any(u => u.UserName == admin.UserName))
             {
                 var password = new Microsoft.AspNetCore.Identity.PasswordHasher<ApplicationUser>();
                 var hashed = password.HashPassword(admin, ApplicationUser.Admin + "@123");
                 admin.PasswordHash = hashed;
-                var userStore = new UserStore<SuperUser>(this);
+                var userStore = new UserStore<SuperUser, ApplicationRole, VanigamAccountingDbContext, Guid>(this);
                 await userStore.CreateAsync(admin);
+
+                // Add role claim to admin
+                await userStore.AddToRoleAsync(admin, ApplicationRole.SuperUserRole.ToUpper());
             }
             var systemAdmin = new SuperUser()
             {
-                Id = ApplicationUser.SystemUserId,
+                Id = Guid.Parse(ApplicationUser.SystemUserId),
                 Name = "System",
                 FullName = "System",
                 TenantId = demoTenant.Id,
@@ -244,16 +253,104 @@ namespace Vanigam.CRM.Objects
                 LockoutEnabled = false,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
-            systemAdmin.Roles = new List<ApplicationRole>();
-            systemAdmin.Roles.Add(Roles.FirstOrDefault(r => r.Name == ApplicationRole.SuperUserRole));
             if (!this.Users.Any(u => u.UserName == systemAdmin.UserName))
             {
                 var password = new Microsoft.AspNetCore.Identity.PasswordHasher<ApplicationUser>();
                 var hashed = password.HashPassword(systemAdmin, ApplicationUser.SystemUserName + "@123");
                 systemAdmin.PasswordHash = hashed;
-                var userStore = new UserStore<SuperUser>(this);
+                var userStore = new UserStore<SuperUser, ApplicationRole, VanigamAccountingDbContext, Guid>(this);
                 await userStore.CreateAsync(systemAdmin);
+
+                // Add role claim to systemAdmin
+                await userStore.AddToRoleAsync(systemAdmin, ApplicationRole.SuperUserRole.ToUpper());
             }
+            await this.SaveChangesAsync();
+        }
+
+        public async Task SeedRoleClaims()
+        {
+            var roleStore = new RoleStore<ApplicationRole, VanigamAccountingDbContext, Guid>(this);
+
+            // Get all roles
+            var superUserRole = await roleStore.FindByNameAsync(ApplicationRole.SuperUserRole.ToUpper());
+            var adminRole = await roleStore.FindByNameAsync(ApplicationRole.AdminRole.ToUpper());
+
+            if (superUserRole == null || adminRole == null)
+                return;
+
+            // Dynamically get all DbSet property names from the DbContext
+            var dbSetProperties = this.GetType()
+                .GetProperties()
+                .Where(p => p.PropertyType.IsGenericType &&
+                           p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
+                .Select(p => p.Name)
+                .Where(name => !string.IsNullOrEmpty(name))
+                .ToArray();
+
+            var entities = dbSetProperties;
+
+            // Create claims for SuperUser role (full permissions)
+            foreach (var entity in entities)
+            {
+                var claimType = $"Permission.{entity}";
+                var claimValue = $"{{\"Role\": \"{ApplicationRole.SuperUserRole}\", \"Read\": true, \"Create\": true, \"Update\": true, \"Delete\": true, \"Priority\": 1}}";
+
+                // Check if claim already exists
+                var existingClaim = RoleClaims.FirstOrDefault(rc => rc.RoleId == superUserRole.Id && rc.ClaimType == claimType);
+                if (existingClaim == null)
+                {
+                    RoleClaims.Add(new IdentityRoleClaim<Guid>
+                    {
+                        RoleId = superUserRole.Id,
+                        ClaimType = claimType,
+                        ClaimValue = claimValue
+                    });
+                }
+            }
+
+            // Create claims for Admin role (full permissions except tenant management)
+            var businessEntities = entities.Where(e => !e.Equals("ApplicationUsers") &&
+                                                       !e.Equals("Tenants") &&
+                                                       !e.Equals("ApplicationTenantUsers"));
+
+            foreach (var entity in businessEntities)
+            {
+                var claimType = $"Permission.{entity}";
+                var claimValue = $"{{\"Role\": \"{ApplicationRole.AdminRole}\", \"Read\": true, \"Create\": true, \"Update\": true, \"Delete\": true, \"Priority\": 2}}";
+
+                // Check if claim already exists
+                var existingClaim = RoleClaims.FirstOrDefault(rc => rc.RoleId == adminRole.Id && rc.ClaimType == claimType);
+                if (existingClaim == null)
+                {
+                    RoleClaims.Add(new IdentityRoleClaim<Guid>
+                    {
+                        RoleId = adminRole.Id,
+                        ClaimType = claimType,
+                        ClaimValue = claimValue
+                    });
+                }
+            }
+
+            // Add limited permissions for Admin role on Application entities (read-only)
+            var applicationEntities = entities.Where(e => e.Equals("ApplicationUsers"));
+            foreach (var entity in applicationEntities)
+            {
+                var claimType = $"Permission.{entity}";
+                var claimValue = $"{{\"Role\": \"{ApplicationRole.AdminRole}\", \"Read\": true, \"Create\": false, \"Update\": false, \"Delete\": false, \"Priority\": 2}}";
+
+                // Check if claim already exists
+                var existingClaim = RoleClaims.FirstOrDefault(rc => rc.RoleId == adminRole.Id && rc.ClaimType == claimType);
+                if (existingClaim == null)
+                {
+                    RoleClaims.Add(new IdentityRoleClaim<Guid>
+                    {
+                        RoleId = adminRole.Id,
+                        ClaimType = claimType,
+                        ClaimValue = claimValue
+                    });
+                }
+            }
+
             await this.SaveChangesAsync();
         }
 

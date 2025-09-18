@@ -36,7 +36,7 @@ namespace Meditalk.AI.Server.Services
 
                 // End any existing database sessions for this user
                 var existingSessions = await _context.UserSessions
-                    .Where(s => s.UserId == userId && s.IsActive)
+                    .Where(s => s.UserId == Guid.Parse(userId) && s.IsActive)
                     .ToListAsync();
 
                 foreach (var session in existingSessions)
@@ -52,7 +52,7 @@ namespace Meditalk.AI.Server.Services
                 // Create database record for historical tracking
                 var newSession = new UserSession
                 {
-                    UserId = userId,
+                    UserId = Guid.Parse(userId),
                     UserName = userName,
                     TenantId = tenantId,
                     LoginTime = DateTime.UtcNow,
@@ -87,7 +87,7 @@ namespace Meditalk.AI.Server.Services
                 await _redisSessionService.EndUserSessionsAsync(userId);
 
                 // Update database records
-                var query = _context.UserSessions.Where(s => s.UserId == userId && s.IsActive);
+                var query = _context.UserSessions.Where(s => s.UserId == Guid.Parse(userId) && s.IsActive);
 
                 if (!string.IsNullOrEmpty(sessionId) && Guid.TryParse(sessionId, out var id))
                 {
@@ -142,7 +142,7 @@ namespace Meditalk.AI.Server.Services
                 var userSessions = redisSessions.Select(rs => new UserSession
                 {
                     Oid = Guid.Parse(rs.SessionId), // Use Redis session ID as Oid
-                    UserId = rs.UserId,
+                    UserId = Guid.Parse(rs.UserId),
                     UserName = rs.UserName,
                     TenantId = rs.TenantId,
                     LoginTime = rs.LoginTime,
@@ -186,7 +186,7 @@ namespace Meditalk.AI.Server.Services
         {
             return await _context.UserSessions
                 .Include(s => s.User)
-                .FirstOrDefaultAsync(s => s.UserId == userId && s.IsActive);
+                .FirstOrDefaultAsync(s => s.UserId == Guid.Parse(userId) && s.IsActive);
         }
 
         public async Task<List<UserSession>> GetUserSessionHistoryAsync(string userId, int days = 30)
@@ -194,7 +194,7 @@ namespace Meditalk.AI.Server.Services
             var cutoffDate = DateTime.UtcNow.AddDays(-days);
 
             return await _context.UserSessions
-                .Where(s => s.UserId == userId && s.LoginTime >= cutoffDate)
+                .Where(s => s.UserId == Guid.Parse(userId) && s.LoginTime >= cutoffDate)
                 .OrderByDescending(s => s.LoginTime)
                 .ToListAsync();
         }
@@ -375,7 +375,7 @@ namespace Meditalk.AI.Server.Services
                 .GroupBy(s => new { s.UserId, s.UserName })
                 .Select(g => new UserActivitySummary
                 {
-                    UserId = g.Key.UserId,
+                    UserId = g.Key.UserId.ToString(),
                     UserName = g.Key.UserName,
                     TotalSessions = g.Count(),
                     TotalHoursLogged = g.Sum(s => s.SessionDurationMinutes) / 60.0,

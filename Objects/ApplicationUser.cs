@@ -25,7 +25,7 @@ namespace Vanigam.CRM.Objects.Entities
         }
     }
 
-    public class ApplicationUser : IdentityUser, IHasAudit, IHasSoftDelete
+    public class ApplicationUser : IdentityUser<Guid>, IHasAudit, IHasSoftDelete, IETag,ITenant,IHasId<Guid>
     {
         public static string SystemUserId = "84050e26-4616-4b37-a927-a16a536a5094";
         public const string SystemUserName = "System";
@@ -35,6 +35,14 @@ namespace Vanigam.CRM.Objects.Entities
         {
             this.CreatedAtUtc = DateTime.UtcNow;
         }
+        [NotMapped]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonPropertyName("@odata.etag")]
+        public string ETag
+        {
+            get;
+            set;
+        } = string.Empty;
         [JsonIgnore, IgnoreDataMember]
         public override string? PasswordHash { get; set; }
 
@@ -103,6 +111,11 @@ namespace Vanigam.CRM.Objects.Entities
         public bool IsNotDeleted { get; set; } = true;
 
 
+        [NotMapped]
+        public Guid Oid
+        {
+            get => Id;set => Id=value;
+        }
     }
 }
 

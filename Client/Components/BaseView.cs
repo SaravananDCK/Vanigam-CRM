@@ -19,16 +19,12 @@ public class CoreView: ComponentBase
     [Inject] protected TooltipService TooltipService { get; set; }
 
     [Inject] protected ContextMenuService ContextMenuService { get; set; }
-
-    protected virtual string FaIcon(string icon) => $"<i class=\"fa fa-solid {icon}\"></i>";
-    protected virtual string FadIcon(string icon) => $"<i class=\"fa fad {icon} fa-lg\"></i>";
-    protected virtual string FadIconSmall(string icon) => $"<i class=\"fa fad {icon}\"></i>";
     [Inject] protected NotificationService NotificationService { get; set; }
     [Inject] protected SecurityService Security { get; set; }
     [Inject] protected ILocalStorageService LocalStorageService { get; set; }
     public ApplicationAuthenticationState AuthenticationState { get; set; }
 }
-public class BaseView<T, K> : CoreView where T : BaseClass where K : ComponentBase
+public class BaseView<T, K> : CoreView where T : IHasId<Guid> where K : ComponentBase
 {
     
     [Inject] protected Microsoft.Extensions.Localization.IStringLocalizer<K> Localizer { get; set; }

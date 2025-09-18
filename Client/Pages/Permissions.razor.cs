@@ -48,8 +48,8 @@ namespace Vanigam.CRM.Client.Pages
             {
                 if (UserRole != null)
                 {
-                    var role = Roles.FirstOrDefault(role => UserRole.Contains(role.Id));
-                    DataSource = await PermissionApiService.GetClaims(role.Id);
+                    var role = Roles.FirstOrDefault(role => UserRole.Contains(role.Id.ToString()));
+                    DataSource = await PermissionApiService.GetClaims(role.Id.ToString());
                     await GridControl.EditRows(DataSource);
                 }
                 await GridControl.Reload();

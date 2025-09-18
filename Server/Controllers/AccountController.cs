@@ -111,7 +111,7 @@ namespace Vanigam.CRM.Server.Controllers
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>();
-            claims.Add(new(ClaimTypes.NameIdentifier, user.Id));
+            claims.Add(new(ClaimTypes.NameIdentifier, user.Id.ToString()));
             claims.Add(new(nameof(ApplicationUser.UserName), user.UserName));
             if (user.SessionId != null)
             {
@@ -145,7 +145,7 @@ namespace Vanigam.CRM.Server.Controllers
             try
             {
                 //var user = await userManager.FindByIdAsync(userId);
-                var user = userManager.Users.Include(u => u.Roles).FirstOrDefault(u => u.Id == userId);
+                var user = userManager.Users.Include(u => u.Roles).FirstOrDefault(u => u.Id.ToString() == userId);
                 if (user == null)
                     return Unauthorized();
 
@@ -235,13 +235,13 @@ namespace Vanigam.CRM.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUserById(string id)
         {
-            return Ok(userManager.Users.Include(u => u.Roles).FirstOrDefault(u => u.Id == id));
+            return Ok(userManager.Users.Include(u => u.Roles).FirstOrDefault(u => u.Id.ToString() == id));
         }
         [HttpGet]
         public async Task<IActionResult> GetLoginUser()
         {
             var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            var loginUser = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id == userId);
+            var loginUser = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToString() == userId);
             return Ok(loginUser);
         }
 
@@ -404,7 +404,7 @@ namespace Vanigam.CRM.Server.Controllers
                 if (user != null)
                 {
                     user.TenantId = Convert.ToInt32(tenantId);
-                    var loginUser = vanigamAccountingDbContext?.Users?.FirstOrDefault(u => u.Id == userId);
+                    var loginUser = vanigamAccountingDbContext?.Users?.FirstOrDefault(u => u.Id.ToString() == userId);
                     if (loginUser != null)
                     {
 
@@ -544,7 +544,7 @@ namespace Vanigam.CRM.Server.Controllers
                 return BadRequest("Invalid userId");
             }
 
-            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToUpper() == userId.ToString().ToUpper());
+            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToString().ToUpper() == userId.ToString().ToUpper());
             if (user != null)
             {
                 try
@@ -569,7 +569,7 @@ namespace Vanigam.CRM.Server.Controllers
                 return BadRequest("Invalid userId");
             }
 
-            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToUpper() == userId.ToString().ToUpper());
+            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToString().ToUpper() == userId.ToString().ToUpper());
             if (user != null)
             {
                 try
@@ -595,7 +595,7 @@ namespace Vanigam.CRM.Server.Controllers
                 return BadRequest("Invalid userId");
             }
 
-            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToUpper() == userId.ToString().ToUpper());
+            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToString().ToUpper() == userId.ToString().ToUpper());
             if (user != null)
             {
                 try
@@ -625,7 +625,7 @@ namespace Vanigam.CRM.Server.Controllers
                 return BadRequest("Invalid userId");
             }
 
-            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToUpper() == userId.ToString().ToUpper());
+            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToString().ToUpper() == userId.ToString().ToUpper());
             if (user != null)
             {
                 try
@@ -655,7 +655,7 @@ namespace Vanigam.CRM.Server.Controllers
                 return BadRequest("Invalid userId");
             }
 
-            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToUpper() == userId.ToString().ToUpper());
+            var user = vanigamAccountingDbContext.Users.FirstOrDefault(u => u.Id.ToString().ToUpper() == userId.ToString().ToUpper());
             if (user != null)
             {
                 try
@@ -688,7 +688,7 @@ namespace Vanigam.CRM.Server.Controllers
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>();
-            claims.Add(new(ClaimTypes.NameIdentifier, user.Id));
+            claims.Add(new(ClaimTypes.NameIdentifier, user.Id.ToString()));
             claims.Add(new(nameof(ApplicationUser.UserName), user.UserName));
             if (loginUser != null)
             {

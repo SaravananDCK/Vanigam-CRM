@@ -1,0 +1,35 @@
+@page "/appointments"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Appointment, Appointments>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject AppointmentApiService AppointmentApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Appointments"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Appointment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Appointment" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="appointment">
+                            <OpenPageCommonComponent T="Appointment" OpenObject="@appointment" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Appointment" UsingObject="@appointment" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.StartAt) Title=@Localizer["StartTime"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.EndAt) Title=@Localizer["EndTime"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.Status) Title=@Localizer["Status"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>
