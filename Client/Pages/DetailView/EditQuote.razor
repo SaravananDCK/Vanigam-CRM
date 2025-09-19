@@ -27,6 +27,12 @@
                     <RadzenNumeric @bind-Value="@CurrentObject.TotalAmount" Name="numeric_TotalAmount" />
                 </ChildContent>
             </VanigamAccountingFormField>
+            @if (CurrentObject != null && Oid != Guid.Empty)
+            {
+                <EntityCollectionsTabContainer T="Quote"
+                                               EntityId="@Oid"
+                                               Entity="@CurrentObject" />
+            }
         </RadzenStack>
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
             <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />

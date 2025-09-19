@@ -40,11 +40,9 @@
             </VanigamAccountingFormField>
             @if (CurrentObject != null && Oid != Guid.Empty)
             {
-                <RadzenCard class="mt-4">
-                    <Contacts CustomerId="@Oid"
-                              IsEmbeddedMode="true"
-                              EmbeddedTitle="@Localizer["Customer Contacts"]" />
-                </RadzenCard>
+                <EntityCollectionsTabContainer T="Customer"
+                                               EntityId="@Oid"
+                                               Entity="@CurrentObject" />
             }
         </RadzenStack>
         

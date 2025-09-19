@@ -1,0 +1,141 @@
+@typeparam T where T : class, IHasId<Guid>
+@using Vanigam.CRM.Objects.Contracts
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Services
+@using System.Reflection
+@using Vanigam.CRM.Client.Components
+@using Microsoft.Extensions.Localization
+@inject IEntityCollectionDiscoveryService CollectionDiscoveryService
+@inject IStringLocalizer Localizer
+
+@if (CollectionProperties.Any())
+{
+    @if (CollectionProperties.Count == 1)
+    {
+        @* Single collection - render directly without tabs *@
+        var collection = CollectionProperties.First();
+        <RadzenCard class="mt-4">
+            @RenderNestedListView(collection)
+        </RadzenCard>
+    }
+    else
+    {
+        @* Multiple collections - render as tabs *@
+        <RadzenCard class="mt-4">
+            <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client">
+                @foreach (var collection in CollectionProperties)
+                {
+                    <RadzenTabsItem Text="@GetTabTitle(collection)">
+                        @RenderNestedListView(collection)
+                    </RadzenTabsItem>
+                }
+            </RadzenTabs>
+        </RadzenCard>
+    }
+}
+
+@code {
+    [Parameter] public Guid EntityId { get; set; }
+    [Parameter] public T? Entity { get; set; }
+    [Parameter] public List<string>? VisibleCollections { get; set; }
+    [Parameter] public List<string>? HiddenCollections { get; set; }
+    [Parameter] public Dictionary<string, string>? CustomTitles { get; set; }
+    [Parameter] public Dictionary<string, RenderFragment>? CustomColumnTemplates { get; set; }
+    [Parameter] public Dictionary<string, List<string>>? SearchablePropertiesConfig { get; set; }
+
+    private List<CollectionPropertyInfo> CollectionProperties = new();
+    private int SelectedTabIndex = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoadCollectionProperties();
+        await base.OnInitializedAsync();
+    }
+
+    private void LoadCollectionProperties()
+    {
+        CollectionProperties = CollectionDiscoveryService.GetCollectionProperties<T>();
+
+        // Filter collections based on VisibleCollections/HiddenCollections
+        if (VisibleCollections?.Any() == true)
+        {
+            CollectionProperties = CollectionProperties
+                .Where(c => VisibleCollections.Contains(c.PropertyName))
+                .ToList();
+        }
+        else if (HiddenCollections?.Any() == true)
+        {
+            CollectionProperties = CollectionProperties
+                .Where(c => !HiddenCollections.Contains(c.PropertyName))
+                .ToList();
+        }
+    }
+
+    private string GetTabTitle(CollectionPropertyInfo collection)
+    {
+        if (CustomTitles?.ContainsKey(collection.PropertyName) == true)
+            return CustomTitles[collection.PropertyName];
+
+        return Localizer[collection.DisplayName];
+    }
+
+    private RenderFragment RenderNestedListView(CollectionPropertyInfo collection)
+    {
+        return builder =>
+        {
+            // Dynamically create NestedListView component
+            var nestedListViewType = typeof(NestedListView<,>).MakeGenericType(typeof(T), collection.ChildEntityType);
+
+            builder.OpenComponent(0, nestedListViewType);
+            builder.AddAttribute(1, "ParentId", EntityId);
+            builder.AddAttribute(2, "ParentPropertyName", collection.ForeignKeyPropertyName);
+            builder.AddAttribute(3, "Title", GetTabTitle(collection));
+            builder.AddAttribute(4, "ShowParentColumn", false);
+
+            // Add searchable properties if configured
+            if (SearchablePropertiesConfig?.ContainsKey(collection.PropertyName) == true)
+            {
+                builder.AddAttribute(5, "SearchableProperties", SearchablePropertiesConfig[collection.PropertyName]);
+            }
+            else
+            {
+                builder.AddAttribute(5, "SearchableProperties", GetDefaultSearchableProperties(collection.ChildEntityType));
+            }
+
+            // Add custom columns if provided
+            if (CustomColumnTemplates?.ContainsKey(collection.PropertyName) == true)
+            {
+                builder.AddAttribute(6, "CustomColumns", CustomColumnTemplates[collection.PropertyName]);
+            }
+
+            builder.CloseComponent();
+        };
+    }
+
+    private List<string> GetDefaultSearchableProperties(Type entityType)
+    {
+        var searchableProps = new List<string>();
+
+        var properties = entityType.GetProperties()
+            .Where(p => p.PropertyType == typeof(string))
+            .Where(p => p.Name != "Oid" && p.Name != "TenantId")
+            .Take(3) // Limit to first 3 string properties
+            .Select(p => p.Name)
+            .ToList();
+
+        searchableProps.AddRange(properties);
+
+        // Add common searchable property names
+        var commonProps = new[] { "Name", "Title", "Description", "Code", "Email", "Phone", "FirstName", "LastName" };
+        foreach (var prop in commonProps)
+        {
+            var property = entityType.GetProperty(prop);
+            if (property != null && property.PropertyType == typeof(string) && !searchableProps.Contains(prop))
+            {
+                searchableProps.Add(prop);
+            }
+        }
+
+        return searchableProps;
+    }
+}
