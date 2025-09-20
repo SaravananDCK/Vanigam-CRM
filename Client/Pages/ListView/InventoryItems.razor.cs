@@ -36,7 +36,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["AddInventoryItem"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["AddInventoryItem"], null, 80, 80);
             await GridReload();
         }
 
@@ -47,7 +47,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(InventoryItem inventoryitem)
         {
-            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["EditInventoryItem"], new Dictionary<string, object> { { "Oid", inventoryitem.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["EditInventoryItem"], new Dictionary<string, object> { { "Oid", inventoryitem.Oid } }, 80, 80);
             await GridReload();
         }
 

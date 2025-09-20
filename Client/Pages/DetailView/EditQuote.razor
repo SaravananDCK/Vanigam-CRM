@@ -1,14 +1,58 @@
 @page "/edit-quote"
 @using Vanigam.CRM.Objects.Entities
 @using Vanigam.CRM.Client.Validators
+@using Vanigam.CRM.Client.Pages.ListView
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<Quote, EditQuote>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
-<DetailPageCommonComponent TitleText="@Localizer["EditQuote"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
+@* Custom Header with Edit Button *@
+<DetailPageTitleComponent TitleText="@Localizer["EditQuote"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
+    <CustomBadge>
+        @* Floating Edit Button - Only visible in read-only mode *@
+        @if (IsEditButtonVisible)
+        {
+
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+        }
+    </CustomBadge>
+</DetailPageTitleComponent>
 <RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Quote" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+
+    @* Read-Only Mode Display *@
+    @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
+    {
+        <RadzenCard class="rz-my-4">
+            <RadzenStack>
+                @* Quote Information Display *@
+                <RadzenRow>
+                    <RadzenColumn Size="6">
+                        <RadzenStack>
+                            <div class="rz-p-4">
+                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Title"]</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Title ?? "-")</RadzenText>
+
+                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Status"]</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Status.ToString())</RadzenText>
+                            </div>
+                        </RadzenStack>
+                    </RadzenColumn>
+                    <RadzenColumn Size="6">
+                        <RadzenStack>
+                            <div class="rz-p-4">
+                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["TotalAmount"]</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.TotalAmount.ToString("C"))</RadzenText>
+                            </div>
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenCard>
+    }
+
+    @* Editable Form Mode *@
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Quote" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@SaveAndStayInEdit">
         <RadzenStack>
             <FluentValidationValidator Validator="new QuoteValidator(Localizer)" />
             <ValidationSummary />
@@ -19,7 +63,7 @@
             </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["Status"]>
                 <ChildContent>
-                    <RadzenDropDown @bind-Value="@CurrentObject.Status" Data="@(Enum.GetValues<QuoteStatus>())" Name="dropdown_Status" />
+                    <QuoteStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                                                                                                                                     </ChildContent>
             </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["TotalAmount"]>
@@ -27,16 +71,35 @@
                     <RadzenNumeric @bind-Value="@CurrentObject.TotalAmount" Name="numeric_TotalAmount" />
                 </ChildContent>
             </VanigamAccountingFormField>
-            @if (CurrentObject != null && Oid != Guid.Empty)
+        </RadzenStack>
+
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            @if (IsCreateMode)
             {
-                <EntityCollectionsTabContainer T="Quote"
-                                               EntityId="@Oid"
-                                               Entity="@CurrentObject" />
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+            }
+            else
+            {
+                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
             }
         </RadzenStack>
-        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
-        </RadzenStack>
     </RadzenTemplateForm>
+
+    @* Related Data Tabs - Available in both read-only and edit modes *@
+    @if (IsTabsVisible)
+    {
+        <RadzenCard class="mt-4">
+            <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client">
+                <Tabs>
+                    <RadzenTabsItem Text="@Localizer["QuoteItems"]">
+                        <QuoteItems QuoteId="@Oid"
+                                   IsEmbeddedMode="true"
+                                   EmbeddedTitle="@Localizer["QuoteItems"]" />
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+        </RadzenCard>
+    }
+
 </RadzenColumn>

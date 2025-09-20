@@ -25,17 +25,37 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<JobReport>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
-                .ContainsOr(u => u.Notes, SearchString)
-                .EndGroup()
-                .Build();
+            var filter = new ODataFilter<JobReport>()
+                .FilterByAnd(args.Filter);
+
+            // Add job filter if in embedded mode
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                filter = filter.FilterByAnd(jr => jr.JobId == JobId.Value);
+            }
+
+            // Add search filter only if there's a search string
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .ContainsOr(u => u.Notes, SearchString)
+                    .EndGroup();
+            }
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["AddJobReport"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+
+            // If in embedded mode with a job, pre-set the JobId
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                parameters.Add("JobId", JobId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["AddJobReport"], parameters.Any() ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +66,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(JobReport jobreport)
         {
-            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["EditJobReport"], new Dictionary<string, object> { { "Oid", jobreport.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["EditJobReport"], new Dictionary<string, object> { { "Oid", jobreport.Oid } }, 80, 80);
             await GridReload();
         }
 

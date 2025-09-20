@@ -25,17 +25,46 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<MaterialUsage>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
-                // No searchable string properties for MaterialUsage
-                .EndGroup()
-                .Build();
+            var filter = new ODataFilter<MaterialUsage>()
+                .FilterByAnd(args.Filter);
+
+            // Add job filter if in embedded mode by job
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                filter = filter.FilterByAnd(mu => mu.JobId == JobId.Value);
+            }
+
+            // Add inventory item filter if in embedded mode by inventory item
+            if (IsEmbeddedMode && InventoryItemId.HasValue)
+            {
+                filter = filter.FilterByAnd(mu => mu.InventoryItemId == InventoryItemId.Value);
+            }
+
+            // No additional searchable string properties for MaterialUsage
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .EndGroup();
+            }
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditMaterialUsage>(Localizer["AddMaterialUsage"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+
+            // If in embedded mode, pre-set the parent entity ID
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                parameters.Add("JobId", JobId.Value);
+            }
+            if (IsEmbeddedMode && InventoryItemId.HasValue)
+            {
+                parameters.Add("InventoryItemId", InventoryItemId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditMaterialUsage>(Localizer["AddMaterialUsage"], parameters.Any() ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +75,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(MaterialUsage materialusage)
         {
-            await DialogService.OpenDialogAsync<EditMaterialUsage>(Localizer["EditMaterialUsage"], new Dictionary<string, object> { { "Oid", materialusage.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditMaterialUsage>(Localizer["EditMaterialUsage"], new Dictionary<string, object> { { "Oid", materialusage.Oid } }, 80, 80);
             await GridReload();
         }
 

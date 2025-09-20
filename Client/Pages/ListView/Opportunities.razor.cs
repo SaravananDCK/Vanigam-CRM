@@ -25,17 +25,31 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Opportunity>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
+            var filter = new ODataFilter<Opportunity>()
+                .FilterByAnd(args.Filter);
+
+            // Filter by parent Lead if in embedded mode
+            if (IsEmbeddedMode && LeadId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.LeadId == LeadId.Value);
+            }
+
+            filter.BeginGroup()
                 .ContainsOr(u => u.Title, SearchString)
-                .EndGroup()
-                .Build();
+                .EndGroup();
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditOpportunity>(Localizer["AddOpportunity"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+            if (IsEmbeddedMode && LeadId.HasValue)
+            {
+                parameters.Add("LeadId", LeadId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditOpportunity>(Localizer["AddOpportunity"], parameters.Count > 0 ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +60,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Opportunity opportunity)
         {
-            await DialogService.OpenDialogAsync<EditOpportunity>(Localizer["EditOpportunity"], new Dictionary<string, object> { { "Oid", opportunity.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditOpportunity>(Localizer["EditOpportunity"], new Dictionary<string, object> { { "Oid", opportunity.Oid } }, 80, 80);
             await GridReload();
         }
 

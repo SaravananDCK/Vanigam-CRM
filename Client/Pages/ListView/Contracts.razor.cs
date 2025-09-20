@@ -25,18 +25,32 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Contract>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
+            var filter = new ODataFilter<Contract>()
+                .FilterByAnd(args.Filter);
+
+            // Filter by parent Customer if in embedded mode
+            if (IsEmbeddedMode && CustomerId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.CustomerId == CustomerId.Value);
+            }
+
+            filter.BeginGroup()
                 .ContainsOr(u => u.Title, SearchString)
                 .ContainsOr(u => u.Terms, SearchString)
-                .EndGroup()
-                .Build();
+                .EndGroup();
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditContract>(Localizer["AddContract"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+            if (IsEmbeddedMode && CustomerId.HasValue)
+            {
+                parameters.Add("CustomerId", CustomerId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditContract>(Localizer["AddContract"], parameters.Count > 0 ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -47,7 +61,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Contract contract)
         {
-            await DialogService.OpenDialogAsync<EditContract>(Localizer["EditContract"], new Dictionary<string, object> { { "Oid", contract.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditContract>(Localizer["EditContract"], new Dictionary<string, object> { { "Oid", contract.Oid } }, 80, 80);
             await GridReload();
         }
 

@@ -4,8 +4,18 @@
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject RecurringJobApiService RecurringJobApiService
 
+@* Parameters for embedded mode *@
+@code {
+    [Parameter] public Guid? ContractId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}
+
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["RecurringJobs"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Contract Recurring Jobs"] : Localizer["RecurringJobs"])
+                                AddButtonClick=@AddButtonClick
+                                SearchButtonClick=@Search
+                                ShowAdd=@(!IsEmbeddedMode || ContractId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="RecurringJob" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -20,6 +30,15 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    @* Show Contract column only in standalone mode *@
+                    @if (!IsEmbeddedMode)
+                    {
+                        <RadzenDataGridColumn TItem="RecurringJob" Property="Contract.Title" Title=@Localizer["Contract"]>
+                            <Template Context="recurringjob">
+                                @recurringjob.Contract?.Title
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
                     <RadzenDataGridColumn TItem="RecurringJob" Property=@nameof(RecurringJob.Name) Title=@Localizer["Name"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="RecurringJob" Property=@nameof(RecurringJob.CronExpression) Title=@Localizer["CronExpression"]>

@@ -25,17 +25,37 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Appointment>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
-                // No searchable string properties for Appointment
-                .EndGroup()
-                .Build();
+            var filter = new ODataFilter<Appointment>()
+                .FilterByAnd(args.Filter);
+
+            // Add job filter if in embedded mode
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                filter = filter.FilterByAnd(a => a.JobId == JobId.Value);
+            }
+
+            // No additional searchable string properties for Appointment
+            // Only add search group if there's a search string
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .EndGroup();
+            }
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["AddAppointment"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+
+            // If in embedded mode with a job, pre-set the JobId
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                parameters.Add("JobId", JobId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["AddAppointment"], parameters.Any() ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +66,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Appointment appointment)
         {
-            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["EditAppointment"], new Dictionary<string, object> { { "Oid", appointment.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["EditAppointment"], new Dictionary<string, object> { { "Oid", appointment.Oid } }, 80, 80);
             await GridReload();
         }
 

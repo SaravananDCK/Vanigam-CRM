@@ -25,18 +25,40 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Activity>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
+            var filter = new ODataFilter<Activity>()
+                .FilterByAnd(args.Filter);
+
+            // Filter by parent Lead or Opportunity if in embedded mode
+            if (IsEmbeddedMode && LeadId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.LeadId == LeadId.Value);
+            }
+            else if (IsEmbeddedMode && OpportunityId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.OpportunityId == OpportunityId.Value);
+            }
+
+            filter.BeginGroup()
                 .ContainsOr(u => u.Type, SearchString)
                 .ContainsOr(u => u.Notes, SearchString)
-                .EndGroup()
-                .Build();
+                .EndGroup();
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditActivity>(Localizer["AddActivity"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+            if (IsEmbeddedMode && LeadId.HasValue)
+            {
+                parameters.Add("LeadId", LeadId.Value);
+            }
+            else if (IsEmbeddedMode && OpportunityId.HasValue)
+            {
+                parameters.Add("OpportunityId", OpportunityId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditActivity>(Localizer["AddActivity"], parameters.Count > 0 ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -47,7 +69,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Activity activity)
         {
-            await DialogService.OpenDialogAsync<EditActivity>(Localizer["EditActivity"], new Dictionary<string, object> { { "Oid", activity.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditActivity>(Localizer["EditActivity"], new Dictionary<string, object> { { "Oid", activity.Oid } }, 80, 80);
             await GridReload();
         }
 

@@ -25,17 +25,31 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Payment>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
+            var filter = new ODataFilter<Payment>()
+                .FilterByAnd(args.Filter);
+
+            // Filter by parent Invoice if in embedded mode
+            if (IsEmbeddedMode && InvoiceId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.InvoiceId == InvoiceId.Value);
+            }
+
+            filter.BeginGroup()
                 .ContainsOr(u => u.ProviderReference, SearchString)
-                .EndGroup()
-                .Build();
+                .EndGroup();
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditPayment>(Localizer["AddPayment"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+            if (IsEmbeddedMode && InvoiceId.HasValue)
+            {
+                parameters.Add("InvoiceId", InvoiceId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditPayment>(Localizer["AddPayment"], parameters.Count > 0 ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +60,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Payment payment)
         {
-            await DialogService.OpenDialogAsync<EditPayment>(Localizer["EditPayment"], new Dictionary<string, object> { { "Oid", payment.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditPayment>(Localizer["EditPayment"], new Dictionary<string, object> { { "Oid", payment.Oid } }, 80, 80);
             await GridReload();
         }
 

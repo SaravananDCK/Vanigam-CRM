@@ -17,6 +17,25 @@
                     <VanigamAccountingTextBox @bind-Value="@CurrentObject.Type" Name="txt_Type" />
                 </ChildContent>
             </VanigamAccountingFormField>
+
+            @if (CurrentObject.LeadId.HasValue)
+            {
+                <VanigamAccountingFormField Text=@Localizer["Lead"]>
+                    <ChildContent>
+                        <VanigamAccountingTextBox Value="@(CurrentObject.Lead?.Name ?? "")" Name="txt_LeadName" Disabled="true" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
+            }
+
+            @if (CurrentObject.OpportunityId.HasValue)
+            {
+                <VanigamAccountingFormField Text=@Localizer["Opportunity"]>
+                    <ChildContent>
+                        <VanigamAccountingTextBox Value="@(CurrentObject.Opportunity?.Title ?? "")" Name="txt_OpportunityTitle" Disabled="true" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
+            }
+
             <VanigamAccountingFormField Text=@Localizer["Notes"]>
                 <ChildContent>
                     <VanigamAccountingTextBox @bind-Value="@CurrentObject.Notes" Name="txt_Notes" />

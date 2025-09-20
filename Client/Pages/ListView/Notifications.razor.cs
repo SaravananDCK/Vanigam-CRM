@@ -36,7 +36,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditNotification>(Localizer["AddNotification"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditNotification>(Localizer["AddNotification"], null, 80, 80);
             await GridReload();
         }
 
@@ -47,7 +47,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Notification notification)
         {
-            await DialogService.OpenDialogAsync<EditNotification>(Localizer["EditNotification"], new Dictionary<string, object> { { "Oid", notification.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditNotification>(Localizer["EditNotification"], new Dictionary<string, object> { { "Oid", notification.Oid } }, 80, 80);
             await GridReload();
         }
 

@@ -24,10 +24,12 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 {
                     CurrentObject.CustomerId = CustomerId.Value;
                 }
+                IsReadOnlyMode = false; // Create mode - always editable
             }
             else
             {
                 CurrentObject = await ContactApiService.GetByOid(oid: Oid);
+                IsReadOnlyMode = true; // Edit mode - start in read-only
             }
 
             await InitEditContext();
@@ -72,5 +74,17 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             IsBusy = false;
         }
+
+        protected override async Task SaveAndStayInEdit()
+        {
+            await FormSubmit();
+            // After successful save, switch back to read-only mode
+            if (!ErrorVisible && !ShowNotUniqueAlert)
+            {
+                IsReadOnlyMode = true;
+                StateHasChanged();
+            }
+        }
+
     }
 }

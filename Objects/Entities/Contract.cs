@@ -19,5 +19,7 @@ namespace Vanigam.CRM.Objects.Entities
         public DateTime? EndDate { get; set; }
         [StringLength(5000)]
         public string? Terms { get; set; }
+
+        public ICollection<RecurringJob> RecurringJobs { get; set; } = new List<RecurringJob>();
     }
 }

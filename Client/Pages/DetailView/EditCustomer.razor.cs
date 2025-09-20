@@ -9,12 +9,19 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditCustomer
     {
         [Inject] private CustomerApiService CustomerApiService { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
+            {
                 CurrentObject = new();
+                IsReadOnlyMode = false; // Create mode - always editable
+            }
             else
+            {
                 CurrentObject = await CustomerApiService.GetByOid(oid: Oid);
+                IsReadOnlyMode = true; // Edit mode - start in read-only
+            }
 
             await InitEditContext();
         }
@@ -57,6 +64,31 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     ErrorVisible = true;
             }
             IsBusy = false;
+        }
+
+
+        protected override async Task SaveAndStayInEdit()
+        {
+            await FormSubmit();
+            // After successful save, switch back to read-only mode
+            if (!ErrorVisible && !ShowNotUniqueAlert)
+            {
+                IsReadOnlyMode = true;
+                StateHasChanged();
+            }
+        }
+
+        protected async Task ReloadButtonClick()
+        {
+            // Reload the current object from the API
+            if (Oid != Guid.Empty)
+            {
+                CurrentObject = await CustomerApiService.GetByOid(oid: Oid);
+                await InitEditContext();
+                HasChanges = false;
+                CanEdit = true;
+                StateHasChanged();
+            }
         }
     }
 }

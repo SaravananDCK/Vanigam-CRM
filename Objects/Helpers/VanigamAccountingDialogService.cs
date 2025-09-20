@@ -27,6 +27,21 @@ public class VanigamAccountingDialogService : DialogService
         //}
 
     }
+
+    public async Task<dynamic> OpenCustomDialogWithOutHeaderAsync<T>(string title, Dictionary<string, dynamic> parameters = null, int width = 75, int height = 100) where T : ComponentBase
+    {
+        // For now, we'll use the standard dialog and handle custom title within the component
+        // The titleTemplate parameter is reserved for future implementation when TitleTemplate becomes available
+        return await this.OpenAsync<T>(title, parameters, new DialogOptions()
+        {
+            Width = $"{width}%",
+            Height = $"{height}%",
+            AutoFocusFirstElement = true,
+            Draggable = true,
+            Resizable = true,
+            ShowTitle = false
+        });
+    }
     public void CloseCustomDialog(dynamic result = null)
     {
         //if (_dialogsList.Count == 1)

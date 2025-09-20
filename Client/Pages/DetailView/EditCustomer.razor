@@ -5,11 +5,61 @@
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<Customer, EditCustomer>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
-<DetailPageCommonComponent TitleText="@Localizer["EditCustomer"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
+@* Custom Header with Edit Button *@
+<DetailPageTitleComponent TitleText="@Localizer["Edit Customer"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
+    <CustomBadge>
+        @* Floating Edit Button - Only visible in read-only mode *@
+        @if (IsEditButtonVisible)
+        {
+
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+        }
+    </CustomBadge>
+</DetailPageTitleComponent>
+
 <RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Customer" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+
+    @* Read-Only Mode Display *@
+    @if (IsReadOnlyModeVisible)
+    {
+        <RadzenCard class="rz-my-4">
+            <RadzenStack>
+                @* Customer Information Display *@
+                <RadzenRow>
+                    <RadzenColumn Size="6">
+                        <RadzenStack>
+                            <div class="rz-p-4">
+                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Name"]</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Name ?? "-")</RadzenText>
+
+                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Industry"]</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Industry ?? "-")</RadzenText>
+
+                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Address"]</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Address ?? "-")</RadzenText>
+                            </div>
+                        </RadzenStack>
+                    </RadzenColumn>
+                    <RadzenColumn Size="6">
+                        <RadzenStack>
+                            <div class="rz-p-4">
+                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Email"]</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Email ?? "-")</RadzenText>
+
+                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Phone"]</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Phone ?? "-")</RadzenText>
+                            </div>
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenCard>
+    }
+
+    @* Editable Form Mode *@
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Customer" Data="@CurrentObject" Visible="@IsFormVisible" Submit="@SaveAndStayInEdit">
         <RadzenStack>
             <FluentValidationValidator Validator="new CustomerValidator(Localizer)" />
             <ValidationSummary />
@@ -38,17 +88,40 @@
                     <VanigamAccountingTextBox @bind-Value="@CurrentObject.Phone" Name="txt_Phone" />
                 </ChildContent>
             </VanigamAccountingFormField>
-            @if (CurrentObject != null && Oid != Guid.Empty)
+        </RadzenStack>
+
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            @if (IsCreateMode)
             {
-                <EntityCollectionsTabContainer T="Customer"
-                                               EntityId="@Oid"
-                                               Entity="@CurrentObject" />
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+            }
+            else
+            {
+                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
             }
         </RadzenStack>
-        
-        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
-        </RadzenStack>
     </RadzenTemplateForm>
+
+    @* Related Data Tabs - Available in both read-only and edit modes *@
+    @if (IsTabsVisible)
+    {
+        <RadzenCard class="mt-4">
+            <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client">
+                <Tabs>
+                    <RadzenTabsItem Text="@Localizer["Contacts"]">
+                        <Contacts CustomerId="@Oid"
+                                  IsEmbeddedMode="true"
+                                  EmbeddedTitle="@Localizer["CustomerContacts"]" />
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="@Localizer["Jobs"]">
+                        <Jobs CustomerId="@Oid"
+                              IsEmbeddedMode="true"
+                              EmbeddedTitle="@Localizer["CustomerJobs"]" />
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+        </RadzenCard>
+    }
+
 </RadzenColumn>

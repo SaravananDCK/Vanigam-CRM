@@ -5,7 +5,10 @@
 @inject LeadApiService LeadApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["Leads"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Leads"] : Localizer["Leads"])
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || true) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Lead" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -20,15 +23,48 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Name) Title=@Localizer["Name"]>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Name) Title=@Localizer["Name"] Width="200px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Email) Title=@Localizer["Email"]>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Organization) Title=@Localizer["Organization"] Width="180px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Phone) Title=@Localizer["Phone"]>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.JobTitle) Title=@Localizer["JobTitle"] Width="150px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Source) Title=@Localizer["Source"]>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Email) Title=@Localizer["Email"] Width="200px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Status) Title=@Localizer["Status"]>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Phone) Title=@Localizer["Phone"] Width="130px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Industry) Title=@Localizer["Industry"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Status) Title=@Localizer["Status"] Width="100px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Source) Title=@Localizer["Source"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.LeadScore) Title=@Localizer["LeadScore"] Width="100px">
+                        <Template Context="lead">
+                            <RadzenBadge Text="@lead.LeadScore.ToString()"
+                                         BadgeStyle="@(lead.LeadScore >= 80 ? BadgeStyle.Success : lead.LeadScore >= 60 ? BadgeStyle.Warning : BadgeStyle.Light)" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property="AssignedTo.UserName" Title=@Localizer["AssignedTo"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.NextFollowUpDate) Title=@Localizer["NextFollowUp"] Width="130px">
+                        <Template Context="lead">
+                            @if (lead.NextFollowUpDate.HasValue)
+                            {
+                                <span class="@(lead.NextFollowUpDate < DateTime.Today ? "text-danger" : lead.NextFollowUpDate <= DateTime.Today.AddDays(3) ? "text-warning" : "")">
+                                    @lead.NextFollowUpDate.Value.ToString("MM/dd/yyyy")
+                                </span>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.EstimatedBudget) Title=@Localizer["EstimatedBudget"] Width="130px">
+                        <Template Context="lead">
+                            @(lead.EstimatedBudget?.ToString("C") ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.City) Title=@Localizer["City"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.State) Title=@Localizer["State"] Width="100px">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>
@@ -37,3 +73,8 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+@code {
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}

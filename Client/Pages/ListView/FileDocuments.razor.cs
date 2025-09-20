@@ -35,7 +35,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditFileDocument>(Localizer["AddFileDocument"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditFileDocument>(Localizer["AddFileDocument"], null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +46,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(FileDocument filedocument)
         {
-            await DialogService.OpenDialogAsync<EditFileDocument>(Localizer["EditFileDocument"], new Dictionary<string, object> { { "Oid", filedocument.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditFileDocument>(Localizer["EditFileDocument"], new Dictionary<string, object> { { "Oid", filedocument.Oid } }, 80, 80);
             await GridReload();
         }
 

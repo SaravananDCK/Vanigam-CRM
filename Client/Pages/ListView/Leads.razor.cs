@@ -29,16 +29,24 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 .FilterByAnd(args.Filter)
                 .BeginGroup()
                 .ContainsOr(u => u.Name, SearchString)
+                .ContainsOr(u => u.Organization, SearchString)
                 .ContainsOr(u => u.Email, SearchString)
                 .ContainsOr(u => u.Phone, SearchString)
+                .ContainsOr(u => u.JobTitle, SearchString)
+                .ContainsOr(u => u.Industry, SearchString)
                 .ContainsOr(u => u.Source, SearchString)
+                .ContainsOr(u => u.CampaignSource, SearchString)
+                .ContainsOr(u => u.City, SearchString)
+                .ContainsOr(u => u.State, SearchString)
+                .ContainsOr(u => u.ProductOfInterest, SearchString)
+                .ContainsOr(u => u.Comments, SearchString)
                 .EndGroup()
                 .Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditLead>(Localizer["AddLead"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditLead>(Localizer["AddLead"], null, 80, 80);
             await GridReload();
         }
 
@@ -49,7 +57,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Lead lead)
         {
-            await DialogService.OpenDialogAsync<EditLead>(Localizer["EditLead"], new Dictionary<string, object> { { "Oid", lead.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditLead>(Localizer["EditLead"], new Dictionary<string, object> { { "Oid", lead.Oid } }, 80, 80);
             await GridReload();
         }
 

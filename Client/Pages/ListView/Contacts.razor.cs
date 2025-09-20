@@ -34,13 +34,16 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 filter = filter.FilterByAnd(c => c.CustomerId == CustomerId.Value);
             }
 
-            // Add search filter
-            filter = filter.BeginGroup()
-                .ContainsOr(u => u.FirstName, SearchString)
-                .ContainsOr(u => u.LastName, SearchString)
-                .ContainsOr(u => u.Email, SearchString)
-                .ContainsOr(u => u.Phone, SearchString)
-                .EndGroup();
+            // Add search filter only if there's a search string
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .ContainsOr(u => u.FirstName, SearchString)
+                    .ContainsOr(u => u.LastName, SearchString)
+                    .ContainsOr(u => u.Email, SearchString)
+                    .ContainsOr(u => u.Phone, SearchString)
+                    .EndGroup();
+            }
 
             return filter.Build();
         }
@@ -55,7 +58,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("CustomerId", CustomerId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditContact>(Localizer["AddContact"], parameters.Any() ? parameters : null, 30, 50);
+            await DialogService.OpenDialogAsync<EditContact>(Localizer["AddContact"], parameters.Any() ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -66,7 +69,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Contact contact)
         {
-            await DialogService.OpenDialogAsync<EditContact>(Localizer["EditContact"], new Dictionary<string, object> { { "Oid", contact.Oid } }, 30, 50);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditContact>(Localizer["Edit Contact"], new Dictionary<string, object> { { "Oid", contact.Oid } }, 80, 80);
             await GridReload();
         }
 

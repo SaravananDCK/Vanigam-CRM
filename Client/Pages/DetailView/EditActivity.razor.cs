@@ -9,12 +9,29 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditActivity
     {
         [Inject] private ActivityApiService ActivityApiService { get; set; }
+
+        [Parameter] public Guid? LeadId { get; set; }
+        [Parameter] public Guid? OpportunityId { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
+            {
                 CurrentObject = new();
+
+                // Set the parent Lead or Opportunity when creating a new activity
+                if (LeadId.HasValue)
+                {
+                    CurrentObject.LeadId = LeadId.Value;
+                }
+                else if (OpportunityId.HasValue)
+                {
+                    CurrentObject.OpportunityId = OpportunityId.Value;
+                }
+            }
             else
+            {
                 CurrentObject = await ActivityApiService.GetByOid(oid: Oid);
+            }
 
             await InitEditContext();
         }
@@ -57,6 +74,17 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     ErrorVisible = true;
             }
             IsBusy = false;
+        }
+
+        protected override async Task SaveAndStayInEdit()
+        {
+            await FormSubmit();
+            // After successful save, switch back to read-only mode
+            if (!ErrorVisible && !ShowNotUniqueAlert)
+            {
+                IsReadOnlyMode = true;
+                StateHasChanged();
+            }
         }
     }
 }

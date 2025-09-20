@@ -5,7 +5,10 @@
 @inject QuoteApiService QuoteApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["Quotes"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Quotes"] : Localizer["Quotes"])
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || JobId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Quote" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -20,6 +23,8 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Quote" Property="Job.Title" Title=@Localizer["Job"] Visible="@(!IsEmbeddedMode)">
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Title) Title=@Localizer["Title"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Status) Title=@Localizer["Status"]>
@@ -33,3 +38,9 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+@code {
+    [Parameter] public Guid? JobId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}

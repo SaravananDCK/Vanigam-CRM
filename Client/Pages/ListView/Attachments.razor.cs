@@ -25,19 +25,33 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Attachment>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
+            var filter = new ODataFilter<Attachment>()
+                .FilterByAnd(args.Filter);
+
+            // Filter by parent JobReport if in embedded mode
+            if (IsEmbeddedMode && JobReportId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.JobReportId == JobReportId.Value);
+            }
+
+            filter.BeginGroup()
                 .ContainsOr(u => u.FileName, SearchString)
                 .ContainsOr(u => u.ContentType, SearchString)
                 .ContainsOr(u => u.Url, SearchString)
-                .EndGroup()
-                .Build();
+                .EndGroup();
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditAttachment>(Localizer["AddAttachment"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+            if (IsEmbeddedMode && JobReportId.HasValue)
+            {
+                parameters.Add("JobReportId", JobReportId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditAttachment>(Localizer["AddAttachment"], parameters.Count > 0 ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -48,7 +62,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Attachment attachment)
         {
-            await DialogService.OpenDialogAsync<EditAttachment>(Localizer["EditAttachment"], new Dictionary<string, object> { { "Oid", attachment.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditAttachment>(Localizer["EditAttachment"], new Dictionary<string, object> { { "Oid", attachment.Oid } }, 80, 80);
             await GridReload();
         }
 

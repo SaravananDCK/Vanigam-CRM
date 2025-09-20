@@ -25,17 +25,31 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Quote>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
+            var filter = new ODataFilter<Quote>()
+                .FilterByAnd(args.Filter);
+
+            // Filter by parent Job if in embedded mode
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.JobId == JobId.Value);
+            }
+
+            filter.BeginGroup()
                 .ContainsOr(u => u.Title, SearchString)
-                .EndGroup()
-                .Build();
+                .EndGroup();
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditQuote>(Localizer["AddQuote"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                parameters.Add("JobId", JobId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditQuote>(Localizer["AddQuote"], parameters.Count > 0 ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +60,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Quote quote)
         {
-            await DialogService.OpenDialogAsync<EditQuote>(Localizer["EditQuote"], new Dictionary<string, object> { { "Oid", quote.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditQuote>(Localizer["EditQuote"], new Dictionary<string, object> { { "Oid", quote.Oid } }, 80, 80);
             await GridReload();
         }
 

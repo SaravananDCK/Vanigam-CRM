@@ -120,11 +120,11 @@ namespace Vanigam.CRM.Client.Layout
                 Icon = "fa-people",
                 ChildItems =
                 [
-                    new MenuItemDto { Text = Localizer["Customers"], Path = "customers", Icon = "fa-users" },
-                    new MenuItemDto { Text = Localizer["Contacts"], Path = "contacts", Icon = "fa-address-book" },
                     new MenuItemDto { Text = Localizer["Leads"], Path = "leads", Icon = ("fa-user-plus") },
                     new MenuItemDto { Text = Localizer["Opportunities"], Path = "opportunities", Icon = ("fa-handshake") },
-                    new MenuItemDto { Text = Localizer["Activities"], Path = "activities", Icon = ("fa-tasks") }
+                    new MenuItemDto { Text = Localizer["Activities"], Path = "activities", Icon = ("fa-tasks") },
+                    new MenuItemDto { Text = Localizer["Customers"], Path = "customers", Icon = "fa-users" },
+                    new MenuItemDto { Text = Localizer["Contacts"], Path = "contacts", Icon = "fa-address-book" },
                 ]
             });
 
@@ -260,7 +260,7 @@ namespace Vanigam.CRM.Client.Layout
              
         private async Task SwapTenantClick()
         {
-            await DialogService.OpenDialogAsync<ChooseTenant>(Localizer["ChooseTenant"], new Dictionary<string, object>(), 30, 50);
+            await DialogService.OpenDialogAsync<ChooseTenant>(Localizer["ChooseTenant"], new Dictionary<string, object>(), 80, 80);
         }
 
         

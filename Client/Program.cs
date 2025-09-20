@@ -57,7 +57,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddScoped<ILocalStorageService, BrowserLocalStorageService>();
 //builder.Services.AddScoped<ILocalStorageService, RedisLocalStorageService>();
-builder.Services.AddScoped<IEntityCollectionDiscoveryService, EntityCollectionDiscoveryService>();
 builder.Services.AddTransient<VanigamAccountingContextDelegatingHandler>();
 builder.AddBlazrRenderStateWASMServices();
 builder.Services.AddDevExpressBlazor();

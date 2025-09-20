@@ -5,7 +5,10 @@
 @inject OpportunityApiService OpportunityApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["Opportunities"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Opportunities"] : Localizer["Opportunities"])
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || LeadId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Opportunity" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -19,6 +22,8 @@
                             <DeletePageCommonComponent T="Opportunity" UsingObject="@opportunity" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Opportunity" Property="Lead.Name" Title=@Localizer["Lead"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Title) Title=@Localizer["Title"]>
                     </RadzenDataGridColumn>
@@ -35,3 +40,9 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+@code {
+    [Parameter] public Guid? LeadId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}

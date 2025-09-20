@@ -4,8 +4,19 @@
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject TimeSheetApiService TimeSheetApiService
 
+@* Parameters for embedded mode *@
+@code {
+    [Parameter] public Guid? JobId { get; set; }
+    [Parameter] public Guid? TechnicianId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}
+
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["TimeSheets"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["TimeSheets"] : Localizer["TimeSheets"])
+                                AddButtonClick=@AddButtonClick
+                                SearchButtonClick=@Search
+                                ShowAdd=@(!IsEmbeddedMode || JobId.HasValue || TechnicianId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="TimeSheet" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -20,6 +31,24 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    @* Show Job column only when not embedded by Job *@
+                    @if (!IsEmbeddedMode || !JobId.HasValue)
+                    {
+                        <RadzenDataGridColumn TItem="TimeSheet" Property="Job.Title" Title=@Localizer["Job"]>
+                            <Template Context="timesheet">
+                                @timesheet.Job?.Title
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
+                    @* Show Technician column only when not embedded by Technician *@
+                    @if (!IsEmbeddedMode || !TechnicianId.HasValue)
+                    {
+                        <RadzenDataGridColumn TItem="TimeSheet" Property="Technician.Name" Title=@Localizer["Technician"]>
+                            <Template Context="timesheet">
+                                @timesheet.Technician?.Name
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
                     <RadzenDataGridColumn TItem="TimeSheet" Property=@nameof(TimeSheet.StartAt) Title=@Localizer["StartAt"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="TimeSheet" Property=@nameof(TimeSheet.EndAt) Title=@Localizer["EndAt"]>

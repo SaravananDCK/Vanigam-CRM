@@ -25,17 +25,37 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<JobAssignment>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
-                // No searchable string properties for JobAssignment
-                .EndGroup()
-                .Build();
+            var filter = new ODataFilter<JobAssignment>()
+                .FilterByAnd(args.Filter);
+
+            // Add job filter if in embedded mode
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                filter = filter.FilterByAnd(ja => ja.JobId == JobId.Value);
+            }
+
+            // No additional searchable string properties for JobAssignment
+            // Only add search group if there's a search string
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .EndGroup();
+            }
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditJobAssignment>(Localizer["AddJobAssignment"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+
+            // If in embedded mode with a job, pre-set the JobId
+            if (IsEmbeddedMode && JobId.HasValue)
+            {
+                parameters.Add("JobId", JobId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditJobAssignment>(Localizer["AddJobAssignment"], parameters.Any() ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +66,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(JobAssignment jobassignment)
         {
-            await DialogService.OpenDialogAsync<EditJobAssignment>(Localizer["EditJobAssignment"], new Dictionary<string, object> { { "Oid", jobassignment.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditJobAssignment>(Localizer["EditJobAssignment"], new Dictionary<string, object> { { "Oid", jobassignment.Oid } }, 80, 80);
             await GridReload();
         }
 

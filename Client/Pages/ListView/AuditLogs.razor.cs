@@ -37,7 +37,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditAuditLog>(Localizer["AddAuditLog"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditAuditLog>(Localizer["AddAuditLog"], null, 80, 80);
             await GridReload();
         }
 
@@ -48,7 +48,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(AuditLog auditlog)
         {
-            await DialogService.OpenDialogAsync<EditAuditLog>(Localizer["EditAuditLog"], new Dictionary<string, object> { { "Oid", auditlog.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditAuditLog>(Localizer["EditAuditLog"], new Dictionary<string, object> { { "Oid", auditlog.Oid } }, 80, 80);
             await GridReload();
         }
 

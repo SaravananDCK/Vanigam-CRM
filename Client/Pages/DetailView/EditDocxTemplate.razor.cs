@@ -69,6 +69,17 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             CurrentObject = await DocxTemplateApiService.GetByOid(oid: Oid);
         }
 
+        protected override async Task SaveAndStayInEdit()
+        {
+            await FormSubmit();
+            // After successful save, switch back to read-only mode
+            if (!ErrorVisible && !ShowNotUniqueAlert)
+            {
+                IsReadOnlyMode = true;
+                StateHasChanged();
+            }
+        }
+
         private async Task OnDocumentContentChanged(byte[] arg)
         {
             EditContext.NotifyFieldChanged(EditContext.Field(nameof(DocumentTemplate.Content)));

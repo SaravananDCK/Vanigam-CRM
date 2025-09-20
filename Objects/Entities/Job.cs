@@ -31,5 +31,7 @@ namespace Vanigam.CRM.Objects.Entities
 
         public ICollection<JobAssignment> Assignments { get; set; } = new List<JobAssignment>();
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+        public ICollection<JobReport> JobReports { get; set; } = new List<JobReport>();
+        public ICollection<MaterialUsage> MaterialUsages { get; set; } = new List<MaterialUsage>();
     }
 }

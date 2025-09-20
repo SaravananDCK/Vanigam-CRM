@@ -5,7 +5,10 @@
 @inject FeedbackApiService FeedbackApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["Feedbacks"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Feedbacks"] : Localizer["Feedbacks"])
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || CustomerId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Feedback" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -20,6 +23,8 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Feedback" Property="Customer.Name" Title=@Localizer["Customer"] Visible="@(!IsEmbeddedMode)">
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Feedback" Property=@nameof(Feedback.Rating) Title=@Localizer["Rating"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Feedback" Property=@nameof(Feedback.Comments) Title=@Localizer["Comments"]>
@@ -31,3 +36,9 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+@code {
+    [Parameter] public Guid? CustomerId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}

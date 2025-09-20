@@ -5,7 +5,10 @@
 @inject AttachmentApiService AttachmentApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["Attachments"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Attachments"] : Localizer["Attachments"])
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || JobReportId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Attachment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -20,6 +23,8 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Attachment" Property="JobReport" Title=@Localizer["JobReport"] Visible="@(!IsEmbeddedMode)">
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Attachment" Property=@nameof(Attachment.FileName) Title=@Localizer["FileName"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Attachment" Property=@nameof(Attachment.ContentType) Title=@Localizer["ContentType"]>
@@ -33,3 +38,9 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+@code {
+    [Parameter] public Guid? JobReportId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}

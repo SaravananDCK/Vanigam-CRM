@@ -39,7 +39,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditUserSession>(Localizer["AddUserSession"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditUserSession>(Localizer["AddUserSession"], null, 80, 80);
             await GridReload();
         }
 
@@ -50,7 +50,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(UserSession usersession)
         {
-            await DialogService.OpenDialogAsync<EditUserSession>(Localizer["EditUserSession"], new Dictionary<string, object> { { "Oid", usersession.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditUserSession>(Localizer["EditUserSession"], new Dictionary<string, object> { { "Oid", usersession.Oid } }, 80, 80);
             await GridReload();
         }
 

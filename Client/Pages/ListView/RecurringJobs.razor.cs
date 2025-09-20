@@ -25,18 +25,38 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<RecurringJob>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
-                .ContainsOr(u => u.Name, SearchString)
-                .ContainsOr(u => u.CronExpression, SearchString)
-                .EndGroup()
-                .Build();
+            var filter = new ODataFilter<RecurringJob>()
+                .FilterByAnd(args.Filter);
+
+            // Add contract filter if in embedded mode
+            if (IsEmbeddedMode && ContractId.HasValue)
+            {
+                filter = filter.FilterByAnd(rj => rj.ContractId == ContractId.Value);
+            }
+
+            // Add search filter only if there's a search string
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .ContainsOr(u => u.Name, SearchString)
+                    .ContainsOr(u => u.CronExpression, SearchString)
+                    .EndGroup();
+            }
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditRecurringJob>(Localizer["AddRecurringJob"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+
+            // If in embedded mode with a contract, pre-set the ContractId
+            if (IsEmbeddedMode && ContractId.HasValue)
+            {
+                parameters.Add("ContractId", ContractId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditRecurringJob>(Localizer["AddRecurringJob"], parameters.Any() ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -47,7 +67,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(RecurringJob recurringjob)
         {
-            await DialogService.OpenDialogAsync<EditRecurringJob>(Localizer["EditRecurringJob"], new Dictionary<string, object> { { "Oid", recurringjob.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditRecurringJob>(Localizer["EditRecurringJob"], new Dictionary<string, object> { { "Oid", recurringjob.Oid } }, 80, 80);
             await GridReload();
         }
 

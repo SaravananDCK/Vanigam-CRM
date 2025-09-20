@@ -1,3 +1,4 @@
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Vanigam.CRM.Objects.OData;
@@ -9,6 +10,9 @@ namespace Vanigam.CRM.Client.Pages.ListView
 {
     public partial class Customers
     {
+        // Selected customer for nested views
+        protected Customer? SelectedCustomer;
+        protected int SelectedTabIndex = 0;
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try
@@ -39,7 +43,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditCustomer>(Localizer["AddCustomer"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditCustomer>(Localizer["AddCustomer"], null, 80, 80);
             await GridReload();
         }
 
@@ -50,7 +54,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Customer customer)
         {
-            await DialogService.OpenDialogAsync<EditCustomer>(Localizer["EditCustomer"], new Dictionary<string, object> { { "Oid", customer.Oid } }, 100, 100);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditCustomer>(Localizer["EditCustomer"], new Dictionary<string, object> { { "Oid", customer.Oid } }, 100, 100);
             await GridReload();
         }
 
@@ -65,6 +69,13 @@ namespace Vanigam.CRM.Client.Pages.ListView
                     if (deleteResult != null)
                     {
                         await GridReload();
+
+                        // Clear selection if deleted customer was selected
+                        if (SelectedCustomer?.Oid == customer.Oid)
+                        {
+                            SelectedCustomer = null;
+                        }
+
                         NotificationService.Notify(new NotificationMessage
                         {
                             Severity = NotificationSeverity.Success,
@@ -83,6 +94,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
                     Detail = Localizer[$"UnableDelete"]
                 });
             }
+        }
+
+        protected void OnRowSelect(Customer customer)
+        {
+            SelectedCustomer = customer;
+            SelectedTabIndex = 0; // Reset to first tab when selecting a new customer
         }
     }
 }

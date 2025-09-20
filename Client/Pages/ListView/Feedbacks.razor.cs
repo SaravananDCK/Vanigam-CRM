@@ -25,17 +25,31 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Feedback>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
+            var filter = new ODataFilter<Feedback>()
+                .FilterByAnd(args.Filter);
+
+            // Filter by parent Customer if in embedded mode
+            if (IsEmbeddedMode && CustomerId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.CustomerId == CustomerId.Value);
+            }
+
+            filter.BeginGroup()
                 .ContainsOr(u => u.Comments, SearchString)
-                .EndGroup()
-                .Build();
+                .EndGroup();
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditFeedback>(Localizer["AddFeedback"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+            if (IsEmbeddedMode && CustomerId.HasValue)
+            {
+                parameters.Add("CustomerId", CustomerId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditFeedback>(Localizer["AddFeedback"], parameters.Count > 0 ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +60,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Feedback feedback)
         {
-            await DialogService.OpenDialogAsync<EditFeedback>(Localizer["EditFeedback"], new Dictionary<string, object> { { "Oid", feedback.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditFeedback>(Localizer["EditFeedback"], new Dictionary<string, object> { { "Oid", feedback.Oid } }, 80, 80);
             await GridReload();
         }
 

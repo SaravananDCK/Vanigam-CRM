@@ -9,12 +9,20 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditAppointment
     {
         [Inject] private AppointmentApiService AppointmentApiService { get; set; }
+
+
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
+            {
                 CurrentObject = new();
+                IsReadOnlyMode = false; // Create mode - always editable
+            }
             else
+            {
                 CurrentObject = await AppointmentApiService.GetByOid(oid: Oid);
+                IsReadOnlyMode = true; // Edit mode - start in read-only
+            }
 
             await InitEditContext();
         }
@@ -58,5 +66,17 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             IsBusy = false;
         }
+
+        protected override async Task SaveAndStayInEdit()
+        {
+            await FormSubmit();
+            // After successful save, switch back to read-only mode
+            if (!ErrorVisible && !ShowNotUniqueAlert)
+            {
+                IsReadOnlyMode = true;
+                StateHasChanged();
+            }
+        }
+
     }
 }

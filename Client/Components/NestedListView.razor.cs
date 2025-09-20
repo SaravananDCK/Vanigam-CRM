@@ -1,0 +1,311 @@
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Radzen;
+using Radzen.Blazor;
+using Vanigam.CRM.Client.Components.CustomComponents;
+
+namespace Vanigam.CRM.Client.Components;
+
+public partial class NestedListView<TParent, TChild>
+{
+    [Parameter] public Guid ParentId { get; set; }
+    [Parameter] public string ParentPropertyName { get; set; } = string.Empty;
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public bool ShowParentColumn { get; set; } = false;
+    [Parameter] public bool ShowAddButton { get; set; } = true;
+    [Parameter] public bool AllowColumnPicking { get; set; } = true;
+    [Parameter] public int PageSize { get; set; } = 10;
+    [Parameter] public IEnumerable<int> PageSizeOptions { get; set; } = new int[] { 10, 20, 50 };
+    [Parameter] public RenderFragment CustomColumns { get; set; }
+    [Parameter] public RenderFragment<TChild> CustomActionsTemplate { get; set; }
+    [Parameter] public Func<TChild, Task> OnEdit { get; set; }
+    [Parameter] public Func<TChild, Task<bool>> OnDelete { get; set; }
+    [Parameter] public Func<Dictionary<string, object>, Task> OnAdd { get; set; }
+    [Parameter] public Func<LoadDataArgs, string> CustomFilterBuilder { get; set; }
+    [Parameter] public List<string> SearchableProperties { get; set; } = new();
+    protected IQueryable<TChild> DataSource;
+    protected int Count;
+    protected VanigamAccountingDataGrid<TChild> GridControl;
+    protected DataGridSettings Settings = new();
+    protected string SearchString = string.Empty;
+    private object _apiService;
+    private Type _apiServiceType;
+    private MethodInfo _getMethod;
+    private MethodInfo _deleteMethod;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitializeApiService();
+
+        if (string.IsNullOrEmpty(Title))
+            Title = typeof(TChild).Name.Replace("Entity", "").Replace("Object", "");
+    }
+
+    private async Task InitializeApiService()
+    {
+        var apiServiceTypeName = $"{typeof(TChild).Name}ApiService";
+        var clientAssembly = Assembly.Load("Vanigam.CRM.Client");
+
+        _apiServiceType = clientAssembly.GetTypes()
+            .FirstOrDefault(t => t.Name == apiServiceTypeName);
+
+        if (_apiServiceType != null)
+        {
+            _apiService = ServiceProvider.GetService(_apiServiceType);
+
+            if (_apiService != null)
+            {
+                _getMethod = _apiServiceType.GetMethod("Get");
+                _deleteMethod = _apiServiceType.GetMethod("Delete");
+            }
+        }
+
+        await Task.CompletedTask;
+    }
+
+    protected void LoadGridSettings(DataGridLoadSettingsEventArgs args)
+    {
+        // Load grid settings if needed
+    }
+
+    protected async Task GridLoadData(LoadDataArgs args)
+    {
+        if (_apiService == null || _getMethod == null) return;
+
+        try
+        {
+            var filterString = GetFilterString(args);
+            var orderBy = args.OrderBy ?? "";
+
+            // Call the Get method dynamically
+            var result = await (dynamic)_getMethod.Invoke(_apiService, new object[]
+            {
+                filterString, orderBy, args.Top, args.Skip, args.Top != null && args.Skip != null
+            })!;
+
+            DataSource = result.Value.AsODataEnumerable();
+            Count = result.Count;
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage()
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = Localizer["Load"]
+            });
+        }
+    }
+
+    protected virtual string GetFilterString(LoadDataArgs args)
+    {
+        if (CustomFilterBuilder != null)
+            return CustomFilterBuilder(args);
+
+        // Create filter string manually
+        var filters = new List<string>();
+
+        // Add grid filter
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            filters.Add(args.Filter);
+        }
+
+        // Add parent filter
+        if (ParentId != Guid.Empty && !string.IsNullOrEmpty(ParentPropertyName))
+        {
+            filters.Add($"{ParentPropertyName} eq {ParentId}");
+        }
+
+        // Add search filter for searchable properties
+        if (!string.IsNullOrEmpty(SearchString) && SearchableProperties.Any())
+        {
+            var searchFilters = SearchableProperties
+                .Select(prop => $"contains(tolower({prop}), '{SearchString.ToLower()}')")
+                .ToList();
+
+            if (searchFilters.Any())
+            {
+                filters.Add($"({string.Join(" or ", searchFilters)})");
+            }
+        }
+
+        return string.Join(" and ", filters);
+    }
+
+    protected async Task AddButtonClick(MouseEventArgs args)
+    {
+        var parameters = new Dictionary<string, object>();
+
+        // Pre-set parent ID if available
+        if (ParentId != Guid.Empty && !string.IsNullOrEmpty(ParentPropertyName))
+        {
+            parameters.Add(ParentPropertyName, ParentId);
+        }
+
+        if (OnAdd != null)
+        {
+            await OnAdd(parameters.Any() ? parameters : null);
+        }
+        else
+        {
+            // Default behavior - open edit dialog
+            var editComponentTypeName = $"Edit{typeof(TChild).Name}";
+            var clientAssembly = Assembly.Load("Vanigam.CRM.Client");
+            var editComponentType = clientAssembly.GetTypes()
+                .FirstOrDefault(t => t.Name == editComponentTypeName);
+
+            if (editComponentType != null)
+            {
+                // Use reflection to call the generic OpenDialogAsync method
+                var dialogServiceType = DialogService.GetType();
+                var openDialogMethod = dialogServiceType.GetMethods()
+                    .FirstOrDefault(m => m.Name == "OpenDialogAsync" && m.IsGenericMethodDefinition);
+
+                if (openDialogMethod != null)
+                {
+                    var genericMethod = openDialogMethod.MakeGenericMethod(editComponentType);
+                    var task = (Task)genericMethod.Invoke(DialogService, new object[]
+                    {
+                        Localizer[$"Add{typeof(TChild).Name}"],
+                        parameters.Any() ? parameters : null,
+                        30,
+                        50
+                    })!;
+                    await task;
+                }
+            }
+        }
+
+        await GridReload();
+    }
+
+    protected async Task EditRow(DataGridRowMouseEventArgs<TChild> args)
+    {
+        await Open(args.Data);
+    }
+
+    private async Task Open(TChild item)
+    {
+        if (OnEdit != null)
+        {
+            await OnEdit(item);
+        }
+        else
+        {
+            // Default behavior - open edit dialog
+            var editComponentTypeName = $"Edit{typeof(TChild).Name}";
+            var clientAssembly = Assembly.Load("Vanigam.CRM.Client");
+            var editComponentType = clientAssembly.GetTypes()
+                .FirstOrDefault(t => t.Name == editComponentTypeName);
+
+            if (editComponentType != null)
+            {
+                // Use reflection to call the generic OpenDialogAsync method
+                var dialogServiceType = DialogService.GetType();
+                var openDialogMethod = dialogServiceType.GetMethods()
+                    .FirstOrDefault(m => m.Name == "OpenDialogAsync" && m.IsGenericMethodDefinition);
+
+                if (openDialogMethod != null)
+                {
+                    var genericMethod = openDialogMethod.MakeGenericMethod(editComponentType);
+                    var task = (Task)genericMethod.Invoke(DialogService, new object[]
+                    {
+                        Localizer[$"Edit{typeof(TChild).Name}"],
+                        new Dictionary<string, object> { { "Oid", item.Oid } },
+                        30,
+                        50
+                    })!;
+                    await task;
+                }
+            }
+        }
+
+        await GridReload();
+    }
+
+    protected async Task GridDeleteButtonClick(TChild item)
+    {
+        try
+        {
+            bool shouldDelete = true;
+
+            if (OnDelete != null)
+            {
+                shouldDelete = await OnDelete(item);
+            }
+            else if (await DialogService.Confirm(Localizer["DeleteRecord"]) == true)
+            {
+                shouldDelete = true;
+            }
+            else
+            {
+                shouldDelete = false;
+            }
+
+            if (shouldDelete && _deleteMethod != null && _apiService != null)
+            {
+                var deleteResult = await (dynamic)_deleteMethod.Invoke(_apiService, new object[] { item.Oid })!;
+
+                if (deleteResult != null)
+                {
+                    await GridReload();
+                    NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = Localizer["Success"],
+                        Detail = Localizer["SuccessfullyDeleted"]
+                    });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = Localizer["UnableDelete"]
+            });
+        }
+    }
+
+    protected async Task GridReload()
+    {
+        if (GridControl != null)
+            await GridControl.Reload();
+    }
+
+    protected async Task Search()
+    {
+        await GridReload();
+    }
+
+    private RenderFragment RenderDefaultColumns()
+    {
+        return builder =>
+        {
+            var properties = typeof(TChild).GetProperties()
+                .Where(p => p.PropertyType == typeof(string) ||
+                            p.PropertyType == typeof(int) ||
+                            p.PropertyType == typeof(decimal) ||
+                            p.PropertyType == typeof(DateTime) ||
+                            p.PropertyType == typeof(bool) ||
+                            p.PropertyType.IsEnum)
+                .Where(p => p.Name != "Oid" && p.Name != "TenantId")
+                .Take(5) // Limit to first 5 properties for performance
+                .ToList();
+
+            var sequence = 0;
+            foreach (var property in properties)
+            {
+                builder.OpenComponent<RadzenDataGridColumn<TChild>>(sequence++);
+                builder.AddAttribute(sequence++, "TItem", typeof(TChild));
+                builder.AddAttribute(sequence++, "Property", property.Name);
+                builder.AddAttribute(sequence++, "Title", Localizer[property.Name]);
+                builder.CloseComponent();
+            }
+        };
+    }
+}

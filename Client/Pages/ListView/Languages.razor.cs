@@ -38,7 +38,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditLanguage>(Localizer["AddLanguage"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditLanguage>(Localizer["AddLanguage"], null, 80, 80);
             await GridReload();
         }
 
@@ -48,7 +48,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         }
         private async Task Open(Language language)
         {
-            await DialogService.OpenDialogAsync<EditLanguage>(Localizer["EditLanguage"], new Dictionary<string, object> { { "Oid", language.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditLanguage>(Localizer["EditLanguage"], new Dictionary<string, object> { { "Oid", language.Oid } }, 80, 80);
             await GridReload();
         }
         protected async Task GridDeleteButtonClick(Language language)

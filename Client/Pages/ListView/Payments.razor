@@ -5,7 +5,10 @@
 @inject PaymentApiService PaymentApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["Payments"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Payments"] : Localizer["Payments"])
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || InvoiceId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Payment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -19,6 +22,8 @@
                             <DeletePageCommonComponent T="Payment" UsingObject="@payment" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property="Invoice.Number" Title=@Localizer["Invoice"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Amount) Title=@Localizer["Amount"]>
                     </RadzenDataGridColumn>
@@ -35,3 +40,9 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+@code {
+    [Parameter] public Guid? InvoiceId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}

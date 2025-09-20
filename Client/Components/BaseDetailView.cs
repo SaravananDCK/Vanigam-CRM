@@ -30,6 +30,17 @@ namespace Vanigam.CRM.Client.Components
         protected bool ShowNotUniqueAlert = false;
         protected RadzenTemplateForm<T> Form { get; set; }
         protected EditContext EditContext { get; set; }
+        protected int SelectedTabIndex = 0;
+        // Read-only mode state management
+        protected bool IsReadOnlyMode = false;
+        protected bool IsCreateMode => Oid == Guid.Empty;
+
+        // Hot reload friendly properties
+        protected bool IsFormVisible => CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode);
+        protected bool IsFormUnmodified => Form?.EditContext?.IsModified() != true;
+        protected bool IsReadOnlyModeVisible => CurrentObject != null && IsReadOnlyMode && !IsCreateMode;
+        protected bool IsEditButtonVisible => CurrentObject != null && IsReadOnlyMode && !IsCreateMode;
+        protected bool IsTabsVisible => CurrentObject != null && Oid != Guid.Empty;
         protected virtual async Task InitEditContext()
         {
             EditContext = new EditContext(CurrentObject);
@@ -62,6 +73,25 @@ namespace Vanigam.CRM.Client.Components
             CollapseExpand = text;
         }
 
+
+        protected void EnableEditMode()
+        {
+            IsReadOnlyMode = false;
+            StateHasChanged();
+        }
+
+        protected void EnableReadOnlyMode()
+        {
+            IsReadOnlyMode = true;
+            StateHasChanged();
+        }
+
+        protected virtual async Task SaveAndStayInEdit()
+        {
+            // This method should be overridden in derived classes to implement specific save logic
+            // Base implementation does nothing
+            await Task.CompletedTask;
+        }
 
         protected DateTime? ParseDate(string input)
         {

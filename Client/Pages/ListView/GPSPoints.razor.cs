@@ -35,7 +35,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditGPSPoint>(Localizer["AddGPSPoint"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditGPSPoint>(Localizer["AddGPSPoint"], null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +46,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(GPSPoint gpspoint)
         {
-            await DialogService.OpenDialogAsync<EditGPSPoint>(Localizer["EditGPSPoint"], new Dictionary<string, object> { { "Oid", gpspoint.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditGPSPoint>(Localizer["EditGPSPoint"], new Dictionary<string, object> { { "Oid", gpspoint.Oid } }, 80, 80);
             await GridReload();
         }
 

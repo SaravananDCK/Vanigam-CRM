@@ -25,17 +25,31 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<QuoteItem>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
+            var filter = new ODataFilter<QuoteItem>()
+                .FilterByAnd(args.Filter);
+
+            // Filter by parent Quote if in embedded mode
+            if (IsEmbeddedMode && QuoteId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.QuoteId == QuoteId.Value);
+            }
+
+            filter.BeginGroup()
                 // No searchable string properties for QuoteItem
-                .EndGroup()
-                .Build();
+                .EndGroup();
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditQuoteItem>(Localizer["AddQuoteItem"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+            if (IsEmbeddedMode && QuoteId.HasValue)
+            {
+                parameters.Add("QuoteId", QuoteId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditQuoteItem>(Localizer["AddQuoteItem"], parameters.Count > 0 ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -46,7 +60,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(QuoteItem quoteitem)
         {
-            await DialogService.OpenDialogAsync<EditQuoteItem>(Localizer["EditQuoteItem"], new Dictionary<string, object> { { "Oid", quoteitem.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditQuoteItem>(Localizer["EditQuoteItem"], new Dictionary<string, object> { { "Oid", quoteitem.Oid } }, 80, 80);
             await GridReload();
         }
 

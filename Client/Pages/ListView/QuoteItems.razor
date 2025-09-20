@@ -5,7 +5,10 @@
 @inject QuoteItemApiService QuoteItemApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["QuoteItems"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["QuoteItems"] : Localizer["QuoteItems"])
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || QuoteId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="QuoteItem" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -20,6 +23,10 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="QuoteItem" Property="Quote.Title" Title=@Localizer["Quote"] Visible="@(!IsEmbeddedMode)">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="QuoteItem" Property="InventoryItem.Name" Title=@Localizer["Item"]>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="QuoteItem" Property=@nameof(QuoteItem.Quantity) Title=@Localizer["Quantity"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="QuoteItem" Property=@nameof(QuoteItem.UnitPrice) Title=@Localizer["UnitPrice"]>
@@ -31,3 +38,9 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+@code {
+    [Parameter] public Guid? QuoteId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}

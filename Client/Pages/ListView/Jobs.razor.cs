@@ -13,7 +13,14 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await JobApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                // In embedded mode, avoid navigation property sorting that can cause server errors
+                var orderBy = args.OrderBy;
+                if (IsEmbeddedMode && !string.IsNullOrEmpty(orderBy) && orderBy.Contains("Customer"))
+                {
+                    orderBy = "Title"; // Default to sorting by Title in embedded mode
+                }
+
+                var result = await JobApiService.Get(filter: GetFilterString(args), orderBy: orderBy, top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
@@ -25,18 +32,38 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Job>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
-                .ContainsOr(u => u.Title, SearchString)
-                .ContainsOr(u => u.Description, SearchString)
-                .EndGroup()
-                .Build();
+            var filter = new ODataFilter<Job>()
+                .FilterByAnd(args.Filter);
+
+            // Add customer filter if in embedded mode
+            if (IsEmbeddedMode && CustomerId.HasValue)
+            {
+                filter = filter.FilterByAnd(j => j.CustomerId == CustomerId.Value);
+            }
+
+            // Add search filter only if there's a search string
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .ContainsOr(u => u.Title, SearchString)
+                    .ContainsOr(u => u.Description, SearchString)
+                    .EndGroup();
+            }
+
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditJob>(Localizer["AddJob"], null, 30, 50);
+            var parameters = new Dictionary<string, object>();
+
+            // If in embedded mode with a customer, pre-set the CustomerId
+            if (IsEmbeddedMode && CustomerId.HasValue)
+            {
+                parameters.Add("CustomerId", CustomerId.Value);
+            }
+
+            await DialogService.OpenDialogAsync<EditJob>(Localizer["AddJob"], parameters.Any() ? parameters : null, 80, 80);
             await GridReload();
         }
 
@@ -47,7 +74,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Job job)
         {
-            await DialogService.OpenDialogAsync<EditJob>(Localizer["EditJob"], new Dictionary<string, object> { { "Oid", job.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditJob>(Localizer["EditJob"], new Dictionary<string, object> { { "Oid", job.Oid } }, 80, 80);
             await GridReload();
         }
 

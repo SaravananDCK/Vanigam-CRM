@@ -2,18 +2,126 @@
 @layout LoginLayout
 @page "/login"
 
-<PageTitle>Login</PageTitle>
-<RadzenText Text="Login" TextStyle="Radzen.Blazor.TextStyle.H5" class="mb-4" TagName="Radzen.Blazor.TagName.H2" />
-<RadzenRow>
-    <RadzenColumn SizeMD="12">
-        <RadzenTemplateForm Action="@($" account/login?redirectUrl={redirectUrl}")" Data="@("login")"
-                            Method="post">
-            <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
-            <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Info" Visible="@infoVisible">@info</RadzenAlert>
-            <RadzenLogin AllowResetPassword="false" AllowRegister="false" FormFieldVariant="Variant.Outlined"
-                         ResetPassword="@ResetPassword"
-                          />
-           
+<PageTitle>Login - Vanigam CRM</PageTitle>
+
+<div class="modern-login-container">
+    <div class="login-header">
+        <RadzenIcon Icon="business" Style="font-size: 3rem; color: var(--rz-primary); margin-bottom: 1rem;" />
+        <RadzenText Text="Welcome Back" TextStyle="Radzen.Blazor.TextStyle.H3"
+                    Style="margin-bottom: 0.5rem; font-weight: 600; color: var(--rz-primary);" />
+        <RadzenText Text="Sign in to access your CRM dashboard" TextStyle="Radzen.Blazor.TextStyle.Body1"
+                    Style="color: var(--rz-base-600); margin-bottom: 2rem;" />
+    </div>
+
+    <RadzenCard class="modern-login-card" Style="border: none; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 16px; padding: 2rem;">
+        <RadzenTemplateForm Action="@($"account/login?redirectUrl={redirectUrl}")" Data="@("login")" Method="post">
+
+            <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat"
+                         Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Danger"
+                         Visible="@errorVisible" Style="margin-bottom: 1rem; border-radius: 8px;">
+                @error
+            </RadzenAlert>
+
+            <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat"
+                         Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Info"
+                         Visible="@infoVisible" Style="margin-bottom: 1rem; border-radius: 8px;">
+                @info
+            </RadzenAlert>
+
+            <div class="modern-login-form">
+                <RadzenFieldset Style="border: none; padding: 0;">
+                    <RadzenStack Gap="1.5rem">
+                        <RadzenFormField Text="Email Address" Variant="Variant.Outlined" Style="width: 100%;">
+                            <ChildContent>
+                                <RadzenTextBox Name="userName" Placeholder="Enter your email address"
+                                               Style="padding: 1rem; font-size: 1rem;width: 100%;"
+                                               class="modern-input"/>
+                            </ChildContent>
+                            <End>
+                                <RadzenIcon Icon="email" Slot="start" Style="color: var(--rz-base-500)" />
+                            </End>
+                        </RadzenFormField> 
+
+                        <RadzenFormField Text="Password" Variant="Variant.Outlined" Style="width: 100%;">
+                            <ChildContent>
+                            <RadzenPassword Name="password" Placeholder="Enter your password"
+                                            Style="padding: 1rem; font-size: 1rem;width: 100%;"
+                                            class="modern-input"/>
+                            </ChildContent>
+                            <End>
+                            <RadzenIcon Icon="lock" Slot="start" Style="color: var(--rz-base-500);"/>
+                            </End>
+                        </RadzenFormField>
+
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween"
+                                     AlignItems="AlignItems.Center" Style="margin: 1rem 0;">
+                            <RadzenCheckBox TValue="bool" Name="rememberMe" />
+                            <RadzenLabel Text="Remember me" Component="rememberMe" Style="color: var(--rz-base-700); cursor: pointer;" />
+                            <RadzenLink Text="Forgot Password?" Style="color: var(--rz-primary); text-decoration: none; font-weight: 500;" />
+                        </RadzenStack>
+
+                        <RadzenButton ButtonType="ButtonType.Submit"
+                                      Text="Sign In"
+                                      Style="width: 100%; padding: 1rem; border-radius: 12px; font-size: 1rem; font-weight: 600; background: linear-gradient(135deg, var(--rz-primary) 0%, var(--rz-primary-dark) 100%); border: none; box-shadow: 0 4px 16px rgba(14, 41, 88, 0.3); transition: all 0.3s ease;"
+                                      class="modern-login-button" />
+                    </RadzenStack>
+                </RadzenFieldset>
+            </div>
         </RadzenTemplateForm>
-    </RadzenColumn>
-</RadzenRow>
+
+        <div class="login-footer" Style="margin-top: 2rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--rz-base-200);">
+            <RadzenText Text="Need help? Contact your system administrator"
+                        TextStyle="Radzen.Blazor.TextStyle.Caption"
+                        Style="color: var(--rz-base-500);" />
+        </div>
+    </RadzenCard>
+</div>
+
+<style>
+    .modern-login-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100%;
+        padding: 2rem;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .modern-login-card {
+        width: 100%;
+        max-width: 420px;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .modern-input:focus {
+        border-color: var(--rz-primary) !important;
+        box-shadow: 0 0 0 3px rgba(14, 41, 88, 0.1) !important;
+        outline: none !important;
+    }
+
+    .modern-login-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(14, 41, 88, 0.4) !important;
+    }
+
+    .modern-login-button:active {
+        transform: translateY(0);
+    }
+
+    @@media (max-width: 768px) {
+        .modern-login-container {
+            padding: 1rem;
+        }
+
+        .modern-login-card {
+            max-width: 100%;
+            margin: 0;
+        }
+    }
+</style>

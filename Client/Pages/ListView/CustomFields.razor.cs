@@ -38,7 +38,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditCustomField>(Localizer["AddCustomField"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditCustomField>(Localizer["AddCustomField"], null, 80, 80);
             await GridReload();
         }
 
@@ -49,7 +49,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(CustomField customfield)
         {
-            await DialogService.OpenDialogAsync<EditCustomField>(Localizer["EditCustomField"], new Dictionary<string, object> { { "Oid", customfield.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditCustomField>(Localizer["EditCustomField"], new Dictionary<string, object> { { "Oid", customfield.Oid } }, 80, 80);
             await GridReload();
         }
 

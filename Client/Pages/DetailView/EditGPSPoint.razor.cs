@@ -58,5 +58,16 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             IsBusy = false;
         }
+
+        protected override async Task SaveAndStayInEdit()
+        {
+            await FormSubmit();
+            // After successful save, switch back to read-only mode
+            if (!ErrorVisible && !ShowNotUniqueAlert)
+            {
+                IsReadOnlyMode = true;
+                StateHasChanged();
+            }
+        }
     }
 }

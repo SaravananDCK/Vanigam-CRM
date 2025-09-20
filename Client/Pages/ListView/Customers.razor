@@ -8,7 +8,7 @@
     <ListPageTitleComponent TitleText=@Localizer["Customers"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
-            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Customer" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Customer" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" RowSelect="@OnRowSelect" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
                 <EmptyTemplate>
                     <NoRecordComponent ShowAddButton="false" />
                 </EmptyTemplate>
@@ -34,4 +34,27 @@
             </VanigamAccountingDataGrid>
         </RadzenColumn>
     </RadzenRow>
+
+    @* Nested Related Data Section *@
+    @if (SelectedCustomer != null)
+    {
+        <RadzenRow class="mt-4">
+            <RadzenColumn SizeMD=12>
+                <RadzenCard>
+                    <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client">
+                        <RadzenTabsItem Text="@Localizer["Contacts"]">
+                            <Contacts CustomerId="@SelectedCustomer.Oid"
+                                      IsEmbeddedMode="true"
+                                      EmbeddedTitle="@Localizer["CustomerContacts"]" />
+                        </RadzenTabsItem>
+                        <RadzenTabsItem Text="@Localizer["Jobs"]">
+                            <Jobs CustomerId="@SelectedCustomer.Oid"
+                                  IsEmbeddedMode="true"
+                                  EmbeddedTitle="@Localizer["CustomerJobs"]" />
+                        </RadzenTabsItem>
+                    </RadzenTabs>
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
 </RadzenStack>

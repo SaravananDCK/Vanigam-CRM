@@ -25,6 +25,13 @@ namespace Vanigam.CRM.Helpers
         {
             return await ((VanigamAccountingDialogService)dialogService).OpenCustomDialogAsync<T>(title, parameters,width,height);
         }
+        public static async Task<dynamic> OpenDialogWithOutHeaderAsync<T>(this DialogService dialogService,
+            string title, Dictionary<string, dynamic> parameters = null, int width = 75, int height = 100)
+            where T : ComponentBase
+        {
+            return await ((VanigamAccountingDialogService)dialogService).OpenCustomDialogWithOutHeaderAsync<T>(title, parameters, width, height);
+        }
+
         public static void CloseDialog(this DialogService dialogService, dynamic result = null)
         {
             ((VanigamAccountingDialogService)dialogService).CloseCustomDialog(result);

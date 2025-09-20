@@ -5,7 +5,10 @@
 @inject ActivityApiService ActivityApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["Activities"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Activities"] : Localizer["Activities"])
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || LeadId.HasValue || OpportunityId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Activity" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -20,6 +23,10 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Activity" Property="Lead.Name" Title=@Localizer["Lead"] Visible="@(!IsEmbeddedMode && LeadId == null)">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Activity" Property="Opportunity.Title" Title=@Localizer["Opportunity"] Visible="@(!IsEmbeddedMode && OpportunityId == null)">
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Type) Title=@Localizer["Type"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Notes) Title=@Localizer["Notes"]>
@@ -33,3 +40,10 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+@code {
+    [Parameter] public Guid? LeadId { get; set; }
+    [Parameter] public Guid? OpportunityId { get; set; }
+    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+    [Parameter] public string? EmbeddedTitle { get; set; }
+}
