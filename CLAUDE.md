@@ -592,6 +592,7 @@ Located in `Objects/Entities/`, all properly decorated with EF Core data annotat
 - **Required fields**: `[Required]` attributes where appropriate
 - **Decimal precision**: `[Column(TypeName = "decimal(18,2)")]` for monetary values
 - **Enums**: Stored as strings in database via `.HasConversion<string>()`
+- **Entity conversions**: Conversion functionality (e.g., Lead to Opportunity, Opportunity to Customer) must be implemented within the primary entity's service, controller, and API service rather than separate conversion services. This maintains architectural consistency and follows the established patterns.
 
 ### Development Notes
 - **Hot reload**: Supported for both Server and Client projects

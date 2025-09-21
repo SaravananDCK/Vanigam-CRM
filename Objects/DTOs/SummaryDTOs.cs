@@ -49,4 +49,41 @@ namespace Vanigam.CRM.Objects.DTOs
         /// </summary>
         public string? AdditionalFilter { get; set; }
     }
+
+    /// <summary>
+    /// Request DTO for converting a Lead to an Opportunity
+    /// </summary>
+    public class ConvertLeadToOpportunityRequest
+    {
+        /// <summary>
+        /// The ID of the Lead to convert
+        /// </summary>
+        public Guid LeadId { get; set; }
+
+        /// <summary>
+        /// Title for the new Opportunity
+        /// </summary>
+        public string OpportunityTitle { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Estimated value for the Opportunity
+        /// </summary>
+        public decimal EstimatedValue { get; set; }
+
+        /// <summary>
+        /// Expected close date for the Opportunity
+        /// </summary>
+        public DateTime ExpectedCloseDate { get; set; }
+    }
+
+    /// <summary>
+    /// Request DTO for converting an Opportunity to a Customer
+    /// </summary>
+    public class ConvertOpportunityToCustomerRequest
+    {
+        /// <summary>
+        /// The ID of the Opportunity to convert
+        /// </summary>
+        public Guid OpportunityId { get; set; }
+    }
 }

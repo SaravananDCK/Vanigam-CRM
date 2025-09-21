@@ -46,4 +46,114 @@ public class LeadApiService(
             };
         }
     }
+
+    /// <summary>
+    /// Converts a Lead to an Opportunity
+    /// </summary>
+    /// <param name="leadId">ID of the Lead to convert</param>
+    /// <param name="opportunityTitle">Title for the new Opportunity</param>
+    /// <param name="estimatedValue">Estimated value for the Opportunity</param>
+    /// <param name="expectedCloseDate">Expected close date for the Opportunity</param>
+    /// <returns>The created Opportunity</returns>
+    public async Task<Opportunity?> ConvertLeadToOpportunityAsync(Guid leadId, string opportunityTitle, decimal estimatedValue, DateTime expectedCloseDate)
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (!authState.User.Identity?.IsAuthenticated == true)
+            {
+                NavigationManager.NavigateTo("/login");
+                return null;
+            }
+
+            var request = new ConvertLeadToOpportunityRequest
+            {
+                LeadId = leadId,
+                OpportunityTitle = opportunityTitle,
+                EstimatedValue = estimatedValue,
+                ExpectedCloseDate = expectedCloseDate
+            };
+
+            var response = await HttpClient.PostAsJsonAsync(
+                $"odata/VanigamAccountingService/Leads/convert-to-opportunity",
+                request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<Opportunity>(json, GetJsonSerializerOptions());
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(errorContent, GetJsonSerializerOptions());
+                throw new InvalidOperationException(errorResponse?.Error ?? "Invalid operation");
+            }
+            else
+            {
+                response.EnsureSuccessStatusCode();
+                return null;
+            }
+        }
+        catch (Exception ex) when (!(ex is InvalidOperationException))
+        {
+            throw new HttpRequestException($"Error converting lead to opportunity: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Converts an Opportunity to a Customer
+    /// </summary>
+    /// <param name="opportunityId">ID of the Opportunity to convert</param>
+    /// <returns>The created Customer</returns>
+    public async Task<Customer?> ConvertOpportunityToCustomerAsync(Guid opportunityId)
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (!authState.User.Identity?.IsAuthenticated == true)
+            {
+                NavigationManager.NavigateTo("/login");
+                return null;
+            }
+
+            var request = new ConvertOpportunityToCustomerRequest
+            {
+                OpportunityId = opportunityId
+            };
+
+            var response = await HttpClient.PostAsJsonAsync(
+                $"odata/VanigamAccountingService/Leads/convert-to-customer",
+                request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<Customer>(json, GetJsonSerializerOptions());
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(errorContent, GetJsonSerializerOptions());
+                throw new InvalidOperationException(errorResponse?.Error ?? "Invalid operation");
+            }
+            else
+            {
+                response.EnsureSuccessStatusCode();
+                return null;
+            }
+        }
+        catch (Exception ex) when (!(ex is InvalidOperationException))
+        {
+            throw new HttpRequestException($"Error converting opportunity to customer: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Error response model for API error handling
+    /// </summary>
+    private class ErrorResponse
+    {
+        public string? Error { get; set; }
+    }
 }

@@ -12,7 +12,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditLead
     {
         [Inject] private LeadApiService LeadApiService { get; set; }
-        [Inject] private LeadConversionApiService ConversionApiService { get; set; }
 
         // Property to determine if the lead can be converted to opportunity
         private bool CanConvertToOpportunity => CurrentObject != null &&

@@ -298,7 +298,8 @@
                     </VanigamAccountingFormField>
                     <VanigamAccountingFormField Text=@Localizer["LeadScore"]>
                         <ChildContent>
-                            <RadzenNumeric @bind-Value="@CurrentObject.LeadScore" Name="numeric_LeadScore" Min="0" Max="100" />
+                            @* <RadzenNumeric @bind-Value="@CurrentObject.LeadScore" Name="numeric_LeadScore" Min="0" Max="100" /> *@
+                            <RadzenSlider @bind-Value=@CurrentObject.LeadScore TValue="int" Min="0" Max="100" />
                         </ChildContent>
                     </VanigamAccountingFormField>
                 </RadzenColumn>

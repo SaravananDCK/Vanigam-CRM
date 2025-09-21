@@ -98,7 +98,6 @@ builder.Services.AddControllers().AddOData(opt =>
 
 //builder.Services.AddInheritedClasses(typeof(BaseApiService<>));
 builder.Services.AddInheritedClasses(typeof(BaseService<>));
-builder.Services.AddScoped<LeadConversionService>();
 
 // Register SummaryService for specific entity types
 builder.Services.AddScoped(typeof(SummaryService<,>));

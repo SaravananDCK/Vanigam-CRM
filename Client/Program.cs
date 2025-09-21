@@ -34,7 +34,6 @@ builder.Services.AddScoped<ReportApiService>();
 builder.Services.AddInheritedClasses(typeof(BaseApiService<>));
 builder.Services.AddScoped<PermissionApiService>();
 builder.Services.AddScoped<UserSessionApiService>();
-builder.Services.AddScoped<LeadConversionApiService>();
 
 builder.Services.AddAuthorizationCore(options =>
 {
