@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Vanigam.CRM.Objects.OData;
 using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Helpers;
 using Vanigam.CRM.Client.Pages.DetailView;
 
@@ -9,6 +10,8 @@ namespace Vanigam.CRM.Client.Pages.ListView
 {
     public partial class Leads
     {
+        private LeadStatus? SelectedStatus = null;
+        private Dictionary<LeadStatus?, int> StatusCounts = new();
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try
@@ -16,6 +19,9 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 var result = await LeadApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
+
+                // Load status counts for the filter cards
+                await LoadStatusCounts();
             }
             catch (Exception ex)
             {
@@ -25,8 +31,16 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Lead>()
-                .FilterByAnd(args.Filter)
+            var filter = new ODataFilter<Lead>()
+                .FilterByAnd(args.Filter);
+
+            // Add status filter if selected
+            if (SelectedStatus.HasValue)
+            {
+                filter = filter.FilterByAnd($"Status eq '{SelectedStatus.Value}'");
+            }
+
+            return filter
                 .BeginGroup()
                 .ContainsOr(u => u.Name, SearchString)
                 .ContainsOr(u => u.Organization, SearchString)
@@ -90,6 +104,96 @@ namespace Vanigam.CRM.Client.Pages.ListView
                     Detail = Localizer[$"UnableDelete"]
                 });
             }
+        }
+
+        private async Task LoadStatusCounts()
+        {
+            try
+            {
+                var request = new StatusSummaryRequest
+                {
+                    SearchFilter = GetBaseFilterString()
+                };
+
+                var summary = await LeadApiService.GetStatusSummaryAsync(request);
+                StatusCounts = summary.StatusCountsNullable.ToDictionary(kv => (LeadStatus?)kv.Key, kv => kv.Value);
+            }
+            catch (Exception ex)
+            {
+                // Fallback to zero counts if API call fails
+                StatusCounts.Clear();
+                StatusCounts[null] = 0;
+                foreach (LeadStatus status in Enum.GetValues<LeadStatus>())
+                {
+                    StatusCounts[status] = 0;
+                }
+            }
+        }
+
+        private string GetBaseFilterString()
+        {
+            if (string.IsNullOrEmpty(SearchString))
+                return string.Empty;
+
+            return new ODataFilter<Lead>()
+                .BeginGroup()
+                .ContainsOr(u => u.Name, SearchString)
+                .ContainsOr(u => u.Organization, SearchString)
+                .ContainsOr(u => u.Email, SearchString)
+                .ContainsOr(u => u.Phone, SearchString)
+                .ContainsOr(u => u.JobTitle, SearchString)
+                .ContainsOr(u => u.Industry, SearchString)
+                .ContainsOr(u => u.Source, SearchString)
+                .ContainsOr(u => u.CampaignSource, SearchString)
+                .ContainsOr(u => u.City, SearchString)
+                .ContainsOr(u => u.State, SearchString)
+                .ContainsOr(u => u.ProductOfInterest, SearchString)
+                .ContainsOr(u => u.Comments, SearchString)
+                .EndGroup()
+                .Build();
+        }
+
+        protected async Task OnStatusChange(LeadStatus? value)
+        {
+            SelectedStatus = value;
+            await GridReload();
+        }
+
+        protected BadgeStyle GetStatusBadgeStyle(LeadStatus? status)
+        {
+            if (!status.HasValue)
+                return BadgeStyle.Info; // For "All" option
+
+            return status.Value switch
+            {
+                LeadStatus.New => BadgeStyle.Secondary,
+                LeadStatus.Contacted => BadgeStyle.Info,
+                LeadStatus.Qualified => BadgeStyle.Success,
+                LeadStatus.Converted => BadgeStyle.Success,
+                LeadStatus.Lost => BadgeStyle.Danger,
+                _ => BadgeStyle.Light
+            };
+        }
+
+        protected BadgeStyle GetStatusBadgeStyle(LeadStatus status)
+        {
+            return status switch
+            {
+                LeadStatus.New => BadgeStyle.Secondary,
+                LeadStatus.Contacted => BadgeStyle.Info,
+                LeadStatus.Qualified => BadgeStyle.Success,
+                LeadStatus.Converted => BadgeStyle.Success,
+                LeadStatus.Lost => BadgeStyle.Danger,
+                _ => BadgeStyle.Light
+            };
+        }
+
+        protected int GetStatusCount(LeadStatus? status)
+        {
+            if (StatusCounts == null)
+                return 0;
+
+            return StatusCounts.TryGetValue(status, out var count) ? count : 0;
         }
     }
 }

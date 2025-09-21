@@ -8,7 +8,43 @@
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Leads"] : Localizer["Leads"])
                             AddButtonClick=@AddButtonClick
                             SearchButtonClick=@Search
-                            ShowAdd=@(!IsEmbeddedMode || true) />
+                            ShowAdd=@(!IsEmbeddedMode || true) FirstSizeMD="6" MiddleSizeMD="0" LastSizeMD="6">
+        <CustomBadge>
+            <!-- Status Filter Bar -->
+            <RadzenRow class="mb-3" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                <RadzenColumn Size="12">
+                    <RadzenSelectBar @bind-Value="@SelectedStatus" TValue="LeadStatus?" Change="@OnStatusChange" class="w-100">
+                        <Items>
+                            <RadzenSelectBarItem Value="@((LeadStatus?)null)">
+                                <Template>
+                                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem" class="p-2">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" class="mb-0">@Localizer["All"]</RadzenText>
+                                        <RadzenBadge Text="@(GetStatusCount(null).ToString())"
+                                                     BadgeStyle="BadgeStyle.Info" />
+                                    </RadzenStack>
+                                </Template>
+                            </RadzenSelectBarItem>
+                            @foreach (LeadStatus status in Enum.GetValues<LeadStatus>())
+                            {
+                                <RadzenSelectBarItem Value="@status">
+                                    <Template>
+                                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem" class="p-2">
+                                            <RadzenText TextStyle="TextStyle.Subtitle2" class="mb-0">@Localizer[status.ToString()]</RadzenText>
+                                            <RadzenBadge Text="@(GetStatusCount(status).ToString())"
+                                                         BadgeStyle="@GetStatusBadgeStyle(status)" />
+                                        </RadzenStack>
+                                    </Template>
+                                </RadzenSelectBarItem>
+                            }
+                        </Items>
+                    </RadzenSelectBar>
+                </RadzenColumn>
+            </RadzenRow>
+        </CustomBadge>
+    </ListPageTitleComponent>
+
+    
+
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Lead" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">

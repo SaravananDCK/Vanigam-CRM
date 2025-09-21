@@ -42,8 +42,8 @@ namespace Vanigam.CRM.Client.Components
         [Parameter] public RenderFragment DropDowns { get; set; }
         [Parameter] public RenderFragment CustomBadge { get; set; }
 
-        [Parameter] public int FirstSizeMD { get; set; } = 4;
-        [Parameter] public int MiddleSizeMD { get; set; } = 2;
+        [Parameter] public int FirstSizeMD { get; set; } = 3;
+        [Parameter] public int MiddleSizeMD { get; set; } = 3;
         [Parameter] public int LastSizeMD { get; set; } = 6;
         [Parameter] public int Size { get; set; } = 12;
         protected override async Task OnAfterRenderAsync(bool firstRender)
