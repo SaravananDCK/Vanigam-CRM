@@ -3,12 +3,21 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Client.Components.Dialogs;
+using Vanigam.CRM.Client.Services;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditLead
     {
         [Inject] private LeadApiService LeadApiService { get; set; }
+        [Inject] private LeadConversionApiService ConversionApiService { get; set; }
+
+        // Property to determine if the lead can be converted to opportunity
+        private bool CanConvertToOpportunity => CurrentObject != null &&
+            (CurrentObject.Status == LeadStatus.Qualified || CurrentObject.Status == LeadStatus.Contacted) &&
+            CurrentObject.Status != LeadStatus.Converted;
 
         protected override async Task OnInitializedAsync()
         {
@@ -73,6 +82,26 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (!ErrorVisible && !ShowNotUniqueAlert)
             {
                 IsReadOnlyMode = true;
+                StateHasChanged();
+            }
+        }
+
+        private async Task ShowConvertToOpportunityDialog()
+        {
+            if (CurrentObject == null) return;
+
+            var result = await DialogService.OpenDialogAsync<ConvertLeadToOpportunityDialog>(
+                Localizer["ConvertToOpportunity"],
+                new Dictionary<string, object>
+                {
+                    { "Lead", CurrentObject }
+                },
+                50, 40);
+
+            if (result != null)
+            {
+                // Refresh the current object to show updated status
+                CurrentObject = await LeadApiService.GetByOid(oid: Oid);
                 StateHasChanged();
             }
         }

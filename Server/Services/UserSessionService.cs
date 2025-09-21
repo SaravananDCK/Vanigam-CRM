@@ -3,6 +3,7 @@ using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Server.Services;
 using Vanigam.CRM.Objects.DTOs;
+using NodaTime;
 
 namespace Meditalk.AI.Server.Services
 {
@@ -42,7 +43,7 @@ namespace Meditalk.AI.Server.Services
                 foreach (var session in existingSessions)
                 {
                     session.IsActive = false;
-                    session.LogoutTime = DateTime.UtcNow;
+                    session.LogoutTime = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
                 }
 
                 // Create new Redis session for real-time tracking
@@ -55,8 +56,8 @@ namespace Meditalk.AI.Server.Services
                     UserId = Guid.Parse(userId),
                     UserName = userName,
                     TenantId = tenantId,
-                    LoginTime = DateTime.UtcNow,
-                    LastActivityTime = DateTime.UtcNow,
+                    LoginTime = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc(),
+                    LastActivityTime = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc(),
                     IsActive = true,
                     DeviceInfo = deviceInfo,
                     IpAddress = ipAddress,
@@ -99,7 +100,7 @@ namespace Meditalk.AI.Server.Services
                 foreach (var session in sessions)
                 {
                     session.IsActive = false;
-                    session.LogoutTime = DateTime.UtcNow;
+                    session.LogoutTime = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
                 }
 
                 await _context.SaveChangesAsync();
@@ -191,7 +192,7 @@ namespace Meditalk.AI.Server.Services
 
         public async Task<List<UserSession>> GetUserSessionHistoryAsync(string userId, int days = 30)
         {
-            var cutoffDate = DateTime.UtcNow.AddDays(-days);
+            var cutoffDate = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().AddDays(-days);
 
             return await _context.UserSessions
                 .Where(s => s.UserId == Guid.Parse(userId) && s.LoginTime >= cutoffDate)
@@ -213,7 +214,7 @@ namespace Meditalk.AI.Server.Services
                 if (session != null)
                 {
                     session.IsActive = false;
-                    session.LogoutTime = DateTime.UtcNow;
+                    session.LogoutTime = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
                     await _context.SaveChangesAsync();
 
                     _logger.LogInformation("Force logout for session {SessionId} user {UserId}", sessionId, session.UserId);
@@ -238,7 +239,7 @@ namespace Meditalk.AI.Server.Services
                 await _redisSessionService.CleanupExpiredSessionsAsync(timeoutMinutes);
 
                 // Cleanup database sessions (secondary, for historical accuracy)
-                var cutoffTime = DateTime.UtcNow.AddMinutes(-timeoutMinutes);
+                var cutoffTime = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().AddMinutes(-timeoutMinutes);
 
                 var expiredSessions = await _context.UserSessions
                     .Where(s => s.IsActive && s.LastActivityTime < cutoffTime)
@@ -247,7 +248,7 @@ namespace Meditalk.AI.Server.Services
                 foreach (var session in expiredSessions)
                 {
                     session.IsActive = false;
-                    session.LogoutTime = DateTime.UtcNow;
+                    session.LogoutTime = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
                 }
 
                 await _context.SaveChangesAsync();
@@ -285,7 +286,7 @@ namespace Meditalk.AI.Server.Services
 
         public async Task<Dictionary<string, object>> GetSessionAnalyticsAsync(int? tenantId = null, int days = 7)
         {
-            var cutoffDate = DateTime.UtcNow.AddDays(-days);
+            var cutoffDate = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().AddDays(-days);
             var query = _context.UserSessions.Where(s => s.LoginTime >= cutoffDate);
 
             if (tenantId.HasValue)

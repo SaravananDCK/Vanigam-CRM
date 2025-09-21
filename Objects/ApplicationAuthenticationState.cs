@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Vanigam.CRM.Objects;
+using NodaTime;
 
 namespace Vanigam.CRM.Objects
 {
@@ -16,7 +17,7 @@ namespace Vanigam.CRM.Objects
             var tokenClaimExpiry = Claims?.FirstOrDefault(c => c.Type == "Bearer_Token_Expiry");
             if (!string.IsNullOrEmpty(tokenClaimExpiry?.Value))
             {
-                if (DateTime.Parse(tokenClaimExpiry.Value.ToString(), new CultureInfo("en-US")) > DateTime.UtcNow)
+                if (DateTime.Parse(tokenClaimExpiry.Value.ToString(), new CultureInfo("en-US")) > SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc())
                 {
                     var tokenClaim = Claims?.FirstOrDefault(c => c.Type == "Bearer_Token");
                     if (tokenClaim != null)

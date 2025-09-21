@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using System.ComponentModel;
 using Vanigam.CRM.Objects.Enums;
 using Vanigam.CRM.Objects.Contracts;
+using NodaTime;
 
 namespace Vanigam.CRM.Objects.Entities
 {
@@ -33,7 +34,7 @@ namespace Vanigam.CRM.Objects.Entities
         public const string Admin = nameof(Admin);
         public ApplicationUser()
         {
-            this.CreatedAtUtc = DateTime.UtcNow;
+            this.CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
         }
         [NotMapped]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

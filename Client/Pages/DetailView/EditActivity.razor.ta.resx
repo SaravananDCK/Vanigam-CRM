@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="EditActivity" xml:space="preserve">
+    <value>செயல்பாட்டைத் திருத்து</value>
+  </data>
+  <data name="ActivityInformation" xml:space="preserve">
+    <value>செயல்பாட்டு தகவல்</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>விषயம்</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>வகை</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>நிலை</value>
+  </data>
+  <data name="ActivityDate" xml:space="preserve">
+    <value>செயல்பாட்டு தேதி</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>விளக்கம்</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>குறிப்புகள்</value>
+  </data>
+  <data name="Lead" xml:space="preserve">
+    <value>வழிகாட்டல்</value>
+  </data>
+  <data name="Opportunity" xml:space="preserve">
+    <value>வாய்ப்பு</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>திருத்து</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>சேமிக்கவும்</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>புதுப்பிக்கவும்</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>ரத்து செய்</value>
+  </data>
+  <data name="SaveAlert" xml:space="preserve">
+    <value>செயல்பாட்டைச் சேமிக்க முடியவில்லை</value>
+  </data>
+  <data name="CodeMust" xml:space="preserve">
+    <value>செயல்பாடு தனித்துவமாக இருக்க வேண்டும்</value>
+  </data>
+  <data name="SavedSuccessfully!" xml:space="preserve">
+    <value>செயல்பாடு வெற்றிகரமாக சேமிக்கப்பட்டது!</value>
+  </data>
+  <data name="SubjectRequired" xml:space="preserve">
+    <value>விषயம் தேவையாகும்</value>
+  </data>
+  <data name="TypeRequired" xml:space="preserve">
+    <value>வகை தேவையாகும்</value>
+  </data>
+  <data name="StatusRequired" xml:space="preserve">
+    <value>நிலை தேவையாகும்</value>
+  </data>
+  <data name="ActivityDateRequired" xml:space="preserve">
+    <value>செயல்பாட்டு தேதி தேவையாகும்</value>
+  </data>
+  <data name="DescriptionTooLong" xml:space="preserve">
+    <value>விளக்கம் 2000 எழுத்துக்களை மீற முடியாது</value>
+  </data>
+  <data name="NotesTooLong" xml:space="preserve">
+    <value>குறிப்புகள் 2000 எழுத்துக்களை மீற முடியாது</value>
+  </data>
+</root>

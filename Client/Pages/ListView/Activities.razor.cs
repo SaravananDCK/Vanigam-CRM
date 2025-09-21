@@ -39,7 +39,10 @@ namespace Vanigam.CRM.Client.Pages.ListView
             }
 
             filter.BeginGroup()
+                .ContainsOr(u => u.Subject, SearchString)
                 .ContainsOr(u => u.Type, SearchString)
+                .ContainsOr(u => u.Status, SearchString)
+                .ContainsOr(u => u.Description, SearchString)
                 .ContainsOr(u => u.Notes, SearchString)
                 .EndGroup();
 

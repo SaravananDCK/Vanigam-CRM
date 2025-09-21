@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using NodaTime;
+using NodaTime.Extensions;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
@@ -12,11 +14,50 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
         [Parameter] public Guid? LeadId { get; set; }
         [Parameter] public Guid? OpportunityId { get; set; }
+
+        // Dropdown data for form fields
+        private List<string> ActivityTypes = new()
+        {
+            "Call", "Email", "Meeting", "Task", "Note", "Conversion", "Follow-up"
+        };
+
+        private List<string> ActivityStatuses = new()
+        {
+            "Pending", "Completed", "Cancelled", "In Progress"
+        };
+
+        // Helper property to convert between NodaTime Instant and DateTime for UI binding
+        private DateTime ActivityDateForUI
+        {
+            get
+            {
+                if (CurrentObject?.ActivityDate != null)
+                {
+                    return Instant.FromDateTimeOffset(CurrentObject.ActivityDate).ToDateTimeUtc();
+                }
+                return SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
+            }
+            set
+            {
+                if (CurrentObject != null)
+                {
+                    CurrentObject.ActivityDate = Instant.FromDateTimeUtc(value).ToDateTimeOffset();
+                }
+            }
+        }
+
+        // Helper method to display activity date in read-only mode
+        private string GetActivityDateDisplay(DateTimeOffset activityDate)
+        {
+            return Instant.FromDateTimeOffset(activityDate).ToDateTimeUtc().ToString("yyyy-MM-dd HH:mm") + " UTC";
+        }
+
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
             {
                 CurrentObject = new();
+                IsReadOnlyMode = false; // Create mode - always editable
 
                 // Set the parent Lead or Opportunity when creating a new activity
                 if (LeadId.HasValue)
@@ -31,6 +72,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             else
             {
                 CurrentObject = await ActivityApiService.GetByOid(oid: Oid);
+                IsReadOnlyMode = true; // Edit mode - start in read-only
             }
 
             await InitEditContext();

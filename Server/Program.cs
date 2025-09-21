@@ -82,7 +82,7 @@ builder.Services.AddDbContext<Vanigam.CRM.Objects.VanigamAccountingDbContext>(op
 {
     if (isPostGreSql)
     {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("EntitiesConnection"));
+        options.UseNpgsql(builder.Configuration.GetConnectionString("EntitiesConnection"), x => x.UseNodaTime());
     }
     else
     {
@@ -98,6 +98,7 @@ builder.Services.AddControllers().AddOData(opt =>
 
 //builder.Services.AddInheritedClasses(typeof(BaseApiService<>));
 builder.Services.AddInheritedClasses(typeof(BaseService<>));
+builder.Services.AddScoped<LeadConversionService>();
 builder.Services.AddAuthentication();
 builder.Services.ConfigureApplicationCookie(options =>
 {

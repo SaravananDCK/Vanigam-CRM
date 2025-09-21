@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Vanigam.CRM.Objects.Contracts;
 using Vanigam.CRM.Objects.Helpers;
 using Vanigam.CRM.Objects.Services;
+using Vanigam.CRM.Objects.SeedData;
 using System.Reflection;
+using NodaTime;
 
 namespace Vanigam.CRM.Objects
 {
@@ -69,6 +71,7 @@ namespace Vanigam.CRM.Objects
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<ApplicationUser>()
           .HasMany(u => u.Roles)
           .WithMany(r => r.Users)
@@ -123,6 +126,7 @@ namespace Vanigam.CRM.Objects
                 await this.Database.EnsureCreatedAsync();
                 await this.SeedTenantsAdmin();
                 await this.SeedRoleClaims();
+                await this.SeedLeadData();
                 //foreach (var fn in beforeUpdate)
                 //{
                 //    await using var stream = typeof(Party).Assembly.GetManifestResourceStream(fn);
@@ -154,7 +158,7 @@ namespace Vanigam.CRM.Objects
                 Name = "TekSpear Solutions",
                 //Currency = "INR",
                 //TimeZone = "Asia/Kolkata",
-                Hosts = "https://localhost:5001/,http://localhost:5270/"
+                Hosts = "https://localhost:5001/,http://localhost:5270/,https://localhost:61564/"
 
             };
             Tenants.Add(tekSpearTenant);
@@ -166,7 +170,7 @@ namespace Vanigam.CRM.Objects
                 Name = "TekSpear Solutions demo",
                 //Currency = "INR",
                 //TimeZone = "Asia/Kolkata",
-                Hosts = "https://localhost:5001/,http://localhost:5270/"
+                Hosts = "https://localhost:5001/,http://localhost:5270/,https://localhost:61564/"
 
             };
             Tenants.Add(demoTenant);
@@ -344,6 +348,97 @@ namespace Vanigam.CRM.Objects
             await this.SaveChangesAsync();
         }
 
+        public async Task SeedLeadData()
+        {
+            // Check if Lead data already exists
+            if (await Leads.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "LeadSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "LeadSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var leadSeedData = System.Text.Json.JsonSerializer.Deserialize<List<LeadSeedModel>>(jsonContent);
+
+                if (leadSeedData?.Any() != true)
+                    return;
+
+                var leads = new List<Lead>();
+                foreach (var seedLead in leadSeedData)
+                {
+                    var lead = new Lead
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Name = seedLead.Name,
+                        Email = seedLead.Email,
+                        Phone = seedLead.Phone,
+                        SecondaryPhone = seedLead.SecondaryPhone,
+                        Organization = seedLead.Organization,
+                        JobTitle = seedLead.JobTitle,
+                        Industry = seedLead.Industry,
+                        CompanySize = seedLead.CompanySize,
+                        Website = seedLead.Website,
+                        Address = seedLead.Address,
+                        City = seedLead.City,
+                        State = seedLead.State,
+                        PostalCode = seedLead.PostalCode,
+                        Country = seedLead.Country,
+                        ProductOfInterest = seedLead.ProductOfInterest,
+                        EstimatedBudget = seedLead.EstimatedBudget,
+                        Timeline = seedLead.Timeline,
+                        LeadScore = seedLead.LeadScore,
+                        Source = seedLead.Source,
+                        CampaignSource = seedLead.CampaignSource,
+                        ReferredBy = seedLead.ReferredBy,
+                        LinkedInProfile = seedLead.LinkedInProfile,
+                        Status = Enum.TryParse<LeadStatus>(seedLead.Status, out var status) ? status : LeadStatus.New,
+                        Comments = seedLead.Comments,
+                        LastContactDate = DateTime.TryParse(seedLead.LastContactDate, out var lastContact) ? DateTime.SpecifyKind(lastContact, DateTimeKind.Utc) : null,
+                        NextFollowUpDate = DateTime.TryParse(seedLead.NextFollowUpDate, out var nextFollowUp) ? DateTime.SpecifyKind(nextFollowUp, DateTimeKind.Utc) : null,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    leads.Add(lead);
+                }
+
+                await Leads.AddRangeAsync(leads);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding Lead data: {ex.Message}");
+            }
+        }
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
             UpdateCreatedByAndModifiedBy();
@@ -360,34 +455,34 @@ namespace Vanigam.CRM.Objects
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedAtUtc = DateTimeOffset.UtcNow;
+                        entry.Entity.CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
                         if (!string.IsNullOrEmpty(currentUserService.UserId))
                         {
                             entry.Entity.CreatedByUserId = currentUserService.UserId;
                             entry.Entity.CreatedByUserName = currentUserService.FullName;
-                            entry.Entity.CreatedAtString = DateTimeOffset.UtcNow.ToHumanDateTime();
+                            entry.Entity.CreatedAtString = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().ToHumanDateTime();
                         }
                         else
                         {
                             entry.Entity.CreatedByUserId = ApplicationUser.SystemUserId;
                             entry.Entity.CreatedByUserName = ApplicationUser.SystemUserName;
-                            entry.Entity.CreatedAtString = DateTimeOffset.UtcNow.ToHumanDateTime();
+                            entry.Entity.CreatedAtString = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().ToHumanDateTime();
                         }
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.UpdatedAtUtc = DateTime.UtcNow;
+                        entry.Entity.UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
                         if (!string.IsNullOrEmpty(currentUserService.UserId))
                         {
                             entry.Entity.UpdatedByUserId = currentUserService.UserId;
                             entry.Entity.UpdatedByUserName = currentUserService.FullName;
-                            entry.Entity.UpdatedAtString = DateTimeOffset.UtcNow.ToHumanDateTime();
+                            entry.Entity.UpdatedAtString = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().ToHumanDateTime();
                         }
                         else
                         {
                             entry.Entity.UpdatedByUserId = ApplicationUser.SystemUserId;
                             entry.Entity.CreatedByUserName = ApplicationUser.SystemUserName;
-                            entry.Entity.CreatedAtString = DateTimeOffset.UtcNow.ToHumanDateTime();
+                            entry.Entity.CreatedAtString = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().ToHumanDateTime();
                         }
                         break;
                 }

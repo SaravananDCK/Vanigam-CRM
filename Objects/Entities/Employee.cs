@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Vanigam.CRM.Objects.Contracts;
+using NodaTime;
 
 namespace Vanigam.CRM.Objects.Entities
 {
@@ -11,6 +12,6 @@ namespace Vanigam.CRM.Objects.Entities
         public string LastName { get; set; } = string.Empty;
         [StringLength(200)] public string? Email { get; set; }
         [StringLength(20)] public string? Phone { get; set; }
-        public DateTime HireDate { get; set; } = DateTime.UtcNow;
+        public DateTimeOffset? HireDate { get; set; } = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
     }
 }

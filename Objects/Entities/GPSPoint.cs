@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Vanigam.CRM.Objects.Contracts;
+using NodaTime;
 
 namespace Vanigam.CRM.Objects.Entities
 {
@@ -18,7 +19,7 @@ namespace Vanigam.CRM.Objects.Entities
         [Required]
         [Column(TypeName = "decimal(11,8)")]
         public double Longitude { get; set; }
-        public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
+        public DateTimeOffset? RecordedAt { get; set; } = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
         [Column(TypeName = "decimal(5,2)")]
         public double? Speed { get; set; }
     }

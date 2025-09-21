@@ -18,8 +18,8 @@ namespace Vanigam.CRM.Objects.Entities
         [ForeignKey(nameof(TechnicianId))]
         public Technician? Technician { get; set; }
 
-        public DateTime StartAt { get; set; }
-        public DateTime EndAt { get; set; }
+        public DateTimeOffset? StartAt { get; set; }
+        public DateTimeOffset? EndAt { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Scheduled;

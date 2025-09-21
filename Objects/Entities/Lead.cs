@@ -92,9 +92,9 @@ namespace Vanigam.CRM.Objects.Entities
         [StringLength(2000)]
         public string? Comments { get; set; }
 
-        public DateTime? LastContactDate { get; set; }
+        public DateTimeOffset? LastContactDate { get; set; }
 
-        public DateTime? NextFollowUpDate { get; set; }
+        public DateTimeOffset? NextFollowUpDate { get; set; }
 
         // Navigation Properties
         public ICollection<Activity> Activities { get; set; } = new List<Activity>();

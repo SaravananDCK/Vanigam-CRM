@@ -22,7 +22,7 @@ public class Opportunity : BaseClass
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public OpportunityStage Stage { get; set; } = OpportunityStage.Prospecting;
-    public DateTime ExpectedCloseDate { get; set; }
+    public DateTimeOffset ExpectedCloseDate { get; set; }
 
     public ICollection<Activity> Activities { get; set; } = new List<Activity>();
 }

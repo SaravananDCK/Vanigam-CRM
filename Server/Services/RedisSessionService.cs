@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using StackExchange.Redis;
 using Vanigam.CRM.Objects.Redis;
+using NodaTime;
 
 namespace Vanigam.CRM.Server.Services
 {
@@ -48,7 +49,7 @@ namespace Vanigam.CRM.Server.Services
             try
             {
                 var sessionId = Guid.NewGuid().ToString();
-                var now = DateTime.UtcNow;
+                var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
 
                 var sessionInfo = new ActiveSessionInfo
                 {
@@ -110,7 +111,7 @@ namespace Vanigam.CRM.Server.Services
                     var sessionInfo = JsonSerializer.Deserialize<ActiveSessionInfo>(sessionJson!);
                     if (sessionInfo != null)
                     {
-                        sessionInfo.LastActivityTime = DateTime.UtcNow;
+                        sessionInfo.LastActivityTime = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
                         var updatedJson = JsonSerializer.Serialize(sessionInfo);
                         
                         await _database.StringSetAsync(sessionKey, updatedJson, TimeSpan.FromHours(24));
@@ -304,7 +305,7 @@ namespace Vanigam.CRM.Server.Services
         {
             try
             {
-                var cutoffTime = DateTime.UtcNow.AddMinutes(-timeoutMinutes);
+                var cutoffTime = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().AddMinutes(-timeoutMinutes);
                 var sessionIds = await _database.SetMembersAsync(ACTIVE_SESSIONS_SET);
                 var expiredCount = 0;
 
@@ -332,7 +333,7 @@ namespace Vanigam.CRM.Server.Services
             try
             {
                 var sessions = await GetActiveSessionsAsync(tenantId);
-                var now = DateTime.UtcNow;
+                var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
 
                 return new Dictionary<string, object>
                 {
@@ -376,6 +377,6 @@ namespace Vanigam.CRM.Server.Services
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
 
-        public int SessionDurationMinutes => (int)(DateTime.UtcNow - LoginTime).TotalMinutes;
+        public int SessionDurationMinutes => (int)(SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc() - LoginTime).TotalMinutes;
     }
 }

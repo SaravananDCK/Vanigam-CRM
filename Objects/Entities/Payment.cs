@@ -18,7 +18,7 @@ namespace Vanigam.CRM.Objects.Entities
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
-        public DateTime PaidAt { get; set; }
+        public DateTimeOffset? PaidAt { get; set; }
         [StringLength(100)]
         public string? ProviderReference { get; set; }
     }

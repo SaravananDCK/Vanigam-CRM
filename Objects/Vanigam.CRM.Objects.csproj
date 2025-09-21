@@ -35,6 +35,8 @@
 		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.19" />
 		<PackageReference Include="NodaTime" Version="3.1.12" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="8.0.11" />
+		<PackageReference Include="Npgsql.NodaTime" Version="8.0.7" />
 		<PackageReference Include="OData.Fluent.QueryBuilder" Version="1.0.3" />
 		<PackageReference Include="Radzen.Blazor" Version="7.3.3" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.19" />
@@ -63,6 +65,9 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="Data\Reports\RPMReadingsPatientSummary.repx">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="SeedData\LeadSeedData.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>

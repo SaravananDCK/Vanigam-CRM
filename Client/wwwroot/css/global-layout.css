@@ -310,3 +310,61 @@
 .legacy-height-320 {
     height: calc(100vh - 320px) !important;
 }
+
+/* ============================================================================
+   Read-Only Field Display Styles
+   ============================================================================ */
+
+/* Read-only field container - displays label and value in same row */
+.read-only-field {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+/* Label styling - bold text with colon */
+.read-only-field .field-label {
+    flex-shrink: 0;
+    font-weight: bold;
+    min-width: fit-content;
+}
+
+/* Value styling - normal text weight */
+.read-only-field .field-value {
+    flex: 1;
+    font-weight: normal;
+    word-break: break-word;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+    .read-only-field {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .read-only-field .field-label {
+        margin-bottom: 4px;
+    }
+}
+
+/* ============================================================================
+   DetailView Section Headers
+   ============================================================================ */
+
+/* Section header styling for read-only mode */
+.read-only-section-header {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    margin-top: 24px;
+    color: var(--rz-text-color, #333);
+    border-bottom: 1px solid var(--rz-border-color, #ddd);
+    padding-bottom: 8px;
+}
+
+/* First section - no top margin */
+.read-only-section-header:first-of-type {
+    margin-top: 0;
+}

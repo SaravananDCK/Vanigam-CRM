@@ -61,7 +61,15 @@ namespace Vanigam.CRM.Objects.Helpers
 
             return businessDays;
         }
-
+         
+        public static DateTime ToDateTimeUtc(this DateTimeOffset dateTime)
+        {
+            return Instant.FromDateTimeOffset(dateTime).ToDateTimeUtc();
+        }
+        public static DateTimeOffset ToDateTimeOffset(this DateTime dateTime)
+        {
+            return Instant.FromDateTimeUtc(DateTime.SpecifyKind(dateTime, DateTimeKind.Utc)).ToDateTimeOffset();
+        }
         public static DateTime? GetNullableDateTime(this DateTime dateTime)
         {
             return dateTime == DateTime.MinValue ? (DateTime?)null : dateTime;

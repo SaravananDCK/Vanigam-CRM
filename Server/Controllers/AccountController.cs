@@ -37,6 +37,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Vanigam.CRM.Server.Helpers;
 using Vanigam.CRM.Server.Services;
 using Vanigam.CRM.Objects.Enums;
+using NodaTime;
 
 namespace Vanigam.CRM.Server.Controllers
 {
@@ -127,7 +128,7 @@ namespace Vanigam.CRM.Server.Controllers
             var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
                 configuration["Jwt:Issuer"],
                 claims,
-                expires: expirationMinutes != null ? DateTime.Now.AddMinutes(expirationMinutes.Value) : DateTime.Now.AddMinutes(_tokenLifeSpan.TotalMinutes),
+                expires: expirationMinutes != null ? NodaTime.SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().AddMinutes(expirationMinutes.Value) : NodaTime.SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().AddMinutes(_tokenLifeSpan.TotalMinutes),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -159,7 +160,7 @@ namespace Vanigam.CRM.Server.Controllers
                     var claims = new List<Claim>();
                     if (user != null)
                     {
-                        claims.Add(new Claim("Bearer_Token_Expiry", DateTime.UtcNow.AddMinutes(_tokenLifeSpan.TotalMinutes).ToString(new CultureInfo("en-US"))));
+                        claims.Add(new Claim("Bearer_Token_Expiry", NodaTime.SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().AddMinutes(_tokenLifeSpan.TotalMinutes).ToString(new CultureInfo("en-US"))));
                         claims.Add(new Claim("Bearer_Token", GenerateJSONWebToken(user, null)));
                         //await PermissionClaim.AddPermissionClaim(userManager, roleManager, user, redisService);
                         claims.Add(new Claim(nameof(ApplicationUser.TenantId), user.TenantId.ToString()));
@@ -313,7 +314,7 @@ namespace Vanigam.CRM.Server.Controllers
 
                 if (user != null)
                 {
-                    claims.Add(new Claim("Bearer_Token_Expiry", DateTime.UtcNow.AddMinutes(_tokenLifeSpan.TotalMinutes).ToString(new CultureInfo("en-US"))));
+                    claims.Add(new Claim("Bearer_Token_Expiry", NodaTime.SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().AddMinutes(_tokenLifeSpan.TotalMinutes).ToString(new CultureInfo("en-US"))));
                     claims.Add(new Claim("Bearer_Token", GenerateJSONWebToken(user, null)));
                     //await PermissionClaim.AddPermissionClaim(userManager, roleManager, user, redisService);
 
@@ -442,7 +443,7 @@ namespace Vanigam.CRM.Server.Controllers
             var tenantId = int.Parse(User.Claims?.FirstOrDefault(c => c.Type == nameof(ApplicationUser.TenantId)).Value);
             if (tokenClaimExpiry != null)
             {
-                if (DateTime.Parse(tokenClaimExpiry.Value.ToString(), new CultureInfo("en-US")) > DateTime.UtcNow)
+                if (DateTime.Parse(tokenClaimExpiry.Value.ToString(), new CultureInfo("en-US")) > NodaTime.SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc())
                 {
                     return new ApplicationAuthenticationState
                     {
@@ -700,7 +701,7 @@ namespace Vanigam.CRM.Server.Controllers
             var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
                 configuration["Jwt:Issuer"],
                 claims,
-                expires: DateTime.Now.AddYears(30),
+                expires: NodaTime.SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().AddYears(30),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

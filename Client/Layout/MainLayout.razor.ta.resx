@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Allergies" xml:space="preserve">
+    <value>ஒவ்வாமைகள்</value>
+  </data>
+  <data name="AllergyCategories" xml:space="preserve">
+    <value>ஒவ்வாமை வகைகள்</value>
+  </data>
+  <data name="AllergyExposureRoutes" xml:space="preserve">
+    <value>ஒவ்வாமை வெளிப்பாடு வழிகள்</value>
+  </data>
+  <data name="AllergyReactions" xml:space="preserve">
+    <value>ஒவ்வாமை எதிர்வினைகள்</value>
+  </data>
+  <data name="AllergySeverities" xml:space="preserve">
+    <value>ஒவ்வாமை தீவிரங்கள்</value>
+  </data>
+  <data name="AllergySubstances" xml:space="preserve">
+    <value>ஒவ்வாமை பொருட்கள்</value>
+  </data>
+  <data name="AllergyTypes" xml:space="preserve">
+    <value>ஒவ்வாமை வகைகள்</value>
+  </data>
+  <data name="Appointments" xml:space="preserve">
+    <value>சந்திப்புகள்</value>
+  </data>
+  <data name="Authorizations" xml:space="preserve">
+    <value>அனுமதிகள்</value>
+  </data>
+  <data name="CCM" xml:space="preserve">
+    <value>CCM</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>கடவுச்சொல்லை மாற்று</value>
+  </data>
+  <data name="ContactPoints" xml:space="preserve">
+    <value>தொடர்பு புள்ளிகள்</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>டாஷ்போர்டு</value>
+  </data>
+  <data name="Devices" xml:space="preserve">
+    <value>சாதனங்கள்</value>
+  </data>
+  <data name="DeviceTypes" xml:space="preserve">
+    <value>சாதன வகைகள்</value>
+  </data>
+  <data name="Drugs" xml:space="preserve">
+    <value>மருந்துகள்</value>
+  </data>
+  <data name="EncounterReasons" xml:space="preserve">
+    <value>சந்திப்பு காரணங்கள்</value>
+  </data>
+  <data name="Encounters" xml:space="preserve">
+    <value>சந்திப்புகள்</value>
+  </data>
+  <data name="Enterprises" xml:space="preserve">
+    <value>நிறுவனங்கள்</value>
+  </data>
+  <data name="Ethnicities" xml:space="preserve">
+    <value>இனங்கள்</value>
+  </data>
+  <data name="Genders" xml:space="preserve">
+    <value>பாலினங்கள்</value>
+  </data>
+  <data name="Guarantors" xml:space="preserve">
+    <value>உத்தரவாதங்கள்</value>
+  </data>
+  <data name="GuarantorsPatients" xml:space="preserve">
+    <value>உத்தரவாத நோயாளிகள்</value>
+  </data>
+  <data name="Hangfire" xml:space="preserve">
+    <value>Hangfire</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>முகப்பு</value>
+  </data>
+  <data name="HomeHealthEnterprises" xml:space="preserve">
+    <value>வீட்டு சுகாதார நிறுவனங்கள்</value>
+  </data>
+  <data name="HomeHealthLocations" xml:space="preserve">
+    <value>வீட்டு சுகாதார இடங்கள்</value>
+  </data>
+  <data name="Immunizations" xml:space="preserve">
+    <value>தடுப்பூசிகள்</value>
+  </data>
+  <data name="InsuranceTypes" xml:space="preserve">
+    <value>காப்பீட்டு வகைகள்</value>
+  </data>
+  <data name="LabResults" xml:space="preserve">
+    <value>ஆய்வக முடிவுகள்</value>
+  </data>
+  <data name="Languages" xml:space="preserve">
+    <value>மொழிகள்</value>
+  </data>
+  <data name="Locations" xml:space="preserve">
+    <value>இடங்கள்</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>வெளியேறு</value>
+  </data>
+  <data name="MaritalStatuses" xml:space="preserve">
+    <value>திருமண நிலைகள்</value>
+  </data>
+  <data name="Medications" xml:space="preserve">
+    <value>மருந்துகள்</value>
+  </data>
+  <data name="Messages" xml:space="preserve">
+    <value>செய்திகள்</value>
+  </data>
+  <data name="Observations" xml:space="preserve">
+    <value>அவதானிப்புகள்</value>
+  </data>
+  <data name="Organization" xml:space="preserve">
+    <value>அமைப்பு</value>
+  </data>
+  <data name="PatientDevices" xml:space="preserve">
+    <value>நோயாளி சாதனங்கள்</value>
+  </data>
+  <data name="PatientInsurances" xml:space="preserve">
+    <value>நோயாளி காப்பீடுகள்</value>
+  </data>
+  <data name="PatientNotes" xml:space="preserve">
+    <value>நோயாளி குறிப்புகள்</value>
+  </data>
+  <data name="PatientPrograms" xml:space="preserve">
+    <value>நோயாளி திட்டங்கள்</value>
+  </data>
+  <data name="PatientRelationships" xml:space="preserve">
+    <value>நோயாளி உறவுகள்</value>
+  </data>
+  <data name="Patients" xml:space="preserve">
+    <value>நோயாளிகள்</value>
+  </data>
+  <data name="Practice" xml:space="preserve">
+    <value>பயிற்சி</value>
+  </data>
+  <data name="Problems" xml:space="preserve">
+    <value>நோய்கண்டறிதல்</value>
+  </data>
+  <data name="ProblemTypes" xml:space="preserve">
+    <value>பிரச்சனை வகைகள்</value>
+  </data>
+  <data name="ProcedureCategories" xml:space="preserve">
+    <value>செயல்முறை வகைகள்</value>
+  </data>
+  <data name="Procedures" xml:space="preserve">
+    <value>செயல்முறைகள்</value>
+  </data>
+  <data name="ProcedureTypes" xml:space="preserve">
+    <value>செயல்முறை வகைகள்</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>விவரம்</value>
+  </data>
+  <data name="ProgramStatus" xml:space="preserve">
+    <value>திட்ட நிலை</value>
+  </data>
+  <data name="ProgramStatusHistory" xml:space="preserve">
+    <value>திட்ட நிலை வரலாறு</value>
+  </data>
+  <data name="Providers" xml:space="preserve">
+    <value>வழங்குநர்கள்</value>
+  </data>
+  <data name="ProviderTypes" xml:space="preserve">
+    <value>வழங்குநர் வகைகள்</value>
+  </data>
+  <data name="Qualifications" xml:space="preserve">
+    <value>தகுதிகள்</value>
+  </data>
+  <data name="Races" xml:space="preserve">
+    <value>இனங்கள்</value>
+  </data>
+  <data name="RelationshipTypes" xml:space="preserve">
+    <value>உறவு வகைகள்</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>பங்குகள்</value>
+  </data>
+  <data name="RPM" xml:space="preserve">
+    <value>RPM</value>
+  </data>
+  <data name="RPMAnalysis" xml:space="preserve">
+    <value>RPM பகுப்பாய்வு</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>தேடு</value>
+  </data>
+  <data name="ServiceTypes" xml:space="preserve">
+    <value>சேவை வகைகள்</value>
+  </data>
+  <data name="Setup" xml:space="preserve">
+    <value>அமைப்பு</value>
+  </data>
+  <data name="SmokingStatuses" xml:space="preserve">
+    <value>புகைபிடித்தல் நிலைகள்</value>
+  </data>
+  <data name="Speciality" xml:space="preserve">
+    <value>சிறப்பு</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>சுருக்கம்</value>
+  </data>
+  <data name="Tenants" xml:space="preserve">
+    <value>குத்தகைதாரர்கள்</value>
+  </data>
+  <data name="TenantSetup" xml:space="preserve">
+    <value>குத்தகைதாரர் அமைப்பு</value>
+  </data>
+  <data name="TypeSearch" xml:space="preserve">
+    <value>வகை தேடல்</value>
+  </data>
+  <data name="UnsolicitedReadings" xml:space="preserve">
+    <value>கேட்கப்படாத வாசிப்புகள்</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>பயனர்கள்</value>
+  </data>
+  <data name="Vaccinations" xml:space="preserve">
+    <value>தடுப்பூசிகள்</value>
+  </data>
+  <data name="Vitals" xml:space="preserve">
+    <value>உயிர்நாடி</value>
+  </data>
+  <data name="VitalSignTypes" xml:space="preserve">
+    <value>உயிர்நாடி அறிகுறி வகைகள்</value>
+  </data>
+  <data name="OutboundNotificationMessage" xml:space="preserve">
+    <value>வெளிச்செல்லும் அறிவிப்பு செய்தி</value>
+  </data>
+  <data name="TaskBoard" xml:space="preserve">
+    <value>பணி பலகை</value>
+  </data>
+  <data name="Inventory" xml:space="preserve">
+    <value>சரக்கு</value>
+  </data>
+  <data name="DirectorOfNursing" xml:space="preserve">
+    <value>நர்சிங் இயக்குநர்</value>
+  </data>
+  <data name="Billing" xml:space="preserve">
+    <value>பில்லிங்</value>
+  </data>
+  <data name="ProgramBillings" xml:space="preserve">
+    <value>திட்ட பில்லிங்கள்</value>
+  </data>
+  <data name="RemoteSupport" xml:space="preserve">
+    <value>தொலைநிலை ஆதரவு</value>
+  </data>
+  <data name="HomeHealthRegions" xml:space="preserve">
+    <value>வீட்டு சுகாதார பகுதிகள்</value>
+  </data>
+  <data name="DeviceReadings" xml:space="preserve">
+    <value>சாதன அளவீடுகள்</value>
+  </data>
+  <data name="ChooseTenant" xml:space="preserve">
+    <value>குத்தகைதாரரைத் தேர்வு செய்</value>
+  </data>
+  <data name="AnswerTemplates" xml:space="preserve">
+    <value>பதில் வார்ப்புருக்கள்</value>
+  </data>
+  <data name="PatientSurveys" xml:space="preserve">
+    <value>நோயாளி கணக்கெடுப்புகள்</value>
+  </data>
+  <data name="QuestionAnswerTemplates" xml:space="preserve">
+    <value>கேள்வி பதில் வார்ப்புருக்கள்</value>
+  </data>
+  <data name="SurveyGroupTemplates" xml:space="preserve">
+    <value>கணக்கெடுப்பு குழு வார்ப்புருக்கள்</value>
+  </data>
+  <data name="SurveyTemplates" xml:space="preserve">
+    <value>கணக்கெடுப்பு வார்ப்புருக்கள்</value>
+  </data>
+  <data name="QuestionTemplates" xml:space="preserve">
+    <value>கேள்வி வார்ப்புருக்கள்</value>
+  </data>
+  <data name="Survey" xml:space="preserve">
+    <value>கணக்கெடுப்பு</value>
+  </data>
+  <data name="AnswerTemplateLinks" xml:space="preserve">
+    <value>பதில் வார்ப்புரு இணைப்பு</value>
+  </data>
+  <data name="QuestionTemplateLinks" xml:space="preserve">
+    <value>கேள்வி வார்ப்புரு இணைப்பு</value>
+  </data>
+</root>

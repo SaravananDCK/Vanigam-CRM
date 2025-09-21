@@ -18,9 +18,9 @@ namespace Vanigam.CRM.Objects.Entities
         [ForeignKey(nameof(JobId))]
         public Job Job { get; set; } = null!;
 
-        public DateTime StartAt { get; set; }
-        public DateTime EndAt { get; set; }
+        public DateTimeOffset? StartAt { get; set; }
+        public DateTimeOffset? EndAt { get; set; }
         [Column(TypeName = "decimal(5,2)")]
-        public decimal Hours => (decimal)(EndAt - StartAt).TotalHours;
+        public decimal? Hours => (decimal)(EndAt - StartAt)?.TotalHours;
     }
 }

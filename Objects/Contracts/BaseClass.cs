@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
+using NodaTime;
 
 namespace Vanigam.CRM.Objects.Contracts
 {
@@ -29,12 +30,12 @@ namespace Vanigam.CRM.Objects.Contracts
 
         //IHasAudit
         public string? CreatedByUserId { get; set; }
-        public DateTimeOffset? CreatedAtUtc { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset? CreatedAtUtc { get; set; } = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
         public string? UpdatedByUserId { get; set; }
-        public DateTimeOffset? UpdatedAtUtc { get; set; }       
-        public string? CreatedByUserName { get; set; }      
-        public string? UpdatedByUserName { get; set; }       
-        public string? CreatedAtString { get; set; }        
+        public DateTimeOffset? UpdatedAtUtc { get; set; }
+        public string? CreatedByUserName { get; set; }
+        public string? UpdatedByUserName { get; set; }
+        public string? CreatedAtString { get; set; }
         public string? UpdatedAtString { get; set; }
         //IHasSoftDelete
         public bool IsNotDeleted { get; set; } = true;

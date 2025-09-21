@@ -13,9 +13,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Restore packages**: `dotnet restore`
 
 ### Database Operations
-- **Add migration**: `dotnet ef migrations add <MigrationName> --project Objects --startup-project Server`
-- **Update database**: `dotnet ef database update --project Objects --startup-project Server`
-- **Generate SQL script**: `dotnet ef migrations script --project Objects --startup-project Server`
+- **Database schema changes**: Use direct SQL scripts instead of EF migrations
+- **Schema updates**: Create SQL scripts manually and apply them to the database
+- **Database initialization**: Handled through `VanigamAccountingDbContext.SeedInitialData()`
+- **Note**: This project does not use EF Core migrations - all schema changes are managed through SQL scripts
 
 ### Entity Framework Code First
 - The main DbContext is `VanigamAccountingDbContext` in the Objects project
@@ -44,6 +45,7 @@ This is a **Blazor Server + WebAssembly hybrid application** with 4 main project
 - **Serilog** for logging with PostgreSQL sink
 - **QuestPDF** for PDF generation
 - **SignalR** for real-time communication
+- **NodaTime** for UTC timestamp generation (uses DateTimeOffset for storage)
 
 ### Multi-Tenant Architecture
 The application implements **row-level multi-tenancy**:
@@ -302,21 +304,79 @@ namespace Vanigam.CRM.Client.Pages.ListView
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<{EntityName}, Edit{EntityName}>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
-<DetailPageCommonComponent TitleText="@Localizer["Edit{EntityName}"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
+@* Custom Header with Edit Button *@
+<DetailPageTitleComponent TitleText="@Localizer["Edit{EntityName}"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
+    <CustomBadge>
+        @* Floating Edit Button - Only visible in read-only mode *@
+        @if (IsEditButtonVisible)
+        {
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+        }
+    </CustomBadge>
+</DetailPageTitleComponent>
+
 <RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="{EntityName}" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+
+    @* Read-Only Mode Display *@
+    @if (IsReadOnlyModeVisible)
+    {
+        <RadzenCard class="rz-my-4">
+            <RadzenStack>
+                @* Section Header Example *@
+                <div class="read-only-section-header">@Localizer["{EntityName}Information"]</div>
+                <RadzenRow>
+                    <RadzenColumn Size="6">
+                        <div class="rz-p-4">
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["FieldName"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.FieldValue ?? "-")</RadzenText>
+                            </div>
+                            <!-- Add more read-only fields here -->
+                        </div>
+                    </RadzenColumn>
+                    <RadzenColumn Size="6">
+                        <div class="rz-p-4">
+                            <!-- Additional fields in second column -->
+                        </div>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenCard>
+    }
+
+    @* Editable Form Mode *@
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="{EntityName}" Data="@CurrentObject" Visible="@IsFormVisible" Submit="@SaveAndStayInEdit">
         <RadzenStack>
             <FluentValidationValidator Validator="new {EntityName}Validator(Localizer)" />
             <ValidationSummary />
             <!-- Add entity-specific form fields here -->
         </RadzenStack>
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+            @if (IsCreateMode)
+            {
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+            }
+            else
+            {
+                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+            }
         </RadzenStack>
     </RadzenTemplateForm>
+
+    @* Related Data Tabs - Available in both read-only and edit modes *@
+    @if (IsTabsVisible)
+    {
+        <RadzenCard class="mt-4">
+            <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client">
+                <Tabs>
+                    <!-- Add tabs for related entities here -->
+                </Tabs>
+            </RadzenTabs>
+        </RadzenCard>
+    }
 </RadzenColumn>
 ```
 
@@ -412,6 +472,63 @@ namespace Vanigam.CRM.Client.Validators
 - **DetailView**: `Edit{EntityName}.razor` (e.g., `EditCustomer.razor`, `EditJob.razor`)
 - **Route**: ListView uses `/{entityname}s`, DetailView uses `/edit-{entityname}` (lowercase)
 
+#### DetailView Read-Only Mode Formatting Standards
+
+**IMPORTANT**: All DetailView pages must implement consistent read-only mode formatting using the following patterns:
+
+**CSS Classes Used**:
+- `.read-only-section-header` - For section headers (replaces `RadzenText TextStyle="H6"`)
+- `.read-only-field` - Container for label/value pairs
+- `.field-label` - For field labels (automatically bold)
+- `.field-value` - For field values
+
+**Section Header Pattern**:
+```razor
+@* Replace RadzenText H6 with this *@
+<div class="read-only-section-header">@Localizer["SectionName"]</div>
+```
+
+**Field Display Pattern**:
+```razor
+@* Replace separate RadzenText elements with this *@
+<div class="read-only-field rz-mb-3">
+    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+        <strong>@Localizer["FieldName"]:</strong>
+    </RadzenText>
+    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+        @(CurrentObject.FieldValue ?? "-")
+    </RadzenText>
+</div>
+```
+
+**Key Requirements**:
+- **Labels and values in same row**: Use flexbox layout with `.read-only-field`
+- **Bold labels with colon**: Always use `<strong>@Localizer["FieldName"]:</strong>`
+- **Consistent spacing**: Use `rz-mb-3` class for field spacing
+- **Section headers**: Use `.read-only-section-header` class instead of RadzenText H6
+- **Mobile responsive**: Automatically stacks vertically on mobile devices
+- **Null handling**: Always provide fallback with `?? "-"` for nullable values
+
+**Before (incorrect)**:
+```razor
+<RadzenText TextStyle="TextStyle.H6" class="rz-mb-4">@Localizer["Section"]</RadzenText>
+<RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Name"]</RadzenText>
+<RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Name ?? "-")</RadzenText>
+```
+
+**After (correct)**:
+```razor
+<div class="read-only-section-header">@Localizer["Section"]</div>
+<div class="read-only-field rz-mb-3">
+    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+        <strong>@Localizer["Name"]:</strong>
+    </RadzenText>
+    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+        @(CurrentObject.Name ?? "-")
+    </RadzenText>
+</div>
+```
+
 ### OData Configuration
 OData endpoints configured in `Server/Extensions/ODataExtensions.cs`:
 - **Route**: `/odata/VanigamAccountingService/`
@@ -484,6 +601,331 @@ Located in `Objects/Entities/`, all properly decorated with EF Core data annotat
 - **PWA support**: Service worker configured for offline capabilities
 - **DevExpress licensing**: Uses local DLL references in `/References/`
 
+### DateTime and Timestamp Handling
+
+**IMPORTANT**: This project uses **DateTimeOffset** for all entity properties, NOT NodaTime Instant.
+
+#### Timestamp Standards:
+- **Entity Properties**: Use `DateTimeOffset` for all date/time properties
+- **Audit Fields**: `CreatedAtUtc` and `UpdatedAtUtc` are `DateTimeOffset?`
+- **Activity Dates**: `ActivityDate` is `DateTimeOffset`
+- **UTC Generation**: Use `SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset()` for creating UTC timestamps
+- **PostgreSQL Compatibility**: All DateTimeOffset values must be UTC (offset 0) for PostgreSQL
+
+#### NodaTime Usage Pattern:
+```csharp
+// CORRECT: Generate UTC DateTimeOffset using NodaTime
+entity.CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
+entity.ActivityDate = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
+
+// CORRECT: Convert DateTime to UTC DateTimeOffset using NodaTime
+entity.ExpectedCloseDate = Instant.FromDateTimeUtc(DateTime.SpecifyKind(dateTimeValue, DateTimeKind.Utc)).ToDateTimeOffset();
+
+// ALTERNATIVE: Manual UTC conversion (less preferred)
+entity.ExpectedCloseDate = new DateTimeOffset(dateTimeValue, TimeSpan.Zero);
+
+// INCORRECT: Don't use Instant directly in entities
+entity.CreatedAtUtc = SystemClock.Instance.GetCurrentInstant(); // Wrong!
+
+// INCORRECT: Don't assign DateTime directly to DateTimeOffset (causes PostgreSQL offset errors)
+entity.ExpectedCloseDate = dateTimeValue; // Wrong! May have local timezone offset
+```
+
+#### Key Rules:
+1. **All entities use DateTimeOffset properties**
+2. **Generate timestamps via NodaTime but convert to DateTimeOffset**
+3. **Always ensure UTC (offset 0) for PostgreSQL compatibility**
+4. **Never use DateTime.UtcNow or DateTimeOffset.UtcNow directly**
+5. **Use SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset() for all timestamp generation**
+6. **When converting DateTime to DateTimeOffset, prefer NodaTime: `Instant.FromDateTimeUtc(DateTime.SpecifyKind(dateTime, DateTimeKind.Utc)).ToDateTimeOffset()`**
+7. **Never assign DateTime directly to DateTimeOffset properties (causes PostgreSQL offset errors)**
+
+### Entity Conversion Patterns
+
+The application supports automated conversion between related CRM entities, following business workflow patterns:
+
+#### Lead → Opportunity → Customer Conversion Flow
+
+**Business Logic**:
+- **Lead to Opportunity**: Qualified or Contacted leads can be converted to opportunities
+- **Opportunity to Customer**: Active opportunities (Proposal, Negotiation, Qualified stages) can be converted to customers
+- **Automatic relationships**: Conversions create associated Contact records and Activity tracking
+
+#### Conversion Service Pattern
+
+**Server Conversion Service Template**:
+```csharp
+using Microsoft.EntityFrameworkCore;
+using Vanigam.CRM.Objects;
+using Vanigam.CRM.Objects.Entities;
+
+namespace Vanigam.CRM.Server.Services;
+
+public class ConversionService(
+    VanigamAccountingDbContext context,
+    ILogger<ConversionService> logger,
+    ICurrentUserService currentUserService)
+{
+    public async Task<Opportunity> ConvertLeadToOpportunityAsync(
+        Guid leadId,
+        string opportunityTitle,
+        decimal estimatedValue,
+        DateTime expectedCloseDate)
+    {
+        using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            // Validate business rules
+            var lead = await context.Leads.FindAsync(leadId);
+            if (lead.Status == LeadStatus.Converted)
+                throw new InvalidOperationException("Lead already converted");
+
+            // Create opportunity
+            var opportunity = new Opportunity
+            {
+                Title = opportunityTitle,
+                EstimatedValue = estimatedValue,
+                ExpectedCloseDate = expectedCloseDate,
+                Stage = OpportunityStage.Qualified,
+                // Copy relevant fields from lead
+            };
+
+            // Update lead status
+            lead.Status = LeadStatus.Converted;
+
+            // Create activity record
+            var activity = new Activity
+            {
+                Type = ActivityType.Conversion,
+                Description = $"Lead converted to opportunity: {opportunityTitle}",
+                // Activity tracking fields
+            };
+
+            context.Opportunities.Add(opportunity);
+            context.Activities.Add(activity);
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return opportunity;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+}
+```
+
+**Controller Template**:
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+public class ConversionController(ConversionService conversionService) : ControllerBase
+{
+    [HttpPost("lead-to-opportunity")]
+    public async Task<ActionResult<Opportunity>> ConvertLeadToOpportunity(
+        [FromBody] ConvertLeadRequest request)
+    {
+        try
+        {
+            var opportunity = await conversionService.ConvertLeadToOpportunityAsync(
+                request.LeadId,
+                request.Title,
+                request.EstimatedValue,
+                request.ExpectedCloseDate);
+            return Ok(opportunity);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+}
+```
+
+**Client API Service Template**:
+```csharp
+public class ConversionApiService(
+    HttpClient httpClient,
+    AuthenticationStateProvider authenticationStateProvider)
+{
+    public async Task<Opportunity?> ConvertLeadToOpportunityAsync(
+        Guid leadId,
+        string title,
+        decimal estimatedValue,
+        DateTime expectedCloseDate)
+    {
+        var request = new ConvertLeadRequest
+        {
+            LeadId = leadId,
+            Title = title,
+            EstimatedValue = estimatedValue,
+            ExpectedCloseDate = expectedCloseDate
+        };
+
+        var response = await httpClient.PostAsJsonAsync("api/conversion/lead-to-opportunity", request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<Opportunity>();
+        }
+
+        var errorMessage = await response.Content.ReadAsStringAsync();
+        throw new InvalidOperationException(errorMessage);
+    }
+}
+```
+
+#### Conversion Dialog Components Pattern
+
+**Dialog Component Template**:
+```razor
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Services
+@inject ConversionApiService ConversionService
+@inject NotificationService NotificationService
+@inject IStringLocalizer<ConversionDialog> Localizer
+
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H6">@Localizer["ConversionTitle"]</RadzenText>
+
+    <RadzenTemplateForm @ref="form" TItem="ConversionModel" Data="@model" Submit="@OnSubmit">
+        <RadzenStack Gap="1rem">
+            <!-- Form fields for conversion parameters -->
+            <div>
+                <RadzenLabel Text="@Localizer["Title"]" Component="txt_Title" />
+                <RadzenTextBox @bind-Value="@model.Title" Name="txt_Title" class="w-100" />
+                <RadzenRequiredValidator Component="txt_Title" Text="@Localizer["Required"]" />
+            </div>
+        </RadzenStack>
+
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" class="rz-mt-4">
+            <RadzenButton Text="@Localizer["Convert"]" ButtonType="ButtonType.Submit"
+                         IsBusy="@isBusy" ButtonStyle="ButtonStyle.Primary" />
+            <RadzenButton Text="@Localizer["Cancel"]" Click="@Cancel" ButtonStyle="ButtonStyle.Light" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    [Parameter] public TSourceEntity? SourceEntity { get; set; }
+    [Parameter] public EventCallback<TTargetEntity> OnConverted { get; set; }
+    [Parameter] public EventCallback OnCanceled { get; set; }
+
+    private ConversionModel model = new();
+    private bool isBusy = false;
+
+    private async Task OnSubmit()
+    {
+        isBusy = true;
+        try
+        {
+            var result = await ConversionService.ConvertAsync(SourceEntity.Oid, model);
+
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Success,
+                Summary = Localizer["Success"],
+                Detail = Localizer["ConversionSuccessful"]
+            });
+
+            await OnConverted.InvokeAsync(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Warning,
+                Summary = Localizer["Warning"],
+                Detail = ex.Message
+            });
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+}
+```
+
+#### DetailView Conversion Integration
+
+**Adding Conversion Buttons to DetailView**:
+```razor
+<DetailPageTitleComponent TitleText="@Localizer["EditLead"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
+    <CustomBadge>
+        @if (IsEditButtonVisible)
+        {
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+        }
+        @* Conversion Button - Only in read-only mode *@
+        @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvert)
+        {
+            <RadzenButton Text="@Localizer["Convert"]"
+                         Icon="transform"
+                         ButtonStyle="ButtonStyle.Success"
+                         Size="ButtonSize.Small"
+                         Click="@ShowConversionDialog" />
+        }
+    </CustomBadge>
+</DetailPageTitleComponent>
+```
+
+**Business Rule Validation**:
+```csharp
+// In DetailView code-behind
+private bool CanConvertToOpportunity => CurrentObject != null &&
+    (CurrentObject.Status == LeadStatus.Qualified || CurrentObject.Status == LeadStatus.Contacted) &&
+    CurrentObject.Status != LeadStatus.Converted;
+
+private async Task ShowConversionDialog()
+{
+    var result = await DialogService.OpenDialogAsync<ConvertLeadToOpportunityDialog>(
+        Localizer["ConvertToOpportunity"],
+        new Dictionary<string, object> { { "Lead", CurrentObject } },
+        50, 40);
+
+    if (result != null)
+    {
+        // Refresh entity to show updated status
+        CurrentObject = await LeadApiService.GetByOid(oid: Oid);
+        StateHasChanged();
+    }
+}
+```
+
+#### Service Registration Pattern
+
+**Server Registration** (`Program.cs`):
+```csharp
+builder.Services.AddScoped<LeadConversionService>();
+```
+
+**Client Registration** (`Program.cs`):
+```csharp
+builder.Services.AddScoped<LeadConversionApiService>();
+```
+
+#### Key Conversion Principles
+
+1. **Transaction Safety**: Always use database transactions for conversions
+2. **Business Rule Validation**: Validate entity state before conversion
+3. **Activity Tracking**: Log conversion activities for audit trail
+4. **Status Updates**: Update source entity status to prevent duplicate conversions
+5. **Relationship Preservation**: Maintain data relationships (e.g., Contact associations)
+6. **Error Handling**: Provide meaningful error messages for business rule violations
+7. **UI Feedback**: Show conversion progress and success/failure notifications
+
+#### Conversion Button Placement Standards
+
+- **Location**: CustomBadge section of DetailPageTitleComponent
+- **Visibility**: Only in read-only mode for existing entities
+- **Icon**: Use "transform" icon for conversion actions
+- **Style**: ButtonStyle.Success with Small size
+- **Business Rules**: Implement entity-specific conversion eligibility logic
+
 When adding new entities:
 1. Create entity class inheriting from `BaseClass` or `NamedClass`/`CodedClass`
 2. Add proper EF Core data annotations (`[StringLength]`, `[ForeignKey]`, etc.)
@@ -491,4 +933,6 @@ When adding new entities:
 4. Register entity in `ODataExtensions.InitOData()`
 5. Create corresponding service inheriting from `BaseService<T>`
 6. Create API service inheriting from `BaseApiService<T>` if needed
-7. Add migration: `dotnet ef migrations add AddNewEntity --project Objects --startup-project Server`
+7. Create SQL script for database schema changes (no EF migrations used)
+- I dont want to use "Instant" datatype with Noda. I just want to use the "DateTimeOffset". I have made this changes manually Just use "DateTimeOffSet" here after
+- document this on @CLAUDE.md

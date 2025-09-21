@@ -1,0 +1,126 @@
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Services
+@using Microsoft.Extensions.Localization
+@inject LeadConversionApiService ConversionService
+@inject NotificationService NotificationService
+@inject IStringLocalizer<ConvertLeadToOpportunityDialog> Localizer
+
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-4">@Localizer["ConvertLeadToOpportunity"]</RadzenText>
+
+    @if (Lead != null)
+    {
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Info" class="rz-mb-4">
+            @Localizer["ConvertingLead"]: <strong>@Lead.Name</strong>
+        </RadzenAlert>
+    }
+
+    <RadzenTemplateForm @ref="form" TItem="ConversionModel" Data="@model" Submit="@OnSubmit">
+        <RadzenStack Gap="1rem">
+            <div>
+                <RadzenLabel Text="@Localizer["OpportunityTitle"]" Component="txt_Title" />
+                <RadzenTextBox @bind-Value="@model.Title" Name="txt_Title" class="w-100" Placeholder="@Localizer["EnterOpportunityTitle"]" />
+                <RadzenRequiredValidator Component="txt_Title" Text="@Localizer["TitleRequired"]" />
+            </div>
+
+            <div>
+                <RadzenLabel Text="@Localizer["EstimatedValue"]" Component="num_Value" />
+                <RadzenNumeric @bind-Value="@model.EstimatedValue" Name="num_Value" class="w-100" Format="C" Min="0" />
+                <RadzenRequiredValidator Component="num_Value" Text="@Localizer["ValueRequired"]" />
+            </div>
+
+            <div>
+                <RadzenLabel Text="@Localizer["ExpectedCloseDate"]" Component="date_CloseDate" />
+                <RadzenDatePicker @bind-Value="@model.ExpectedCloseDate" Name="date_CloseDate" class="w-100" DateFormat="yyyy-MM-dd" />
+                <RadzenRequiredValidator Component="date_CloseDate" Text="@Localizer["CloseDateRequired"]" />
+            </div>
+        </RadzenStack>
+
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" class="rz-mt-4" Gap="0.5rem">
+            <RadzenButton Text="@Localizer["Convert"]" ButtonType="ButtonType.Submit" IsBusy="@isBusy"
+                         Icon="transform" ButtonStyle="ButtonStyle.Primary" />
+            <RadzenButton Text="@Localizer["Cancel"]" Click="@Cancel" ButtonStyle="ButtonStyle.Light" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    [Parameter] public Lead? Lead { get; set; }
+    [Parameter] public EventCallback<Opportunity> OnConverted { get; set; }
+    [Parameter] public EventCallback OnCanceled { get; set; }
+
+    private RadzenTemplateForm<ConversionModel>? form;
+    private ConversionModel model = new();
+    private bool isBusy = false;
+
+    protected override void OnParametersSet()
+    {
+        if (Lead != null)
+        {
+            model.Title = $"{Lead.Organization ?? Lead.Name} - {Lead.ProductOfInterest ?? "Opportunity"}";
+            model.EstimatedValue = Lead.EstimatedBudget ?? 0;
+            model.ExpectedCloseDate = DateTime.Today.AddDays(30); // Default to 30 days from now
+        }
+    }
+
+    private async Task OnSubmit()
+    {
+        if (Lead == null) return;
+
+        isBusy = true;
+        try
+        {
+            var opportunity = await ConversionService.ConvertLeadToOpportunityAsync(
+                Lead.Oid,
+                model.Title,
+                model.EstimatedValue,
+                model.ExpectedCloseDate);
+
+            if (opportunity != null)
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = Localizer["Success"],
+                    Detail = Localizer["LeadConvertedSuccessfully"]
+                });
+
+                await OnConverted.InvokeAsync(opportunity);
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Warning,
+                Summary = Localizer["Warning"],
+                Detail = ex.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = Localizer["ConversionFailed"]
+            });
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await OnCanceled.InvokeAsync();
+    }
+
+    private class ConversionModel
+    {
+        public string Title { get; set; } = string.Empty;
+        public decimal EstimatedValue { get; set; }
+        public DateTime ExpectedCloseDate { get; set; } = DateTime.Today.AddDays(30);
+    }
+}

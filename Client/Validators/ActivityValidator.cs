@@ -8,9 +8,12 @@ namespace Vanigam.CRM.Client.Validators
     {
         public ActivityValidator(IStringLocalizer localizer)
         {
+            RuleFor(c => c.Subject).NotEmpty().WithMessage(localizer["SubjectRequired"]);
             RuleFor(c => c.Type).NotEmpty().WithMessage(localizer["TypeRequired"]);
-            RuleFor(c => c.Notes).NotEmpty().WithMessage(localizer["NotesRequired"]);
-            RuleFor(c => c.Date).NotEmpty().WithMessage(localizer["DateRequired"]);
+            RuleFor(c => c.Status).NotEmpty().WithMessage(localizer["StatusRequired"]);
+            RuleFor(c => c.ActivityDate).NotEmpty().WithMessage(localizer["ActivityDateRequired"]);
+            RuleFor(c => c.Description).MaximumLength(2000).WithMessage(localizer["DescriptionTooLong"]);
+            RuleFor(c => c.Notes).MaximumLength(2000).WithMessage(localizer["NotesTooLong"]);
         }
     }
 }

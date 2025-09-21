@@ -20,7 +20,7 @@ namespace Vanigam.CRM.Objects.Entities
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public AssignmentStatus Status { get; set; } = AssignmentStatus.Pending;
-        public DateTime? AssignedAt { get; set; }
-        public DateTime? AcceptedAt { get; set; }
+        public DateTimeOffset? AssignedAt { get; set; }
+        public DateTimeOffset? AcceptedAt { get; set; }
     }
 }

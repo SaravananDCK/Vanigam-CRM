@@ -15,8 +15,8 @@ namespace Vanigam.CRM.Objects.Entities
 
         [ForeignKey(nameof(CustomerId))]
         public Customer Customer { get; set; } = null!;
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateTimeOffset? StartDate { get; set; }
+        public DateTimeOffset? EndDate { get; set; }
         [StringLength(5000)]
         public string? Terms { get; set; }
 

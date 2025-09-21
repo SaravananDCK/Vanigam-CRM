@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Vanigam.CRM.Objects.Contracts;
+using NodaTime;
 
 namespace Vanigam.CRM.Objects.Entities
 {
@@ -15,12 +16,12 @@ namespace Vanigam.CRM.Objects.Entities
         public string? UserName { get; set; }
 
         [Required]
-        public DateTimeOffset LoginTime { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset LoginTime { get; set; } = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
 
         public DateTimeOffset? LogoutTime { get; set; }
 
         [Required]
-        public DateTimeOffset LastActivityTime { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset LastActivityTime { get; set; } = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
 
         public bool IsActive { get; set; } = true;
 
@@ -45,11 +46,11 @@ namespace Vanigam.CRM.Objects.Entities
         // Computed property for session duration
         [NotMapped]
         public int SessionDurationMinutes => 
-            (int)(LogoutTime ?? DateTime.UtcNow).Subtract(LoginTime).TotalMinutes;
+            (int)(LogoutTime ?? SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc()).Subtract(LoginTime).TotalMinutes;
 
         [NotMapped]
         public TimeSpan SessionDuration => 
-            (LogoutTime ?? DateTime.UtcNow).Subtract(LoginTime);
+            (LogoutTime ?? SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc()).Subtract(LoginTime);
 
         // Navigation properties
         [ForeignKey("UserId")]

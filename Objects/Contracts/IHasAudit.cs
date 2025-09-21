@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using NodaTime;
 
 namespace Vanigam.CRM.Objects.Contracts
 {

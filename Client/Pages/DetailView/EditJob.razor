@@ -30,22 +30,30 @@
                     <RadzenColumn Size="6">
                         <RadzenStack>
                             <div class="rz-p-4">
-                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Title"]</RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Title ?? "-")</RadzenText>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Title"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Title ?? "-")</RadzenText>
+                                </div>
 
-                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Status"]</RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Status.ToString())</RadzenText>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
+                                </div>
                             </div>
                         </RadzenStack>
                     </RadzenColumn>
                     <RadzenColumn Size="6">
                         <RadzenStack>
                             <div class="rz-p-4">
-                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Description"]</RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Description ?? "-")</RadzenText>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Description"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Description ?? "-")</RadzenText>
+                                </div>
 
-                                <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-mb-2">@Localizer["Priority"]</RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-4">@(CurrentObject.Priority.ToString())</RadzenText>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Priority"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Priority.ToString())</RadzenText>
+                                </div>
                             </div>
                         </RadzenStack>
                     </RadzenColumn>
