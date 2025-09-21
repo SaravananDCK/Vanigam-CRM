@@ -1,6 +1,248 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<Index> L
 @page "/"
+@using ApexCharts
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Objects.DTOs
+@inject LeadApiService LeadApiService
+@inject OpportunityApiService OpportunityApiService
+@inject CustomerApiService CustomerApiService
+@inject JobApiService JobApiService
+@inject InvoiceApiService InvoiceApiService
+@inject PaymentApiService PaymentApiService
 
 @attribute [Authorize]
-<PageTitle>Index</PageTitle>
+<PageTitle>@L["Dashboard"]</PageTitle>
 
+<RadzenStack Gap="1rem">
+    <!-- Dashboard Header -->
+    <RadzenRow>
+        <RadzenColumn Size="12">
+            <RadzenText TextStyle="TextStyle.H3" class="mb-0">@L["CRM Dashboard"]</RadzenText>
+            <RadzenText TextStyle="TextStyle.Subtitle2" class="text-muted">@L["Welcome back! Here's your business overview"]</RadzenText>
+        </RadzenColumn>
+    </RadzenRow>
+
+    <!-- Key Metrics Cards -->
+    <RadzenRow>
+        <RadzenColumn SizeLG="3" SizeMD="6" SizeXS="12">
+            <RadzenCard class="h-100">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                    <RadzenIcon Icon="people" Style="font-size: 2rem; color: var(--rz-primary);" />
+                    <RadzenStack Gap="0.25rem">
+                        <RadzenText TextStyle="TextStyle.H4" class="mb-0">@TotalLeads</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body2" class="text-muted">@L["Total Leads"]</RadzenText>
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+        <RadzenColumn SizeLG="3" SizeMD="6" SizeXS="12">
+            <RadzenCard class="h-100">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                    <RadzenIcon Icon="trending_up" Style="font-size: 2rem; color: var(--rz-success);" />
+                    <RadzenStack Gap="0.25rem">
+                        <RadzenText TextStyle="TextStyle.H4" class="mb-0">@TotalOpportunities</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body2" class="text-muted">@L["Opportunities"]</RadzenText>
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+        <RadzenColumn SizeLG="3" SizeMD="6" SizeXS="12">
+            <RadzenCard class="h-100">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                    <RadzenIcon Icon="business" Style="font-size: 2rem; color: var(--rz-info);" />
+                    <RadzenStack Gap="0.25rem">
+                        <RadzenText TextStyle="TextStyle.H4" class="mb-0">@TotalCustomers</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body2" class="text-muted">@L["Customers"]</RadzenText>
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+        <RadzenColumn SizeLG="3" SizeMD="6" SizeXS="12">
+            <RadzenCard class="h-100">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                    <RadzenIcon Icon="attach_money" Style="font-size: 2rem; color: var(--rz-warning);" />
+                    <RadzenStack Gap="0.25rem">
+                        <RadzenText TextStyle="TextStyle.H4" class="mb-0">@TotalRevenue.ToString("C")</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body2" class="text-muted">@L["Total Revenue"]</RadzenText>
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+
+    <!-- Charts Row 1 -->
+    <RadzenRow>
+        <RadzenColumn SizeLG="6" SizeXS="12">
+            <RadzenCard Style="height: 400px;">
+                <RadzenText TextStyle="TextStyle.H5" class="mb-3">@L["Lead Status Distribution"]</RadzenText>
+                @if (LeadStatusData?.Any() == true)
+                {
+                    <ApexChart TItem="StatusChartData" Title="@L["Lead Status"]" Height="300">
+                        <ApexPointSeries TItem="StatusChartData"
+                                         Items="LeadStatusData"
+                                         SeriesType="SeriesType.Donut"
+                                         Name="@L["Leads"]"
+                                         XValue="@(e => e.Label)"
+                                         YAggregate="@(e => e.Sum(x => x.Value))"
+                                         PointColor="@(e => e.Color)" />
+                    </ApexChart>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center h-75">
+                        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Medium" />
+                    </div>
+                }
+            </RadzenCard>
+        </RadzenColumn>
+        <RadzenColumn SizeLG="6" SizeXS="12">
+            <RadzenCard Style="height: 400px;">
+                <RadzenText TextStyle="TextStyle.H5" class="mb-3">@L["Job Status Overview"]</RadzenText>
+                @if (JobStatusData?.Any() == true)
+                {
+                    <ApexChart TItem="StatusChartData" Title="@L["Job Status"]" Height="300">
+                        <ApexPointSeries TItem="StatusChartData"
+                                         Items="JobStatusData"
+                                         SeriesType="SeriesType.Pie"
+                                         Name="@L["Jobs"]"
+                                         XValue="@(e => e.Label)"
+                                         YAggregate="@(e => e.Sum(x => x.Value))"
+                                         PointColor="@(e => e.Color)" />
+                    </ApexChart>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center h-75">
+                        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Medium" />
+                    </div>
+                }
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+
+    <!-- Charts Row 2 -->
+    <RadzenRow>
+        <RadzenColumn SizeLG="8" SizeXS="12">
+            <RadzenCard Style="height: 400px;">
+                <RadzenText TextStyle="TextStyle.H5" class="mb-3">@L["Monthly Revenue Trend"]</RadzenText>
+                @if (MonthlyRevenueData?.Any() == true)
+                {
+                    <ApexChart TItem="MonthlyData" Title="@L["Revenue"]" Height="300">
+                        <ApexPointSeries TItem="MonthlyData"
+                                         Items="MonthlyRevenueData"
+                                         SeriesType="SeriesType.Area"
+                                         Name="@L["Revenue"]"
+                                         XValue="@(e => e.Month)"
+                                         YValue="@(e => (decimal)e.Value)"
+                                         Color="#28a745" />
+                    </ApexChart>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center h-75">
+                        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Medium" />
+                    </div>
+                }
+            </RadzenCard>
+        </RadzenColumn>
+        <RadzenColumn SizeLG="4" SizeXS="12">
+            <RadzenCard Style="height: 400px;">
+                <RadzenText TextStyle="TextStyle.H5" class="mb-3">@L["Invoice Status"]</RadzenText>
+                @if (InvoiceStatusData?.Any() == true)
+                {
+                    <ApexChart TItem="StatusChartData" Title="@L["Invoices"]" Height="300">
+                        <ApexPointSeries TItem="StatusChartData"
+                                         Items="InvoiceStatusData"
+                                         SeriesType="SeriesType.Bar"
+                                         Name="@L["Invoices"]"
+                                         XValue="@(e => e.Label)"
+                                         YAggregate="@(e => e.Sum(x => x.Value))"
+                                         PointColor="@(e => e.Color)" />
+                    </ApexChart>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center h-75">
+                        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Medium" />
+                    </div>
+                }
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+
+    <!-- Recent Activity and Quick Actions -->
+    <RadzenRow>
+        <RadzenColumn SizeLG="6" SizeXS="12">
+            <RadzenCard Style="height: 300px;">
+                <RadzenText TextStyle="TextStyle.H5" class="mb-3">@L["Recent Leads"]</RadzenText>
+                @if (RecentLeads?.Any() == true)
+                {
+                    <RadzenDataList Data="@RecentLeads" TItem="Lead" class="recent-leads-list">
+                        <Template Context="lead">
+                            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" class="p-2 border-bottom">
+                                <RadzenStack Gap="0.25rem">
+                                    <RadzenText TextStyle="TextStyle.Body1" class="mb-0 fw-bold">@lead.Name</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body2" class="text-muted">@lead.Organization</RadzenText>
+                                </RadzenStack>
+                                <RadzenBadge Text="@lead.Status.ToString()"
+                                             BadgeStyle="@GetLeadStatusBadgeStyle(lead.Status)" />
+                            </RadzenStack>
+                        </Template>
+                    </RadzenDataList>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center h-75">
+                        <RadzenText>@L["No recent leads found"]</RadzenText>
+                    </div>
+                }
+            </RadzenCard>
+        </RadzenColumn>
+        <RadzenColumn SizeLG="6" SizeXS="12">
+            <RadzenCard Style="height: 300px;">
+                <RadzenText TextStyle="TextStyle.H5" class="mb-3">@L["Quick Actions"]</RadzenText>
+                <RadzenStack Gap="1rem">
+                    <RadzenButton Text="@L["Add New Lead"]"
+                                  Icon="person_add"
+                                  ButtonStyle="ButtonStyle.Primary"
+                                  Size="ButtonSize.Medium"
+                                  Click="@(() => NavigateToPage("/leads"))"
+                                  class="w-100" />
+                    <RadzenButton Text="@L["Create Opportunity"]"
+                                  Icon="trending_up"
+                                  ButtonStyle="ButtonStyle.Success"
+                                  Size="ButtonSize.Medium"
+                                  Click="@(() => NavigateToPage("/opportunities"))"
+                                  class="w-100" />
+                    <RadzenButton Text="@L["Schedule Job"]"
+                                  Icon="schedule"
+                                  ButtonStyle="ButtonStyle.Info"
+                                  Size="ButtonSize.Medium"
+                                  Click="@(() => NavigateToPage("/jobs"))"
+                                  class="w-100" />
+                    <RadzenButton Text="@L["View Reports"]"
+                                  Icon="assessment"
+                                  ButtonStyle="ButtonStyle.Secondary"
+                                  Size="ButtonSize.Medium"
+                                  Click="@(() => NavigateToPage("/reports"))"
+                                  class="w-100" />
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>
+
+<style>
+    .recent-leads-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .recent-leads-list .border-bottom {
+        border-bottom: 1px solid var(--rz-border-color) !important;
+    }
+
+    .recent-leads-list .border-bottom:last-child {
+        border-bottom: none !important;
+    }
+</style>

@@ -11,7 +11,8 @@ namespace Vanigam.CRM.Client.Pages.ListView
     public partial class Leads
     {
         private LeadStatus? SelectedStatus = null;
-        private Dictionary<LeadStatus?, int> StatusCounts = new();
+        private Dictionary<LeadStatus, int> StatusCounts = new();
+        private int TotalCount = 0;
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try
@@ -116,13 +117,14 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 };
 
                 var summary = await LeadApiService.GetStatusSummaryAsync(request);
-                StatusCounts = summary.StatusCountsNullable.ToDictionary(kv => (LeadStatus?)kv.Key, kv => kv.Value);
+                TotalCount = summary.TotalCount;
+                StatusCounts = summary.StatusCounts.ToDictionary(kv => (LeadStatus)kv.Key, kv => kv.Value);
             }
             catch (Exception ex)
             {
                 // Fallback to zero counts if API call fails
                 StatusCounts.Clear();
-                StatusCounts[null] = 0;
+                StatusCounts= null;
                 foreach (LeadStatus status in Enum.GetValues<LeadStatus>())
                 {
                     StatusCounts[status] = 0;
@@ -188,7 +190,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             };
         }
 
-        protected int GetStatusCount(LeadStatus? status)
+        protected int GetStatusCount(LeadStatus status)
         {
             if (StatusCounts == null)
                 return 0;

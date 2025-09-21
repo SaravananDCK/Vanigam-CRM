@@ -53,7 +53,7 @@
                     <RadzenButton Click="@SwapTenantClick" Icon="@FadIcon("fa-starship")"
                         ButtonStyle="ButtonStyle.Primary" Style="margin-right:5px" />
                 </AuthorizeView>
-             
+                <CulturePicker />
                 <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick"
                     Style="background-color:transparent !important">
                     <ChildContent>

@@ -8,18 +8,18 @@
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Leads"] : Localizer["Leads"])
                             AddButtonClick=@AddButtonClick
                             SearchButtonClick=@Search
-                            ShowAdd=@(!IsEmbeddedMode || true) FirstSizeMD="6" MiddleSizeMD="0" LastSizeMD="6">
-        <CustomBadge>
+                            ShowAdd=@(!IsEmbeddedMode || true) FirstSizeMD="2" MiddleSizeMD="6" LastSizeMD="4">
+        <RadioButtons>
             <!-- Status Filter Bar -->
             <RadzenRow class="mb-3" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
                 <RadzenColumn Size="12">
                     <RadzenSelectBar @bind-Value="@SelectedStatus" TValue="LeadStatus?" Change="@OnStatusChange" class="w-100">
                         <Items>
-                            <RadzenSelectBarItem Value="@((LeadStatus?)null)">
+                            <RadzenSelectBarItem Value="@(null)">
                                 <Template>
                                     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem" class="p-2">
                                         <RadzenText TextStyle="TextStyle.Subtitle2" class="mb-0">@Localizer["All"]</RadzenText>
-                                        <RadzenBadge Text="@(GetStatusCount(null).ToString())"
+                                        <RadzenBadge Text="@(TotalCount.ToString())"
                                                      BadgeStyle="BadgeStyle.Info" />
                                     </RadzenStack>
                                 </Template>
@@ -40,7 +40,7 @@
                     </RadzenSelectBar>
                 </RadzenColumn>
             </RadzenRow>
-        </CustomBadge>
+        </RadioButtons>
     </ListPageTitleComponent>
 
     
