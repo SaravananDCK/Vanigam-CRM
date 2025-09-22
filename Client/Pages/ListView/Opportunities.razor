@@ -8,7 +8,44 @@
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Opportunities"] : Localizer["Opportunities"])
                             AddButtonClick=@AddButtonClick
                             SearchButtonClick=@Search
-                            ShowAdd=@(!IsEmbeddedMode || LeadId.HasValue) />
+                            ShowAdd=@(!IsEmbeddedMode || LeadId.HasValue)>
+        <RadioButtons>
+            @* Stage Filter Bar - Only show in non-embedded mode *@
+            @if (!IsEmbeddedMode)
+            {
+                <RadzenRow class="mb-3" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                    <RadzenColumn Size="12">
+                        <RadzenSelectBar @bind-Value="@SelectedStage" TValue="OpportunityStage?" Change="@OnStageChange" class="w-100">
+                            <Items>
+                                <RadzenSelectBarItem Value="@(null)">
+                                    <Template>
+                                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem" class="p-2">
+                                            <RadzenText TextStyle="TextStyle.Subtitle2" class="mb-0">@Localizer["All"]</RadzenText>
+                                            <RadzenBadge Text="@(TotalCount.ToString())"
+                                                         BadgeStyle="BadgeStyle.Info" />
+                                        </RadzenStack>
+                                    </Template>
+                                </RadzenSelectBarItem>
+                                @foreach (OpportunityStage stage in Enum.GetValues<OpportunityStage>())
+                                {
+                                    <RadzenSelectBarItem Value="@stage">
+                                        <Template>
+                                            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem" class="p-2">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" class="mb-0">@Localizer[stage.ToString()]</RadzenText>
+                                                <RadzenBadge Text="@(GetStageCount(stage).ToString())"
+                                                             BadgeStyle="@GetStageBadgeStyle(stage)" />
+                                            </RadzenStack>
+                                        </Template>
+                                    </RadzenSelectBarItem>
+                                }
+                            </Items>
+                        </RadzenSelectBar>
+                    </RadzenColumn>
+                </RadzenRow>
+            }
+        </RadioButtons>
+    </ListPageTitleComponent>
+
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Opportunity" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">

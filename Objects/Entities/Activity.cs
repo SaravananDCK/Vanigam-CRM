@@ -17,12 +17,10 @@ public class Activity : BaseClass
     public DateTimeOffset ActivityDate { get; set; } = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
 
     [Required]
-    [StringLength(50)]
-    public string Status { get; set; } = "Pending"; // Pending, Completed, Cancelled
+    public ActivityStatus Status { get; set; } = ActivityStatus.Pending;
 
     [Required]
-    [StringLength(50)]
-    public string Type { get; set; } = string.Empty; // Call, Email, Meeting
+    public ActivityType Type { get; set; } = ActivityType.Task;
 
     [StringLength(2000)]
     public string Notes { get; set; } = string.Empty;

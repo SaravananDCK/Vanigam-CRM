@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Vanigam.CRM.Objects.OData;
 using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Helpers;
 using Vanigam.CRM.Client.Pages.DetailView;
 
@@ -9,6 +10,9 @@ namespace Vanigam.CRM.Client.Pages.ListView
 {
     public partial class Activities
     {
+        private ActivityStatus? SelectedStatus = null;
+        private Dictionary<ActivityStatus, int> StatusCounts = new();
+        private int TotalCount = 0;
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try
@@ -16,6 +20,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 var result = await ActivityApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
+
+                // Load status counts only in non-embedded mode
+                if (!IsEmbeddedMode)
+                {
+                    await LoadStatusCounts();
+                }
             }
             catch (Exception ex)
             {
@@ -38,10 +48,14 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 filter = filter.FilterByAnd(u => u.OpportunityId == OpportunityId.Value);
             }
 
+            // Add status filter if selected
+            if (SelectedStatus.HasValue)
+            {
+                filter = filter.FilterByAnd($"Status eq '{SelectedStatus.Value}'");
+            }
+
             filter.BeginGroup()
                 .ContainsOr(u => u.Subject, SearchString)
-                .ContainsOr(u => u.Type, SearchString)
-                .ContainsOr(u => u.Status, SearchString)
                 .ContainsOr(u => u.Description, SearchString)
                 .ContainsOr(u => u.Notes, SearchString)
                 .EndGroup();
@@ -105,6 +119,91 @@ namespace Vanigam.CRM.Client.Pages.ListView
                     Detail = Localizer[$"UnableDelete"]
                 });
             }
+        }
+
+        private async Task LoadStatusCounts()
+        {
+            try
+            {
+                var request = new StatusSummaryRequest
+                {
+                    SearchFilter = GetBaseFilterString()
+                };
+
+                var summary = await ActivityApiService.GetStatusSummaryAsync(request);
+                TotalCount = summary.TotalCount;
+                StatusCounts = summary.StatusCounts.ToDictionary(kv => (ActivityStatus)kv.Key, kv => kv.Value);
+            }
+            catch (Exception ex)
+            {
+                // Fallback to zero counts if API call fails
+                StatusCounts.Clear();
+                TotalCount = 0;
+                foreach (ActivityStatus status in Enum.GetValues<ActivityStatus>())
+                {
+                    StatusCounts[status] = 0;
+                }
+            }
+        }
+
+        private string GetBaseFilterString()
+        {
+            var filter = new ODataFilter<Activity>();
+
+            // Filter by parent Lead or Opportunity if in embedded mode
+            if (IsEmbeddedMode && LeadId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.LeadId == LeadId.Value);
+            }
+            else if (IsEmbeddedMode && OpportunityId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.OpportunityId == OpportunityId.Value);
+            }
+
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .ContainsOr(u => u.Subject, SearchString)
+                    .ContainsOr(u => u.Description, SearchString)
+                    .ContainsOr(u => u.Notes, SearchString)
+                    .EndGroup();
+            }
+
+            return filter.Build();
+        }
+
+        protected async Task OnStatusChange(ActivityStatus? value)
+        {
+            SelectedStatus = value;
+            await GridReload();
+        }
+
+        // Overloaded methods for nullable and non-nullable status types
+        protected BadgeStyle GetStatusBadgeStyle(ActivityStatus? status)
+        {
+            if (!status.HasValue)
+                return BadgeStyle.Info; // For "All" option
+
+            return GetStatusBadgeStyle(status.Value);
+        }
+
+        protected BadgeStyle GetStatusBadgeStyle(ActivityStatus status)
+        {
+            return status switch
+            {
+                ActivityStatus.Pending => BadgeStyle.Warning,
+                ActivityStatus.Completed => BadgeStyle.Success,
+                ActivityStatus.Cancelled => BadgeStyle.Danger,
+                _ => BadgeStyle.Secondary
+            };
+        }
+
+        protected int GetStatusCount(ActivityStatus status)
+        {
+            if (StatusCounts == null)
+                return 0;
+
+            return StatusCounts.TryGetValue(status, out var count) ? count : 0;
         }
     }
 }

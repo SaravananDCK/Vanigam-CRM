@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Vanigam.CRM.Objects.OData;
 using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Helpers;
 using Vanigam.CRM.Client.Pages.DetailView;
 
@@ -9,6 +10,9 @@ namespace Vanigam.CRM.Client.Pages.ListView
 {
     public partial class Opportunities
     {
+        private OpportunityStage? SelectedStage = null;
+        private Dictionary<OpportunityStage, int> StageCounts = new();
+        private int TotalCount = 0;
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try
@@ -16,6 +20,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 var result = await OpportunityApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
+
+                // Load stage counts only in non-embedded mode
+                if (!IsEmbeddedMode)
+                {
+                    await LoadStageCounts();
+                }
             }
             catch (Exception ex)
             {
@@ -32,6 +42,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
             if (IsEmbeddedMode && LeadId.HasValue)
             {
                 filter = filter.FilterByAnd(u => u.LeadId == LeadId.Value);
+            }
+
+            // Add stage filter if selected
+            if (SelectedStage.HasValue)
+            {
+                filter = filter.FilterByAnd($"Stage eq '{SelectedStage.Value}'");
             }
 
             filter.BeginGroup()
@@ -93,6 +109,88 @@ namespace Vanigam.CRM.Client.Pages.ListView
                     Detail = Localizer[$"UnableDelete"]
                 });
             }
+        }
+
+        private async Task LoadStageCounts()
+        {
+            try
+            {
+                var request = new StatusSummaryRequest
+                {
+                    SearchFilter = GetBaseFilterString()
+                };
+
+                var summary = await OpportunityApiService.GetStatusSummaryAsync(request);
+                TotalCount = summary.TotalCount;
+                StageCounts = summary.StatusCounts.ToDictionary(kv => (OpportunityStage)kv.Key, kv => kv.Value);
+            }
+            catch (Exception ex)
+            {
+                // Fallback to zero counts if API call fails
+                StageCounts.Clear();
+                TotalCount = 0;
+                foreach (OpportunityStage stage in Enum.GetValues<OpportunityStage>())
+                {
+                    StageCounts[stage] = 0;
+                }
+            }
+        }
+
+        private string GetBaseFilterString()
+        {
+            var filter = new ODataFilter<Opportunity>();
+
+            // Filter by parent Lead if in embedded mode
+            if (IsEmbeddedMode && LeadId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.LeadId == LeadId.Value);
+            }
+
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .ContainsOr(u => u.Title, SearchString)
+                    .EndGroup();
+            }
+
+            return filter.Build();
+        }
+
+        protected async Task OnStageChange(OpportunityStage? value)
+        {
+            SelectedStage = value;
+            await GridReload();
+        }
+
+        // Overloaded methods for nullable and non-nullable stage types
+        protected BadgeStyle GetStageBadgeStyle(OpportunityStage? stage)
+        {
+            if (!stage.HasValue)
+                return BadgeStyle.Info; // For "All" option
+
+            return GetStageBadgeStyle(stage.Value);
+        }
+
+        protected BadgeStyle GetStageBadgeStyle(OpportunityStage stage)
+        {
+            return stage switch
+            {
+                OpportunityStage.Prospecting => BadgeStyle.Light,
+                OpportunityStage.Qualified => BadgeStyle.Info,
+                OpportunityStage.Proposal => BadgeStyle.Warning,
+                OpportunityStage.Negotiation => BadgeStyle.Primary,
+                OpportunityStage.ClosedWon => BadgeStyle.Success,
+                OpportunityStage.ClosedLost => BadgeStyle.Danger,
+                _ => BadgeStyle.Secondary
+            };
+        }
+
+        protected int GetStageCount(OpportunityStage stage)
+        {
+            if (StageCounts == null)
+                return 0;
+
+            return StageCounts.TryGetValue(stage, out var count) ? count : 0;
         }
     }
 }

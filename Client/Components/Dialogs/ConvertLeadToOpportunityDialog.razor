@@ -1,13 +1,12 @@
 @using Vanigam.CRM.Objects.Entities
 @using Vanigam.CRM.Client.Services
 @using Microsoft.Extensions.Localization
+@using Vanigam.CRM.Helpers
 @inject LeadApiService ConversionService
-@inject NotificationService NotificationService
+@inherits CoreView
 @inject IStringLocalizer<ConvertLeadToOpportunityDialog> Localizer
 
 <RadzenStack>
-    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-4">@Localizer["ConvertLeadToOpportunity"]</RadzenText>
-
     @if (Lead != null)
     {
         <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Info" class="rz-mb-4">
@@ -84,7 +83,7 @@
                     Summary = Localizer["Success"],
                     Detail = Localizer["LeadConvertedSuccessfully"]
                 });
-
+                DialogService.CloseDialog();
                 await OnConverted.InvokeAsync(opportunity);
             }
         }
@@ -114,6 +113,7 @@
 
     private async Task Cancel()
     {
+        DialogService.CloseDialog();
         await OnCanceled.InvokeAsync();
     }
 

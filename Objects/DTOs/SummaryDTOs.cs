@@ -11,11 +11,13 @@ namespace Vanigam.CRM.Objects.DTOs
         /// <summary>
         /// Total count of all records (equivalent to "All" filter)
         /// </summary>
+        [JsonPropertyName("totalCount")]
         public int TotalCount { get; set; }
 
         /// <summary>
         /// Dictionary containing count for each enum status value
         /// </summary>
+        [JsonPropertyName("statusCounts")]
         public Dictionary<TEnum, int> StatusCounts { get; set; } = new();
 
         /// <summary>
