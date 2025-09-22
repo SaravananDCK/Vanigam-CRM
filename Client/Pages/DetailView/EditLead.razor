@@ -83,6 +83,11 @@
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
                             </div>
+
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Description"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Description ?? "-")</RadzenText>
+                            </div>
                         </div>
                     </RadzenColumn>
                 </RadzenRow>
@@ -214,6 +219,11 @@
                     <VanigamAccountingFormField Text=@Localizer["Website"]>
                         <ChildContent>
                             <VanigamAccountingTextBox @bind-Value="@CurrentObject.Website" Name="txt_Website" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                    <VanigamAccountingFormField Text=@Localizer["Description"]>
+                        <ChildContent>
+                            <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="textarea_Description" Rows="3" Style="width: 100%;" />
                         </ChildContent>
                     </VanigamAccountingFormField>
                 </RadzenColumn>

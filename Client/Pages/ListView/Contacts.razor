@@ -39,15 +39,33 @@
                             </Template>
                         </RadzenDataGridColumn>
                     }
-                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.FirstName) Title=@Localizer["FirstName"]>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.FirstName) Title=@Localizer["FirstName"] Width="120px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.LastName) Title=@Localizer["LastName"]>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.LastName) Title=@Localizer["LastName"] Width="120px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Email) Title=@Localizer["Email"]>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.JobTitle) Title=@Localizer["JobTitle"] Width="150px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Phone) Title=@Localizer["Phone"]>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Department) Title=@Localizer["Department"] Width="120px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Type) Title=@Localizer["Type"]>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Email) Title=@Localizer["Email"] Width="200px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Phone) Title=@Localizer["Phone"] Width="130px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Mobile) Title=@Localizer["Mobile"] Width="130px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.City) Title=@Localizer["City"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.IsPrimary) Title=@Localizer["Primary"] Width="80px">
+                        <Template Context="contact">
+                            @if (contact.IsPrimary)
+                            {
+                                <RadzenIcon Icon="star" Style="color: gold;" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Status) Title=@Localizer["Status"] Width="100px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Type) Title=@Localizer["Type"] Width="100px">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

@@ -44,6 +44,14 @@
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["ActivityDate"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@GetActivityDateDisplay(CurrentObject.ActivityDate)</RadzenText>
                             </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Duration"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Duration?.ToString() ?? "-") @if(CurrentObject.Duration.HasValue) { <text>minutes</text> }</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Priority"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Priority.ToString())</RadzenText>
+                            </div>
                         </div>
                     </RadzenColumn>
                     <RadzenColumn Size="6">
@@ -65,6 +73,10 @@
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Description"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Description ?? "-")</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Outcome"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Outcome ?? "-")</RadzenText>
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Notes"]:</strong></RadzenText>
@@ -107,6 +119,18 @@
                 </ChildContent>
             </VanigamAccountingFormField>
 
+            <VanigamAccountingFormField Text=@Localizer["Duration"]>
+                <ChildContent>
+                    <RadzenNumeric @bind-Value="@CurrentObject.Duration" Name="num_Duration" Placeholder="@Localizer["Minutes"]" class="w-100" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+
+            <VanigamAccountingFormField Text=@Localizer["Priority"]>
+                <ChildContent>
+                    <PriorityEnumDropDown @bind-Value="@CurrentObject.Priority" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+
             @if (CurrentObject.LeadId.HasValue)
             {
                 <VanigamAccountingFormField Text=@Localizer["Lead"]>
@@ -128,6 +152,12 @@
             <VanigamAccountingFormField Text=@Localizer["Description"]>
                 <ChildContent>
                     <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="txt_Description" Rows="4" class="w-100" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+
+            <VanigamAccountingFormField Text=@Localizer["Outcome"]>
+                <ChildContent>
+                    <RadzenTextArea @bind-Value="@CurrentObject.Outcome" Name="txt_Outcome" Rows="3" class="w-100" />
                 </ChildContent>
             </VanigamAccountingFormField>
 

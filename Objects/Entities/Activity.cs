@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using NodaTime;
 using Vanigam.CRM.Objects.Contracts;
 
@@ -16,11 +17,19 @@ public class Activity : BaseClass
 
     public DateTimeOffset ActivityDate { get; set; } = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
 
+    public int? Duration { get; set; }
+
     [Required]
     public ActivityStatus Status { get; set; } = ActivityStatus.Pending;
 
     [Required]
     public ActivityType Type { get; set; } = ActivityType.Task;
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public Priority Priority { get; set; } = Priority.Normal;
+
+    [StringLength(2000)]
+    public string? Outcome { get; set; }
 
     [StringLength(2000)]
     public string Notes { get; set; } = string.Empty;

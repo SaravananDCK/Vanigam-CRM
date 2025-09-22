@@ -75,6 +75,8 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Source) Title=@Localizer["Source"] Width="120px">
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Description) Title=@Localizer["Description"] Width="200px">
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.LeadScore) Title=@Localizer["LeadScore"] Width="100px">
                         <Template Context="lead">
                             <RadzenBadge Text="@lead.LeadScore.ToString()"

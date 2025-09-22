@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Vanigam.CRM.Objects.OData;
@@ -10,6 +11,10 @@ namespace Vanigam.CRM.Client.Pages.ListView
 {
     public partial class Opportunities
     {
+
+        [Parameter] public Guid? LeadId { get; set; }
+        [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+        [Parameter] public string EmbeddedTitle { get; set; }
         private OpportunityStage? SelectedStage = null;
         private Dictionary<OpportunityStage, int> StageCounts = new();
         private int TotalCount = 0;
@@ -192,5 +197,6 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
             return StageCounts.TryGetValue(stage, out var count) ? count : 0;
         }
+
     }
 }

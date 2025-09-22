@@ -71,11 +71,20 @@
                             @activity.ActivityDate.ToDateTimeUtc().ToString("yyyy-MM-dd HH:mm")
                         </Template>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Duration) Title=@Localizer["Duration"] Width="100px">
+                        <Template Context="activity">
+                            @(activity.Duration?.ToString() ?? "-") @if(activity.Duration.HasValue) { <text>min</text> }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Priority) Title=@Localizer["Priority"] Width="100px">
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property="Lead.Name" Title=@Localizer["Lead"] Visible="@(!IsEmbeddedMode && LeadId == null)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property="Opportunity.Title" Title=@Localizer["Opportunity"] Visible="@(!IsEmbeddedMode && OpportunityId == null)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Description) Title=@Localizer["Description"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Outcome) Title=@Localizer["Outcome"] Width="150px">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

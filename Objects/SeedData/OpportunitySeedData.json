@@ -1,0 +1,167 @@
+[
+  {
+    "Title": "TCS Digital Transformation Initiative",
+    "Description": "Comprehensive digital transformation project for modernizing internal IT infrastructure and implementing cloud-native solutions.",
+    "EstimatedValue": 15000000.00,
+    "ExpectedCloseDate": "2024-06-30T00:00:00Z",
+    "Stage": "Proposal",
+    "Probability": 75,
+    "Source": "Existing Customer",
+    "Notes": "Multi-year engagement with TCS for their internal digital transformation. Strong relationship and high probability of closure.",
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Title": "HDFC Bank Core Banking Upgrade",
+    "Description": "Modernization of core banking platform with real-time processing capabilities and enhanced security features.",
+    "EstimatedValue": 25000000.00,
+    "ExpectedCloseDate": "2024-09-15T00:00:00Z",
+    "Stage": "Negotiation",
+    "Probability": 80,
+    "Source": "RFP Response",
+    "Notes": "HDFC Bank seeking next-generation core banking solution. Currently in final negotiations on contract terms.",
+    "CreatedAtUtc": "2024-01-05T00:00:00Z"
+  },
+  {
+    "Title": "Airtel 5G Network Management",
+    "Description": "Implementation of advanced network management system for Airtel's 5G infrastructure across major Indian cities.",
+    "EstimatedValue": 18000000.00,
+    "ExpectedCloseDate": "2024-08-20T00:00:00Z",
+    "Stage": "Qualified",
+    "Probability": 60,
+    "Source": "Industry Conference",
+    "Notes": "Airtel expanding 5G network rapidly. Need comprehensive management solution for network optimization.",
+    "CreatedAtUtc": "2024-01-15T00:00:00Z"
+  },
+  {
+    "Title": "Apollo Hospital Chain EMR System",
+    "Description": "Electronic Medical Records system implementation across Apollo's 70+ hospitals nationwide.",
+    "EstimatedValue": 12000000.00,
+    "ExpectedCloseDate": "2024-07-10T00:00:00Z",
+    "Stage": "Proposal",
+    "Probability": 70,
+    "Source": "Healthcare Conference",
+    "Notes": "Apollo looking to standardize EMR across all locations. Compliance with Indian healthcare regulations critical.",
+    "CreatedAtUtc": "2024-01-20T00:00:00Z"
+  },
+  {
+    "Title": "Mahindra Manufacturing Analytics",
+    "Description": "IoT and analytics platform for Mahindra's manufacturing facilities to optimize production and reduce downtime.",
+    "EstimatedValue": 8500000.00,
+    "ExpectedCloseDate": "2024-05-25T00:00:00Z",
+    "Stage": "Negotiation",
+    "Probability": 85,
+    "Source": "Partner Referral",
+    "Notes": "Strong partner endorsement. Mahindra eager to implement Industry 4.0 solutions across manufacturing plants.",
+    "CreatedAtUtc": "2024-01-12T00:00:00Z"
+  },
+  {
+    "Title": "Wipro Internal Collaboration Platform",
+    "Description": "Enterprise collaboration and knowledge management platform for Wipro's global workforce.",
+    "EstimatedValue": 6000000.00,
+    "ExpectedCloseDate": "2024-04-30T00:00:00Z",
+    "Stage": "ClosedWon",
+    "Probability": 100,
+    "Source": "Direct Sales",
+    "Notes": "Successfully closed deal with Wipro. Implementation to begin next month.",
+    "CreatedAtUtc": "2024-01-08T00:00:00Z"
+  },
+  {
+    "Title": "Asian Paints Supply Chain Optimization",
+    "Description": "AI-powered supply chain optimization solution for Asian Paints' distribution network across India.",
+    "EstimatedValue": 4500000.00,
+    "ExpectedCloseDate": "2024-06-15T00:00:00Z",
+    "Stage": "Prospecting",
+    "Probability": 40,
+    "Source": "Cold Outreach",
+    "Notes": "Initial discussions started. Asian Paints interested in reducing supply chain costs and improving efficiency.",
+    "CreatedAtUtc": "2024-01-25T00:00:00Z"
+  },
+  {
+    "Title": "Dr. Reddy's Regulatory Compliance Platform",
+    "Description": "Comprehensive regulatory compliance and quality management system for pharmaceutical operations.",
+    "EstimatedValue": 7200000.00,
+    "ExpectedCloseDate": "2024-08-05T00:00:00Z",
+    "Stage": "Qualified",
+    "Probability": 65,
+    "Source": "Industry Publication",
+    "Notes": "Dr. Reddy's needs robust compliance platform for global regulatory requirements. Strong technical fit.",
+    "CreatedAtUtc": "2024-01-18T00:00:00Z"
+  },
+  {
+    "Title": "Godrej Digital Marketing Platform",
+    "Description": "Integrated digital marketing and customer engagement platform for Godrej's consumer brands.",
+    "EstimatedValue": 3500000.00,
+    "ExpectedCloseDate": "2024-05-10T00:00:00Z",
+    "Stage": "Proposal",
+    "Probability": 55,
+    "Source": "Marketing Conference",
+    "Notes": "Godrej looking to enhance digital marketing capabilities. Competition from other vendors is strong.",
+    "CreatedAtUtc": "2024-01-22T00:00:00Z"
+  },
+  {
+    "Title": "Reliance Retail Analytics Platform",
+    "Description": "Advanced retail analytics and customer insights platform for Reliance's retail operations.",
+    "EstimatedValue": 22000000.00,
+    "ExpectedCloseDate": "2024-10-30T00:00:00Z",
+    "Stage": "Prospecting",
+    "Probability": 30,
+    "Source": "Strategic Partnership",
+    "Notes": "Massive opportunity with Reliance Retail. Early stage discussions but significant potential value.",
+    "CreatedAtUtc": "2024-01-28T00:00:00Z"
+  },
+  {
+    "Title": "IIT Delhi Research Data Platform",
+    "Description": "Research data management and collaboration platform for IIT Delhi's academic and research activities.",
+    "EstimatedValue": 2800000.00,
+    "ExpectedCloseDate": "2024-04-15T00:00:00Z",
+    "Stage": "Qualified",
+    "Probability": 80,
+    "Source": "Government RFP",
+    "Notes": "Government-funded project with IIT Delhi. Budget approved and timeline confirmed.",
+    "CreatedAtUtc": "2024-01-14T00:00:00Z"
+  },
+  {
+    "Title": "Zomato Customer Experience Enhancement",
+    "Description": "AI-powered customer experience platform to improve food delivery and customer satisfaction metrics.",
+    "EstimatedValue": 5500000.00,
+    "ExpectedCloseDate": "2024-03-20T00:00:00Z",
+    "Stage": "Negotiation",
+    "Probability": 90,
+    "Source": "Startup Network",
+    "Notes": "Zomato urgently needs customer experience improvements. Final contract negotiations in progress.",
+    "CreatedAtUtc": "2024-01-06T00:00:00Z"
+  },
+  {
+    "Title": "Blue Dart Logistics Automation",
+    "Description": "Comprehensive logistics automation platform for Blue Dart's pan-India operations and last-mile delivery.",
+    "EstimatedValue": 9500000.00,
+    "ExpectedCloseDate": "2024-07-25T00:00:00Z",
+    "Stage": "Proposal",
+    "Probability": 70,
+    "Source": "Industry Referral",
+    "Notes": "Blue Dart looking to automate logistics operations. Strong technical requirements match with our platform.",
+    "CreatedAtUtc": "2024-01-16T00:00:00Z"
+  },
+  {
+    "Title": "Oxfam India Program Management",
+    "Description": "NGO program management and impact tracking system for Oxfam India's social development initiatives.",
+    "EstimatedValue": 1200000.00,
+    "ExpectedCloseDate": "2024-12-15T00:00:00Z",
+    "Stage": "Prospecting",
+    "Probability": 45,
+    "Source": "NGO Network",
+    "Notes": "Oxfam India interested in digital transformation of program management. Budget constraints but strong mission alignment.",
+    "CreatedAtUtc": "2024-01-30T00:00:00Z"
+  },
+  {
+    "Title": "Big Bazaar Omnichannel Platform",
+    "Description": "Integrated omnichannel retail platform connecting online and offline shopping experiences for Big Bazaar.",
+    "EstimatedValue": 6800000.00,
+    "ExpectedCloseDate": "2024-09-30T00:00:00Z",
+    "Stage": "Qualified",
+    "Probability": 60,
+    "Source": "Retail Summit",
+    "Notes": "Big Bazaar wants to compete with e-commerce giants. Omnichannel strategy is key priority for management.",
+    "CreatedAtUtc": "2024-01-24T00:00:00Z"
+  }
+]

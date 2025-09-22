@@ -64,9 +64,18 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Title) Title=@Localizer["Title"]>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Description) Title=@Localizer["Description"] Width="200px">
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.EstimatedValue) Title=@Localizer["EstimatedValue"]>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Probability) Title=@Localizer["Probability"] Width="100px">
+                        <Template Context="opportunity">
+                            @(opportunity.Probability)%
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Stage) Title=@Localizer["Stage"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Source) Title=@Localizer["Source"] Width="120px">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.ExpectedCloseDate) Title=@Localizer["ExpectedCloseDate"]>
                     </RadzenDataGridColumn>
@@ -77,9 +86,3 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
-
-@code {
-    [Parameter] public Guid? LeadId { get; set; }
-    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
-    [Parameter] public string? EmbeddedTitle { get; set; }
-}

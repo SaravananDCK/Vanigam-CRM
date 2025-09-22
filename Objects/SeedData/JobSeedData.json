@@ -1,0 +1,107 @@
+[
+  {
+    "Title": "TCS Digital Infrastructure Modernization",
+    "Description": "Complete overhaul of TCS's internal IT infrastructure including cloud migration, security enhancement, and system integration across 15 major offices in India.",
+    "Status": "InProgress",
+    "Priority": "High",
+    "CreatedAtUtc": "2024-01-15T00:00:00Z"
+  },
+  {
+    "Title": "HDFC Core Banking System Implementation",
+    "Description": "Deployment of next-generation core banking platform with real-time processing capabilities, mobile integration, and compliance features for HDFC Bank's nationwide operations.",
+    "Status": "InProgress",
+    "Priority": "Critical",
+    "CreatedAtUtc": "2024-01-20T00:00:00Z"
+  },
+  {
+    "Title": "Airtel 5G Network Management Deployment",
+    "Description": "Implementation of advanced network management system for Airtel's 5G infrastructure covering Delhi, Mumbai, Bangalore, and Chennai metro areas.",
+    "Status": "Pending",
+    "Priority": "High",
+    "CreatedAtUtc": "2024-01-25T00:00:00Z"
+  },
+  {
+    "Title": "Apollo EMR System Rollout - Phase 1",
+    "Description": "Electronic Medical Records system implementation across Apollo's first 20 hospitals in South India, including staff training and data migration.",
+    "Status": "InProgress",
+    "Priority": "High",
+    "CreatedAtUtc": "2024-01-30T00:00:00Z"
+  },
+  {
+    "Title": "Mahindra Manufacturing Analytics Platform",
+    "Description": "IoT and analytics platform deployment across Mahindra's manufacturing facilities in Maharashtra and Tamil Nadu for production optimization.",
+    "Status": "InProgress",
+    "Priority": "Medium",
+    "CreatedAtUtc": "2024-02-05T00:00:00Z"
+  },
+  {
+    "Title": "Wipro Collaboration Platform Deployment",
+    "Description": "Enterprise collaboration and knowledge management platform implementation for Wipro's global workforce of 240,000 employees.",
+    "Status": "Completed",
+    "Priority": "Medium",
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Title": "Asian Paints Supply Chain Optimization",
+    "Description": "AI-powered supply chain optimization solution implementation across Asian Paints' distribution network in North and West India.",
+    "Status": "Pending",
+    "Priority": "Medium",
+    "CreatedAtUtc": "2024-02-01T00:00:00Z"
+  },
+  {
+    "Title": "Dr. Reddy's Regulatory Compliance System",
+    "Description": "Comprehensive regulatory compliance and quality management system deployment for pharmaceutical operations across 3 manufacturing sites.",
+    "Status": "Planning",
+    "Priority": "High",
+    "CreatedAtUtc": "2024-02-10T00:00:00Z"
+  },
+  {
+    "Title": "Godrej Digital Marketing Platform Integration",
+    "Description": "Integrated digital marketing and customer engagement platform setup for Godrej's consumer brands including training and data integration.",
+    "Status": "Pending",
+    "Priority": "Medium",
+    "CreatedAtUtc": "2024-02-15T00:00:00Z"
+  },
+  {
+    "Title": "Reliance Retail Analytics Platform - Mumbai Pilot",
+    "Description": "Advanced retail analytics and customer insights platform pilot implementation across 50 Reliance Retail stores in Mumbai region.",
+    "Status": "Planning",
+    "Priority": "Low",
+    "CreatedAtUtc": "2024-02-08T00:00:00Z"
+  },
+  {
+    "Title": "IIT Delhi Research Data Platform Setup",
+    "Description": "Research data management and collaboration platform implementation for IIT Delhi's academic and research activities across all departments.",
+    "Status": "InProgress",
+    "Priority": "Medium",
+    "CreatedAtUtc": "2024-01-18T00:00:00Z"
+  },
+  {
+    "Title": "Zomato Customer Experience Platform",
+    "Description": "AI-powered customer experience platform implementation to improve food delivery metrics and customer satisfaction across major Indian cities.",
+    "Status": "InProgress",
+    "Priority": "High",
+    "CreatedAtUtc": "2024-01-12T00:00:00Z"
+  },
+  {
+    "Title": "Blue Dart Logistics Automation System",
+    "Description": "Comprehensive logistics automation platform deployment for Blue Dart's pan-India operations including last-mile delivery optimization.",
+    "Status": "Planning",
+    "Priority": "High",
+    "CreatedAtUtc": "2024-02-12T00:00:00Z"
+  },
+  {
+    "Title": "Oxfam India Program Management System",
+    "Description": "NGO program management and impact tracking system implementation for Oxfam India's social development initiatives across rural areas.",
+    "Status": "Pending",
+    "Priority": "Low",
+    "CreatedAtUtc": "2024-02-20T00:00:00Z"
+  },
+  {
+    "Title": "Big Bazaar Omnichannel Platform Implementation",
+    "Description": "Integrated omnichannel retail platform connecting online and offline shopping experiences across Big Bazaar's 200+ stores nationwide.",
+    "Status": "Planning",
+    "Priority": "Medium",
+    "CreatedAtUtc": "2024-02-18T00:00:00Z"
+  }
+]

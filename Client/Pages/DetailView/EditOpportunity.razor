@@ -48,8 +48,18 @@
                                 </div>
 
                                 <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Description"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Description ?? "-")</RadzenText>
+                                </div>
+
+                                <div class="read-only-field rz-mb-3">
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["EstimatedValue"]:</strong></RadzenText>
                                     <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.EstimatedValue.ToString("C"))</RadzenText>
+                                </div>
+
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Source"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Source ?? "-")</RadzenText>
                                 </div>
                             </div>
                         </RadzenStack>
@@ -63,8 +73,18 @@
                                 </div>
 
                                 <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Probability"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Probability)%</RadzenText>
+                                </div>
+
+                                <div class="read-only-field rz-mb-3">
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["ExpectedCloseDate"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.ExpectedCloseDate.ToString("yyyy-MM-dd"))</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.ExpectedCloseDate?.ToString("yyyy-MM-dd"))</RadzenText>
+                                </div>
+
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Comments"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Comments ?? "-")</RadzenText>
                                 </div>
                             </div>
                         </RadzenStack>
@@ -84,19 +104,39 @@
                     <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
                 </ChildContent>
             </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["Description"]>
+                <ChildContent>
+                    <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="txt_Description" Rows="3" />
+                </ChildContent>
+            </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["EstimatedValue"]>
                 <ChildContent>
                     <RadzenNumeric @bind-Value="@CurrentObject.EstimatedValue" Name="numeric_EstimatedValue" />
                 </ChildContent>
             </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["Probability"]>
+                <ChildContent>
+                    <RadzenNumeric @bind-Value="@CurrentObject.Probability" Name="numeric_Probability" Min="0" Max="100" Step="5" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["Source"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Source" Name="txt_Source" />
+                </ChildContent>
+            </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["Stage"]>
                 <ChildContent>
                     <OpportunityStageEnumDropDown @bind-Value="@CurrentObject.Stage" />
-                                                                                                                                       </ChildContent>
+                </ChildContent>
             </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["ExpectedCloseDate"]>
                 <ChildContent>
                     <RadzenDatePicker @bind-Value="@CurrentObject.ExpectedCloseDate" Name="date_ExpectedCloseDate" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["Comments"]>
+                <ChildContent>
+                    <RadzenTextArea @bind-Value="@CurrentObject.Comments" Name="txt_Comments" Rows="3" />
                 </ChildContent>
             </VanigamAccountingFormField>
         </RadzenStack>

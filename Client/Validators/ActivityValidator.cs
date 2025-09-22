@@ -14,6 +14,13 @@ namespace Vanigam.CRM.Client.Validators
             RuleFor(c => c.ActivityDate).NotEmpty().WithMessage(localizer["ActivityDateRequired"]);
             RuleFor(c => c.Description).MaximumLength(2000).WithMessage(localizer["DescriptionTooLong"]);
             RuleFor(c => c.Notes).MaximumLength(2000).WithMessage(localizer["NotesTooLong"]);
+
+            RuleFor(c => c.Duration).GreaterThan(0).When(c => c.Duration.HasValue)
+                .WithMessage(localizer["DurationMustBePositive"]);
+
+            RuleFor(c => c.Priority).NotEmpty().WithMessage(localizer["PriorityRequired"]);
+
+            RuleFor(c => c.Outcome).MaximumLength(2000).WithMessage(localizer["OutcomeTooLong"]);
         }
     }
 }

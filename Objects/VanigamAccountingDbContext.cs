@@ -127,6 +127,11 @@ namespace Vanigam.CRM.Objects
                 await this.SeedTenantsAdmin();
                 await this.SeedRoleClaims();
                 await this.SeedLeadData();
+                await this.SeedCustomerData();
+                await this.SeedOpportunityData();
+                await this.SeedJobData();
+                await this.SeedActivityData();
+                await this.SeedContactData();
                 //foreach (var fn in beforeUpdate)
                 //{
                 //    await using var stream = typeof(Party).Assembly.GetManifestResourceStream(fn);
@@ -415,6 +420,7 @@ namespace Vanigam.CRM.Objects
                         CampaignSource = seedLead.CampaignSource,
                         ReferredBy = seedLead.ReferredBy,
                         LinkedInProfile = seedLead.LinkedInProfile,
+                        Description = seedLead.Description,
                         Status = Enum.TryParse<LeadStatus>(seedLead.Status, out var status) ? status : LeadStatus.New,
                         Comments = seedLead.Comments,
                         LastContactDate = DateTime.TryParse(seedLead.LastContactDate, out var lastContact) ? DateTime.SpecifyKind(lastContact, DateTimeKind.Utc) : null,
@@ -436,6 +442,397 @@ namespace Vanigam.CRM.Objects
             {
                 // Log the exception but don't throw to avoid breaking the seeding process
                 Console.WriteLine($"Error seeding Lead data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedCustomerData()
+        {
+            // Check if Customer data already exists
+            if (await Customers.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "CustomerSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "CustomerSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var customerSeedData = System.Text.Json.JsonSerializer.Deserialize<List<CustomerSeedModel>>(jsonContent);
+
+                if (customerSeedData?.Any() != true)
+                    return;
+
+                var customers = new List<Customer>();
+                foreach (var seedCustomer in customerSeedData)
+                {
+                    var customer = new Customer
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Name = seedCustomer.Name,
+                        Type = Enum.TryParse<CustomerType>(seedCustomer.Type, out var type) ? type : CustomerType.Company,
+                        Email = seedCustomer.Email,
+                        Phone = seedCustomer.Phone,
+                        Address = seedCustomer.Address,
+                        City = seedCustomer.City,
+                        State = seedCustomer.State,
+                        PostalCode = seedCustomer.PostalCode,
+                        Country = seedCustomer.Country,
+                        Website = seedCustomer.Website,
+                        Industry = seedCustomer.Industry,
+                        AnnualRevenue = seedCustomer.AnnualRevenue,
+                        EmployeeCount = seedCustomer.EmployeeCount,
+                        CustomerSince = DateTime.TryParse(seedCustomer.CustomerSince, out var customerSince) ?
+                            Instant.FromDateTimeUtc(DateTime.SpecifyKind(customerSince, DateTimeKind.Utc)).ToDateTimeOffset() : null,
+                        Status = Enum.TryParse<CustomerStatus>(seedCustomer.Status, out var status) ? status : CustomerStatus.Active,
+                        Rating = seedCustomer.Rating,
+                        Description = seedCustomer.Description,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    customers.Add(customer);
+                }
+
+                await Customers.AddRangeAsync(customers);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding Customer data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedOpportunityData()
+        {
+            // Check if Opportunity data already exists
+            if (await Opportunities.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "OpportunitySeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "OpportunitySeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var opportunitySeedData = System.Text.Json.JsonSerializer.Deserialize<List<OpportunitySeedModel>>(jsonContent);
+
+                if (opportunitySeedData?.Any() != true)
+                    return;
+
+                var opportunities = new List<Opportunity>();
+                foreach (var seedOpportunity in opportunitySeedData)
+                {
+                    var opportunity = new Opportunity
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Title = seedOpportunity.Title,
+                        Description = seedOpportunity.Description,
+                        EstimatedValue = seedOpportunity.EstimatedValue,
+                        ExpectedCloseDate = DateTime.TryParse(seedOpportunity.ExpectedCloseDate, out var expectedCloseDate) ? DateTime.SpecifyKind(expectedCloseDate, DateTimeKind.Utc) : null,
+                        Stage = Enum.TryParse<OpportunityStage>(seedOpportunity.Stage, out var stage) ? stage : OpportunityStage.Prospecting,
+                        Probability = seedOpportunity.Probability,
+                        Source = seedOpportunity.Source,
+                        Comments = seedOpportunity.Notes,
+                        Notes = seedOpportunity.Notes,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = DateTime.TryParse(seedOpportunity.CreatedAtUtc, out var createdAt) ?
+                            Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :
+                            SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    opportunities.Add(opportunity);
+                }
+
+                await Opportunities.AddRangeAsync(opportunities);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding Opportunity data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedJobData()
+        {
+            // Check if Job data already exists
+            if (await Jobs.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "JobSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "JobSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var jobSeedData = System.Text.Json.JsonSerializer.Deserialize<List<JobSeedModel>>(jsonContent);
+
+                if (jobSeedData?.Any() != true)
+                    return;
+
+                var jobs = new List<Job>();
+                foreach (var seedJob in jobSeedData)
+                {
+                    var job = new Job
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Title = seedJob.Title,
+                        Description = seedJob.Description,
+                        Status = Enum.TryParse<JobStatus>(seedJob.Status, out var status) ? status : JobStatus.Pending,
+                        Priority = Enum.TryParse<Priority>(seedJob.Priority, out var priority) ? priority : Priority.Normal,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = DateTime.TryParse(seedJob.CreatedAtUtc, out var createdAt) ?
+                            Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :
+                            SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    jobs.Add(job);
+                }
+
+                await Jobs.AddRangeAsync(jobs);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding Job data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedActivityData()
+        {
+            // Check if Activity data already exists
+            if (await Activities.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "ActivitySeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "ActivitySeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var activitySeedData = System.Text.Json.JsonSerializer.Deserialize<List<ActivitySeedModel>>(jsonContent);
+
+                if (activitySeedData?.Any() != true)
+                    return;
+
+                var activities = new List<Activity>();
+                foreach (var seedActivity in activitySeedData)
+                {
+                    var activity = new Activity
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Type = Enum.TryParse<ActivityType>(seedActivity.Type, out var type) ? type : ActivityType.Call,
+                        Subject = seedActivity.Subject,
+                        Description = seedActivity.Description,
+                        ActivityDate = DateTime.TryParse(seedActivity.ActivityDate, out var activityDate) ?
+                            Instant.FromDateTimeUtc(DateTime.SpecifyKind(activityDate, DateTimeKind.Utc)).ToDateTimeOffset() :
+                            SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        Duration = seedActivity.Duration,
+                        Status = Enum.TryParse<ActivityStatus>(seedActivity.Status, out var status) ? status : ActivityStatus.Pending,
+                        Priority = Enum.TryParse<Priority>(seedActivity.Priority, out var priority) ? priority : Priority.Normal,
+                        Outcome = seedActivity.Outcome,
+                        Notes = seedActivity.Notes,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = DateTime.TryParse(seedActivity.CreatedAtUtc, out var createdAt) ?
+                            Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :
+                            SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    activities.Add(activity);
+                }
+
+                await Activities.AddRangeAsync(activities);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding Activity data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedContactData()
+        {
+            // Check if Contact data already exists
+            if (await Contacts.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "ContactSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "ContactSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var contactSeedData = System.Text.Json.JsonSerializer.Deserialize<List<ContactSeedModel>>(jsonContent);
+
+                if (contactSeedData?.Any() != true)
+                    return;
+
+                var contacts = new List<Contact>();
+                foreach (var seedContact in contactSeedData)
+                {
+                    var contact = new Contact
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        FirstName = seedContact.FirstName,
+                        LastName = seedContact.LastName,
+                        JobTitle = seedContact.JobTitle,
+                        Department = seedContact.Department,
+                        Email = seedContact.Email,
+                        Phone = seedContact.Phone,
+                        Mobile = seedContact.Mobile,
+                        LinkedInProfile = seedContact.LinkedInProfile,
+                        Address = seedContact.Address,
+                        City = seedContact.City,
+                        State = seedContact.State,
+                        PostalCode = seedContact.PostalCode,
+                        Country = seedContact.Country,
+                        IsPrimary = seedContact.IsPrimary,
+                        Status = Enum.TryParse<ContactStatus>(seedContact.Status, out var status) ? status : ContactStatus.Active,
+                        Notes = seedContact.Notes,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = DateTime.TryParse(seedContact.CreatedAtUtc, out var createdAt) ?
+                            Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :
+                            SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    contacts.Add(contact);
+                }
+
+                await Contacts.AddRangeAsync(contacts);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding Contact data: {ex.Message}");
             }
         }
 

@@ -9,15 +9,20 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditJob
     {
         [Inject] private JobApiService JobApiService { get; set; }
-
-        protected int SelectedTabIndex = 0;
-
+        [Parameter] public Guid? CustomerId { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
             {
                 CurrentObject = new();
+
+                // If CustomerId is provided, set it on the new job
+                if (CustomerId.HasValue)
+                {
+                    CurrentObject.CustomerId = CustomerId.Value;
+                }
+
                 IsReadOnlyMode = false; // Create mode - always editable
             }
             else

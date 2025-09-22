@@ -15,7 +15,7 @@ namespace Vanigam.CRM.Objects.Entities
         public string? Description { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public JobStatus Status { get; set; } = JobStatus.New;
+        public JobStatus Status { get; set; } = JobStatus.Pending;
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public Priority Priority { get; set; } = Priority.Normal;

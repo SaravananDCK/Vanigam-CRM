@@ -84,6 +84,10 @@ namespace Vanigam.CRM.Objects.Entities
         [StringLength(200)]
         public string? LinkedInProfile { get; set; }
 
+        // Lead Description
+        [StringLength(1000)]
+        public string? Description { get; set; }
+
         // Status & Classification
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LeadStatus Status { get; set; } = LeadStatus.New;

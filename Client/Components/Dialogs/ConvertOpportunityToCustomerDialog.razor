@@ -1,85 +1,50 @@
 @using Vanigam.CRM.Objects.Entities
 @using Vanigam.CRM.Client.Services
 @using Microsoft.Extensions.Localization
+@inherits CoreView
 @inject LeadApiService ConversionService
-@inject NotificationService NotificationService
 @inject IStringLocalizer<ConvertOpportunityToCustomerDialog> Localizer
 
 <RadzenStack>
-    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-4">@Localizer["ConvertOpportunityToCustomer"]</RadzenText>
+    <RadzenTemplateForm @ref="form" TItem="CustomerConversionModel" Data="@model" Submit="@OnConvert">
+        @if (Opportunity != null)
+        {
+            <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Info" class="rz-mb-4">
+                @Localizer["ConvertingOpportunity"]: <strong>@Opportunity.Title</strong>
+            </RadzenAlert>
 
-    @if (Opportunity != null)
-    {
-        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Info" class="rz-mb-4">
-            @Localizer["ConvertingOpportunity"]: <strong>@Opportunity.Title</strong>
-        </RadzenAlert>
 
-        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" class="rz-mb-4">
-            @Localizer["ConversionWillCloseOpportunity"]
-        </RadzenAlert>
-    }
+            <RadzenStack Gap="1rem">
+                <VanigamAccountingFormField Text="@Localizer["CustomerName"]">
+                    <ChildContent>
+                        <VanigamAccountingTextBox @bind-Value="@model.CustomerName" Name="txt_CustomerName" Placeholder="@Localizer["EnterCustomerName"]" />
+                        <RadzenRequiredValidator Component="txt_CustomerName" Text="@Localizer["CustomerNameRequired"]" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
 
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" class="rz-mt-4" Gap="0.5rem">
-        <RadzenButton Text="@Localizer["Convert"]" Click="@OnConvert" IsBusy="@isBusy"
-                     Icon="person_add" ButtonStyle="ButtonStyle.Primary" />
-        <RadzenButton Text="@Localizer["Cancel"]" Click="@Cancel" ButtonStyle="ButtonStyle.Light" />
-    </RadzenStack>
+                <VanigamAccountingFormField Text="@Localizer["CustomerType"]">
+                    <ChildContent>
+                        <RadzenDropDown @bind-Value="@model.CustomerType" Data="@customerTypes" Name="dd_CustomerType" class="w-100" />
+                    </ChildContent>
+                </VanigamAccountingFormField>
+            </RadzenStack>
+
+            <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" class="rz-my-4">
+                @Localizer["ConversionWillCloseOpportunity"]
+            </RadzenAlert>
+        }
+        else
+        {
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" class="rz-mt-4" Gap="0.5rem">
+                <RadzenButton Text="@Localizer["Cancel"]" Click="@Cancel" ButtonStyle="ButtonStyle.Light" />
+            </RadzenStack>
+        }
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" class="rz-mt-4" Gap="0.5rem">
+            <RadzenButton Text="@Localizer["Convert"]" ButtonType="ButtonType.Submit" IsBusy="@isBusy"
+                          Icon="person_add" ButtonStyle="ButtonStyle.Primary" />
+            <RadzenButton Text="@Localizer["Cancel"]" Click="@Cancel" ButtonStyle="ButtonStyle.Light" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+    
+    
 </RadzenStack>
-
-@code {
-    [Parameter] public Opportunity? Opportunity { get; set; }
-    [Parameter] public EventCallback<Customer> OnConverted { get; set; }
-    [Parameter] public EventCallback OnCanceled { get; set; }
-
-    private bool isBusy = false;
-
-    private async Task OnConvert()
-    {
-        if (Opportunity == null) return;
-
-        isBusy = true;
-        try
-        {
-            var customer = await ConversionService.ConvertOpportunityToCustomerAsync(Opportunity.Oid);
-
-            if (customer != null)
-            {
-                NotificationService.Notify(new NotificationMessage
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = Localizer["Success"],
-                    Detail = Localizer["OpportunityConvertedSuccessfully"]
-                });
-
-                await OnConverted.InvokeAsync(customer);
-            }
-        }
-        catch (InvalidOperationException ex)
-        {
-            NotificationService.Notify(new NotificationMessage
-            {
-                Severity = NotificationSeverity.Warning,
-                Summary = Localizer["Warning"],
-                Detail = ex.Message
-            });
-        }
-        catch (Exception ex)
-        {
-            NotificationService.Notify(new NotificationMessage
-            {
-                Severity = NotificationSeverity.Error,
-                Summary = Localizer["Error"],
-                Detail = Localizer["ConversionFailed"]
-            });
-        }
-        finally
-        {
-            isBusy = false;
-        }
-    }
-
-    private async Task Cancel()
-    {
-        await OnCanceled.InvokeAsync();
-    }
-}

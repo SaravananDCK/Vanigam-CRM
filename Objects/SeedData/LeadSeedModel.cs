@@ -28,5 +28,6 @@ namespace Vanigam.CRM.Objects.SeedData
         public string? Comments { get; set; }
         public string? LastContactDate { get; set; }
         public string? NextFollowUpDate { get; set; }
+        public string? Description { get; set; }
     }
 }

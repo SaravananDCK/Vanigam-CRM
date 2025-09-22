@@ -22,11 +22,33 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Name) Title=@Localizer["Name"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Industry) Title=@Localizer["Industry"]>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Type) Title=@Localizer["Type"] Width="100px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Email) Title=@Localizer["Email"]>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Industry) Title=@Localizer["Industry"] Width="150px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Phone) Title=@Localizer["Phone"]>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.City) Title=@Localizer["City"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.State) Title=@Localizer["State"] Width="100px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Email) Title=@Localizer["Email"] Width="200px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Phone) Title=@Localizer["Phone"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.AnnualRevenue) Title=@Localizer["AnnualRevenue"] Width="130px">
+                        <Template Context="customer">
+                            @if (customer.AnnualRevenue.HasValue)
+                            {
+                                @(customer.AnnualRevenue.Value.ToString("C0"))
+                            }
+                            else
+                            {
+                                @("-")
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Status) Title=@Localizer["Status"] Width="100px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Rating) Title=@Localizer["Rating"] Width="80px">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

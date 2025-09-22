@@ -52,9 +52,13 @@ public class LeadService(
                 TenantId = lead.TenantId,
                 LeadId = lead.Oid,
                 Title = opportunityTitle,
+                Description = $"Opportunity converted from lead: {lead.Name} ({lead.Organization ?? "Individual"})",
                 EstimatedValue = estimatedValue,
+                Probability = 75, // Default probability for qualified opportunities
+                Source = lead.Source ?? "Lead Conversion",
                 Stage = OpportunityStage.Qualified,
                 ExpectedCloseDate = expectedCloseDate.ToDateTimeOffset(),
+                Comments = $"Converted from lead on {DateTime.UtcNow:yyyy-MM-dd}. Original lead score: {lead.LeadScore}",
                 CreatedByUserId = lead.CreatedByUserId,
                 CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
                 UpdatedByUserId = lead.UpdatedByUserId,

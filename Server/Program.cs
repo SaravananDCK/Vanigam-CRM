@@ -101,6 +101,9 @@ builder.Services.AddInheritedClasses(typeof(BaseService<>));
 
 // Register SummaryService for specific entity types
 builder.Services.AddScoped(typeof(SummaryService<,>));
+
+// Register webhook services
+builder.Services.AddScoped<WebhookLeadService>();
 builder.Services.AddAuthentication();
 builder.Services.ConfigureApplicationCookie(options =>
 {

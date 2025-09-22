@@ -99,7 +99,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 {
                     { "Opportunity", CurrentObject }
                 },
-                50, 30);
+                50, 50);
 
             if (result != null)
             {
