@@ -30,7 +30,7 @@ namespace Vanigam.CRM.Objects.Helpers
             try
             {
                 response.EnsureSuccessStatusCode();
-                //var responseAsString = await response.Content.ReadAsStringAsync();
+                var responseAsString = await response.Content.ReadAsStringAsync();
                 await using var stream = await response.Content.ReadAsStreamAsync();
                 var options = new JsonSerializerOptions
                 {

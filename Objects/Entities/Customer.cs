@@ -60,6 +60,8 @@ namespace Vanigam.CRM.Objects.Entities
         [StringLength(2000)]
         public string? Description { get; set; }
 
+        public ICollection<Quote> Quotes { get; set; } = new List<Quote>();
+        public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
         public ICollection<Contact> Contacts { get; set; } = new List<Contact>();
         public ICollection<Job> Jobs { get; set; } = new List<Job>();
     }

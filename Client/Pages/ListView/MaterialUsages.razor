@@ -40,12 +40,12 @@
                             </Template>
                         </RadzenDataGridColumn>
                     }
-                    @* Show InventoryItem column only when not embedded by InventoryItem *@
+                    @* Show Item column only when not embedded by Item *@
                     @if (!IsEmbeddedMode || !InventoryItemId.HasValue)
                     {
-                        <RadzenDataGridColumn TItem="MaterialUsage" Property="InventoryItem.Name" Title=@Localizer["InventoryItem"]>
+                        <RadzenDataGridColumn TItem="MaterialUsage" Property="Item.Name" Title=@Localizer["InventoryItem"]>
                             <Template Context="materialusage">
-                                @materialusage.InventoryItem?.Name
+                                @materialusage.Item?.Name
                             </Template>
                         </RadzenDataGridColumn>
                     }

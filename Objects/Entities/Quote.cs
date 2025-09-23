@@ -13,8 +13,16 @@ namespace Vanigam.CRM.Objects.Entities
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public QuoteStatus Status { get; set; } = QuoteStatus.Draft;
-        public Guid? JobId { get; set; }
 
+        public Guid? OpportunityId { get; set; }
+        [ForeignKey(nameof(OpportunityId))]
+        public Opportunity? Opportunity { get; set; }
+
+        public Guid? CustomerId { get; set; }
+        [ForeignKey(nameof(CustomerId))]
+        public Customer? Customer { get; set; }
+
+        public Guid? JobId { get; set; }
         [ForeignKey(nameof(JobId))]
         public Job? Job { get; set; }
         public ICollection<QuoteItem> Items { get; set; } = new List<QuoteItem>();

@@ -41,4 +41,5 @@ public class Opportunity : BaseClass
     public DateTimeOffset? ExpectedCloseDate { get; set; }
 
     public ICollection<Activity> Activities { get; set; } = new List<Activity>();
+    public ICollection<Quote> Quotes { get; set; } = new List<Quote>();
 }

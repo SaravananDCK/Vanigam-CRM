@@ -20,13 +20,13 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(InventoryItem.Name) Title=@Localizer["Name"]>
+                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(Item.Name) Title=@Localizer["Name"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(InventoryItem.SKU) Title=@Localizer["SKU"]>
+                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(Item.SKU) Title=@Localizer["SKU"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(InventoryItem.QuantityOnHand) Title=@Localizer["QuantityOnHand"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(InventoryItem.Oid) Title=@Localizer["Oid"] Visible="false">
+                    <RadzenDataGridColumn TItem="InventoryItem" Property=@nameof(Item.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>
                 </Columns>
             </VanigamAccountingDataGrid>

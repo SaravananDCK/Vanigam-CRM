@@ -16,7 +16,7 @@ namespace Vanigam.CRM.Objects.Entities
         public Guid InventoryItemId { get; set; }
 
         [ForeignKey(nameof(InventoryItemId))]
-        public InventoryItem InventoryItem { get; set; } = null!;
+        public Item Item { get; set; } = null!;
 
         public int Quantity { get; set; }
     }

@@ -1,0 +1,185 @@
+@using Microsoft.Extensions.Localization
+@using Vanigam.CRM.Objects.DTOs
+@using Vanigam.CRM.Objects.Entities
+@inject IStringLocalizer<EditableInvoicePayments> Localizer
+@inject NotificationService NotificationService
+
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["InvoicePayments"]</RadzenText>
+
+    @* Add New Payment Button *@
+    <RadzenButton Text="@Localizer["AddPayment"]"
+                 Icon="add"
+                 ButtonStyle="ButtonStyle.Success"
+                 Size="ButtonSize.Small"
+                 Click="@AddNewPayment" />
+
+    @* Payments List *@
+    @if (Payments?.Any() == true)
+    {
+        <RadzenDataGrid @ref="paymentsGrid" Data="@Payments.Where(p => !p.IsDeleted)" TItem="PaymentDTO"
+                       AllowFiltering="false" AllowPaging="false" AllowSorting="false"
+                       EditMode="Radzen.DataGridEditMode.Single" RowUpdate="@OnRowUpdate"
+                       class="rz-mt-3">
+            <Columns>
+                <RadzenDataGridColumn TItem="PaymentDTO" Property="Amount" Title="@Localizer["Amount"]" Width="150px">
+                    <Template Context="payment">
+                        @payment.Amount.ToString("C")
+                    </Template>
+                    <EditTemplate Context="payment">
+                        <RadzenNumeric TValue="decimal" @bind-Value="payment.Amount"
+                                      Format="C"
+                                      Min="0"
+                                      Change="@(async (decimal value) => { payment.Amount = value; await NotifyChanges(); })"
+                                      class="w-100" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="PaymentDTO" Property="Status" Title="@Localizer["Status"]" Width="120px">
+                    <EditTemplate Context="payment">
+                        <PaymentStatusEnumDropDown @bind-Value="payment.Status" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="PaymentDTO" Property="PaidAt" Title="@Localizer["PaidAt"]" Width="150px">
+                    <Template Context="payment">
+                        @(payment.PaidAt?.ToString("yyyy-MM-dd") ?? "-")
+                    </Template>
+                    <EditTemplate Context="payment">
+                        <RadzenDatePicker TValue="DateTimeOffset?" @bind-Value="payment.PaidAt"
+                                         DateFormat="yyyy-MM-dd"
+                                         class="w-100" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="PaymentDTO" Property="ProviderReference" Title="@Localizer["Reference"]" Width="150px">
+                    <EditTemplate Context="payment">
+                        <RadzenTextBox @bind-Value="payment.ProviderReference"
+                                      class="w-100" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="PaymentDTO" Title="@Localizer["Actions"]" Width="150px" Filterable="false" Sortable="false">
+                    <Template Context="payment">
+                        <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light"
+                                     Variant="Variant.Flat" Size="ButtonSize.Small"
+                                     Click="@(() => EditRow(payment))" />
+                        <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger"
+                                     Variant="Variant.Flat" Size="ButtonSize.Small"
+                                     Click="@(() => DeletePayment(payment))"
+                                     class="rz-ml-2" />
+                    </Template>
+                    <EditTemplate Context="payment">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success"
+                                     Variant="Variant.Flat" Size="ButtonSize.Small"
+                                     Click="@(() => SaveRow(payment))" />
+                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light"
+                                     Variant="Variant.Flat" Size="ButtonSize.Small"
+                                     Click="@(() => CancelEdit(payment))"
+                                     class="rz-ml-2" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+
+        @* Totals Display *@
+        <RadzenCard class="rz-mt-3">
+            <RadzenRow>
+                <RadzenColumn Size="8">
+                </RadzenColumn>
+                <RadzenColumn Size="4">
+                    <RadzenStack>
+                        <div class="d-flex justify-content-between">
+                            <RadzenText TextStyle="TextStyle.H6">@Localizer["TotalPayments"]:</RadzenText>
+                            <RadzenText TextStyle="TextStyle.H6">@TotalPayments.ToString("C")</RadzenText>
+                        </div>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenCard>
+    }
+    else
+    {
+        <RadzenCard class="rz-mt-3">
+            <RadzenText TextStyle="TextStyle.Body1" class="rz-color-secondary">
+                @Localizer["NoPayments"]
+            </RadzenText>
+        </RadzenCard>
+    }
+</RadzenStack>
+
+@code {
+    [Parameter] public List<PaymentDTO> Payments { get; set; } = new();
+    [Parameter] public EventCallback<List<PaymentDTO>> PaymentsChanged { get; set; }
+    [Parameter] public EventCallback<decimal> TotalPaymentsChanged { get; set; }
+
+    private RadzenDataGrid<PaymentDTO> paymentsGrid = null!;
+    private PaymentDTO? paymentBeingEdited;
+
+    public decimal TotalPayments => Payments?.Where(p => !p.IsDeleted).Sum(p => p.Amount) ?? 0;
+
+    private async Task AddNewPayment()
+    {
+        var newPayment = new PaymentDTO
+        {
+            Amount = 0,
+            Status = PaymentStatus.Pending
+        };
+
+        Payments.Add(newPayment);
+        await NotifyChanges();
+
+        // Start editing the new payment immediately
+        await Task.Delay(100); // Small delay to ensure the grid is updated
+        await EditRow(newPayment);
+    }
+
+    private async Task EditRow(PaymentDTO payment)
+    {
+        paymentBeingEdited = payment;
+        await paymentsGrid.EditRow(payment);
+    }
+
+    private async Task SaveRow(PaymentDTO payment)
+    {
+        await paymentsGrid.UpdateRow(payment);
+    }
+
+    private async Task CancelEdit(PaymentDTO payment)
+    {
+        paymentsGrid.CancelEditRow(payment);
+
+        // If it's a new payment and user cancels, remove it
+        if (payment.IsNew)
+        {
+            Payments.Remove(payment);
+            await NotifyChanges();
+        }
+    }
+
+    private async Task OnRowUpdate(PaymentDTO payment)
+    {
+        await NotifyChanges();
+    }
+
+    private async Task DeletePayment(PaymentDTO payment)
+    {
+        if (payment.IsNew)
+        {
+            Payments.Remove(payment);
+        }
+        else
+        {
+            payment.IsDeleted = true;
+        }
+
+        await NotifyChanges();
+    }
+
+    private async Task NotifyChanges()
+    {
+        await PaymentsChanged.InvokeAsync(Payments);
+        await TotalPaymentsChanged.InvokeAsync(TotalPayments);
+        StateHasChanged();
+    }
+}

@@ -80,12 +80,16 @@ namespace Vanigam.CRM.Client.Components
             StateHasChanged();
         }
 
-        protected void EnableReadOnlyMode()
+        protected virtual void EnableReadOnlyMode()
         {
             IsReadOnlyMode = true;
             StateHasChanged();
         }
-
+        protected virtual async Task EnableReadOnlyModeAsync()
+        {
+            IsReadOnlyMode = true;
+            StateHasChanged();
+        }
         protected virtual async Task SaveAndStayInEdit()
         {
             // This method should be overridden in derived classes to implement specific save logic

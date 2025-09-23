@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
@@ -12,9 +13,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
-                CurrentObject = new();
+                CurrentObject = new InventoryItem();
             else
-                CurrentObject = await InventoryItemApiService.GetByOid(oid: Oid);
+                CurrentObject = (InventoryItem)await InventoryItemApiService.GetByOid(oid: Oid);
 
             await InitEditContext();
         }
@@ -26,7 +27,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             {
                 if (Oid == Guid.Empty)
                 {
-                    CurrentObject = await InventoryItemApiService.Create(CurrentObject);
+                    CurrentObject = (InventoryItem)await InventoryItemApiService.Create(CurrentObject);
                 }
                 else
                 {

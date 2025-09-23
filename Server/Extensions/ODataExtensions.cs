@@ -41,7 +41,15 @@ namespace Vanigam.CRM.Server.Extensions
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Appointment>(nameof(VanigamAccountingDbContext.Appointments));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.TimeSheet>(nameof(VanigamAccountingDbContext.TimeSheets));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Invoice>(nameof(VanigamAccountingDbContext.Invoices));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Item>(nameof(VanigamAccountingDbContext.Items));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Product>(nameof(VanigamAccountingDbContext.Products));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.InventoryItem>(nameof(VanigamAccountingDbContext.InventoryItems));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.ServiceItem>(nameof(VanigamAccountingDbContext.ServiceItems));
+
+            //oDataBuilderVanigamAccounting.EntityType<InventoryItem>().DerivesFrom<Item>();
+            //oDataBuilderVanigamAccounting.EntityType<Product>().DerivesFrom<Item>();
+            //oDataBuilderVanigamAccounting.EntityType<ServiceItem>().DerivesFrom<Item>();
+
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.MaterialUsage>(nameof(VanigamAccountingDbContext.MaterialUsages));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Quote>(nameof(VanigamAccountingDbContext.Quotes));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.QuoteItem>(nameof(VanigamAccountingDbContext.QuoteItems));

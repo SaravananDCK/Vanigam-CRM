@@ -1,9 +1,13 @@
 @page "/edit-quote"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Objects.DTOs
 @using Vanigam.CRM.Client.Validators
 @using Vanigam.CRM.Client.Pages.ListView
+@using Vanigam.CRM.Client.Components
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<Quote, EditQuote>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject OpportunityApiService OpportunityApiService
+@inject CustomerApiService CustomerApiService
 
 @* Custom Header with Edit Button *@
 <DetailPageTitleComponent TitleText="@Localizer["EditQuote"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
@@ -40,12 +44,22 @@
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
                                     <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
                                 </div>
+
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Opportunity"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Opportunity?.Title ?? "-")</RadzenText>
+                                </div>
                             </div>
                         </RadzenStack>
                     </RadzenColumn>
                     <RadzenColumn Size="6">
                         <RadzenStack>
                             <div class="rz-p-4">
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Customer"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Customer?.Name ?? "-")</RadzenText>
+                                </div>
+
                                 <div class="read-only-field rz-mb-3">
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["TotalAmount"]:</strong></RadzenText>
                                     <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.TotalAmount.ToString("C"))</RadzenText>
@@ -59,54 +73,226 @@
     }
 
     @* Editable Form Mode *@
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Quote" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@SaveAndStayInEdit">
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Quote" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@SaveBulkQuote">
         <RadzenStack>
             <FluentValidationValidator Validator="new QuoteValidator(Localizer)" />
             <ValidationSummary />
-            <VanigamAccountingFormField Text=@Localizer["Title"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Status"]>
-                <ChildContent>
-                    <QuoteStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                                                                                                                                    </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["TotalAmount"]>
-                <ChildContent>
-                    <RadzenNumeric @bind-Value="@CurrentObject.TotalAmount" Name="numeric_TotalAmount" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+
+            @* Quote Information Section *@
+            <RadzenCard class="rz-mb-4">
+                <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["QuoteInformation"]</RadzenText>
+                <RadzenStack>
+                    <VanigamAccountingFormField Text=@Localizer["Title"]>
+                        <ChildContent>
+                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                    <VanigamAccountingFormField Text=@Localizer["Status"]>
+                        <ChildContent>
+                            <QuoteStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                    <VanigamAccountingFormField Text=@Localizer["Opportunity"]>
+                        <ChildContent>
+                            <RadzenDropDown @bind-Value="@CurrentObject.OpportunityId"
+                                            Data="@Opportunities"
+                                            TextProperty="Title"
+                                            ValueProperty="Oid"
+                                            Placeholder="@Localizer["Select Opportunity"]"
+                                            AllowClear="true"
+                                            class="w-100" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                    <VanigamAccountingFormField Text=@Localizer["Customer"]>
+                        <ChildContent>
+                            <RadzenDropDown @bind-Value="@CurrentObject.CustomerId"
+                                            Data="@Customers"
+                                            TextProperty="Name"
+                                            ValueProperty="Oid"
+                                            Placeholder="@Localizer["Select Customer"]"
+                                            AllowClear="true"
+                                            class="w-100" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                    <VanigamAccountingFormField Text=@Localizer["TotalAmount"]>
+                        <ChildContent>
+                            <RadzenNumeric @bind-Value="@CurrentObject.TotalAmount" Name="numeric_TotalAmount" ReadOnly="true" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                </RadzenStack>
+            </RadzenCard>
+
+            @* Quote Items Section *@
+            <RadzenCard class="rz-mb-4">
+                <EditableQuoteItems Items="@quoteItems"
+                                   ItemsChanged="@OnQuoteItemsChanged"
+                                   TotalAmountChanged="@OnTotalAmountChanged" />
+            </RadzenCard>
         </RadzenStack>
 
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
             @if (IsCreateMode)
             {
-                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" />
             }
             else
             {
-                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
             }
         </RadzenStack>
     </RadzenTemplateForm>
 
-    @* Related Data Tabs - Available in both read-only and edit modes *@
-    @if (IsTabsVisible)
+</RadzenColumn>
+
+@code {
+    private List<QuoteItemDTO> quoteItems = new();
+    private bool hasQuoteItemChanges = false;
+    private IEnumerable<Opportunity>? Opportunities { get; set; }
+    private IEnumerable<Customer>? Customers { get; set; }
+
+    public bool HasAnyChanges => Form?.EditContext?.IsModified() == true || hasQuoteItemChanges;
+
+    protected override async Task OnParametersSetAsync()
     {
-        <RadzenCard class="mt-4">
-            <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client">
-                <Tabs>
-                    <RadzenTabsItem Text="@Localizer["QuoteItems"]">
-                        <QuoteItems QuoteId="@Oid"
-                                   IsEmbeddedMode="true"
-                                   EmbeddedTitle="@Localizer["QuoteItems"]" />
-                    </RadzenTabsItem>
-                </Tabs>
-            </RadzenTabs>
-        </RadzenCard>
+        await base.OnParametersSetAsync();
+
+        // Load dropdown data
+        await LoadDropdownData();
+
+        if (CurrentObject != null && !IsCreateMode)
+        {
+            await LoadQuoteItems();
+        }
+        else if (IsCreateMode)
+        {
+            quoteItems = new List<QuoteItemDTO>();
+        }
     }
 
-</RadzenColumn>
+    private async Task LoadDropdownData()
+    {
+        try
+        {
+            var opportunitiesTask = OpportunityApiService.Get();
+            var customersTask = CustomerApiService.Get();
+
+            await Task.WhenAll(opportunitiesTask, customersTask);
+
+            Opportunities = (await opportunitiesTask).Value;
+            Customers = (await customersTask).Value;
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = Localizer["FailedToLoadDropdownData"]
+            });
+        }
+    }
+
+    private async Task LoadQuoteItems()
+    {
+        try
+        {
+            if (Oid != Guid.Empty)
+            {
+                quoteItems = await QuoteApiService.GetQuoteItemsForEditingAsync(Oid);
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = Localizer["FailedToLoadQuoteItems"]
+            });
+        }
+    }
+
+    private async Task OnQuoteItemsChanged(List<QuoteItemDTO> items)
+    {
+        quoteItems = items;
+        hasQuoteItemChanges = true;
+        StateHasChanged();
+    }
+
+    private async Task OnTotalAmountChanged(decimal totalAmount)
+    {
+        if (CurrentObject != null)
+        {
+            CurrentObject.TotalAmount = totalAmount;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveBulkQuote()
+    {
+        if (CurrentObject == null) return;
+
+        IsBusy = true;
+        try
+        {
+            var bulkData = new QuoteBulkSaveDTO
+            {
+                Oid = IsCreateMode ? null : CurrentObject.Oid,
+                Title = CurrentObject.Title,
+                Status = CurrentObject.Status,
+                OpportunityId = CurrentObject.OpportunityId,
+                CustomerId = CurrentObject.CustomerId,
+                JobId = CurrentObject.JobId,
+                TotalAmount = CurrentObject.TotalAmount,
+                Items = quoteItems
+            };
+
+            var savedQuote = await QuoteApiService.BulkSaveQuoteWithItemsAsync(bulkData);
+
+            if (savedQuote != null)
+            {
+                CurrentObject = savedQuote;
+                hasQuoteItemChanges = false;
+
+                if (IsCreateMode)
+                {
+                    // Navigate to edit mode for the newly created quote
+                    NavigationManager.NavigateTo($"/edit-quote?oid={savedQuote.Oid}");
+                }
+                else
+                {
+                    await LoadQuoteItems(); // Refresh items
+                    await EnableReadOnlyModeAsync();
+                }
+
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = Localizer["Success"],
+                    Detail = Localizer["QuoteSavedSuccessfully"]
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = ex.Message
+            });
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    protected override async Task EnableReadOnlyModeAsync()
+    {
+        await base.EnableReadOnlyModeAsync();
+        hasQuoteItemChanges = false;
+        await LoadQuoteItems(); // Reload original data
+    }
+}

@@ -17,4 +17,5 @@ namespace Vanigam.CRM.Objects.Entities
     public enum CustomerType { Individual, Company }
     public enum CustomerStatus { Active, Inactive, Prospect, Suspended }
     public enum ContactStatus { Active, Inactive }
+    public enum ItemType { Product, InventoryItem, ServiceItem }
 }

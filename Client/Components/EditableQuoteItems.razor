@@ -1,0 +1,208 @@
+@using Microsoft.Extensions.Localization
+@using Vanigam.CRM.Objects.DTOs
+@using Vanigam.CRM.Objects.Entities
+@inject IStringLocalizer<EditableQuoteItems> Localizer
+@inject InventoryItemApiService InventoryItemApiService
+@inject NotificationService NotificationService
+
+<RadzenStack>
+    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["QuoteItems"]</RadzenText>
+
+    @* Add New Item Button *@
+    <RadzenButton Text="@Localizer["AddItem"]"
+                 Icon="add"
+                 ButtonStyle="ButtonStyle.Success"
+                 Size="ButtonSize.Small"
+                 Click="@AddNewItem" />
+
+    @* Items List *@
+    @if (Items?.Any() == true)
+    {
+        <RadzenDataGrid @ref="itemsGrid" Data="@Items.Where(i => !i.IsDeleted)" TItem="QuoteItemDTO"
+                       AllowFiltering="false" AllowPaging="false" AllowSorting="false"
+                       EditMode="Radzen.DataGridEditMode.Single" RowUpdate="@OnRowUpdate"
+                       class="rz-mt-3">
+            <Columns>
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="ItemName" Title="@Localizer["Item"]" Width="200px">
+                    <EditTemplate Context="item">
+                        <InventoryItemDropDownDataGrid @bind-Value="item.InventoryItemId"
+                                       TextProperty="Name"
+                                       ValueProperty="Oid"
+                                       Placeholder="@Localizer["SelectItem"]"
+                                                       Change="@(async (object value) => { item.InventoryItemId = (Guid?)value; await OnInventoryItemChanged(value as Item,item); })"
+                                       class="w-100" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="Quantity" Title="@Localizer["Quantity"]" Width="120px">
+                    <EditTemplate Context="item">
+                        <RadzenNumeric TValue="int" @bind-Value="item.Quantity"
+                                      Min="1"
+                                      Change="@(async (int value) => { item.Quantity = value; CalculateTotal(item); await NotifyChanges(); })"
+                                      class="w-100" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="UnitPrice" Title="@Localizer["UnitPrice"]" Width="120px">
+                    <Template Context="item">
+                        @item.UnitPrice.ToString("C")
+                    </Template>
+                    <EditTemplate Context="item">
+                        <RadzenNumeric TValue="decimal" @bind-Value="item.UnitPrice"
+                                      Format="C"
+                                      Change="@(async (decimal value) => { item.UnitPrice = value; CalculateTotal(item); await NotifyChanges(); })"
+                                      class="w-100" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="Total" Title="@Localizer["Total"]" Width="120px">
+                    <Template Context="item">
+                        @item.Total.ToString("C")
+                    </Template>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Title="@Localizer["Actions"]" Width="150px" Filterable="false" Sortable="false">
+                    <Template Context="item">
+                        <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light"
+                                     Variant="Variant.Flat" Size="ButtonSize.Small"
+                                     Click="@(() => EditRow(item))" />
+                        <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger"
+                                     Variant="Variant.Flat" Size="ButtonSize.Small"
+                                     Click="@(() => DeleteItem(item))"
+                                     class="rz-ml-2" />
+                    </Template>
+                    <EditTemplate Context="item">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success"
+                                     Variant="Variant.Flat" Size="ButtonSize.Small"
+                                     Click="@(() => SaveRow(item))" />
+                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light"
+                                     Variant="Variant.Flat" Size="ButtonSize.Small"
+                                     Click="@(() => CancelEdit(item))"
+                                     class="rz-ml-2" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+
+        @* Totals Display *@
+        <RadzenCard class="rz-mt-3">
+            <RadzenRow>
+                <RadzenColumn Size="8">
+                </RadzenColumn>
+                <RadzenColumn Size="4">
+                    <RadzenStack>
+                        <div class="d-flex justify-content-between">
+                            <RadzenText TextStyle="TextStyle.H6">@Localizer["TotalAmount"]:</RadzenText>
+                            <RadzenText TextStyle="TextStyle.H6">@TotalAmount.ToString("C")</RadzenText>
+                        </div>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenCard>
+    }
+    else
+    {
+        <RadzenCard class="rz-mt-3">
+            <RadzenText TextStyle="TextStyle.Body1" class="rz-color-secondary">
+                @Localizer["NoQuoteItems"]
+            </RadzenText>
+        </RadzenCard>
+    }
+</RadzenStack>
+
+@code {
+    [Parameter] public List<QuoteItemDTO> Items { get; set; } = new();
+    [Parameter] public EventCallback<List<QuoteItemDTO>> ItemsChanged { get; set; }
+    [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
+
+    private RadzenDataGrid<QuoteItemDTO> itemsGrid = null!;
+    private QuoteItemDTO? itemBeingEdited;
+
+    public decimal TotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
+
+    private async Task AddNewItem()
+    {
+        var newItem = new QuoteItemDTO
+        {
+            Quantity = 1,
+            UnitPrice = 0,
+        };
+
+        Items.Add(newItem);
+        await NotifyChanges();
+
+        // Start editing the new item immediately
+        await Task.Delay(100); // Small delay to ensure the grid is updated
+        await EditRow(newItem);
+    }
+
+    private async Task EditRow(QuoteItemDTO item)
+    {
+        itemBeingEdited = item;
+        await itemsGrid.EditRow(item);
+    }
+
+    private async Task SaveRow(QuoteItemDTO item)
+    {
+        await itemsGrid.UpdateRow(item);
+    }
+
+    private async Task CancelEdit(QuoteItemDTO item)
+    {
+        itemsGrid.CancelEditRow(item);
+
+        // If it's a new item and user cancels, remove it
+        if (item.IsNew)
+        {
+            Items.Remove(item);
+            await NotifyChanges();
+        }
+    }
+
+    private async Task OnRowUpdate(QuoteItemDTO item)
+    {
+        CalculateTotal(item);
+        await NotifyChanges();
+    }
+
+    private async Task DeleteItem(QuoteItemDTO item)
+    {
+        if (item.IsNew)
+        {
+            Items.Remove(item);
+        }
+        else
+        {
+            item.IsDeleted = true;
+        }
+
+        await NotifyChanges();
+    }
+
+    private async Task OnInventoryItemChanged(Item item, QuoteItemDTO quoteItemDTO)
+    {
+        if (quoteItemDTO.InventoryItemId.HasValue)
+        {
+            if (item != null)
+            {
+                quoteItemDTO.InventoryItemName = item.Name;
+                // You might want to set default price from inventory item if available
+            }
+        }
+
+        CalculateTotal(quoteItemDTO);
+        await NotifyChanges();
+    }
+
+    private void CalculateTotal(QuoteItemDTO item)
+    {
+        // Total is calculated automatically in the DTO property
+    }
+
+    private async Task NotifyChanges()
+    {
+        await ItemsChanged.InvokeAsync(Items);
+        await TotalAmountChanged.InvokeAsync(TotalAmount);
+        StateHasChanged();
+    }
+}

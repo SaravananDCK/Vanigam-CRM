@@ -1,7 +1,9 @@
 @page "/edit-invoice"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Objects.DTOs
 @using Vanigam.CRM.Client.Validators
 @using Vanigam.CRM.Client.Pages.ListView
+@using Vanigam.CRM.Client.Components
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<Invoice, EditInvoice>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
@@ -59,54 +61,174 @@
     }
 
     @* Editable Form Mode *@
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Invoice" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@SaveAndStayInEdit">
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Invoice" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@SaveBulkInvoice">
         <RadzenStack>
             <FluentValidationValidator Validator="new InvoiceValidator(Localizer)" />
             <ValidationSummary />
-            <VanigamAccountingFormField Text=@Localizer["Number"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Status"]>
-                <ChildContent>
-                    <InvoiceStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                                                                                                                                      </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["TotalAmount"]>
-                <ChildContent>
-                    <RadzenNumeric @bind-Value="@CurrentObject.TotalAmount" Name="numeric_TotalAmount" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+
+            @* Invoice Information Section *@
+            <RadzenCard class="rz-mb-4">
+                <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["InvoiceInformation"]</RadzenText>
+                <RadzenStack>
+                    <VanigamAccountingFormField Text=@Localizer["Number"]>
+                        <ChildContent>
+                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                    <VanigamAccountingFormField Text=@Localizer["Status"]>
+                        <ChildContent>
+                            <InvoiceStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                    <VanigamAccountingFormField Text=@Localizer["TotalAmount"]>
+                        <ChildContent>
+                            <RadzenNumeric @bind-Value="@CurrentObject.TotalAmount" Name="numeric_TotalAmount" ReadOnly="true" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                </RadzenStack>
+            </RadzenCard>
+
+            @* Invoice Items Section *@
+            <RadzenCard class="rz-mb-4">
+                <EditableInvoiceItems Items="@invoiceItems"
+                                     ItemsChanged="@OnInvoiceItemsChanged"
+                                     TotalAmountChanged="@OnTotalAmountChanged" />
+            </RadzenCard>
         </RadzenStack>
 
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
             @if (IsCreateMode)
             {
-                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" />
             }
             else
             {
-                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
             }
         </RadzenStack>
     </RadzenTemplateForm>
 
-    @* Related Data Tabs - Available in both read-only and edit modes *@
-    @if (IsTabsVisible)
+</RadzenColumn>
+
+@code {
+    private List<InvoiceItemDTO> invoiceItems = new();
+    private bool hasItemChanges = false;
+
+    public bool HasAnyChanges => Form?.EditContext?.IsModified() == true || hasItemChanges;
+
+    protected override async Task OnParametersSetAsync()
     {
-        <RadzenCard class="mt-4">
-            <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client">
-                <Tabs>
-                    <RadzenTabsItem Text="@Localizer["Payments"]">
-                        <Payments InvoiceId="@Oid"
-                                  IsEmbeddedMode="true"
-                                  EmbeddedTitle="@Localizer["InvoicePayments"]" />
-                    </RadzenTabsItem>
-                </Tabs>
-            </RadzenTabs>
-        </RadzenCard>
+        await base.OnParametersSetAsync();
+
+        if (CurrentObject != null && !IsCreateMode)
+        {
+            await LoadInvoiceItems();
+        }
+        else if (IsCreateMode)
+        {
+            invoiceItems = new List<InvoiceItemDTO>();
+        }
     }
 
-</RadzenColumn>
+    private async Task LoadInvoiceItems()
+    {
+        try
+        {
+            if (Oid != Guid.Empty)
+            {
+                invoiceItems = await InvoiceApiService.GetInvoiceItemsForEditingAsync(Oid);
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = Localizer["FailedToLoadInvoiceItems"]
+            });
+        }
+    }
+
+    private async Task OnInvoiceItemsChanged(List<InvoiceItemDTO> items)
+    {
+        invoiceItems = items;
+        hasItemChanges = true;
+        StateHasChanged();
+    }
+
+    private async Task OnTotalAmountChanged(decimal totalAmount)
+    {
+        if (CurrentObject != null)
+        {
+            CurrentObject.TotalAmount = totalAmount;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveBulkInvoice()
+    {
+        if (CurrentObject == null) return;
+
+        IsBusy = true;
+        try
+        {
+            var bulkData = new InvoiceBulkSaveDTO
+            {
+                Oid = IsCreateMode ? null : CurrentObject.Oid,
+                Number = CurrentObject.Number,
+                Status = CurrentObject.Status,
+                JobId = CurrentObject.JobId,
+                TotalAmount = CurrentObject.TotalAmount,
+                Items = invoiceItems
+            };
+
+            var savedInvoice = await InvoiceApiService.BulkSaveInvoiceWithItemsAsync(bulkData);
+
+            if (savedInvoice != null)
+            {
+                CurrentObject = savedInvoice;
+                hasItemChanges = false;
+
+                if (IsCreateMode)
+                {
+                    // Navigate to edit mode for the newly created invoice
+                    NavigationManager.NavigateTo($"/edit-invoice?oid={savedInvoice.Oid}");
+                }
+                else
+                {
+                    await LoadInvoiceItems(); // Refresh items
+                    await EnableReadOnlyModeAsync();
+                }
+
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = Localizer["Success"],
+                    Detail = Localizer["InvoiceSavedSuccessfully"]
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = ex.Message
+            });
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    protected override async Task EnableReadOnlyModeAsync()
+    {
+        await base.EnableReadOnlyModeAsync();
+        hasItemChanges = false;
+        await LoadInvoiceItems(); // Reload original data
+    }
+}

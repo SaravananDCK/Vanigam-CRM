@@ -31,10 +31,14 @@ namespace Vanigam.CRM.Objects
         public DbSet<Appointment> Appointments => Set<Appointment>();
         public DbSet<TimeSheet> TimeSheets => Set<TimeSheet>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
+        public DbSet<Item> Items => Set<Item>();
         public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
+        public DbSet<Product> Products => Set<Product>();
+        public DbSet<ServiceItem> ServiceItems => Set<ServiceItem>();
         public DbSet<MaterialUsage> MaterialUsages => Set<MaterialUsage>();
         public DbSet<Quote> Quotes => Set<Quote>();
         public DbSet<QuoteItem> QuoteItems => Set<QuoteItem>();
+        public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
         public DbSet<Payment> Payments => Set<Payment>();
         public DbSet<JobReport> JobReports => Set<JobReport>();
         public DbSet<Attachment> Attachments => Set<Attachment>();
@@ -95,6 +99,13 @@ namespace Vanigam.CRM.Objects
             modelBuilder.Entity<SuperUser>().ToTable(nameof(VanigamAccountingDbContext.ApplicationUsers));
             modelBuilder.Entity<Admin>().ToTable(nameof(VanigamAccountingDbContext.ApplicationUsers));
 
+            modelBuilder.Entity<Item>()
+                .ToTable(nameof(Items))
+                .HasDiscriminator<ItemType>(nameof(Item.Type))
+                .HasValue<InventoryItem>(ItemType.InventoryItem)
+                .HasValue<Product>(ItemType.Product)
+                .HasValue<ServiceItem>(ItemType.ServiceItem);
+
             var configurations = typeof(FileCategory).Assembly
             .GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract && t.BaseType != null && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(BaseClassConfiguration<>))
@@ -132,6 +143,9 @@ namespace Vanigam.CRM.Objects
                 await this.SeedJobData();
                 await this.SeedActivityData();
                 await this.SeedContactData();
+                await this.SeedProductData();
+                await this.SeedInventoryItemData();
+                await this.SeedServiceItemData();
                 //foreach (var fn in beforeUpdate)
                 //{
                 //    await using var stream = typeof(Party).Assembly.GetManifestResourceStream(fn);
@@ -833,6 +847,215 @@ namespace Vanigam.CRM.Objects
             {
                 // Log the exception but don't throw to avoid breaking the seeding process
                 Console.WriteLine($"Error seeding Contact data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedProductData()
+        {
+            // Check if Product data already exists
+            if (await Products.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "ProductSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "ProductSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var productSeedData = System.Text.Json.JsonSerializer.Deserialize<List<ProductSeedModel>>(jsonContent);
+
+                if (productSeedData?.Any() != true)
+                    return;
+
+                var products = new List<Product>();
+                foreach (var seedProduct in productSeedData)
+                {
+                    var product = new Product
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Name = seedProduct.Name,
+                        SKU = seedProduct.SKU,
+                        Type = Enum.TryParse<ItemType>(seedProduct.Type, out var type) ? type : ItemType.Product,
+                        UnitPrice = seedProduct.UnitPrice,
+                        Cost = seedProduct.Cost,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = DateTime.TryParse(seedProduct.CreatedAtUtc, out var createdAt) ?
+                            Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :
+                            SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset()
+                    };
+
+                    products.Add(product);
+                }
+
+                await Products.AddRangeAsync(products);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't throw to prevent seeding from failing completely
+                Console.WriteLine($"Error seeding Product data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedInventoryItemData()
+        {
+            // Check if InventoryItem data already exists
+            if (await InventoryItems.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "InventoryItemSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "InventoryItemSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var inventoryItemSeedData = System.Text.Json.JsonSerializer.Deserialize<List<InventoryItemSeedModel>>(jsonContent);
+
+                if (inventoryItemSeedData?.Any() != true)
+                    return;
+
+                var inventoryItems = new List<InventoryItem>();
+                foreach (var seedInventoryItem in inventoryItemSeedData)
+                {
+                    var inventoryItem = new InventoryItem
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Name = seedInventoryItem.Name,
+                        SKU = seedInventoryItem.SKU,
+                        Type = Enum.TryParse<ItemType>(seedInventoryItem.Type, out var type) ? type : ItemType.InventoryItem,
+                        UnitPrice = seedInventoryItem.UnitPrice,
+                        Cost = seedInventoryItem.Cost,
+                        QuantityOnHand = seedInventoryItem.QuantityOnHand,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = DateTime.TryParse(seedInventoryItem.CreatedAtUtc, out var createdAt) ?
+                            Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :
+                            SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset()
+                    };
+
+                    inventoryItems.Add(inventoryItem);
+                }
+
+                await InventoryItems.AddRangeAsync(inventoryItems);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't throw to prevent seeding from failing completely
+                Console.WriteLine($"Error seeding InventoryItem data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedServiceItemData()
+        {
+            // Check if ServiceItem data already exists
+            if (await ServiceItems.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "ServiceItemSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "ServiceItemSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var serviceItemSeedData = System.Text.Json.JsonSerializer.Deserialize<List<ServiceItemSeedModel>>(jsonContent);
+
+                if (serviceItemSeedData?.Any() != true)
+                    return;
+
+                var serviceItems = new List<ServiceItem>();
+                foreach (var seedServiceItem in serviceItemSeedData)
+                {
+                    var serviceItem = new ServiceItem
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Name = seedServiceItem.Name,
+                        SKU = seedServiceItem.SKU,
+                        Type = Enum.TryParse<ItemType>(seedServiceItem.Type, out var type) ? type : ItemType.ServiceItem,
+                        UnitPrice = seedServiceItem.UnitPrice,
+                        Cost = seedServiceItem.Cost,
+                        HourlyRate = seedServiceItem.HourlyRate,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = DateTime.TryParse(seedServiceItem.CreatedAtUtc, out var createdAt) ?
+                            Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :
+                            SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset()
+                    };
+
+                    serviceItems.Add(serviceItem);
+                }
+
+                await ServiceItems.AddRangeAsync(serviceItems);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't throw to prevent seeding from failing completely
+                Console.WriteLine($"Error seeding ServiceItem data: {ex.Message}");
             }
         }
 

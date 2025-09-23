@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -69,7 +70,12 @@ public abstract class BaseApiService<T> where T : IETag
         OnGet(httpRequestMessage);
         var response = await HttpClient.SendAsync(httpRequestMessage);
 
-        return await VanigamAccountingHttpResponseMessageExtensions.ReadAsync<Radzen.ODataServiceResult<T>>(response);
+        return await VanigamAccountingHttpResponseMessageExtensions.ReadAsync<Radzen.ODataServiceResult<T>>(response, GetJsonConverters());
+    }
+
+    protected virtual JsonConverter[] GetJsonConverters()
+    {
+        return null;
     }
 
     void OnCreate(HttpRequestMessage requestMessage) { }
