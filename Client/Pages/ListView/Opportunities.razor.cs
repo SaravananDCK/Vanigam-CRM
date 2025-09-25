@@ -190,6 +190,54 @@ namespace Vanigam.CRM.Client.Pages.ListView
             };
         }
 
+        protected async Task OnStageTabChange(int tabIndex)
+        {
+            if (tabIndex == 0)
+            {
+                // "All" tab selected
+                SelectedStage = null;
+            }
+            else
+            {
+                // Stage tab selected (tabIndex - 1 because first tab is "All")
+                var stageValues = Enum.GetValues<OpportunityStage>();
+                if (tabIndex - 1 < stageValues.Length)
+                {
+                    SelectedStage = stageValues[tabIndex - 1];
+                }
+            }
+
+            await GridReload();
+        }
+
+        protected string GetIcon(OpportunityStage stage)
+        {
+            return stage switch
+            {
+                OpportunityStage.Prospecting => "fa-search",
+                OpportunityStage.Qualified => "fa-filter",
+                OpportunityStage.Proposal => "fa-file-alt",
+                OpportunityStage.Negotiation => "fa-handshake",
+                OpportunityStage.ClosedWon => "fa-trophy",
+                OpportunityStage.ClosedLost => "fa-times-circle",
+                _ => "fa-question-circle"
+            };
+        }
+
+        protected string GetIconColor(OpportunityStage stage)
+        {
+            return stage switch
+            {
+                OpportunityStage.Prospecting => "var(--rz-info)",
+                OpportunityStage.Qualified => "var(--rz-primary)",
+                OpportunityStage.Proposal => "var(--rz-secondary)",
+                OpportunityStage.Negotiation => "var(--rz-warning)",
+                OpportunityStage.ClosedWon => "var(--rz-success)",
+                OpportunityStage.ClosedLost => "var(--rz-danger)",
+                _ => "var(--rz-text-color)"
+            };
+        }
+
         protected int GetStageCount(OpportunityStage stage)
         {
             if (StageCounts == null)
@@ -197,6 +245,5 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
             return StageCounts.TryGetValue(stage, out var count) ? count : 0;
         }
-
     }
 }

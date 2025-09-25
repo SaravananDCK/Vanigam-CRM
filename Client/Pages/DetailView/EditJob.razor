@@ -118,6 +118,16 @@
                                       IsEmbeddedMode="true"
                                       EmbeddedTitle="@Localizer["JobAppointments"]" />
                     </RadzenTabsItem>
+                    <RadzenTabsItem Text="@Localizer["MaterialUsages"]">
+                        <MaterialUsages JobId="@Oid"
+                                        IsEmbeddedMode="true"
+                                        EmbeddedTitle="@Localizer["JobMaterialUsages"]" />
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="@Localizer["JobReports"]">
+                        <JobReports JobId="@Oid"
+                                    IsEmbeddedMode="true"
+                                    EmbeddedTitle="@Localizer["JobReports"]" />
+                    </RadzenTabsItem>
                 </Tabs>
             </RadzenTabs>
         </RadzenCard>

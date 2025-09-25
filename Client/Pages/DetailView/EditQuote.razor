@@ -68,6 +68,33 @@
                         </RadzenStack>
                     </RadzenColumn>
                 </RadzenRow>
+
+                @* Quote Items Display *@
+                @if (quoteItems != null && quoteItems.Any())
+                {
+                    <div class="read-only-section-header rz-mt-4">@Localizer["QuoteItems"]</div>
+                    <RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                                    Data="@quoteItems" TItem="QuoteItemDTO" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" class="rz-mt-3">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="QuoteItemDTO" Property="Description" Title="@Localizer["Description"]" Width="300px" />
+                            <RadzenDataGridColumn TItem="QuoteItemDTO" Property="Quantity" Title="@Localizer["Quantity"]" Width="100px">
+                                <Template Context="item">
+                                    @item.Quantity.ToString("N2")
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="QuoteItemDTO" Property="UnitPrice" Title="@Localizer["UnitPrice"]" Width="120px">
+                                <Template Context="item">
+                                    @item.UnitPrice.ToString("C")
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="QuoteItemDTO" Property="TotalPrice" Title="@Localizer["TotalPrice"]" Width="120px">
+                                <Template Context="item">
+                                    @item.Total.ToString("C")
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                }
             </RadzenStack>
         </RadzenCard>
     }

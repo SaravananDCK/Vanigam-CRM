@@ -8,6 +8,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditJobAssignment
     {
+        [Parameter] public Guid? JobId { get; set; }
+
         [Inject] private JobAssignmentApiService JobAssignmentApiService { get; set; }
 
         protected override async Task OnInitializedAsync()
@@ -15,6 +17,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (Oid == Guid.Empty)
             {
                 CurrentObject = new();
+                // Pre-set JobId if provided (for embedded mode)
+                if (JobId.HasValue)
+                {
+                    CurrentObject.JobId = JobId.Value;
+                }
                 IsReadOnlyMode = false; // Create mode - always editable
             }
             else

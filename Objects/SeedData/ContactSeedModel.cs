@@ -19,4 +19,5 @@ public class ContactSeedModel
     public string Status { get; set; } = "Active";
     public string? Notes { get; set; }
     public string? CreatedAtUtc { get; set; }
+    public string? CustomerName { get; set; }
 }

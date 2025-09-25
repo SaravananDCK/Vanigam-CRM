@@ -110,58 +110,57 @@
     "CreatedAtUtc": "2024-01-28T00:00:00Z"
   },
   {
-    "Title": "IIT Delhi Research Data Platform",
-    "Description": "Research data management and collaboration platform for IIT Delhi's academic and research activities.",
-    "EstimatedValue": 2800000.00,
-    "ExpectedCloseDate": "2024-04-15T00:00:00Z",
+    "Title": "TCS Cloud Infrastructure Expansion",
+    "Description": "Second phase cloud infrastructure expansion for TCS's global operations with enhanced security and compliance.",
+    "EstimatedValue": 12500000.00,
+    "ExpectedCloseDate": "2024-11-30T00:00:00Z",
     "Stage": "Qualified",
-    "Probability": 80,
-    "Source": "Government RFP",
-    "Notes": "Government-funded project with IIT Delhi. Budget approved and timeline confirmed.",
-    "CreatedAtUtc": "2024-01-14T00:00:00Z"
-  },
-  {
-    "Title": "Zomato Customer Experience Enhancement",
-    "Description": "AI-powered customer experience platform to improve food delivery and customer satisfaction metrics.",
-    "EstimatedValue": 5500000.00,
-    "ExpectedCloseDate": "2024-03-20T00:00:00Z",
-    "Stage": "Negotiation",
-    "Probability": 90,
-    "Source": "Startup Network",
-    "Notes": "Zomato urgently needs customer experience improvements. Final contract negotiations in progress.",
-    "CreatedAtUtc": "2024-01-06T00:00:00Z"
-  },
-  {
-    "Title": "Blue Dart Logistics Automation",
-    "Description": "Comprehensive logistics automation platform for Blue Dart's pan-India operations and last-mile delivery.",
-    "EstimatedValue": 9500000.00,
-    "ExpectedCloseDate": "2024-07-25T00:00:00Z",
-    "Stage": "Proposal",
     "Probability": 70,
-    "Source": "Industry Referral",
-    "Notes": "Blue Dart looking to automate logistics operations. Strong technical requirements match with our platform.",
-    "CreatedAtUtc": "2024-01-16T00:00:00Z"
+    "Source": "Existing Customer",
+    "Notes": "Follow-up opportunity from successful Phase 1 implementation. TCS satisfied with previous delivery.",
+    "CreatedAtUtc": "2024-02-01T00:00:00Z"
   },
   {
-    "Title": "Oxfam India Program Management",
-    "Description": "NGO program management and impact tracking system for Oxfam India's social development initiatives.",
-    "EstimatedValue": 1200000.00,
-    "ExpectedCloseDate": "2024-12-15T00:00:00Z",
+    "Title": "HDFC Digital Banking Platform",
+    "Description": "Next-generation digital banking platform with AI-powered customer service and mobile-first approach.",
+    "EstimatedValue": 18500000.00,
+    "ExpectedCloseDate": "2024-12-20T00:00:00Z",
     "Stage": "Prospecting",
     "Probability": 45,
-    "Source": "NGO Network",
-    "Notes": "Oxfam India interested in digital transformation of program management. Budget constraints but strong mission alignment.",
-    "CreatedAtUtc": "2024-01-30T00:00:00Z"
+    "Source": "Industry Summit",
+    "Notes": "HDFC exploring digital banking transformation. Early discussions but significant potential.",
+    "CreatedAtUtc": "2024-02-05T00:00:00Z"
   },
   {
-    "Title": "Big Bazaar Omnichannel Platform",
-    "Description": "Integrated omnichannel retail platform connecting online and offline shopping experiences for Big Bazaar.",
-    "EstimatedValue": 6800000.00,
-    "ExpectedCloseDate": "2024-09-30T00:00:00Z",
+    "Title": "Airtel Enterprise IoT Platform",
+    "Description": "Comprehensive IoT platform for Airtel's enterprise customers with real-time monitoring and analytics.",
+    "EstimatedValue": 14000000.00,
+    "ExpectedCloseDate": "2024-08-15T00:00:00Z",
+    "Stage": "Proposal",
+    "Probability": 65,
+    "Source": "Partner Channel",
+    "Notes": "Airtel wants to offer advanced IoT solutions to enterprise customers. Strong business case developed.",
+    "CreatedAtUtc": "2024-02-10T00:00:00Z"
+  },
+  {
+    "Title": "Apollo Telemedicine Platform",
+    "Description": "Comprehensive telemedicine platform with video consultation, remote monitoring, and AI-assisted diagnosis.",
+    "EstimatedValue": 9800000.00,
+    "ExpectedCloseDate": "2024-09-05T00:00:00Z",
     "Stage": "Qualified",
-    "Probability": 60,
-    "Source": "Retail Summit",
-    "Notes": "Big Bazaar wants to compete with e-commerce giants. Omnichannel strategy is key priority for management.",
-    "CreatedAtUtc": "2024-01-24T00:00:00Z"
-  }
+    "Probability": 75,
+    "Source": "Healthcare Innovation",
+    "Notes": "Apollo expanding telemedicine capabilities post-COVID. Strong demand for remote healthcare solutions.",
+    "CreatedAtUtc": "2024-02-15T00:00:00Z"
+  },
+  {
+    "Title": "Mahindra EV Fleet Management System",
+    "Description": "Electric vehicle fleet management system for Mahindra's commercial EV operations with route optimization.",
+    "EstimatedValue": 6200000.00,
+    "ExpectedCloseDate": "2024-07-30T00:00:00Z",
+    "Stage": "Negotiation",
+    "Probability": 80,
+    "Source": "Green Tech Summit",
+    "Notes": "Mahindra's EV division growing rapidly. Need sophisticated fleet management for commercial vehicles.",
+      }
 ]

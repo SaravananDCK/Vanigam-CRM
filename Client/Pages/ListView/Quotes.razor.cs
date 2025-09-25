@@ -49,7 +49,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("JobId", JobId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditQuote>(Localizer["AddQuote"], parameters.Count > 0 ? parameters : null, 80, 80);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditQuote>(Localizer["AddQuote"], parameters.Count > 0 ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -60,7 +60,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Quote quote)
         {
-            await DialogService.OpenDialogAsync<EditQuote>(Localizer["EditQuote"], new Dictionary<string, object> { { "Oid", quote.Oid } }, 80, 80);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditQuote>(Localizer["EditQuote"], new Dictionary<string, object> { { "Oid", quote.Oid } }, 100, 100);
             await GridReload();
         }
 

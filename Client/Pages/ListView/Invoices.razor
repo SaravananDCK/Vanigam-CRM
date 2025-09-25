@@ -1,8 +1,10 @@
 @page "/invoices"
+@using Vanigam.CRM.Client.Services
 @using Vanigam.CRM.Objects.Entities
 @inherits Vanigam.CRM.Client.Components.BaseListView<Invoice, Invoices>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject InvoiceApiService InvoiceApiService
+@inject PdfApiService PdfApiService
 
 <RadzenStack>
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Invoices"] : Localizer["Invoices"])
@@ -16,10 +18,16 @@
                     <NoRecordComponent ShowAddButton="false" />
                 </EmptyTemplate>
                 <Columns>
-                    <RadzenDataGridColumn TItem="Invoice" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                    <RadzenDataGridColumn TItem="Invoice" Filterable="false" Sortable="false" Width="200px" Title="@Localizer["Actions"]">
                         <Template Context="invoice">
-                            <OpenPageCommonComponent T="Invoice" OpenObject="@invoice" Open="@Open"></OpenPageCommonComponent>
-                            <DeletePageCommonComponent T="Invoice" UsingObject="@invoice" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                            <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
+                                <OpenPageCommonComponent T="Invoice" OpenObject="@invoice" Open="@Open"></OpenPageCommonComponent>
+                                <DeletePageCommonComponent T="Invoice" UsingObject="@invoice" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="preview" Size="ButtonSize.ExtraSmall"
+                                             Click="@(() => PreviewPdf(invoice.Oid))" Title="@Localizer["Preview PDF"]" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="download" Size="ButtonSize.ExtraSmall"
+                                             Click="@(() => DownloadPdf(invoice.Oid))" Title="@Localizer["Download PDF"]" />
+                            </RadzenStack>
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
@@ -43,4 +51,14 @@
     [Parameter] public Guid? JobId { get; set; }
     [Parameter] public bool IsEmbeddedMode { get; set; } = false;
     [Parameter] public string? EmbeddedTitle { get; set; }
+
+    private async Task PreviewPdf(Guid invoiceId)
+    {
+        await PdfApiService.PreviewInvoicePdfAsync(invoiceId);
+    }
+
+    private async Task DownloadPdf(Guid invoiceId)
+    {
+        await PdfApiService.DownloadInvoicePdfAsync(invoiceId);
+    }
 }

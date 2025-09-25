@@ -4,12 +4,6 @@
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject JobAssignmentApiService JobAssignmentApiService
 
-@* Parameters for embedded mode *@
-@code {
-    [Parameter] public Guid? JobId { get; set; }
-    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
-    [Parameter] public string? EmbeddedTitle { get; set; }
-}
 
 <RadzenStack>
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Job Assignments"] : Localizer["JobAssignments"])

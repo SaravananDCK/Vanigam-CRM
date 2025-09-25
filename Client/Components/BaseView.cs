@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.JSInterop;
 using Radzen;
+using Vanigam.CRM.Client.Services;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Contracts;
 
@@ -23,6 +24,13 @@ public class CoreView: ComponentBase
     [Inject] protected SecurityService Security { get; set; }
     [Inject] protected ILocalStorageService LocalStorageService { get; set; }
     public ApplicationAuthenticationState AuthenticationState { get; set; }
+
+    protected virtual string FaIcon(string icon) => FontAwesomeIconMapping.GetUnicode(icon);
+    protected virtual string FadIcon(string icon) => FontAwesomeIconMapping.GetUnicode(icon);
+    protected virtual string FadIconSmall(string icon) => FontAwesomeIconMapping.GetUnicode(icon);
+    protected string FasIcon(string icon) => FontAwesomeIconMapping.GetUnicode(icon);
+    protected string FarIcon(string icon) => FontAwesomeIconMapping.GetUnicode(icon);
+    protected string FabIcon(string icon) => FontAwesomeIconMapping.GetUnicode(icon);
 }
 public class BaseView<T, K> : CoreView where T : IHasId<Guid> where K : ComponentBase
 {

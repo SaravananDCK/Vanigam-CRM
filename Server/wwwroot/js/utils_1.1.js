@@ -141,3 +141,37 @@ function resetButtonZIndexes() {
         btn.style.zIndex = '10';
     });
 }
+
+// PDF-related functions for downloads and previews
+window.downloadFileFromBytes = function (fileName, contentType, byteArray) {
+    const link = document.createElement('a');
+    const bytes = new Uint8Array(byteArray);
+    const blob = new Blob([bytes], { type: contentType });
+    const url = URL.createObjectURL(blob);
+
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up the object URL
+    URL.revokeObjectURL(url);
+};
+
+window.openPdfInNewTab = function (byteArray) {
+    const bytes = new Uint8Array(byteArray);
+    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    const newWindow = window.open(url, '_blank');
+    if (newWindow) {
+        newWindow.onload = function() {
+            URL.revokeObjectURL(url);
+        };
+    } else {
+        // If popup was blocked, clean up immediately
+        URL.revokeObjectURL(url);
+        console.error('Popup blocked. Could not open PDF preview.');
+    }
+};

@@ -11,38 +11,33 @@
                             SearchButtonClick=@Search
                             ShowAdd=@(!IsEmbeddedMode || LeadId.HasValue || OpportunityId.HasValue)>
         <RadioButtons>
-            @* Status Filter Bar - Only show in non-embedded mode *@
+            @* Status Filter Bar using RadzenTabs with FilterTabTemplate *@
             @if (!IsEmbeddedMode)
             {
-                <RadzenRow class="mb-3" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
-                    <RadzenColumn Size="12">
-                        <RadzenSelectBar @bind-Value="@SelectedStatus" TValue="ActivityStatus?" Change="@OnStatusChange" class="w-100">
-                            <Items>
-                                <RadzenSelectBarItem Value="@(null)">
-                                    <Template>
-                                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem" class="p-2">
-                                            <RadzenText TextStyle="TextStyle.Subtitle2" class="mb-0">@Localizer["All"]</RadzenText>
-                                            <RadzenBadge Text="@(TotalCount.ToString())"
-                                                         BadgeStyle="BadgeStyle.Info" />
-                                        </RadzenStack>
-                                    </Template>
-                                </RadzenSelectBarItem>
-                                @foreach (ActivityStatus status in Enum.GetValues<ActivityStatus>())
-                                {
-                                    <RadzenSelectBarItem Value="@status">
-                                        <Template>
-                                            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem" class="p-2">
-                                                <RadzenText TextStyle="TextStyle.Subtitle2" class="mb-0">@Localizer[status.ToString()]</RadzenText>
-                                                <RadzenBadge Text="@(GetStatusCount(status).ToString())"
-                                                             BadgeStyle="@GetStatusBadgeStyle(status)" />
-                                            </RadzenStack>
-                                        </Template>
-                                    </RadzenSelectBarItem>
-                                }
-                            </Items>
-                        </RadzenSelectBar>
-                    </RadzenColumn>
-                </RadzenRow>
+                <RadzenTabs RenderMode="TabRenderMode.Client" SelectedIndexChanged="OnStatusTabChange"
+                            TabPosition="TabPosition.Top" class="modern-tabs">
+                    <Tabs>
+                        <RadzenTabsItem>
+                            <Template>
+                                <FilterTabTemplate Text="@Localizer["All"]"
+                                                 Count="@(TotalCount.ToString() ?? "0")"
+                                                 Icon="@FadIcon("fa-list")"
+                                                 Style="@BadgeStyle.Primary" />
+                            </Template>
+                        </RadzenTabsItem>
+                        @foreach (ActivityStatus status in Enum.GetValues<ActivityStatus>())
+                        {
+                            <RadzenTabsItem>
+                                <Template>
+                                    <FilterTabTemplate Text="@Localizer[status.ToString()]"
+                                                     Count="@(GetStatusCount(status).ToString())"
+                                                     Icon="@FadIcon(GetIcon(status))"
+                                                     Style="@GetStatusBadgeStyle(status)" />
+                                </Template>
+                            </RadzenTabsItem>
+                        }
+                    </Tabs>
+                </RadzenTabs>
             }
         </RadioButtons>
     </ListPageTitleComponent>
@@ -94,9 +89,9 @@
     </RadzenRow>
 </RadzenStack>
 
-@code {
-    [Parameter] public Guid? LeadId { get; set; }
-    [Parameter] public Guid? OpportunityId { get; set; }
-    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
-    [Parameter] public string? EmbeddedTitle { get; set; }
-}
+<style>
+    :root {
+        .rz-tabview.rz-tabview-top { flex-direction: row !important; }
+    }
+</style>
+

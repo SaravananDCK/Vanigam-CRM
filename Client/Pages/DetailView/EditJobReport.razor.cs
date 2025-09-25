@@ -8,11 +8,20 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditJobReport
     {
+        [Parameter] public Guid? JobId { get; set; }
+
         [Inject] private JobReportApiService JobReportApiService { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
+            {
                 CurrentObject = new();
+                // Pre-set JobId if provided (for embedded mode)
+                if (JobId.HasValue)
+                {
+                    CurrentObject.JobId = JobId.Value;
+                }
+            }
             else
                 CurrentObject = await JobReportApiService.GetByOid(oid: Oid);
 

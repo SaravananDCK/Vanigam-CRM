@@ -11,7 +11,7 @@ namespace Vanigam.CRM.Objects.Entities
     public enum AssetStatus { Active, InRepair, Decommissioned, UnderWarranty }
     public enum Priority { Low, Normal, High, Critical }
     public enum OpportunityStage { Prospecting, Qualified, Proposal, Negotiation, ClosedWon, ClosedLost }
-    public enum ActivityStatus { Pending, Completed, Cancelled }
+    public enum ActivityStatus { NotStarted, InProgress, Pending, Completed, Cancelled }
     public enum ActivityType { Call, Email, Meeting, Task, Note,LeadConversion, CustomerConversion }
     public enum ContactType { Individual, Company }
     public enum CustomerType { Individual, Company }

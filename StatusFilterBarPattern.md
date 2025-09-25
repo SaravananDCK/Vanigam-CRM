@@ -4,7 +4,53 @@
 
 ## Implementation
 
-**Razor Template** (Optimized Pattern - Use This):
+**Razor Template - Modern RadzenTabs with FilterTabTemplate** (Recommended - Latest Version):
+```razor
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["EntityPlural"]
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode)>
+        <RadioButtons>
+            @* Status Filter Bar using RadzenTabs with FilterTabTemplate *@
+            <RadzenTabs RenderMode="TabRenderMode.Client" SelectedIndexChanged="OnStatusTabChange"
+                        TabPosition="TabPosition.Top" class="modern-tabs">
+                <Tabs>
+                    <RadzenTabsItem>
+                        <Template>
+                            <FilterTabTemplate Text="@Localizer["All"]"
+                                             Count="@(TotalCount.ToString() ?? "0")"
+                                             Icon="@FadIcon("fa-list")"
+                                             Style="@BadgeStyle.Primary" />
+                        </Template>
+                    </RadzenTabsItem>
+                    @foreach (EntityStatus status in Enum.GetValues<EntityStatus>())
+                    {
+                        <RadzenTabsItem>
+                            <Template>
+                                <FilterTabTemplate Text="@Localizer[status.ToString()]"
+                                                 Count="@(GetStatusCount(status).ToString())"
+                                                 Icon="@FadIcon(GetIcon(status))"
+                                                 Style="@GetStatusBadgeStyle(status)" />
+                            </Template>
+                        </RadzenTabsItem>
+                    }
+                </Tabs>
+            </RadzenTabs>
+        </RadioButtons>
+    </ListPageTitleComponent>
+
+    <!-- Rest of your ListView content -->
+</RadzenStack>
+
+<style>
+    :root {
+        .rz-tabview.rz-tabview-top { flex-direction: row !important; }
+    }
+</style>
+```
+
+**Alternative Pattern - RadzenSelectBar** (Still Supported):
 ```razor
 <RadzenStack>
     <ListPageTitleComponent TitleText=@Localizer["EntityPlural"]
@@ -88,23 +134,46 @@ Do not place the status filter bar outside the `ListPageTitleComponent` as this 
 </RadzenRow>
 ```
 
-**Code-behind Implementation** (Optimized Pattern - Use This):
+**Code-behind Implementation - Modern RadzenTabs Pattern** (Recommended):
+
+### Option 1: Separate Code-Behind File (Recommended)
+Create a separate `.razor.cs` file (e.g., `Opportunities.razor.cs`):
+
 ```csharp
-using Vanigam.CRM.Objects.Entities.Enums;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Radzen;
+using Vanigam.CRM.Objects.OData;
+using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.DTOs;
+using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Client.Pages.DetailView;
 
-public partial class EntityListView
+namespace Vanigam.CRM.Client.Pages.ListView
 {
-    private EntityStatus? SelectedStatus = null;
-    private Dictionary<EntityStatus, int> StatusCounts = new();
-    private int TotalCount = 0;
-
-    protected override string GetFilterString(LoadDataArgs args)
+    public partial class Opportunities
     {
-        var filter = new ODataFilter<Entity>()
-            .FilterByAnd(args.Filter);
+        [Parameter] public Guid? LeadId { get; set; }
+        [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+        [Parameter] public string? EmbeddedTitle { get; set; }
 
-        // Add status filter if selected
+        private OpportunityStage? SelectedStage = null;
+        private Dictionary<OpportunityStage, int> StageCounts = new();
+        private int TotalCount = 0;
+        private int SelectedTabIndex = 0;
+
+        protected override string GetFilterString(LoadDataArgs args)
+        {
+            var filter = new ODataFilter<Opportunity>()
+                .FilterByAnd(args.Filter);
+
+            // Filter by parent Lead if in embedded mode
+            if (IsEmbeddedMode && LeadId.HasValue)
+            {
+                filter = filter.FilterByAnd(u => u.LeadId == LeadId.Value);
+            }
+
+            // Add stage filter if selected
         if (SelectedStatus.HasValue)
         {
             filter = filter.FilterByAnd($"Status eq '{SelectedStatus.Value}'");
@@ -162,6 +231,62 @@ public partial class EntityListView
         await GridReload();
     }
 
+    // RadzenTabs-specific methods
+    protected async Task OnStatusTabChange(int tabIndex)
+    {
+        SelectedTabIndex = tabIndex;
+
+        if (tabIndex == 0)
+        {
+            // "All" tab selected
+            SelectedStatus = null;
+        }
+        else
+        {
+            // Status tab selected (tabIndex - 1 because first tab is "All")
+            var statusValues = Enum.GetValues<EntityStatus>();
+            if (tabIndex - 1 < statusValues.Length)
+            {
+                SelectedStatus = statusValues[tabIndex - 1];
+            }
+        }
+
+        await GridReload();
+    }
+
+    protected string GetIcon(EntityStatus status)
+    {
+        return status switch
+        {
+            EntityStatus.New => "fa-plus-circle",
+            EntityStatus.Active => "fa-play-circle",
+            EntityStatus.InProgress => "fa-clock",
+            EntityStatus.Completed => "fa-check-circle",
+            EntityStatus.Cancelled => "fa-times-circle",
+            EntityStatus.Pending => "fa-pause-circle",
+            _ => "fa-question-circle"
+        };
+    }
+
+    protected string GetIconColor(EntityStatus status)
+    {
+        return status switch
+        {
+            EntityStatus.New => "var(--rz-info)",
+            EntityStatus.Active => "var(--rz-success)",
+            EntityStatus.InProgress => "var(--rz-warning)",
+            EntityStatus.Completed => "var(--rz-success)",
+            EntityStatus.Cancelled => "var(--rz-danger)",
+            EntityStatus.Pending => "var(--rz-secondary)",
+            _ => "var(--rz-text-color)"
+        };
+    }
+
+    protected string FadIcon(string iconClass)
+    {
+        return $"fad {iconClass}";
+    }
+
     // Overloaded methods for nullable and non-nullable status types
     protected BadgeStyle GetStatusBadgeStyle(EntityStatus? status)
     {
@@ -193,6 +318,75 @@ public partial class EntityListView
 }
 ```
 
+### Code-Behind File Architecture
+
+**MANDATORY**: The project **requires** separate `.razor.cs` code-behind files for all ListView components implementing status filter bars. This is not optional - it is an architectural requirement.
+
+**File Structure:**
+- `Opportunities.razor` - Contains the Razor markup and UI components
+- `Opportunities.razor.cs` - Contains the C# logic, event handlers, and data operations
+
+**Code-Behind Pattern Benefits:**
+- **Separation of Concerns**: UI markup separated from business logic
+- **Better Maintainability**: Easier to manage complex ListView logic
+- **Improved Readability**: Clean separation between presentation and code
+- **Enhanced Tooling**: Better IntelliSense and debugging support
+- **Team Collaboration**: Easier for different developers to work on UI vs logic
+- **Architectural Consistency**: Ensures uniform code organization across all ListView pages
+
+**Example Implementation:**
+
+**File: `Opportunities.razor.cs`**
+```csharp
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Radzen;
+using Vanigam.CRM.Objects.OData;
+using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.DTOs;
+
+namespace Vanigam.CRM.Client.Pages.ListView
+{
+    public partial class Opportunities
+    {
+        // All the C# logic, properties, and methods
+        // (Complete implementation shown in previous sections)
+    }
+}
+```
+
+**File: `Opportunities.razor`**
+```razor
+@page "/opportunities"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Opportunity, Opportunities>
+@inject OpportunityApiService OpportunityApiService
+
+<!-- All the Razor markup -->
+<!-- (Complete markup shown in previous sections) -->
+```
+
+### ❌ PROHIBITED: Inline @code Section
+
+**DO NOT USE** inline `@code` sections in ListView components with status filter bars. This approach is prohibited for the following reasons:
+
+```razor
+<!-- PROHIBITED PATTERN - DO NOT USE -->
+@code {
+    // This is not allowed in ListView components
+    // All C# logic must be in separate .razor.cs files
+}
+```
+
+**Why Inline @code is Prohibited:**
+- **Violates Architecture**: Breaks established code-behind pattern
+- **Poor Maintainability**: Complex ListView logic becomes unmanageable in single files
+- **Inconsistent**: Creates inconsistency across the codebase
+- **Team Issues**: Makes collaborative development more difficult
+- **Debugging Difficulties**: Harder to debug and test when mixed with markup
+
+**MANDATORY**: Use separate `.razor.cs` files for all ListView components implementing status filter bars.
+
 **Key Code Changes for Optimization**:
 - Change `Dictionary<EntityStatus?, int>` to `Dictionary<EntityStatus, int>`
 - Add `int TotalCount` property for "All" badge
@@ -214,20 +408,57 @@ public partial class EntityListView
 6. **Responsive layout**: Uses RadzenColumn Size="2" for 6 cards per row
 
 ## Implementation Checklist
-1. Add using statement for enum namespace
-2. Add SelectedStatus and StatusCounts properties + TotalCount property
-3. Modify GetFilterString to include status filtering
-4. Add LoadStatusCounts method (optimized with Summary API)
-5. Add GetBaseFilterString method (search without status filter)
-6. Add OnStatusChange event handler for RadzenSelectBar
-7. Add overloaded GetStatusBadgeStyle methods (nullable and non-nullable)
-8. Add GetStatusCount method for safe count retrieval
-9. Call LoadStatusCounts in GridLoadData method
-10. **Place RadzenSelectBar inside `<RadioButtons>` section of ListPageTitleComponent**
-11. Create RadzenSelectBar with Items and RadzenSelectBarItem using Templates
-12. Create localization files for status values
-13. Add GetStatusSummaryAsync method to entity's API service
-14. Add status-summary endpoint to entity's OData controller
+
+### RadzenTabs Pattern (Recommended)
+
+**Prerequisites:**
+1. **✅ MANDATORY**: Create separate `.razor.cs` code-behind file
+2. **✅ MANDATORY**: Move all C# logic to code-behind file
+3. **✅ MANDATORY**: Keep only Razor markup in `.razor` file
+
+**Implementation Steps:**
+4. Add using statements for enum namespace in code-behind file
+5. Add SelectedStatus, StatusCounts, TotalCount properties in code-behind
+6. Add [Parameter] properties for embedded mode support in code-behind
+7. Modify GetFilterString to include status filtering in code-behind
+8. Add LoadStatusCounts method (optimized with Summary API) in code-behind
+9. Add GetBaseFilterString method (search without status filter) in code-behind
+10. Add OnStatusTabChange event handler for RadzenTabs in code-behind
+11. Add GetIcon and GetIconColor methods for status-specific icons in code-behind
+12. Add FadIcon helper method for FontAwesome Duotone icons in code-behind
+13. Add overloaded GetStatusBadgeStyle methods (nullable and non-nullable) in code-behind
+14. Add GetStatusCount method for safe count retrieval in code-behind
+15. Call LoadStatusCounts in GridLoadData method in code-behind
+16. **Place RadzenTabs inside `<RadioButtons>` section of ListPageTitleComponent**
+17. Create RadzenTabs with FilterTabTemplate components in `.razor` file
+18. Add minimal CSS styles in `.razor` file
+19. Create localization files for status values
+20. Add GetStatusSummaryAsync method to entity's API service
+21. Add status-summary endpoint to entity's OData controller
+
+### RadzenSelectBar Pattern (Alternative - Legacy)
+
+**Prerequisites:**
+1. **✅ MANDATORY**: Create separate `.razor.cs` code-behind file
+2. **✅ MANDATORY**: Move all C# logic to code-behind file
+3. **✅ MANDATORY**: Keep only Razor markup in `.razor` file
+
+**Implementation Steps:**
+4. Add using statement for enum namespace in code-behind file
+5. Add SelectedStatus and StatusCounts properties + TotalCount property in code-behind
+6. Add [Parameter] properties for embedded mode support in code-behind
+7. Modify GetFilterString to include status filtering in code-behind
+8. Add LoadStatusCounts method (optimized with Summary API) in code-behind
+9. Add GetBaseFilterString method (search without status filter) in code-behind
+10. Add OnStatusChange event handler for RadzenSelectBar in code-behind
+11. Add overloaded GetStatusBadgeStyle methods (nullable and non-nullable) in code-behind
+12. Add GetStatusCount method for safe count retrieval in code-behind
+13. Call LoadStatusCounts in GridLoadData method in code-behind
+14. **Place RadzenSelectBar inside `<RadioButtons>` section of ListPageTitleComponent**
+15. Create RadzenSelectBar with Items and RadzenSelectBarItem using Templates in `.razor` file
+16. Create localization files for status values
+17. Add GetStatusSummaryAsync method to entity's API service
+18. Add status-summary endpoint to entity's OData controller
 
 ## Backend Requirements for Optimization
 
@@ -455,3 +686,175 @@ This pattern can be applied to any entity with status enums (Opportunities, Cust
 2. Adding status-summary endpoint to existing OData controller
 3. Adding GetStatusSummaryAsync method to entity's API service
 4. Using optimized LoadStatusCounts pattern in ListView
+
+## Pattern Comparison
+
+### RadzenTabs Pattern (Recommended)
+**Advantages:**
+- **Visual Appeal**: More modern, tab-based interface with icons and badges
+- **Better UX**: Clear visual separation between status categories
+- **Icon Support**: Status-specific icons provide immediate visual context
+- **Flexible Styling**: Easy to customize appearance with CSS
+- **Mobile Friendly**: Better responsive behavior on mobile devices
+- **FontAwesome Integration**: Supports FontAwesome Duotone icons for richer visuals
+
+**Use Cases:**
+- Primary ListViews with prominent status filtering needs
+- When visual differentiation between statuses is important
+- Applications with modern UI requirements
+- Mobile-responsive applications
+
+### RadzenSelectBar Pattern (Alternative)
+**Advantages:**
+- **Compact Layout**: Takes less vertical space
+- **Consistent Behavior**: Standard Radzen component behavior
+- **Quick Implementation**: Easier to implement initially
+- **Horizontal Layout**: Better for limited vertical space
+
+**Use Cases:**
+- Secondary ListViews or embedded views
+- When space is constrained
+- Quick prototyping or simple filtering needs
+- Applications prioritizing consistency over visual appeal
+
+## Migration Guide
+
+To migrate from RadzenSelectBar to RadzenTabs pattern:
+
+1. **Replace the markup** with RadzenTabs structure
+2. **Add SelectedTabIndex property** and OnStatusTabChange method
+3. **Add icon methods** (GetIcon, GetIconColor, FadIcon)
+4. **Add CSS styles** for tab-content and tab-icon classes
+5. **Update event handling** from OnStatusChange to OnStatusTabChange
+6. **Test functionality** to ensure proper tab switching and filtering
+
+## FilterTabTemplate Component Pattern
+
+**Overview**: The FilterTabTemplate component provides a reusable, clean approach for status filter tabs, eliminating code duplication and providing consistent styling across all ListView pages.
+
+### Component Structure
+
+**FilterTabTemplate.razor**:
+```razor
+<RadzenStack Orientation="Orientation.Vertical" Gap="0">
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="5">
+        <span class="tab-label">@Text</span>
+        <RadzenIcon Icon="@Icon" IconColor="@GetIconColor(Style)" />
+    </RadzenStack>
+    <ModernRoundBadge Text="@(Count)" BadgeStyle="@Style" />
+</RadzenStack>
+
+@code {
+    [Parameter] public string Text { get; set; }
+    [Parameter] public string Count { get; set; }
+    [Parameter] public string Icon { get; set; }
+    [Parameter] public BadgeStyle Style { get; set; }
+
+    protected string GetIconColor(BadgeStyle style)
+    {
+        return style switch
+        {
+            BadgeStyle.Info => "var(--rz-info)",
+            BadgeStyle.Primary => "var(--rz-primary)",
+            BadgeStyle.Secondary => "var(--rz-secondary)",
+            BadgeStyle.Warning => "var(--rz-warning)",
+            BadgeStyle.Success => "var(--rz-success)",
+            BadgeStyle.Danger => "var(--rz-danger)",
+            _ => "var(--rz-text-color)"
+        };
+    }
+}
+```
+
+### Usage in ListView Pages
+
+**Before (Inline Template)**:
+```razor
+<RadzenTabsItem Icon="@FadIcon(GetIcon(status))" IconColor="@GetIconColor(status)">
+    <Template>
+        <div class="tab-content">
+            <span class="tab-label">@Localizer[status.ToString()]</span>
+            <ModernRoundBadge Text="@(GetStatusCount(status).ToString())" BadgeStyle="@GetStatusBadgeStyle(status)" />
+        </div>
+    </Template>
+</RadzenTabsItem>
+```
+
+**After (FilterTabTemplate)**:
+```razor
+<RadzenTabsItem>
+    <Template>
+        <FilterTabTemplate Text="@Localizer[status.ToString()]"
+                         Count="@(GetStatusCount(status).ToString())"
+                         Icon="@FadIcon(GetIcon(status))"
+                         Style="@GetStatusBadgeStyle(status)" />
+    </Template>
+</RadzenTabsItem>
+```
+
+### Benefits of FilterTabTemplate Pattern
+
+1. **Code Reusability**: Single component used across all ListView pages
+2. **Consistent Styling**: Ensures uniform appearance across the application
+3. **Maintainability**: Changes to tab styling only require updating one component
+4. **Cleaner Markup**: Reduces code complexity in ListView pages
+5. **Better Organization**: Separates presentation logic from business logic
+6. **Reduced CSS**: Eliminates need for custom tab-content CSS in each page
+7. **Type Safety**: Strongly-typed parameters prevent runtime errors
+8. **Testability**: Component can be unit tested independently
+
+### Migration to FilterTabTemplate
+
+**Steps to migrate existing RadzenTabs implementation**:
+
+1. **Remove custom CSS**: Delete tab-content and tab-icon styles from ListView pages
+2. **Replace inline templates**: Use FilterTabTemplate component instead of div structures
+3. **Remove IconColor attributes**: FilterTabTemplate handles icon coloring internally
+4. **Simplify Template sections**: Remove complex div and span structures
+5. **Update all ListView pages**: Apply the pattern consistently across the application
+
+**Example Migration**:
+
+```razor
+<!-- OLD: Complex inline template -->
+<RadzenTabsItem Icon="@FadIcon(GetIcon(status))" IconColor="@GetIconColor(status)">
+    <Template>
+        <div class="tab-content">
+            <span class="tab-label">@Localizer[status.ToString()]</span>
+            <ModernRoundBadge Text="@(GetStatusCount(status).ToString())" BadgeStyle="@GetStatusBadgeStyle(status)" />
+        </div>
+    </Template>
+</RadzenTabsItem>
+
+<!-- NEW: Clean component usage -->
+<RadzenTabsItem>
+    <Template>
+        <FilterTabTemplate Text="@Localizer[status.ToString()]"
+                         Count="@(GetStatusCount(status).ToString())"
+                         Icon="@FadIcon(GetIcon(status))"
+                         Style="@GetStatusBadgeStyle(status)" />
+    </Template>
+</RadzenTabsItem>
+```
+
+### Component Registration
+
+Ensure the FilterTabTemplate component is available in your ListView pages by adding the appropriate using statement or registering it in `_Imports.razor`:
+
+```razor
+@using Vanigam.CRM.Client.Components
+```
+
+## Best Practices
+
+1. **✅ MANDATORY Code-Behind**: Always use separate `.razor.cs` files for ListView components
+2. **✅ MANDATORY Markup Separation**: Keep only Razor markup in `.razor` files
+3. **Consistent Icons**: Use meaningful, consistent icons across similar entity types
+4. **Color Coding**: Align icon colors with badge colors for visual consistency
+5. **Responsive Design**: Test on mobile devices and adjust CSS accordingly
+6. **Performance**: Implement status count caching for better performance
+7. **Accessibility**: Ensure proper ARIA labels and keyboard navigation
+8. **Localization**: Provide translations for all status labels and "All" option
+9. **Component Reuse**: Use FilterTabTemplate for all status filter implementations
+10. **Minimal CSS**: Let FilterTabTemplate handle styling; avoid custom CSS in ListView pages
+11. **Architecture Consistency**: Follow established patterns across all ListView implementations

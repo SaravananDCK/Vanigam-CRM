@@ -1,0 +1,182 @@
+[
+  {
+    "Name": "Cat6 Ethernet Cable (1 meter)",
+    "SKU": "CBL-CAT6-1M",
+    "Type": "InventoryItem",
+    "UnitPrice": 150.00,
+    "Cost": 85.00,
+    "QuantityOnHand": 500,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Cat6 Ethernet Cable (5 meter)",
+    "SKU": "CBL-CAT6-5M",
+    "Type": "InventoryItem",
+    "UnitPrice": 450.00,
+    "Cost": 280.00,
+    "QuantityOnHand": 200,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "HDMI Cable 2.0 (2 meter)",
+    "SKU": "CBL-HDMI-2M",
+    "Type": "InventoryItem",
+    "UnitPrice": 800.00,
+    "Cost": 450.00,
+    "QuantityOnHand": 150,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "USB-C to USB-A Adapter",
+    "SKU": "ADP-USBC-A",
+    "Type": "InventoryItem",
+    "UnitPrice": 650.00,
+    "Cost": 380.00,
+    "QuantityOnHand": 300,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Network Cable Tester",
+    "SKU": "TST-NET-CBL",
+    "Type": "InventoryItem",
+    "UnitPrice": 2500.00,
+    "Cost": 1800.00,
+    "QuantityOnHand": 25,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Screwdriver Set (Phillips & Flathead)",
+    "SKU": "TOL-SCREW-SET",
+    "Type": "InventoryItem",
+    "UnitPrice": 1200.00,
+    "Cost": 750.00,
+    "QuantityOnHand": 50,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Anti-Static Wrist Strap",
+    "SKU": "SAF-WRIST-AS",
+    "Type": "InventoryItem",
+    "UnitPrice": 350.00,
+    "Cost": 180.00,
+    "QuantityOnHand": 75,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Cable Zip Ties (Pack of 100)",
+    "SKU": "CBL-ZIP-100",
+    "Type": "InventoryItem",
+    "UnitPrice": 250.00,
+    "Cost": 120.00,
+    "QuantityOnHand": 100,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Patch Panel 24-Port Cat6",
+    "SKU": "NET-PP-24C6",
+    "Type": "InventoryItem",
+    "UnitPrice": 3500.00,
+    "Cost": 2400.00,
+    "QuantityOnHand": 20,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "RJ45 Connectors (Pack of 50)",
+    "SKU": "CON-RJ45-50",
+    "Type": "InventoryItem",
+    "UnitPrice": 450.00,
+    "Cost": 250.00,
+    "QuantityOnHand": 80,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Network Cable Crimping Tool",
+    "SKU": "TOL-CRIMP-NET",
+    "Type": "InventoryItem",
+    "UnitPrice": 1800.00,
+    "Cost": 1200.00,
+    "QuantityOnHand": 15,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Cable Management Tray",
+    "SKU": "MGT-CBL-TRAY",
+    "Type": "InventoryItem",
+    "UnitPrice": 2200.00,
+    "Cost": 1500.00,
+    "QuantityOnHand": 30,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Server Rack Mounting Screws (Pack of 20)",
+    "SKU": "SCR-RACK-20",
+    "Type": "InventoryItem",
+    "UnitPrice": 350.00,
+    "Cost": 180.00,
+    "QuantityOnHand": 120,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Thermal Paste Tube (5g)",
+    "SKU": "THM-PASTE-5G",
+    "Type": "InventoryItem",
+    "UnitPrice": 450.00,
+    "Cost": 280.00,
+    "QuantityOnHand": 60,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Compressed Air Duster Can",
+    "SKU": "CLN-AIR-CAN",
+    "Type": "InventoryItem",
+    "UnitPrice": 280.00,
+    "Cost": 150.00,
+    "QuantityOnHand": 90,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Cable Labels (Roll of 500)",
+    "SKU": "LBL-CBL-500",
+    "Type": "InventoryItem",
+    "UnitPrice": 650.00,
+    "Cost": 350.00,
+    "QuantityOnHand": 40,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Ethernet Wall Jack Cat6",
+    "SKU": "JAK-ETH-C6",
+    "Type": "InventoryItem",
+    "UnitPrice": 180.00,
+    "Cost": 95.00,
+    "QuantityOnHand": 200,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Cable Trunking 2m Length",
+    "SKU": "TRK-CBL-2M",
+    "Type": "InventoryItem",
+    "UnitPrice": 850.00,
+    "Cost": 580.00,
+    "QuantityOnHand": 45,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Power Extension Cord 5m",
+    "SKU": "PWR-EXT-5M",
+    "Type": "InventoryItem",
+    "UnitPrice": 1200.00,
+    "Cost": 800.00,
+    "QuantityOnHand": 35,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Velcro Cable Ties (Pack of 25)",
+    "SKU": "VEL-CBL-25",
+    "Type": "InventoryItem",
+    "UnitPrice": 450.00,
+    "Cost": 250.00,
+    "QuantityOnHand": 65,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  }
+]

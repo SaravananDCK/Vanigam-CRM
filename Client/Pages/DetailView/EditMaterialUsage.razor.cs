@@ -8,11 +8,25 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditMaterialUsage
     {
+        [Parameter] public Guid? JobId { get; set; }
+        [Parameter] public Guid? InventoryItemId { get; set; }
+
         [Inject] private MaterialUsageApiService MaterialUsageApiService { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
+            {
                 CurrentObject = new();
+                // Pre-set parent IDs if provided (for embedded mode)
+                if (JobId.HasValue)
+                {
+                    CurrentObject.JobId = JobId.Value;
+                }
+                if (InventoryItemId.HasValue)
+                {
+                    CurrentObject.InventoryItemId = InventoryItemId.Value;
+                }
+            }
             else
                 CurrentObject = await MaterialUsageApiService.GetByOid(oid: Oid);
 

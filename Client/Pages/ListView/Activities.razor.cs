@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Vanigam.CRM.Objects.OData;
@@ -10,6 +11,11 @@ namespace Vanigam.CRM.Client.Pages.ListView
 {
     public partial class Activities
     {
+        [Parameter] public Guid? LeadId { get; set; }
+        [Parameter] public Guid? OpportunityId { get; set; }
+        [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+        [Parameter] public string? EmbeddedTitle { get; set; }
+
         private ActivityStatus? SelectedStatus = null;
         private Dictionary<ActivityStatus, int> StatusCounts = new();
         private int TotalCount = 0;
@@ -191,10 +197,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             return status switch
             {
-                ActivityStatus.Pending => BadgeStyle.Warning,
+                ActivityStatus.NotStarted => BadgeStyle.Light,
+                ActivityStatus.InProgress => BadgeStyle.Warning,
                 ActivityStatus.Completed => BadgeStyle.Success,
                 ActivityStatus.Cancelled => BadgeStyle.Danger,
-                _ => BadgeStyle.Secondary
+                ActivityStatus.Pending => BadgeStyle.Secondary,
+                _ => BadgeStyle.Light
             };
         }
 
@@ -204,6 +212,45 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 return 0;
 
             return StatusCounts.TryGetValue(status, out var count) ? count : 0;
+        }
+
+        // RadzenTabs-specific methods
+        protected async Task OnStatusTabChange(int tabIndex)
+        {
+            if (tabIndex == 0)
+            {
+                // "All" tab selected
+                SelectedStatus = null;
+            }
+            else
+            {
+                // Status tab selected (tabIndex - 1 because first tab is "All")
+                var statusValues = Enum.GetValues<ActivityStatus>();
+                if (tabIndex - 1 < statusValues.Length)
+                {
+                    SelectedStatus = statusValues[tabIndex - 1];
+                }
+            }
+
+            await GridReload();
+        }
+
+        protected string GetIcon(ActivityStatus status)
+        {
+            return status switch
+            {
+                ActivityStatus.NotStarted => "fa-play-circle",
+                ActivityStatus.InProgress => "fa-clock",
+                ActivityStatus.Completed => "fa-check-circle",
+                ActivityStatus.Cancelled => "fa-times-circle",
+                ActivityStatus.Pending => "fa-pause-circle",
+                _ => "fa-question-circle"
+            };
+        }
+
+        protected override string FadIcon(string iconClass)
+        {
+            return base.FadIcon($"fad {iconClass}");
         }
     }
 }

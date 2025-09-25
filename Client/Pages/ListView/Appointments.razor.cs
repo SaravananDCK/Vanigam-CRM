@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Vanigam.CRM.Objects.OData;
@@ -9,6 +10,9 @@ namespace Vanigam.CRM.Client.Pages.ListView
 {
     public partial class Appointments
     {
+        [Parameter] public Guid? JobId { get; set; }
+        [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+        [Parameter] public string? EmbeddedTitle { get; set; }
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try

@@ -7,4 +7,5 @@ public class JobSeedModel
     public string Status { get; set; } = "Pending";
     public string Priority { get; set; } = "Medium";
     public string? CreatedAtUtc { get; set; }
+    public string? CustomerName { get; set; }
 }

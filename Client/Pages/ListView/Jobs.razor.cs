@@ -20,7 +20,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                     orderBy = "Title"; // Default to sorting by Title in embedded mode
                 }
 
-                var result = await JobApiService.Get(filter: GetFilterString(args), orderBy: orderBy, top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await JobApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: orderBy, top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
@@ -52,7 +52,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
             return filter.Build();
         }
-
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return new ODataExpand<Job>()
+                .Expand(f => f.Customer, f => f.Customer.Name)
+                .Build();
+        }
         protected async Task AddButtonClick(MouseEventArgs args)
         {
             var parameters = new Dictionary<string, object>();

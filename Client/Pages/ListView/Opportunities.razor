@@ -10,39 +10,25 @@
                             SearchButtonClick=@Search
                             ShowAdd=@(!IsEmbeddedMode || LeadId.HasValue)>
         <RadioButtons>
-            @* Stage Filter Bar - Only show in non-embedded mode *@
-            @if (!IsEmbeddedMode)
-            {
-                <RadzenRow class="mb-3" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
-                    <RadzenColumn Size="12">
-                        <RadzenSelectBar @bind-Value="@SelectedStage" TValue="OpportunityStage?" Change="@OnStageChange" class="w-100">
-                            <Items>
-                                <RadzenSelectBarItem Value="@(null)">
-                                    <Template>
-                                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem" class="p-2">
-                                            <RadzenText TextStyle="TextStyle.Subtitle2" class="mb-0">@Localizer["All"]</RadzenText>
-                                            <RadzenBadge Text="@(TotalCount.ToString())"
-                                                         BadgeStyle="BadgeStyle.Info" />
-                                        </RadzenStack>
-                                    </Template>
-                                </RadzenSelectBarItem>
-                                @foreach (OpportunityStage stage in Enum.GetValues<OpportunityStage>())
-                                {
-                                    <RadzenSelectBarItem Value="@stage">
-                                        <Template>
-                                            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem" class="p-2">
-                                                <RadzenText TextStyle="TextStyle.Subtitle2" class="mb-0">@Localizer[stage.ToString()]</RadzenText>
-                                                <RadzenBadge Text="@(GetStageCount(stage).ToString())"
-                                                             BadgeStyle="@GetStageBadgeStyle(stage)" />
-                                            </RadzenStack>
-                                        </Template>
-                                    </RadzenSelectBarItem>
-                                }
-                            </Items>
-                        </RadzenSelectBar>
-                    </RadzenColumn>
-                </RadzenRow>
-            }
+            @* Stage Filter Bar using RadzenTabs *@
+            <RadzenTabs RenderMode="TabRenderMode.Client" SelectedIndexChanged="OnStageTabChange"
+                        TabPosition="TabPosition.Top" class="modern-tabs">
+                <Tabs>
+                    <RadzenTabsItem>
+                        <Template>
+                            <FilterTabTemplate Text="@Localizer["All"]" Count="@(TotalCount.ToString() ?? "0")" Icon="@FadIcon("fa-list")" Style="@BadgeStyle.Primary" ></FilterTabTemplate>
+                        </Template>
+                    </RadzenTabsItem>
+                    @foreach (OpportunityStage stage in Enum.GetValues<OpportunityStage>())
+                    {
+                        <RadzenTabsItem>
+                            <Template>
+                                <FilterTabTemplate Text="@Localizer[stage.ToString()]" Count="@(GetStageCount(stage).ToString())" Icon="@FadIcon(GetIcon(stage))" Style="@GetStageBadgeStyle(stage)" ></FilterTabTemplate>
+                            </Template>
+                        </RadzenTabsItem>
+                    }
+                </Tabs>
+            </RadzenTabs>
         </RadioButtons>
     </ListPageTitleComponent>
 
@@ -86,3 +72,9 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+<style>
+    :root {
+        .rz-tabview.rz-tabview-top { flex-direction: row !important; }
+    }
+</style>

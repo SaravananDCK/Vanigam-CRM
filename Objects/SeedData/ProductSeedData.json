@@ -1,0 +1,162 @@
+[
+  {
+    "Name": "Dell OptiPlex 7090 Desktop",
+    "SKU": "DELL-OPT-7090",
+    "Type": "Product",
+    "UnitPrice": 85000.00,
+    "Cost": 72000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "HP EliteBook 850 G8 Laptop",
+    "SKU": "HP-EB-850G8",
+    "Type": "Product",
+    "UnitPrice": 125000.00,
+    "Cost": 105000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Lenovo ThinkPad X1 Carbon",
+    "SKU": "LEN-TP-X1C",
+    "Type": "Product",
+    "UnitPrice": 165000.00,
+    "Cost": 145000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Cisco Catalyst 9300 Series Switch",
+    "SKU": "CSC-C9300-48P",
+    "Type": "Product",
+    "UnitPrice": 350000.00,
+    "Cost": 285000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Fortinet FortiGate 100F Firewall",
+    "SKU": "FTI-FG-100F",
+    "Type": "Product",
+    "UnitPrice": 125000.00,
+    "Cost": 95000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "VMware vSphere Standard License",
+    "SKU": "VMW-VSP-STD",
+    "Type": "Product",
+    "UnitPrice": 95000.00,
+    "Cost": 75000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Microsoft Office 365 E5 License",
+    "SKU": "MSO-O365-E5",
+    "Type": "Product",
+    "UnitPrice": 3500.00,
+    "Cost": 2800.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Samsung 34-inch Curved Monitor",
+    "SKU": "SAM-CRV-34",
+    "Type": "Product",
+    "UnitPrice": 45000.00,
+    "Cost": 38000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Epson L15150 A3+ Wi-Fi Duplex Printer",
+    "SKU": "EPS-L15150",
+    "Type": "Product",
+    "UnitPrice": 35000.00,
+    "Cost": 28000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "APC Smart-UPS 1500VA Battery Backup",
+    "SKU": "APC-SUP-1500",
+    "Type": "Product",
+    "UnitPrice": 25000.00,
+    "Cost": 20000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "TP-Link Omada EAP660 HD Wi-Fi 6 Access Point",
+    "SKU": "TPL-EAP660HD",
+    "Type": "Product",
+    "UnitPrice": 18000.00,
+    "Cost": 14500.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Synology DS920+ 4-Bay NAS DiskStation",
+    "SKU": "SYN-DS920",
+    "Type": "Product",
+    "UnitPrice": 65000.00,
+    "Cost": 52000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Logitech MX Master 3 Wireless Mouse",
+    "SKU": "LOG-MXM3",
+    "Type": "Product",
+    "UnitPrice": 8500.00,
+    "Cost": 6800.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Logitech MX Keys Advanced Wireless Keyboard",
+    "SKU": "LOG-MXKEYS",
+    "Type": "Product",
+    "UnitPrice": 12000.00,
+    "Cost": 9500.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Western Digital 4TB External Hard Drive",
+    "SKU": "WD-EXT-4TB",
+    "Type": "Product",
+    "UnitPrice": 8500.00,
+    "Cost": 7200.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Kingston 32GB DDR4 3200MHz RAM Module",
+    "SKU": "KIN-DDR4-32GB",
+    "Type": "Product",
+    "UnitPrice": 12000.00,
+    "Cost": 9800.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Samsung 970 EVO Plus 1TB NVMe SSD",
+    "SKU": "SAM-970EVO-1TB",
+    "Type": "Product",
+    "UnitPrice": 8500.00,
+    "Cost": 7000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "NVIDIA GeForce RTX 3060 Graphics Card",
+    "SKU": "NVI-RTX3060",
+    "Type": "Product",
+    "UnitPrice": 35000.00,
+    "Cost": 28500.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Intel Core i7-12700K Processor",
+    "SKU": "INT-I7-12700K",
+    "Type": "Product",
+    "UnitPrice": 32000.00,
+    "Cost": 27500.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "ASUS ROG Strix B550-F Gaming Motherboard",
+    "SKU": "ASU-B550F-GAM",
+    "Type": "Product",
+    "UnitPrice": 18000.00,
+    "Cost": 15200.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  }
+]

@@ -16,6 +16,7 @@ namespace Vanigam.CRM.Objects
 {
     public partial class VanigamAccountingDbContext(DbContextOptions<VanigamAccountingDbContext> options) : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>(options)
     {
+        
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             //configurationBuilder.Conventions.Add(_ => new BlankTriggerAddingConvention());
@@ -146,6 +147,7 @@ namespace Vanigam.CRM.Objects
                 await this.SeedProductData();
                 await this.SeedInventoryItemData();
                 await this.SeedServiceItemData();
+                await this.SeedQuoteData();
                 //foreach (var fn in beforeUpdate)
                 //{
                 //    await using var stream = typeof(Party).Assembly.GetManifestResourceStream(fn);
@@ -659,11 +661,13 @@ namespace Vanigam.CRM.Objects
                 var jobs = new List<Job>();
                 foreach (var seedJob in jobSeedData)
                 {
+                    var customer = Customers.FirstOrDefault(c => c.Name == seedJob.CustomerName);
                     var job = new Job
                     {
                         Oid = Guid.NewGuid(),
                         TenantId = demoTenant.Id,
                         Title = seedJob.Title,
+                        CustomerId = customer?.Oid,
                         Description = seedJob.Description,
                         Status = Enum.TryParse<JobStatus>(seedJob.Status, out var status) ? status : JobStatus.Pending,
                         Priority = Enum.TryParse<Priority>(seedJob.Priority, out var priority) ? priority : Priority.Normal,
@@ -808,10 +812,12 @@ namespace Vanigam.CRM.Objects
                 var contacts = new List<Contact>();
                 foreach (var seedContact in contactSeedData)
                 {
+                    var customer = Customers.FirstOrDefault(c => c.Name == seedContact.CustomerName);
                     var contact = new Contact
                     {
                         Oid = Guid.NewGuid(),
                         TenantId = demoTenant.Id,
+                        CustomerId = customer.Oid,
                         FirstName = seedContact.FirstName,
                         LastName = seedContact.LastName,
                         JobTitle = seedContact.JobTitle,
@@ -1106,6 +1112,103 @@ namespace Vanigam.CRM.Objects
                         }
                         break;
                 }
+            }
+        }
+
+        public async Task SeedQuoteData()
+        {
+            // Check if Quote data already exists
+            if (await Quotes.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "QuoteSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "QuoteSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var quoteSeedData = System.Text.Json.JsonSerializer.Deserialize<List<QuoteSeedModel>>(jsonContent);
+
+                if (quoteSeedData?.Any() != true)
+                    return;
+
+                var quotes = new List<Quote>();
+                foreach (var seedQuote in quoteSeedData)
+                {
+                    // Find customer by name
+                    var customer = await Customers.FirstOrDefaultAsync(c => c.Name == seedQuote.CustomerName);
+
+                    // Find job by title
+                    var job = await Jobs.FirstOrDefaultAsync(j => j.Title == seedQuote.JobTitle);
+
+                    var quote = new Quote
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Title = seedQuote.Title,
+                        Status = Enum.TryParse<QuoteStatus>(seedQuote.Status, out var status) ? status : QuoteStatus.Draft,
+                        CustomerId = customer?.Oid,
+                        JobId = job?.Oid,
+                        TotalAmount = seedQuote.TotalAmount,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = DateTime.TryParse(seedQuote.CreatedAtUtc, out var createdAt) ?
+                            DateTime.SpecifyKind(createdAt, DateTimeKind.Utc).ToDateTimeOffset() :
+                            SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        Items = new List<QuoteItem>()
+                    };
+
+                    // Add quote items
+                    foreach (var seedItem in seedQuote.Items)
+                    {
+                        // Try to find existing inventory item by name
+                        var inventoryItem = await Items.FirstOrDefaultAsync(i => i.Name == seedItem.ItemName);
+
+                        var quoteItem = new QuoteItem
+                        {
+                            Oid = Guid.NewGuid(),
+                            TenantId = demoTenant.Id,
+                            QuoteId = quote.Oid,
+                            InventoryItemId = inventoryItem?.Oid,
+                            Quantity = seedItem.Quantity,
+                            UnitPrice = seedItem.UnitPrice,
+                            CreatedByUserId = ApplicationUser.SystemUserId,
+                            CreatedAtUtc = quote.CreatedAtUtc
+                        };
+
+                        quote.Items.Add(quoteItem);
+                    }
+
+                    quotes.Add(quote);
+                }
+
+                await Quotes.AddRangeAsync(quotes);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't throw to prevent seeding from failing completely
+                Console.WriteLine($"Error seeding Quote data: {ex.Message}");
             }
         }
     }

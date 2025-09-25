@@ -151,7 +151,6 @@ namespace Vanigam.CRM.Client.Layout
                 ChildItems =
                 [
                     new MenuItemDto { Text = Localizer["Quotes"], Path = "quotes", Icon = ("fa-file-invoice-dollar") },
-                    new MenuItemDto { Text = Localizer["Quote Items"], Path = "quoteitems", Icon = ("fa-list-ul") },
                     new MenuItemDto { Text = Localizer["Invoices"], Path = "invoices", Icon = ("fa-file-invoice") },
                     new MenuItemDto { Text = Localizer["Payments"], Path = "payments", Icon = ("fa-credit-card") },
                     new MenuItemDto { Text = Localizer["Contracts"], Path = "contracts", Icon = ("fa-handshake") }

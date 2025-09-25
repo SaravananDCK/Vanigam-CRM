@@ -1,0 +1,149 @@
+﻿<div class="round-badge-section">
+    <div class="modern-round-badge-wrapper">
+        <RadzenBadge BadgeStyle="BadgeStyle" Class="modern-round-filter-badge">@Text</RadzenBadge>
+        <div class="round-badge-pulse-ring"></div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public BadgeStyle BadgeStyle { get; set; }
+    [Parameter]
+    public string Text { get; set; }
+}
+<style>
+    /* Round badge section with enhanced styling */
+    .round-badge-section {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding-right: var(--filter-spacing-sm);
+    }
+
+    .modern-round-badge-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: fit-content;
+    }
+
+    .modern-round-filter-badge {
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+        padding: var(--filter-spacing-xs) var(--filter-spacing-sm) !important;
+        border-radius: 50px !important; /* Fully rounded/pill shape */
+        position: relative;
+        z-index: 1;
+        transition: var(--filter-transition-smooth);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+        min-width: 2.5rem;
+        height: 2.5rem;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+        .modern-round-filter-badge:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+    .round-badge-pulse-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        border: 2px solid currentColor;
+        border-radius: 50px;
+        opacity: 0;
+        animation: none;
+        transition: var(--filter-transition-smooth);
+    }
+
+    /* Add subtle glow effect for different badge styles */
+    .modern-round-filter-badge.rz-badge-primary {
+        background: linear-gradient(135deg, var(--rz-primary) 0%, var(--rz-primary-darker) 100%) !important;
+        color: white !important;
+        box-shadow: 0 3px 12px rgba(var(--rz-primary-rgb), 0.4);
+    }
+
+    .modern-round-filter-badge.rz-badge-success {
+        background: linear-gradient(135deg, var(--rz-success) 0%, var(--rz-success-darker) 100%) !important;
+        color: white !important;
+        box-shadow: 0 3px 12px rgba(var(--rz-success-rgb), 0.4);
+    }
+
+    .modern-round-filter-badge.rz-badge-warning {
+        background: linear-gradient(135deg, var(--rz-warning) 0%, var(--rz-warning-darker) 100%) !important;
+        color: white !important;
+        box-shadow: 0 3px 12px rgba(var(--rz-warning-rgb), 0.4);
+    }
+
+    .modern-round-filter-badge.rz-badge-danger {
+        background: linear-gradient(135deg, var(--rz-danger) 0%, var(--rz-danger-darker) 100%) !important;
+        color: white !important;
+        box-shadow: 0 3px 12px rgba(var(--rz-danger-rgb), 0.4);
+    }
+
+    .modern-round-filter-badge.rz-badge-info {
+        background: linear-gradient(135deg, var(--rz-info) 0%, var(--rz-info-darker) 100%) !important;
+        color: white !important;
+        box-shadow: 0 3px 12px rgba(var(--rz-info-rgb), 0.4);
+    }
+
+    .modern-round-filter-badge.rz-badge-secondary {
+        background: linear-gradient(135deg, var(--rz-secondary) 0%, var(--rz-secondary-darker) 100%) !important;
+        color: white !important;
+        box-shadow: 0 3px 12px rgba(var(--rz-secondary-rgb), 0.4);
+    }
+
+    /* Pulse animation for active states */
+    .round-badge-pulse-ring.active {
+        animation: roundPulse 2s infinite;
+        opacity: 0.6;
+    }
+
+    @@keyframes roundPulse {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.6;
+        }
+
+        70% {
+            transform: translate(-50%, -50%) scale(1.4);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translate(-50%, -50%) scale(1.4);
+            opacity: 0;
+        }
+    }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .modern-round-filter-badge {
+            font-size: 0.9rem !important;
+            min-width: 2.2rem;
+            height: 2.2rem;
+            padding: 0.3rem 0.6rem !important;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .modern-round-filter-badge {
+            font-size: 0.8rem !important;
+            min-width: 2rem;
+            height: 2rem;
+            padding: 0.25rem 0.5rem !important;
+        }
+    }
+</style>

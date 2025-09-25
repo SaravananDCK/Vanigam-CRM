@@ -17,7 +17,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await LeadApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await LeadApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count: args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
 
@@ -26,7 +26,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             }
             catch (Exception ex)
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = Localizer[$"Load"] });
+                NotificationService.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = Localizer[$"Load"] });
             }
         }
 
@@ -82,7 +82,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             {
                 if (await DialogService.Confirm(Localizer["DeleteRecord"]) == true)
                 {
-                    var deleteResult = await LeadApiService.Delete(oid:lead.Oid);
+                    var deleteResult = await LeadApiService.Delete(oid: lead.Oid);
 
                     if (deleteResult != null)
                     {
@@ -124,7 +124,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             {
                 // Fallback to zero counts if API call fails
                 StatusCounts.Clear();
-                StatusCounts= null;
+                StatusCounts = null;
                 foreach (LeadStatus status in Enum.GetValues<LeadStatus>())
                 {
                     StatusCounts[status] = 0;
@@ -155,9 +155,16 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 .Build();
         }
 
-        protected async Task OnStatusChange(LeadStatus? value)
+        protected async Task OnStatusTabChange(int value)
         {
-            SelectedStatus = value;
+            if (value == 0)
+            {
+                SelectedStatus = null;
+            }
+            else
+            {
+                SelectedStatus = (LeadStatus)value-1;
+            }
             await GridReload();
         }
 
@@ -181,12 +188,36 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             return status switch
             {
-                LeadStatus.New => BadgeStyle.Secondary,
+                LeadStatus.New => BadgeStyle.Warning,
                 LeadStatus.Contacted => BadgeStyle.Info,
                 LeadStatus.Qualified => BadgeStyle.Success,
                 LeadStatus.Converted => BadgeStyle.Success,
                 LeadStatus.Lost => BadgeStyle.Danger,
                 _ => BadgeStyle.Light
+            };
+        }
+        protected string GetIcon(LeadStatus status)
+        {
+            return status switch
+            {
+                LeadStatus.New => "fa-sparkles",
+                LeadStatus.Contacted => "fa-phone",
+                LeadStatus.Qualified => "fa-square-check",
+                LeadStatus.Converted => "fa-check-double",
+                LeadStatus.Lost => "fa-user-slash",
+                _ => "fa-check",
+            };
+        }
+        protected string GetIconColor(LeadStatus status)
+        {
+            return status switch
+            {
+                LeadStatus.New => "var(--rz-warning)",
+                LeadStatus.Contacted => "var(--rz-info)",
+                LeadStatus.Qualified => "var(--rz-success)",
+                LeadStatus.Converted => "var(--rz-success)",
+                LeadStatus.Lost => "var(--rz-danger)",
+                _ => "var(--rz-primary)",
             };
         }
 

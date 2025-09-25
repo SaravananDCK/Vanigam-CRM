@@ -1,0 +1,182 @@
+[
+  {
+    "Name": "Network Infrastructure Setup",
+    "SKU": "SVC-NET-SETUP",
+    "Type": "ServiceItem",
+    "UnitPrice": 15000.00,
+    "Cost": 8500.00,
+    "HourlyRate": 2500.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Server Configuration & Deployment",
+    "SKU": "SVC-SRV-DEPLOY",
+    "Type": "ServiceItem",
+    "UnitPrice": 25000.00,
+    "Cost": 14000.00,
+    "HourlyRate": 3500.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Database Installation & Configuration",
+    "SKU": "SVC-DB-CONFIG",
+    "Type": "ServiceItem",
+    "UnitPrice": 20000.00,
+    "Cost": 12000.00,
+    "HourlyRate": 3000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Security Audit & Assessment",
+    "SKU": "SVC-SEC-AUDIT",
+    "Type": "ServiceItem",
+    "UnitPrice": 35000.00,
+    "Cost": 18000.00,
+    "HourlyRate": 4500.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Cloud Migration Services",
+    "SKU": "SVC-CLD-MIGRATE",
+    "Type": "ServiceItem",
+    "UnitPrice": 45000.00,
+    "Cost": 25000.00,
+    "HourlyRate": 5000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "System Integration & Testing",
+    "SKU": "SVC-SYS-INTEG",
+    "Type": "ServiceItem",
+    "UnitPrice": 30000.00,
+    "Cost": 16000.00,
+    "HourlyRate": 4000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Application Development",
+    "SKU": "SVC-APP-DEV",
+    "Type": "ServiceItem",
+    "UnitPrice": 55000.00,
+    "Cost": 32000.00,
+    "HourlyRate": 6000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Technical Consultation",
+    "SKU": "SVC-TECH-CONSULT",
+    "Type": "ServiceItem",
+    "UnitPrice": 8000.00,
+    "Cost": 4500.00,
+    "HourlyRate": 2000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "System Maintenance & Support",
+    "SKU": "SVC-SYS-MAINT",
+    "Type": "ServiceItem",
+    "UnitPrice": 12000.00,
+    "Cost": 6500.00,
+    "HourlyRate": 1800.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Hardware Installation",
+    "SKU": "SVC-HW-INSTALL",
+    "Type": "ServiceItem",
+    "UnitPrice": 5000.00,
+    "Cost": 2800.00,
+    "HourlyRate": 1500.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Software Installation & Configuration",
+    "SKU": "SVC-SW-CONFIG",
+    "Type": "ServiceItem",
+    "UnitPrice": 8000.00,
+    "Cost": 4200.00,
+    "HourlyRate": 1800.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Data Backup & Recovery Setup",
+    "SKU": "SVC-DATA-BACKUP",
+    "Type": "ServiceItem",
+    "UnitPrice": 18000.00,
+    "Cost": 10000.00,
+    "HourlyRate": 2800.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Network Security Implementation",
+    "SKU": "SVC-NET-SECURITY",
+    "Type": "ServiceItem",
+    "UnitPrice": 28000.00,
+    "Cost": 15500.00,
+    "HourlyRate": 3800.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "User Training & Documentation",
+    "SKU": "SVC-USER-TRAIN",
+    "Type": "ServiceItem",
+    "UnitPrice": 10000.00,
+    "Cost": 5500.00,
+    "HourlyRate": 1200.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Performance Optimization",
+    "SKU": "SVC-PERF-OPT",
+    "Type": "ServiceItem",
+    "UnitPrice": 22000.00,
+    "Cost": 12500.00,
+    "HourlyRate": 3200.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Disaster Recovery Planning",
+    "SKU": "SVC-DR-PLAN",
+    "Type": "ServiceItem",
+    "UnitPrice": 40000.00,
+    "Cost": 22000.00,
+    "HourlyRate": 4800.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Mobile Application Development",
+    "SKU": "SVC-MOB-DEV",
+    "Type": "ServiceItem",
+    "UnitPrice": 65000.00,
+    "Cost": 38000.00,
+    "HourlyRate": 7000.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "DevOps Implementation",
+    "SKU": "SVC-DEVOPS",
+    "Type": "ServiceItem",
+    "UnitPrice": 50000.00,
+    "Cost": 28000.00,
+    "HourlyRate": 5500.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "API Development & Integration",
+    "SKU": "SVC-API-DEV",
+    "Type": "ServiceItem",
+    "UnitPrice": 35000.00,
+    "Cost": 19000.00,
+    "HourlyRate": 4200.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Name": "Quality Assurance Testing",
+    "SKU": "SVC-QA-TEST",
+    "Type": "ServiceItem",
+    "UnitPrice": 18000.00,
+    "Cost": 9500.00,
+    "HourlyRate": 2200.00,
+    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+  }
+]

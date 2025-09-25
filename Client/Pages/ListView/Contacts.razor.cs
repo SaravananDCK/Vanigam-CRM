@@ -13,7 +13,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await ContactApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await ContactApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
@@ -47,7 +47,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
             return filter.Build();
         }
-
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return new ODataExpand<Contact>()
+                .Expand(f => f.Customer, f => f.Customer.Name)
+                .Build();
+        }
         protected async Task AddButtonClick(MouseEventArgs args)
         {
             var parameters = new Dictionary<string, object>();

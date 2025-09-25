@@ -16,7 +16,8 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Key decision maker for TCS digital transformation initiatives. Strong technical background and good relationship with our team.",
-    "CreatedAtUtc": "2024-01-10T00:00:00Z"
+    "CreatedAtUtc": "2024-01-10T00:00:00Z",
+    "CustomerName": "Tata Consultancy Services"
   },
   {
     "FirstName": "Priya",
@@ -35,7 +36,8 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Leading HDFC's core banking modernization. Very focused on security and compliance requirements.",
-    "CreatedAtUtc": "2024-01-05T00:00:00Z"
+    "CreatedAtUtc": "2024-01-05T00:00:00Z",
+    "CustomerName": "HDFC Bank Limited"
   },
   {
     "FirstName": "Vikram",
@@ -53,7 +55,8 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Responsible for Airtel's 5G network expansion. Technical expert with strong industry connections.",
-    "CreatedAtUtc": "2024-01-15T00:00:00Z"
+    "CreatedAtUtc": "2024-01-15T00:00:00Z",
+    "CustomerName": "Bharti Airtel Limited"
   },
   {
     "FirstName": "Dr. Suresh",
@@ -72,7 +75,8 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Leading Apollo's digital transformation. Medical background with strong IT expertise. NABH compliance is top priority.",
-    "CreatedAtUtc": "2024-01-20T00:00:00Z"
+    "CreatedAtUtc": "2024-01-20T00:00:00Z",
+    "CustomerName": "Apollo Hospitals Enterprise Ltd"
   },
   {
     "FirstName": "Anjali",
@@ -90,7 +94,8 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Driving Mahindra's Industry 4.0 initiatives. Very interested in IoT and analytics solutions for manufacturing optimization.",
-    "CreatedAtUtc": "2024-02-14T00:00:00Z"
+    "CreatedAtUtc": "2024-02-14T00:00:00Z",
+    "CustomerName": "Mahindra & Mahindra Limited"
   },
   {
     "FirstName": "Kiran",
@@ -108,7 +113,8 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Key stakeholder for Wipro's collaboration platform project. Global perspective with strong execution focus.",
-    "CreatedAtUtc": "2024-01-08T00:00:00Z"
+    "CreatedAtUtc": "2024-01-08T00:00:00Z",
+    "CustomerName": "Wipro Limited"
   },
   {
     "FirstName": "Rohit",
@@ -126,7 +132,8 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Leading Asian Paints' supply chain digitalization. Cost-conscious but appreciates value of good technology solutions.",
-    "CreatedAtUtc": "2024-01-18T00:00:00Z"
+    "CreatedAtUtc": "2024-01-18T00:00:00Z",
+    "CustomerName": "Asian Paints Limited"
   },
   {
     "FirstName": "Dr. Meera",
@@ -144,7 +151,8 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Pharmaceutical regulatory expert. Extremely detail-oriented with deep knowledge of FDA and EMA compliance requirements.",
-    "CreatedAtUtc": "2024-02-12T00:00:00Z"
+    "CreatedAtUtc": "2024-02-12T00:00:00Z",
+    "CustomerName": "Dr. Reddy's Laboratories"
   },
   {
     "FirstName": "Sanjay",
@@ -162,97 +170,8 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Responsible for Godrej's digital marketing transformation. Manages multiple consumer brands with complex integration needs.",
-    "CreatedAtUtc": "2024-01-22T00:00:00Z"
-  },
-  {
-    "FirstName": "Prof. Arjun",
-    "LastName": "Singh",
-    "JobTitle": "Dean of Academic Affairs",
-    "Department": "Academic Administration",
-    "Email": "arjun.singh@iitd.ac.in",
-    "Phone": "+91-11-26591234",
-    "Mobile": "+91-9876501234",
-    "Address": "IIT Delhi, Hauz Khas",
-    "City": "New Delhi",
-    "State": "Delhi",
-    "PostalCode": "110016",
-    "Country": "India",
-    "IsPrimary": true,
-    "Status": "Active",
-    "Notes": "Leading IIT Delhi's academic technology modernization. Strong advocate for research data management and collaboration tools.",
-    "CreatedAtUtc": "2024-01-14T00:00:00Z"
-  },
-  {
-    "FirstName": "Kavitha",
-    "LastName": "Nair",
-    "JobTitle": "VP Engineering",
-    "Department": "Engineering",
-    "Email": "kavitha.nair@zomato.com",
-    "Phone": "+91-80-28296123",
-    "Mobile": "+91-9988556677",
-    "Address": "Koramangala 5th Block",
-    "City": "Bangalore",
-    "State": "Karnataka",
-    "PostalCode": "560095",
-    "Country": "India",
-    "IsPrimary": true,
-    "Status": "Active",
-    "Notes": "Leading Zomato's customer experience initiatives. Data-driven approach with focus on machine learning and AI solutions.",
-    "CreatedAtUtc": "2024-01-09T00:00:00Z"
-  },
-  {
-    "FirstName": "Ramesh",
-    "LastName": "Sharma",
-    "JobTitle": "Head of Operations",
-    "Department": "Operations",
-    "Email": "ramesh.sharma@bluedart.com",
-    "Phone": "+91-80-26543211",
-    "Mobile": "+91-9123987654",
-    "Address": "Electronic City, Phase 1",
-    "City": "Bangalore",
-    "State": "Karnataka",
-    "PostalCode": "560100",
-    "Country": "India",
-    "IsPrimary": true,
-    "Status": "Active",
-    "Notes": "Blue Dart operations expert. Focused on last-mile delivery optimization and real-time tracking capabilities.",
-    "CreatedAtUtc": "2024-01-17T00:00:00Z"
-  },
-  {
-    "FirstName": "Sunita",
-    "LastName": "Reddy",
-    "JobTitle": "Program Director",
-    "Department": "Programs",
-    "Email": "sunita.reddy@oxfamindia.org",
-    "Phone": "+91-80-26543212",
-    "Mobile": "+91-9876123459",
-    "Address": "1st Block, Koramangala",
-    "City": "Bangalore",
-    "State": "Karnataka",
-    "PostalCode": "560034",
-    "Country": "India",
-    "IsPrimary": true,
-    "Status": "Active",
-    "Notes": "Leading Oxfam India's digital transformation. Strong focus on impact measurement and donor management systems.",
-    "CreatedAtUtc": "2024-01-11T00:00:00Z"
-  },
-  {
-    "FirstName": "Amit",
-    "LastName": "Agarwal",
-    "JobTitle": "Retail Technology Head",
-    "Department": "Technology",
-    "Email": "amit.agarwal@bigbazaar.in",
-    "Phone": "+91-22-25188012",
-    "Mobile": "+91-9876543298",
-    "Address": "DLF Cyber City, Sector 25",
-    "City": "Gurugram",
-    "State": "Haryana",
-    "PostalCode": "122002",
-    "Country": "India",
-    "IsPrimary": true,
-    "Status": "Active",
-    "Notes": "Driving Big Bazaar's omnichannel strategy. Experienced in retail technology with focus on customer experience optimization.",
-    "CreatedAtUtc": "2024-01-24T00:00:00Z"
+    "CreatedAtUtc": "2024-01-22T00:00:00Z",
+    "CustomerName": "Godrej Consumer Products"
   },
   {
     "FirstName": "Deepika",
@@ -270,6 +189,7 @@
     "IsPrimary": true,
     "Status": "Active",
     "Notes": "Leading Reliance Retail's analytics initiatives. Strong background in retail analytics and customer insights.",
-    "CreatedAtUtc": "2024-01-28T00:00:00Z"
+    "CreatedAtUtc": "2024-01-28T00:00:00Z",
+    "CustomerName": "Reliance Industries Limited"
   }
 ]
