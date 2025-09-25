@@ -37,10 +37,14 @@ namespace Vanigam.CRM.Objects.Helpers
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                     PropertyNameCaseInsensitive = true,
                 };
-                foreach (var jsonConverter in converters)
+                if (converters!=null)
                 {
-                    options.Converters.Add(jsonConverter);
+                    foreach (var jsonConverter in converters)
+                    {
+                        options.Converters.Add(jsonConverter);
+                    }
                 }
+                
                 
 
                 return stream.Length > 0 ? await JsonSerializer.DeserializeAsync<T>(stream,options) : default(T);

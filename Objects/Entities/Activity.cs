@@ -20,9 +20,11 @@ public class Activity : BaseClass
     public int? Duration { get; set; }
 
     [Required]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public ActivityStatus Status { get; set; } = ActivityStatus.Pending;
 
     [Required]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public ActivityType Type { get; set; } = ActivityType.Task;
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
