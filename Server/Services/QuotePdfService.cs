@@ -37,7 +37,7 @@ public class QuotePdfService(
 
             row.RelativeItem().Column(col =>
             {
-                col.Item().Text($"Quote #: {quote.Title}").SemiBold();
+                col.Item().Text($"Quote #: {quote.Number}").SemiBold();
                 col.Item().Text($"Date: {quote.CreatedAtUtc?.ToString("MM/dd/yyyy") ?? DateTime.Now.ToString("MM/dd/yyyy")}");
                 col.Item().Text($"Status: {quote.Status}");
                 if (quote.Job != null)

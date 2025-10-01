@@ -59,7 +59,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("JobId", JobId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["AddJobReport"], parameters.Any() ? parameters : null, 80, 80);
+            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["AddJobReport"], parameters.Any() ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -70,7 +70,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(JobReport jobreport)
         {
-            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["EditJobReport"], new Dictionary<string, object> { { "Oid", jobreport.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["EditJobReport"], new Dictionary<string, object> { { "Oid", jobreport.Oid } }, 100, 100);
             await GridReload();
         }
 

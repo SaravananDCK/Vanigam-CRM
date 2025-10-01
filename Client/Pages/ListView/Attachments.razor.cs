@@ -51,7 +51,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("JobReportId", JobReportId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditAttachment>(Localizer["AddAttachment"], parameters.Count > 0 ? parameters : null, 80, 80);
+            await DialogService.OpenDialogAsync<EditAttachment>(Localizer["AddAttachment"], parameters.Count > 0 ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -62,7 +62,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Attachment attachment)
         {
-            await DialogService.OpenDialogAsync<EditAttachment>(Localizer["EditAttachment"], new Dictionary<string, object> { { "Oid", attachment.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditAttachment>(Localizer["EditAttachment"], new Dictionary<string, object> { { "Oid", attachment.Oid } }, 100, 100);
             await GridReload();
         }
 

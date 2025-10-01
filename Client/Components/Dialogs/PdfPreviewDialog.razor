@@ -1,0 +1,50 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
+<RadzenStack Style="height:100%">
+    <ModernCloseButton OnClose="Close"></ModernCloseButton>
+    @if (!string.IsNullOrEmpty(PdfDataUrl))
+    {
+        <body style="margin:0px;padding:0px;overflow:hidden">
+            <iframe src="@PdfDataUrl" frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px" height="100%" width="100%"></iframe>
+        </body>
+       @*  <div style="width: 100%; height: fit-content; border: 1px solid #ddd;">
+            <iframe src="@PdfDataUrl"
+                    style="width: 100%; height: 100%; border: none;"
+                    title="PDF Preview">
+            </iframe>
+        </div> *@
+    }
+    else
+    {
+        <RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Primary"
+                                   Value="100"
+                                   ShowValue="false"
+                                   Mode="ProgressBarMode.Indeterminate"/>
+        <RadzenText>Loading PDF...</RadzenText>
+    }
+
+</RadzenStack>
+
+@code {
+    [Parameter] public byte[]? PdfBytes { get; set; }
+    [Parameter] public DialogService DialogService { get; set; }
+
+    private string? PdfDataUrl { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && PdfBytes != null)
+        {
+            // Convert PDF bytes to data URL for iframe
+            var base64 = Convert.ToBase64String(PdfBytes);
+            PdfDataUrl = $"data:application/pdf;base64,{base64}";
+            StateHasChanged();
+        }
+    }
+
+    private async Task Close()
+    {
+        DialogService.Close();
+    }
+}

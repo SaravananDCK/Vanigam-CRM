@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -58,22 +58,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="All" xml:space="preserve">
-    <value>All</value>
+  <data name="ConvertingQuote" xml:space="preserve">
+    <value>Converting Quote</value>
   </data>
-  <data name="Draft" xml:space="preserve">
-    <value>Draft</value>
+  <data name="InvoiceNumber" xml:space="preserve">
+    <value>Invoice Number</value>
   </data>
-  <data name="Sent" xml:space="preserve">
-    <value>Sent</value>
+  <data name="EnterInvoiceNumber" xml:space="preserve">
+    <value>Enter invoice number (optional)</value>
   </data>
-  <data name="Accepted" xml:space="preserve">
-    <value>Accepted</value>
+  <data name="InvoiceNumberHelp" xml:space="preserve">
+    <value>Leave blank to auto-generate</value>
   </data>
-  <data name="Rejected" xml:space="preserve">
-    <value>Rejected</value>
+  <data name="ImportantNote" xml:space="preserve">
+    <value>Important Note</value>
   </data>
-  <data name="Expired" xml:space="preserve">
-    <value>Expired</value>
+  <data name="ConversionNote" xml:space="preserve">
+    <value>This will create a new invoice with all quote items. Only accepted quotes can be converted.</value>
+  </data>
+  <data name="ConvertToInvoice" xml:space="preserve">
+    <value>Convert to Invoice</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="QuoteConvertedSuccessfully" xml:space="preserve">
+    <value>Quote converted to invoice successfully</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ConversionFailed" xml:space="preserve">
+    <value>Failed to convert quote to invoice</value>
   </data>
 </root>

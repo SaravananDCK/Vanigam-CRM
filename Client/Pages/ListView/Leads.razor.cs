@@ -17,7 +17,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await LeadApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count: args.Top != null && args.Skip != null);
+                var result = await LeadApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count: args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
 
@@ -58,10 +58,16 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 .EndGroup()
                 .Build();
         }
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return new ODataExpand<Lead>()
+                .Expand(f => f.AssignedTo, f => f.AssignedTo.UserName)
+                .Build();
+        }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditLead>(Localizer["AddLead"], null, 80, 80);
+            await DialogService.OpenDialogAsync<EditLead>(Localizer["AddLead"], null, 100, 100);
             await GridReload();
         }
 
@@ -72,7 +78,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Lead lead)
         {
-            await DialogService.OpenDialogAsync<EditLead>(Localizer["EditLead"], new Dictionary<string, object> { { "Oid", lead.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditLead>(Localizer["Edit Lead:"] + lead.Name, new Dictionary<string, object> { { "Oid", lead.Oid } }, 100, 100);
             await GridReload();
         }
 

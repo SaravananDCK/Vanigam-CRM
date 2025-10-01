@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Net.Http.Json;
 using System.Text.Json;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
@@ -75,4 +76,64 @@ public class QuoteApiService(
             throw new InvalidOperationException($"Network error: {ex.Message}");
         }
     }
+
+    public async Task<StatusSummaryResponse<QuoteStatus>> GetStatusSummaryAsync(StatusSummaryRequest request)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync(
+                $"odata/VanigamAccountingService/Quotes/status-summary",
+                request);
+
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<StatusSummaryResponse<QuoteStatus>>(json, GetJsonSerializerOptions())
+                   ?? new StatusSummaryResponse<QuoteStatus>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting quote status summary: {ex.Message}");
+            return new StatusSummaryResponse<QuoteStatus>
+            {
+                TotalCount = 0,
+                StatusCounts = new Dictionary<QuoteStatus, int>()
+            };
+        }
+    }
+
+    public async Task<Invoice?> ConvertQuoteToInvoiceAsync(Guid quoteId, string? invoiceNumber = null)
+    {
+        try
+        {
+            var request = new ConvertQuoteToInvoiceRequest
+            {
+                InvoiceNumber = invoiceNumber
+            };
+
+            var response = await httpClient.PostAsJsonAsync(
+                $"api/quote/{quoteId}/convert-to-invoice",
+                request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<Invoice>(json, GetJsonSerializerOptions());
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"Failed to convert quote to invoice: {errorMessage}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException($"Network error: {ex.Message}");
+        }
+    }
+}
+
+public class ConvertQuoteToInvoiceRequest
+{
+    public string? InvoiceNumber { get; set; }
 }

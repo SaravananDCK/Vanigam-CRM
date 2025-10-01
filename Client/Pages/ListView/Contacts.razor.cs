@@ -63,7 +63,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("CustomerId", CustomerId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditContact>(Localizer["AddContact"], parameters.Any() ? parameters : null, 80, 80);
+            await DialogService.OpenDialogAsync<EditContact>(Localizer["AddContact"], parameters.Any() ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -74,7 +74,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Contact contact)
         {
-            await DialogService.OpenDialogWithOutHeaderAsync<EditContact>(Localizer["Edit Contact"], new Dictionary<string, object> { { "Oid", contact.Oid } }, 80, 80);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditContact>(Localizer["Edit Contact"], new Dictionary<string, object> { { "Oid", contact.Oid } }, 100, 100);
             await GridReload();
         }
 

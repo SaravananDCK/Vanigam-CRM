@@ -1,0 +1,39 @@
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Services
+@using Microsoft.Extensions.Localization
+@using Vanigam.CRM.Helpers
+@inject QuoteApiService ConversionService
+@inherits CoreView
+@inject IStringLocalizer<ConvertQuoteToInvoiceDialog> Localizer
+
+<RadzenStack>
+    @if (Quote != null)
+    {
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Info" class="rz-mb-4">
+            @Localizer["ConvertingQuote"]: <strong>@Quote.Number</strong> (@Quote.TotalAmount.ToString("C"))
+        </RadzenAlert>
+    }
+
+    <RadzenTemplateForm @ref="form" TItem="ConversionModel" Data="@model" Submit="@OnSubmit">
+        <RadzenStack Gap="1rem">
+            <VanigamAccountingFormField Text="@Localizer["InvoiceNumber"]">
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@model.InvoiceNumber" Name="txt_InvoiceNumber" Placeholder="@Localizer["EnterInvoiceNumber"]" />
+                    <RadzenText TextStyle="TextStyle.Caption" class="rz-color-info">
+                        @Localizer["InvoiceNumberHelp"]
+                    </RadzenText>
+                </ChildContent>
+            </VanigamAccountingFormField>
+
+            <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" class="rz-mt-2">
+                <strong>@Localizer["ImportantNote"]:</strong> @Localizer["ConversionNote"]
+            </RadzenAlert>
+        </RadzenStack>
+
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" class="rz-mt-4" Gap="0.5rem">
+            <RadzenButton Text="@Localizer["ConvertToInvoice"]" ButtonType="ButtonType.Submit" IsBusy="@isBusy"
+                         Icon="receipt" ButtonStyle="ButtonStyle.Primary" />
+            <RadzenButton Text="@Localizer["Cancel"]" Click="@Cancel" ButtonStyle="ButtonStyle.Light" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>

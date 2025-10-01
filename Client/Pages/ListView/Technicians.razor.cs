@@ -13,7 +13,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await TechnicianApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await TechnicianApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
@@ -34,10 +34,14 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 .EndGroup()
                 .Build();
         }
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return string.Empty;
+        }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditTechnician>(Localizer["AddTechnician"], null, 80, 80);
+            await DialogService.OpenDialogAsync<EditTechnician>(Localizer["AddTechnician"], null, 100, 100);
             await GridReload();
         }
 
@@ -48,7 +52,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Technician technician)
         {
-            await DialogService.OpenDialogAsync<EditTechnician>(Localizer["EditTechnician"], new Dictionary<string, object> { { "Oid", technician.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditTechnician>(Localizer["EditTechnician"], new Dictionary<string, object> { { "Oid", technician.Oid } }, 100, 100);
             await GridReload();
         }
 

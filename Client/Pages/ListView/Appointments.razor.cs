@@ -17,7 +17,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await AppointmentApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await AppointmentApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
@@ -48,6 +48,13 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
             return filter.Build();
         }
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return new ODataExpand<Appointment>()
+                .Expand(f => f.Job, f => f.Job.Title)
+                .Expand(f => f.Technician, f => f.Technician.Name)
+                .Build();
+        }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
@@ -59,7 +66,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("JobId", JobId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["AddAppointment"], parameters.Any() ? parameters : null, 80, 80);
+            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["AddAppointment"], parameters.Any() ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -70,7 +77,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Appointment appointment)
         {
-            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["EditAppointment"], new Dictionary<string, object> { { "Oid", appointment.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["EditAppointment"], new Dictionary<string, object> { { "Oid", appointment.Oid } }, 100, 100);
             await GridReload();
         }
 

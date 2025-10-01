@@ -13,7 +13,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await LanguageApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await LanguageApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
                 
@@ -35,10 +35,14 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 .EndGroup()
                 .Build();
         }
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return string.Empty;
+        }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditLanguage>(Localizer["AddLanguage"], null, 80, 80);
+            await DialogService.OpenDialogAsync<EditLanguage>(Localizer["AddLanguage"], null, 100, 100);
             await GridReload();
         }
 
@@ -48,7 +52,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         }
         private async Task Open(Language language)
         {
-            await DialogService.OpenDialogAsync<EditLanguage>(Localizer["EditLanguage"], new Dictionary<string, object> { { "Oid", language.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditLanguage>(Localizer["EditLanguage"], new Dictionary<string, object> { { "Oid", language.Oid } }, 100, 100);
             await GridReload();
         }
         protected async Task GridDeleteButtonClick(Language language)

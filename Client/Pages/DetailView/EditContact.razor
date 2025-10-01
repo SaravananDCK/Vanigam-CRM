@@ -175,6 +175,8 @@
         <RadzenStack>
             <FluentValidationValidator Validator="new ContactValidator(Localizer)" />
             <ValidationSummary />
+
+            @* Full-width fields *@
             <VanigamAccountingFormField Text=@Localizer["Customer"]>
                 <ChildContent>
                     <RadzenDropDown @bind-Value="@CurrentObject.CustomerId"
@@ -186,86 +188,122 @@
                                     Name="dropdown_Customer" />
                 </ChildContent>
             </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Type"]>
-                <ChildContent>
-                    <ContactTypeEnumDropDown @bind-Value="@CurrentObject.Type" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["FirstName"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.FirstName" Name="txt_FirstName" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["LastName"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.LastName" Name="txt_LastName" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Email"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Email" Name="txt_Email" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Phone"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Phone" Name="txt_Phone" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Mobile"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Mobile" Name="txt_Mobile" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["JobTitle"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.JobTitle" Name="txt_JobTitle" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Department"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Department" Name="txt_Department" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["LinkedInProfile"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.LinkedInProfile" Name="txt_LinkedInProfile" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Status"]>
-                <ChildContent>
-                    <ContactStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Address"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Address" Name="txt_Address" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["City"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.City" Name="txt_City" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["State"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.State" Name="txt_State" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["PostalCode"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.PostalCode" Name="txt_PostalCode" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Country"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Country" Name="txt_Country" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["IsPrimary"]>
-                <ChildContent>
-                    <RadzenCheckBox @bind-Value="@CurrentObject.IsPrimary" Name="chk_IsPrimary" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+
+            <RadzenRow>
+                @* Left Column - Personal Information *@
+                <RadzenColumn Size="6">
+                    <RadzenStack>
+                        <VanigamAccountingFormField Text=@Localizer["Type"]>
+                            <ChildContent>
+                                <ContactTypeEnumDropDown @bind-Value="@CurrentObject.Type" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["FirstName"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.FirstName" Name="txt_FirstName" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["LastName"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.LastName" Name="txt_LastName" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["JobTitle"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.JobTitle" Name="txt_JobTitle" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["Department"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Department" Name="txt_Department" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["Status"]>
+                            <ChildContent>
+                                <ContactStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["IsPrimary"]>
+                            <Start>
+                                <RadzenSwitch @bind-Value="@CurrentObject.IsPrimary" Name="switch_IsPrimary" />
+                            </Start>
+                        </VanigamAccountingFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+
+                @* Right Column - Contact Information *@
+                <RadzenColumn Size="6">
+                    <RadzenStack>
+                        <VanigamAccountingFormField Text=@Localizer["Email"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Email" Name="txt_Email" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["Phone"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Phone" Name="txt_Phone" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["Mobile"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Mobile" Name="txt_Mobile" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["LinkedInProfile"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.LinkedInProfile" Name="txt_LinkedInProfile" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["Address"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Address" Name="txt_Address" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["City"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.City" Name="txt_City" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+
+                        <VanigamAccountingFormField Text=@Localizer["State"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.State" Name="txt_State" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+
+            @* Additional fields that span full width *@
+            <RadzenRow>
+                <RadzenColumn Size="6">
+                    <VanigamAccountingFormField Text=@Localizer["PostalCode"]>
+                        <ChildContent>
+                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.PostalCode" Name="txt_PostalCode" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="6">
+                    <VanigamAccountingFormField Text=@Localizer["Country"]>
+                        <ChildContent>
+                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Country" Name="txt_Country" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                </RadzenColumn>
+            </RadzenRow>
+
+            @* Notes section - full width *@
             <VanigamAccountingFormField Text=@Localizer["Notes"]>
                 <ChildContent>
                     <RadzenTextArea @bind-Value="@CurrentObject.Notes" Name="txt_Notes" Rows="4" class="w-100" />

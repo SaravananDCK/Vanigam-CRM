@@ -35,62 +35,135 @@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
         <RadzenCard class="rz-my-4">
-            <RadzenStack>
-                @* Opportunity Information Display *@
-                <div class="read-only-section-header">@Localizer["OpportunityInformation"]</div>
-                <RadzenRow>
-                    <RadzenColumn Size="6">
+            <RadzenTabs @bind-SelectedIndex="SelectedInfoTabIndex" RenderMode="TabRenderMode.Client">
+                <Tabs>
+                    <RadzenTabsItem Text="@Localizer["OpportunityInformation"]">
                         <RadzenStack>
-                            <div class="rz-p-4">
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Title"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Title ?? "-")</RadzenText>
-                                </div>
+                            <RadzenRow>
+                                <RadzenColumn Size="6">
+                                    <RadzenStack>
+                                        <div class="rz-p-4">
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Title"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Title ?? "-")</RadzenText>
+                                            </div>
 
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Description"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Description ?? "-")</RadzenText>
-                                </div>
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Description"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Description ?? "-")</RadzenText>
+                                            </div>
 
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["EstimatedValue"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.EstimatedValue.ToString("C"))</RadzenText>
-                                </div>
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["EstimatedValue"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.EstimatedValue.ToString("C"))</RadzenText>
+                                            </div>
 
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Source"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Source ?? "-")</RadzenText>
-                                </div>
-                            </div>
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Source"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Source ?? "-")</RadzenText>
+                                            </div>
+                                        </div>
+                                    </RadzenStack>
+                                </RadzenColumn>
+                                <RadzenColumn Size="6">
+                                    <RadzenStack>
+                                        <div class="rz-p-4">
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Stage"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Stage.ToString())</RadzenText>
+                                            </div>
+
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Probability"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Probability)%</RadzenText>
+                                            </div>
+
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["ExpectedCloseDate"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.ExpectedCloseDate?.ToString("yyyy-MM-dd"))</RadzenText>
+                                            </div>
+
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Comments"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Comments ?? "-")</RadzenText>
+                                            </div>
+                                        </div>
+                                    </RadzenStack>
+                                </RadzenColumn>
+                            </RadzenRow>
                         </RadzenStack>
-                    </RadzenColumn>
-                    <RadzenColumn Size="6">
-                        <RadzenStack>
-                            <div class="rz-p-4">
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Stage"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Stage.ToString())</RadzenText>
-                                </div>
+                    </RadzenTabsItem>
+                    @if (CurrentObject.Lead != null)
+                    {
+                        <RadzenTabsItem Text="@Localizer["LeadInformation"]">
+                            <RadzenStack>
+                                <RadzenRow>
+                                    <RadzenColumn Size="6">
+                                        <RadzenStack>
+                                            <div class="rz-p-4">
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Name"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.Name ?? "-")</RadzenText>
+                                                </div>
 
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Probability"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Probability)%</RadzenText>
-                                </div>
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Email"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.Email ?? "-")</RadzenText>
+                                                </div>
 
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["ExpectedCloseDate"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.ExpectedCloseDate?.ToString("yyyy-MM-dd"))</RadzenText>
-                                </div>
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Phone"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.Phone ?? "-")</RadzenText>
+                                                </div>
 
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Comments"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Comments ?? "-")</RadzenText>
-                                </div>
-                            </div>
-                        </RadzenStack>
-                    </RadzenColumn>
-                </RadzenRow>
-            </RadzenStack>
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Organization"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.Organization ?? "-")</RadzenText>
+                                                </div>
+
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["JobTitle"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.JobTitle ?? "-")</RadzenText>
+                                                </div>
+                                            </div>
+                                        </RadzenStack>
+                                    </RadzenColumn>
+                                    <RadzenColumn Size="6">
+                                        <RadzenStack>
+                                            <div class="rz-p-4">
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.Status.ToString())</RadzenText>
+                                                </div>
+
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Industry"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.Industry ?? "-")</RadzenText>
+                                                </div>
+
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Source"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.Source ?? "-")</RadzenText>
+                                                </div>
+
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["EstimatedBudget"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.EstimatedBudget?.ToString("C") ?? "-")</RadzenText>
+                                                </div>
+
+                                                <div class="read-only-field rz-mb-3">
+                                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["LeadScore"]:</strong></RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@CurrentObject.Lead.LeadScore</RadzenText>
+                                                </div>
+                                            </div>
+                                        </RadzenStack>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                            </RadzenStack>
+                        </RadzenTabsItem>
+                    }
+                </Tabs>
+            </RadzenTabs>
         </RadzenCard>
     }
 
@@ -158,7 +231,7 @@
     @if (IsTabsVisible)
     {
         <RadzenCard class="mt-4">
-            <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client">
+            <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Top">
                 <Tabs>
                     <RadzenTabsItem Text="@Localizer["Activities"]">
                         <Activities OpportunityId="@Oid"

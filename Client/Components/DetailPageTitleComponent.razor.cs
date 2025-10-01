@@ -74,7 +74,7 @@ namespace Vanigam.CRM.Client.Components
             }
         }
 
-        private async Task OnCloseClick(MouseEventArgs arg)
+        private async Task OnCloseClick()
         {
             DialogService.CloseDialog();
         }

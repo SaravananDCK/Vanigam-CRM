@@ -24,7 +24,7 @@
             </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["Sent"]>
                 <ChildContent>
-                    <RadzenCheckBox @bind-Value="@CurrentObject.Sent" Name="checkbox_Sent" />
+                    <RadzenSwitch @bind-Value="@CurrentObject.Sent" Name="switch_Sent" />
                 </ChildContent>
             </VanigamAccountingFormField>
         </RadzenStack>

@@ -22,7 +22,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await OpportunityApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await OpportunityApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
 
@@ -61,6 +61,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
             return filter.Build();
         }
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return new ODataExpand<Opportunity>()
+                .Expand(f => f.Lead, f => f.Lead.Name)
+                .Build();
+        }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
@@ -70,7 +76,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("LeadId", LeadId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditOpportunity>(Localizer["AddOpportunity"], parameters.Count > 0 ? parameters : null, 80, 80);
+            await DialogService.OpenDialogAsync<EditOpportunity>(Localizer["Add Opportunity"], parameters.Count > 0 ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -81,7 +87,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Opportunity opportunity)
         {
-            await DialogService.OpenDialogAsync<EditOpportunity>(Localizer["EditOpportunity"], new Dictionary<string, object> { { "Oid", opportunity.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditOpportunity>(Localizer["Edit Opportunity:"] + opportunity.Title, new Dictionary<string, object> { { "Oid", opportunity.Oid } }, 100, 100);
             await GridReload();
         }
 

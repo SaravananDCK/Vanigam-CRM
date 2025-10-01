@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Client.Components.Dialogs;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
@@ -77,5 +79,24 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
         }
 
+        // Business rule validation for conversion
+        private bool CanConvertToInvoice => CurrentObject != null &&
+            CurrentObject.Status == QuoteStatus.Accepted &&
+            IsReadOnlyMode && !IsCreateMode;
+
+        private async Task ShowConversionDialog()
+        {
+            var result = await DialogService.OpenDialogAsync<ConvertQuoteToInvoiceDialog>(
+                Localizer["ConvertToInvoice"],
+                new Dictionary<string, object> { { "Quote", CurrentObject } },
+                50, 40);
+
+            if (result != null)
+            {
+                // Refresh quote to show any updated information
+                CurrentObject = await QuoteApiService.GetByOid(oid: Oid);
+                StateHasChanged();
+            }
+        }
     }
 }

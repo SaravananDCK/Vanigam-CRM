@@ -19,38 +19,8 @@
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
             @DropDowns
             @CustomButtons
-            <div class="close-button-wrapper">
-                <RadzenButton Click=@OnCloseClick Icon="close" Size="ButtonSize.Small"
-                              ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" class="modern-close-btn" />
-            </div>
+            <ModernCloseButton OnClose="@OnCloseClick"></ModernCloseButton>
         </RadzenStack>
     </RadzenColumn>
 </RadzenRow>
 <DetailPageCommonComponent TitleText="@TitleText" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@CurrentOid" />
-<style>
-    /* Modern close button */
-    .close-button-wrapper {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        z-index: 10;
-    }
-
-    .modern-close-btn {
-        background: rgba(239, 68, 68, 0.1) !important;
-        backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(239, 68, 68, 0.2) !important;
-        border-radius: 50% !important;
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        color: #dc2626 !important;
-        transition: var(--transition-fast) !important;
-    }
-
-        .modern-close-btn:hover {
-            background: rgba(239, 68, 68, 0.2) !important;
-            transform: translateY(-1px) scale(1.1);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-</style>

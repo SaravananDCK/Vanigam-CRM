@@ -15,8 +15,16 @@
         @* Floating Edit Button - Only visible in read-only mode *@
         @if (IsEditButtonVisible)
         {
-
             <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+        }
+        @* Conversion Button - Only in read-only mode for accepted quotes *@
+        @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvertToInvoice)
+        {
+            <RadzenButton Text="@Localizer["ConvertToInvoice"]"
+                         Icon="receipt"
+                         ButtonStyle="ButtonStyle.Success"
+                         Size="ButtonSize.Small"
+                         Click="@ShowConversionDialog" />
         }
     </CustomBadge>
 </DetailPageTitleComponent>
@@ -37,7 +45,7 @@
                             <div class="rz-p-4">
                                 <div class="read-only-field rz-mb-3">
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Title"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Title ?? "-")</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Number ?? "-")</RadzenText>
                                 </div>
 
                                 <div class="read-only-field rz-mb-3">
@@ -111,7 +119,7 @@
                 <RadzenStack>
                     <VanigamAccountingFormField Text=@Localizer["Title"]>
                         <ChildContent>
-                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
+                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Title" />
                         </ChildContent>
                     </VanigamAccountingFormField>
                     <VanigamAccountingFormField Text=@Localizer["Status"]>
@@ -266,7 +274,7 @@
             var bulkData = new QuoteBulkSaveDTO
             {
                 Oid = IsCreateMode ? null : CurrentObject.Oid,
-                Title = CurrentObject.Title,
+                Title = CurrentObject.Number,
                 Status = CurrentObject.Status,
                 OpportunityId = CurrentObject.OpportunityId,
                 CustomerId = CurrentObject.CustomerId,

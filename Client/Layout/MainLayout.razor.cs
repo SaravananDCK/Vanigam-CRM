@@ -261,7 +261,7 @@ namespace Vanigam.CRM.Client.Layout
              
         private async Task SwapTenantClick()
         {
-            await DialogService.OpenDialogAsync<ChooseTenant>(Localizer["ChooseTenant"], new Dictionary<string, object>(), 80, 80);
+            await DialogService.OpenDialogAsync<ChooseTenant>(Localizer["ChooseTenant"], new Dictionary<string, object>(), 100, 100);
         }
 
         

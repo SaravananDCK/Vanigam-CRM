@@ -15,10 +15,39 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
     VanigamAccountingDbContext context,
     UserManager<ApplicationUser> userManager,
     RoleManager<ApplicationRole> roleManager,
-    QuoteService service)
+    QuoteService service,
+    SummaryService<Quote, QuoteStatus> summaryService,
+    ILogger<QuotesController> logger)
     : BaseODataServiceController<Quote, QuoteService>(context, userManager, roleManager,
         service, null)
     {
+        [HttpPost("status-summary")]
+        [Route("status-summary")]
+        public async Task<ActionResult<StatusSummaryResponse<QuoteStatus>>> GetStatusSummary(
+            [FromBody] StatusSummaryRequest request)
+        {
+            try
+            {
+                logger.LogInformation("Getting Quote status summary with search filter: {SearchFilter}",
+                    request.SearchFilter);
+
+                var result = await summaryService.GetStatusSummaryAsync(
+                    Context.Quotes,
+                    quote => quote.Status,
+                    request.SearchFilter,
+                    request.AdditionalFilter);
+
+                logger.LogInformation("Quote status summary completed: Total={TotalCount}, Statuses={StatusCount}",
+                    result.TotalCount, result.StatusCounts.Count);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error getting Quote status summary");
+                return BadRequest(new { Error = "Failed to retrieve status summary" });
+            }
+        }
         [HttpPost("/api/quote/bulk-save")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Quote>> BulkSaveQuoteWithItems([FromBody] QuoteBulkSaveDTO quoteData)
@@ -41,7 +70,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         return NotFound("Quote not found");
 
                     // Update quote properties
-                    quote.Title = quoteData.Title;
+                    quote.Number = quoteData.Title;
                     quote.Status = quoteData.Status;
                     quote.OpportunityId = quoteData.OpportunityId;
                     quote.CustomerId = quoteData.CustomerId;
@@ -54,7 +83,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                     quote = new Quote
                     {
                         Oid = Guid.NewGuid(),
-                        Title = quoteData.Title,
+                        Number = quoteData.Title,
                         Status = quoteData.Status,
                         OpportunityId = quoteData.OpportunityId,
                         CustomerId = quoteData.CustomerId,
@@ -160,5 +189,36 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                 return BadRequest($"Error loading quote items: {ex.Message}");
             }
         }
+
+        [HttpPost("/api/quote/{quoteId}/convert-to-invoice")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<Invoice>> ConvertQuoteToInvoice(Guid quoteId, [FromBody] ConvertQuoteToInvoiceRequest? request = null)
+        {
+            try
+            {
+                logger.LogInformation("Converting Quote {QuoteId} to Invoice", quoteId);
+
+                var invoice = await service.ConvertQuoteToInvoiceAsync(quoteId, request?.InvoiceNumber);
+
+                logger.LogInformation("Successfully converted Quote {QuoteId} to Invoice {InvoiceId}", quoteId, invoice.Oid);
+
+                return Ok(invoice);
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.LogWarning("Conversion validation failed for Quote {QuoteId}: {Message}", quoteId, ex.Message);
+                return BadRequest(new { Error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error converting Quote {QuoteId} to Invoice", quoteId);
+                return BadRequest(new { Error = "Failed to convert quote to invoice" });
+            }
+        }
+    }
+
+    public class ConvertQuoteToInvoiceRequest
+    {
+        public string? InvoiceNumber { get; set; }
     }
 }

@@ -1,16 +1,45 @@
 @page "/quotes"
-@using Vanigam.CRM.Client.Services
 @using Vanigam.CRM.Objects.Entities
 @inherits Vanigam.CRM.Client.Components.BaseListView<Quote, Quotes>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject QuoteApiService QuoteApiService
-@inject PdfApiService PdfApiService
 
 <RadzenStack>
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Quotes"] : Localizer["Quotes"])
                             AddButtonClick=@AddButtonClick
                             SearchButtonClick=@Search
-                            ShowAdd=@(!IsEmbeddedMode || JobId.HasValue) />
+                            ShowAdd=@(!IsEmbeddedMode || JobId.HasValue)>
+        <RadioButtons>
+            @* Status Filter Bar using RadzenTabs with FilterTabTemplate *@
+            @if (!IsEmbeddedMode)
+            {
+                <RadzenTabs RenderMode="TabRenderMode.Client" SelectedIndexChanged="OnStatusTabChange"
+                            TabPosition="TabPosition.Top" class="modern-tabs">
+                    <Tabs>
+                        <RadzenTabsItem>
+                            <Template>
+                                <FilterTabTemplate Text="@Localizer["All"]"
+                                                 Count="@(TotalCount.ToString() ?? "0")"
+                                                 Icon="@FadIcon("fa-list")"
+                                                 Style="@BadgeStyle.Primary" />
+                            </Template>
+                        </RadzenTabsItem>
+                        @foreach (QuoteStatus status in Enum.GetValues<QuoteStatus>())
+                        {
+                            <RadzenTabsItem>
+                                <Template>
+                                    <FilterTabTemplate Text="@Localizer[status.ToString()]"
+                                                     Count="@(GetStatusCount(status).ToString())"
+                                                     Icon="@FadIcon(GetIcon(status))"
+                                                     Style="@GetStatusBadgeStyle(status)" />
+                                </Template>
+                            </RadzenTabsItem>
+                        }
+                    </Tabs>
+                </RadzenTabs>
+            }
+        </RadioButtons>
+    </ListPageTitleComponent>
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Quote" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -24,16 +53,16 @@
                                 <OpenPageCommonComponent T="Quote" OpenObject="@quote" Open="@Open"></OpenPageCommonComponent>
                                 <DeletePageCommonComponent T="Quote" UsingObject="@quote" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
                                 <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="preview" Size="ButtonSize.ExtraSmall"
-                                             Click="@(() => PreviewPdf(quote.Oid))" Title="@Localizer["Preview PDF"]" />
+                                             Click="@(() => PreviewPdf(quote))" Title="@Localizer["Preview PDF"]" />
                                 <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="download" Size="ButtonSize.ExtraSmall"
-                                             Click="@(() => DownloadPdf(quote.Oid))" Title="@Localizer["Download PDF"]" />
+                                             Click="@(() => DownloadPdf(quote))" Title="@Localizer["Download PDF"]" />
                             </RadzenStack>
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property="Job.Title" Title=@Localizer["Job"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Title) Title=@Localizer["Title"]>
+                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Number) Title=@Localizer["Title"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Status) Title=@Localizer["Status"]>
                     </RadzenDataGridColumn>
@@ -47,18 +76,8 @@
     </RadzenRow>
 </RadzenStack>
 
-@code {
-    [Parameter] public Guid? JobId { get; set; }
-    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
-    [Parameter] public string? EmbeddedTitle { get; set; }
-
-    private async Task PreviewPdf(Guid quoteId)
-    {
-        await PdfApiService.PreviewQuotePdfAsync(quoteId);
+<style>
+    :root {
+        .rz-tabview.rz-tabview-top { flex-direction: row !important; }
     }
-
-    private async Task DownloadPdf(Guid quoteId)
-    {
-        await PdfApiService.DownloadQuotePdfAsync(quoteId);
-    }
-}
+</style>

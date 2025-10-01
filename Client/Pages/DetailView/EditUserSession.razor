@@ -35,7 +35,7 @@
             </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["IsActive"]>
                 <ChildContent>
-                    <RadzenCheckBox @bind-Value="@CurrentObject.IsActive" Name="checkbox_IsActive" />
+                    <RadzenSwitch @bind-Value="@CurrentObject.IsActive" Name="switch_IsActive" />
                 </ChildContent>
             </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["DeviceInfo"]>

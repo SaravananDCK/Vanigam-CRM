@@ -13,7 +13,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await QuoteItemApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await QuoteItemApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
@@ -40,6 +40,13 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
             return filter.Build();
         }
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return new ODataExpand<QuoteItem>()
+                .Expand(f => f.Quote, f => f.Quote.Number)
+                .Expand(f => f.InventoryItem, f => f.InventoryItem.Name)
+                .Build();
+        }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
@@ -49,7 +56,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("QuoteId", QuoteId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditQuoteItem>(Localizer["AddQuoteItem"], parameters.Count > 0 ? parameters : null, 80, 80);
+            await DialogService.OpenDialogAsync<EditQuoteItem>(Localizer["AddQuoteItem"], parameters.Count > 0 ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -60,7 +67,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(QuoteItem quoteitem)
         {
-            await DialogService.OpenDialogAsync<EditQuoteItem>(Localizer["EditQuoteItem"], new Dictionary<string, object> { { "Oid", quoteitem.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditQuoteItem>(Localizer["EditQuoteItem"], new Dictionary<string, object> { { "Oid", quoteitem.Oid } }, 100, 100);
             await GridReload();
         }
 

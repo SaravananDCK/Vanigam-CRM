@@ -1166,7 +1166,7 @@ namespace Vanigam.CRM.Objects
                     {
                         Oid = Guid.NewGuid(),
                         TenantId = demoTenant.Id,
-                        Title = seedQuote.Title,
+                        Number = seedQuote.Title,
                         Status = Enum.TryParse<QuoteStatus>(seedQuote.Status, out var status) ? status : QuoteStatus.Draft,
                         CustomerId = customer?.Oid,
                         JobId = job?.Oid,

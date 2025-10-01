@@ -58,4 +58,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="All" xml:space="preserve">
+    <value>அனைத்தும்</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>நிலுவையில்</value>
+  </data>
+  <data name="Assigned" xml:space="preserve">
+    <value>ஒதுக்கப்பட்டது</value>
+  </data>
+  <data name="Scheduled" xml:space="preserve">
+    <value>திட்டமிடப்பட்டது</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>செயல்பாட்டில்</value>
+  </data>
+  <data name="OnHold" xml:space="preserve">
+    <value>நிறுத்தி வைக்கப்பட்டது</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>முடிந்தது</value>
+  </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>ரத்து செய்யப்பட்டது</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>மூடப்பட்டது</value>
+  </data>
 </root>

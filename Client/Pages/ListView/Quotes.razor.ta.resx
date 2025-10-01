@@ -58,4 +58,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="All" xml:space="preserve">
+    <value>அனைத்தும்</value>
+  </data>
+  <data name="Draft" xml:space="preserve">
+    <value>வரைவு</value>
+  </data>
+  <data name="Sent" xml:space="preserve">
+    <value>அனுப்பப்பட்டது</value>
+  </data>
+  <data name="Accepted" xml:space="preserve">
+    <value>ஏற்றுக்கொள்ளப்பட்டது</value>
+  </data>
+  <data name="Rejected" xml:space="preserve">
+    <value>நிராகரிக்கப்பட்டது</value>
+  </data>
+  <data name="Expired" xml:space="preserve">
+    <value>காலாவதியானது</value>
+  </data>
 </root>

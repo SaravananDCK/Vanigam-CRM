@@ -14,6 +14,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         [Inject] private OpportunityApiService OpportunityApiService { get; set; }
         [Inject] private LeadApiService ConversionApiService { get; set; }
 
+        // Property to track selected information tab in read-only mode
+        private int SelectedInfoTabIndex = 0;
+
         // Property to determine if the opportunity can be converted to customer
         private bool CanConvertToCustomer => CurrentObject != null &&
             (CurrentObject.Stage == OpportunityStage.Proposal ||
@@ -31,7 +34,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             else
             {
-                CurrentObject = await OpportunityApiService.GetByOid(oid: Oid);
+                CurrentObject = await OpportunityApiService.GetByOid(expand: "Lead", oid: Oid);
                 IsReadOnlyMode = true; // Edit mode - start in read-only
             }
 
@@ -104,7 +107,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (result != null)
             {
                 // Refresh the current object to show updated status
-                CurrentObject = await OpportunityApiService.GetByOid(oid: Oid);
+                CurrentObject = await OpportunityApiService.GetByOid(expand: "Lead", oid: Oid);
                 StateHasChanged();
             }
         }

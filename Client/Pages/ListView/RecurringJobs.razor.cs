@@ -56,7 +56,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("ContractId", ContractId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditRecurringJob>(Localizer["AddRecurringJob"], parameters.Any() ? parameters : null, 80, 80);
+            await DialogService.OpenDialogAsync<EditRecurringJob>(Localizer["AddRecurringJob"], parameters.Any() ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -67,7 +67,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(RecurringJob recurringjob)
         {
-            await DialogService.OpenDialogAsync<EditRecurringJob>(Localizer["EditRecurringJob"], new Dictionary<string, object> { { "Oid", recurringjob.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditRecurringJob>(Localizer["EditRecurringJob"], new Dictionary<string, object> { { "Oid", recurringjob.Oid } }, 100, 100);
             await GridReload();
         }
 

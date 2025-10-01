@@ -4,18 +4,43 @@
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject JobApiService JobApiService
 
-@* Parameters for embedded mode *@
-@code {
-    [Parameter] public Guid? CustomerId { get; set; }
-    [Parameter] public bool IsEmbeddedMode { get; set; } = false;
-    [Parameter] public string? EmbeddedTitle { get; set; }
-}
 
 <RadzenStack>
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Customer Jobs"] : Localizer["Jobs"])
                                 AddButtonClick=@AddButtonClick
                                 SearchButtonClick=@Search
-                                ShowAdd=@(!IsEmbeddedMode || CustomerId.HasValue) />
+                                ShowAdd=@(!IsEmbeddedMode || CustomerId.HasValue)>
+        <RadioButtons>
+            @* Status Filter Bar using RadzenTabs with FilterTabTemplate *@
+            @if (!IsEmbeddedMode)
+            {
+                <RadzenTabs RenderMode="TabRenderMode.Client" SelectedIndexChanged="OnStatusTabChange"
+                            TabPosition="TabPosition.Top" class="modern-tabs">
+                    <Tabs>
+                        <RadzenTabsItem>
+                            <Template>
+                                <FilterTabTemplate Text="@Localizer["All"]"
+                                                 Count="@(TotalCount.ToString() ?? "0")"
+                                                 Icon="@FadIcon("fa-list")"
+                                                 Style="@BadgeStyle.Primary" />
+                            </Template>
+                        </RadzenTabsItem>
+                        @foreach (JobStatus status in Enum.GetValues<JobStatus>())
+                        {
+                            <RadzenTabsItem>
+                                <Template>
+                                    <FilterTabTemplate Text="@Localizer[status.ToString()]"
+                                                     Count="@(GetStatusCount(status).ToString())"
+                                                     Icon="@FadIcon(GetIcon(status))"
+                                                     Style="@GetStatusBadgeStyle(status)" />
+                                </Template>
+                            </RadzenTabsItem>
+                        }
+                    </Tabs>
+                </RadzenTabs>
+            }
+        </RadioButtons>
+    </ListPageTitleComponent>
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Job" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -54,3 +79,9 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
+
+<style>
+    :root {
+        .rz-tabview.rz-tabview-top { flex-direction: row !important; }
+    }
+</style>

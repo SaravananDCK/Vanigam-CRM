@@ -50,7 +50,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("CustomerId", CustomerId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditContract>(Localizer["AddContract"], parameters.Count > 0 ? parameters : null, 80, 80);
+            await DialogService.OpenDialogAsync<EditContract>(Localizer["AddContract"], parameters.Count > 0 ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -61,7 +61,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Contract contract)
         {
-            await DialogService.OpenDialogAsync<EditContract>(Localizer["EditContract"], new Dictionary<string, object> { { "Oid", contract.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditContract>(Localizer["EditContract"], new Dictionary<string, object> { { "Oid", contract.Oid } }, 100, 100);
             await GridReload();
         }
 

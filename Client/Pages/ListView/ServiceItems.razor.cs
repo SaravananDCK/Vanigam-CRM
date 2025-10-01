@@ -13,7 +13,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await ServiceItemApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await ServiceItemApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
@@ -33,10 +33,14 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 .EndGroup()
                 .Build();
         }
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return string.Empty;
+        }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["AddInventoryItem"], null, 80, 80);
+            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["AddInventoryItem"], null, 100, 100);
             await GridReload();
         }
 
@@ -47,7 +51,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(ServiceItem serviceItem)
         {
-            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["EditInventoryItem"], new Dictionary<string, object> { { "Oid", serviceItem.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["EditInventoryItem"], new Dictionary<string, object> { { "Oid", serviceItem.Oid } }, 100, 100);
             await GridReload();
         }
 

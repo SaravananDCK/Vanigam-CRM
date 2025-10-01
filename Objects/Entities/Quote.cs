@@ -8,8 +8,8 @@ namespace Vanigam.CRM.Objects.Entities
     public class Quote : BaseClass
     {
         [Required]
-        [StringLength(200)]
-        public string Title { get; set; } = string.Empty;
+        [StringLength(50)]
+        public string Number { get; set; } = string.Empty;
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public QuoteStatus Status { get; set; } = QuoteStatus.Draft;

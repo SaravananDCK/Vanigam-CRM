@@ -13,7 +13,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                var result = await PaymentApiService.Get(filter: GetFilterString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await PaymentApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
@@ -40,6 +40,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
             return filter.Build();
         }
+        protected override string GetExpandString(LoadDataArgs args)
+        {
+            return new ODataExpand<Payment>()
+                .Expand(f => f.Invoice, f => f.Invoice.Number)
+                .Build();
+        }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
@@ -49,7 +55,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("InvoiceId", InvoiceId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditPayment>(Localizer["AddPayment"], parameters.Count > 0 ? parameters : null, 80, 80);
+            await DialogService.OpenDialogAsync<EditPayment>(Localizer["AddPayment"], parameters.Count > 0 ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -60,7 +66,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Payment payment)
         {
-            await DialogService.OpenDialogAsync<EditPayment>(Localizer["EditPayment"], new Dictionary<string, object> { { "Oid", payment.Oid } }, 80, 80);
+            await DialogService.OpenDialogAsync<EditPayment>(Localizer["EditPayment"], new Dictionary<string, object> { { "Oid", payment.Oid } }, 100, 100);
             await GridReload();
         }
 
