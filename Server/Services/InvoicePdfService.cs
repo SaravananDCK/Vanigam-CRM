@@ -14,7 +14,7 @@ public class InvoicePdfService(
     public override async Task<Invoice?> GetEntityWithIncludesAsync(Guid entityId)
     {
         return await Context.Invoices
-            .Include(i => i.Customer)
+            .Include(i => i.Party)
             .Include(i => i.Job)
             .Include(i => i.Items)
                 .ThenInclude(ii => ii.InventoryItem)
@@ -51,11 +51,11 @@ public class InvoicePdfService(
         column.Item().PaddingTop(20).LineHorizontal(1);
 
         // Customer Info
-        if (invoice.Customer != null)
+        if (invoice.Party != null)
         {
             column.Item().PaddingTop(20).Column(col =>
             {
-                BuildCustomerInfo(invoice.Customer, col);
+                BuildCustomerInfo(invoice.Party, col);
             });
         }
 

@@ -1,0 +1,60 @@
+@page "/purchaseinvoices"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<PurchaseInvoice, PurchaseInvoices>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject PurchaseInvoiceApiService PurchaseInvoiceApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["PurchaseInvoices"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="PurchaseInvoice" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="purchaseinvoice">
+                            <OpenPageCommonComponent T="PurchaseInvoice" OpenObject="@purchaseinvoice" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="PurchaseInvoice" UsingObject="@purchaseinvoice" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.Number) Title=@Localizer["Number"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.VendorInvoiceNumber) Title=@Localizer["VendorInvoiceNumber"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.VoucherDate) Title=@Localizer["Date"] Width="120px">
+                        <Template Context="purchaseinvoice">
+                            @(purchaseinvoice.VoucherDate.ToString("yyyy-MM-dd"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property="Vendor.Name" Title=@Localizer["Vendor"] Width="200px">
+                        <Template Context="purchaseinvoice">
+                            @(purchaseinvoice.Party?.Name ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="purchaseinvoice">
+                            @(purchaseinvoice.Status.ToString())
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.ReceivedDate) Title=@Localizer["ReceivedDate"] Width="150px">
+                        <Template Context="purchaseinvoice">
+                            @(purchaseinvoice.ReceivedDate?.ToString("yyyy-MM-dd") ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.TotalAmount) Title=@Localizer["TotalAmount"] Width="150px">
+                        <Template Context="purchaseinvoice">
+                            @(purchaseinvoice.TotalAmount.ToString("C2"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.Reference) Title=@Localizer["Reference"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

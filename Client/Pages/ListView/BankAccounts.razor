@@ -1,0 +1,49 @@
+@page "/bankaccounts"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<BankAccount, BankAccounts>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject BankAccountApiService BankAccountApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["BankAccounts"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="BankAccount" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="BankAccount" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="bankaccount">
+                            <OpenPageCommonComponent T="BankAccount" OpenObject="@bankaccount" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="BankAccount" UsingObject="@bankaccount" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.Code) Title=@Localizer["Code"] Width="100px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.BankName) Title=@Localizer["BankName"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.AccountNumber) Title=@Localizer["AccountNumber"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.Currency) Title=@Localizer["Currency"] Width="100px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.CurrentBalance) Title=@Localizer["CurrentBalance"] Width="150px">
+                        <Template Context="bankaccount">
+                            @(bankaccount.CurrentBalance.ToString("C2"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.IsActive) Title=@Localizer["Status"] Width="100px">
+                        <Template Context="bankaccount">
+                            @(bankaccount.IsActive ? Localizer["Active"] : Localizer["Inactive"])
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

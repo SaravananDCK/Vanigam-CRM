@@ -73,6 +73,22 @@ namespace Vanigam.CRM.Objects
 
         #endregion
 
+        #region Accounting Entities
+        public DbSet<AccountGroup> AccountGroups { get; set; }
+        public DbSet<LedgerAccount> LedgerAccounts { get; set; }
+        public DbSet<Vendor> Vendors { get; set; }
+        public DbSet<BankAccount> BankAccounts { get; set; }
+        public DbSet<Voucher> Vouchers { get; set; }
+        public DbSet<VoucherLine> VoucherLines { get; set; }
+        public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+        public DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; }
+        public DbSet<PurchaseInvoice> PurchaseInvoices { get; set; }
+        public DbSet<PurchaseInvoiceItem> PurchaseInvoiceItems { get; set; }
+        public DbSet<LedgerEntry> LedgerEntries { get; set; }
+        public DbSet<StockLedgerEntry> StockLedgerEntries { get; set; }
+        public DbSet<NumberSeries> NumberSeries { get; set; }
+        #endregion
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -107,6 +123,54 @@ namespace Vanigam.CRM.Objects
                 .HasValue<Product>(ItemType.Product)
                 .HasValue<ServiceItem>(ItemType.ServiceItem);
 
+            // Configure AccountGroup self-referencing hierarchy
+            modelBuilder.Entity<AccountGroup>()
+                .HasOne(g => g.ParentGroup)
+                .WithMany(g => g.ChildGroups)
+                .HasForeignKey(g => g.ParentGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AccountGroup>()
+                .Property(g => g.Nature)
+                .HasConversion<string>();
+
+            // Configure TPH for LedgerAccount hierarchy
+            modelBuilder.Entity<LedgerAccount>()
+                .ToTable(nameof(LedgerAccounts))
+                .HasDiscriminator<AccountType>(nameof(LedgerAccount.AccountType))
+                .HasValue<Customer>(AccountType.Customer)
+                .HasValue<Vendor>(AccountType.Vendor)
+                .HasValue<BankAccount>(AccountType.BankAccount)
+                .HasValue<LedgerAccount>(AccountType.LedgerAccount);
+
+            // Configure LedgerAccount to AccountGroup relationship
+            modelBuilder.Entity<LedgerAccount>()
+                .HasOne(l => l.AccountGroup)
+                .WithMany(g => g.LedgerAccounts)
+                .HasForeignKey(l => l.AccountGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure LedgerEntry to LedgerAccount relationship
+            modelBuilder.Entity<LedgerEntry>()
+                .HasOne(e => e.Account)
+                .WithMany(a => a.Transactions)
+                .HasForeignKey(e => e.AccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure EntryType enum to be stored as string
+            modelBuilder.Entity<LedgerEntry>()
+                .Property(e => e.EntryType)
+                .HasConversion<string>();
+
+            // Configure TPH for Voucher hierarchy
+            modelBuilder.Entity<Voucher>()
+                .ToTable(nameof(Vouchers))
+                .HasDiscriminator<VoucherType>(nameof(Voucher.VoucherType))
+                .HasValue<Quote>(VoucherType.Quote)
+                .HasValue<Invoice>(VoucherType.Invoice)
+                .HasValue<PurchaseOrder>(VoucherType.PurchaseOrder)
+                .HasValue<PurchaseInvoice>(VoucherType.PurchaseInvoice);
+
             var configurations = typeof(FileCategory).Assembly
             .GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract && t.BaseType != null && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(BaseClassConfiguration<>))
@@ -138,6 +202,9 @@ namespace Vanigam.CRM.Objects
                 await this.Database.EnsureCreatedAsync();
                 await this.SeedTenantsAdmin();
                 await this.SeedRoleClaims();
+                await this.SeedAccountGroupData();
+                await this.SeedBankAccountData();
+                await this.SeedNumberSeriesData();
                 await this.SeedLeadData();
                 await this.SeedCustomerData();
                 await this.SeedOpportunityData();
@@ -367,6 +434,300 @@ namespace Vanigam.CRM.Objects
             }
 
             await this.SaveChangesAsync();
+        }
+
+        public async Task SeedAccountGroupData()
+        {
+            // Check if AccountGroup data already exists
+            if (await AccountGroups.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "AccountGroupsSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "AccountGroupsSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var seedData = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(jsonContent);
+
+                if (!seedData.TryGetProperty("AccountGroups", out var accountGroupsElement))
+                    return;
+
+                var accountGroupSeedData = System.Text.Json.JsonSerializer.Deserialize<List<AccountGroupSeedModel>>(accountGroupsElement.GetRawText());
+
+                if (accountGroupSeedData?.Any() != true)
+                    return;
+
+                // Dictionary to track created groups by their Code for hierarchy linking
+                var createdGroups = new Dictionary<string, AccountGroup>();
+
+                // First pass: Create all parent groups (no ParentCode)
+                var parentGroups = accountGroupSeedData.Where(g => string.IsNullOrEmpty(g.ParentCode)).ToList();
+                foreach (var seedGroup in parentGroups)
+                {
+                    if (!Enum.TryParse<AccountNature>(seedGroup.Nature, out var nature))
+                    {
+                        Console.WriteLine($"Invalid Nature value: {seedGroup.Nature}");
+                        continue;
+                    }
+
+                    var accountGroup = new AccountGroup
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Code = seedGroup.Code,
+                        Name = seedGroup.Name,
+                        Nature = nature,
+                        ParentGroupId = null,
+                        IsActive = seedGroup.IsActive,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    await AccountGroups.AddAsync(accountGroup);
+                    createdGroups[seedGroup.Code] = accountGroup;
+                }
+
+                await SaveChangesAsync();
+
+                // Second pass: Create all child groups (with ParentCode)
+                var childGroups = accountGroupSeedData.Where(g => !string.IsNullOrEmpty(g.ParentCode)).ToList();
+                foreach (var seedGroup in childGroups)
+                {
+                    if (!Enum.TryParse<AccountNature>(seedGroup.Nature, out var nature))
+                    {
+                        Console.WriteLine($"Invalid Nature value: {seedGroup.Nature}");
+                        continue;
+                    }
+
+                    // Find parent group
+                    AccountGroup? parentGroup = null;
+                    if (!string.IsNullOrEmpty(seedGroup.ParentCode) && createdGroups.ContainsKey(seedGroup.ParentCode))
+                    {
+                        parentGroup = createdGroups[seedGroup.ParentCode];
+                    }
+
+                    var accountGroup = new AccountGroup
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Code = seedGroup.Code,
+                        Name = seedGroup.Name,
+                        Nature = nature,
+                        ParentGroupId = parentGroup?.Oid,
+                        IsActive = seedGroup.IsActive,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    await AccountGroups.AddAsync(accountGroup);
+                    createdGroups[seedGroup.Code] = accountGroup;
+                }
+
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding AccountGroup data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedBankAccountData()
+        {
+            // Check if BankAccount data already exists
+            if (await BankAccounts.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "LedgerAccountsSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "LedgerAccountsSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var seedData = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(jsonContent);
+
+                if (!seedData.TryGetProperty("BankAccounts", out var bankAccountsElement))
+                    return;
+
+                var bankAccountSeedData = System.Text.Json.JsonSerializer.Deserialize<List<BankAccountSeedModel>>(bankAccountsElement.GetRawText());
+
+                if (bankAccountSeedData?.Any() != true)
+                    return;
+
+                var bankAccounts = new List<BankAccount>();
+                foreach (var seedBankAccount in bankAccountSeedData)
+                {
+                    // Find AccountGroup by Code
+                    var accountGroup = await AccountGroups.FirstOrDefaultAsync(ag => ag.Code == seedBankAccount.AccountGroupCode);
+                    if (accountGroup == null)
+                    {
+                        Console.WriteLine($"AccountGroup not found for Code: {seedBankAccount.AccountGroupCode}");
+                        continue;
+                    }
+
+                    var bankAccount = new BankAccount
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Code = seedBankAccount.Code,
+                        Name = seedBankAccount.Name,
+                        AccountType = Enum.TryParse<AccountType>(seedBankAccount.AccountType, out var accountType) ? accountType : AccountType.BankAccount,
+                        AccountGroupId = accountGroup.Oid,
+                        Description = seedBankAccount.Description,
+                        Currency = seedBankAccount.Currency,
+                        Balance = seedBankAccount.Balance,
+                        CreditLimit = seedBankAccount.CreditLimit,
+                        IsActive = seedBankAccount.IsActive,
+                        BankName = seedBankAccount.BankName,
+                        AccountNumber = seedBankAccount.AccountNumber,
+                        RoutingNumber = seedBankAccount.RoutingNumber,
+                        IFSCCode = seedBankAccount.IFSCCode,
+                        BranchName = seedBankAccount.BranchName,
+                        SwiftCode = seedBankAccount.SwiftCode,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    bankAccounts.Add(bankAccount);
+                }
+
+                await BankAccounts.AddRangeAsync(bankAccounts);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding BankAccount data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedNumberSeriesData()
+        {
+            // Check if NumberSeries data already exists
+            if (await NumberSeries.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "NumberSeriesSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "NumberSeriesSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var seedData = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(jsonContent);
+
+                if (!seedData.TryGetProperty("NumberSeries", out var numberSeriesElement))
+                    return;
+
+                var numberSeriesSeedData = System.Text.Json.JsonSerializer.Deserialize<List<NumberSeriesSeedModel>>(numberSeriesElement.GetRawText());
+
+                if (numberSeriesSeedData?.Any() != true)
+                    return;
+
+                var numberSeriesList = new List<NumberSeries>();
+                foreach (var seedNumberSeries in numberSeriesSeedData)
+                {
+                    var numberSeries = new NumberSeries
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        EntityType = seedNumberSeries.EntityType,
+                        Prefix = seedNumberSeries.Prefix,
+                        Suffix = seedNumberSeries.Suffix,
+                        StartNo = seedNumberSeries.StartNo,
+                        CurrentNo = seedNumberSeries.CurrentNo,
+                        PaddingLength = seedNumberSeries.PaddingLength,
+                        IsActive = seedNumberSeries.IsActive,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    numberSeriesList.Add(numberSeries);
+                }
+
+                await NumberSeries.AddRangeAsync(numberSeriesList);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding NumberSeries data: {ex.Message}");
+            }
         }
 
         public async Task SeedLeadData()
@@ -1168,7 +1529,7 @@ namespace Vanigam.CRM.Objects
                         TenantId = demoTenant.Id,
                         Number = seedQuote.Title,
                         Status = Enum.TryParse<QuoteStatus>(seedQuote.Status, out var status) ? status : QuoteStatus.Draft,
-                        CustomerId = customer?.Oid,
+                        PartyId = customer?.Oid,
                         JobId = job?.Oid,
                         TotalAmount = seedQuote.TotalAmount,
                         CreatedByUserId = ApplicationUser.SystemUserId,

@@ -1,0 +1,166 @@
+{
+  "BankAccounts": [
+    {
+      "Code": "CASH001",
+      "Name": "Cash Account",
+      "AccountType": "BankAccount",
+      "AccountGroupCode": "CASH",
+      "Description": "Primary cash account for cash transactions",
+      "Currency": "INR",
+      "CurrentBalance": 0,
+      "CreditLimit": 0,
+      "Balance": 0,
+      "IsActive": true,
+      "BankName": "Cash",
+      "AccountNumber": "CASH001"
+    },
+    {
+      "Code": "CARD001",
+      "Name": "Card Account",
+      "AccountType": "BankAccount",
+      "AccountGroupCode": "BANK",
+      "Description": "Card payment processing account",
+      "Currency": "INR",
+      "CurrentBalance": 0,
+      "CreditLimit": 0,
+      "Balance": 0,
+      "IsActive": true,
+      "BankName": "Card Gateway",
+      "AccountNumber": "CARD001"
+    },
+    {
+      "Code": "UPI001",
+      "Name": "UPI Account",
+      "AccountType": "BankAccount",
+      "AccountGroupCode": "BANK",
+      "Description": "UPI payment processing account",
+      "Currency": "INR",
+      "CurrentBalance": 0,
+      "CreditLimit": 0,
+      "Balance": 0,
+      "IsActive": true,
+      "BankName": "UPI Gateway",
+      "AccountNumber": "UPI001"
+    },
+    {
+      "Code": "BANK001",
+      "Name": "State Bank of India - Current",
+      "AccountType": "BankAccount",
+      "AccountGroupCode": "BANK",
+      "Description": "SBI Current Account for business operations",
+      "Currency": "INR",
+      "CurrentBalance": 0,
+      "CreditLimit": 50000,
+      "Balance": 0,
+      "IsActive": true,
+      "BankName": "State Bank of India",
+      "AccountNumber": "1234567890",
+      "RoutingNumber": "SBIN0001234",
+      "IFSCCode": "SBIN0001234",
+      "BranchName": "Main Branch",
+      "SwiftCode": "SBININBB"
+    },
+    {
+      "Code": "BANK002",
+      "Name": "HDFC Bank - Savings",
+      "AccountType": "BankAccount",
+      "AccountGroupCode": "BANK",
+      "Description": "HDFC Savings Account",
+      "Currency": "INR",
+      "CurrentBalance": 0,
+      "CreditLimit": 25000,
+      "Balance": 0,
+      "IsActive": true,
+      "BankName": "HDFC Bank",
+      "AccountNumber": "0987654321",
+      "RoutingNumber": "HDFC0001234",
+      "IFSCCode": "HDFC0001234",
+      "BranchName": "City Branch",
+      "SwiftCode": "HDFCINBB"
+    },
+    {
+      "Code": "BANK003",
+      "Name": "ICICI Bank - Current",
+      "AccountType": "BankAccount",
+      "AccountGroupCode": "BANK",
+      "Description": "ICICI Current Account for vendor payments",
+      "Currency": "INR",
+      "CurrentBalance": 0,
+      "CreditLimit": 100000,
+      "Balance": 0,
+      "IsActive": true,
+      "BankName": "ICICI Bank",
+      "AccountNumber": "1122334455",
+      "RoutingNumber": "ICIC0001234",
+      "IFSCCode": "ICIC0001234",
+      "BranchName": "Commercial Branch",
+      "SwiftCode": "ICICINBB"
+    }
+  ],
+  "Instructions": {
+    "SeedingOrder": [
+      "1. Seed AccountGroups first using AccountGroupsSeedData.json",
+      "2. Seed BankAccounts - Link to AccountGroup using AccountGroupCode",
+      "3. Customers and Vendors can be linked to AccountGroups (SDEB for Customers, SCRED for Vendors)"
+    ],
+    "AccountGroupLinking": {
+      "Note": "Use AccountGroupCode to match and link LedgerAccounts to their respective AccountGroups during seeding.",
+      "Example": "BankAccount with AccountGroupCode='BANK' should be linked to AccountGroup where Code='BANK'"
+    },
+    "Properties": {
+      "Balance": "Opening balance for the account (decimal)",
+      "CurrentBalance": "BankAccount-specific - current balance (decimal)",
+      "CreditLimit": "Maximum credit allowed (decimal)",
+      "AccountGroupCode": "Code of the AccountGroup this account belongs to (for linking during seed)"
+    }
+  },
+  "SampleCustomersAndVendors": {
+    "Note": "Sample data showing how Customers and Vendors should be structured",
+    "Customers": [
+      {
+        "Code": "CUST001",
+        "Name": "ABC Corporation",
+        "AccountType": "Customer",
+        "AccountGroupCode": "SDEB",
+        "Type": "Company",
+        "Industry": "Technology",
+        "Email": "contact@abc.com",
+        "Phone": "+91-9876543210",
+        "Address": "123 Business Street",
+        "City": "Mumbai",
+        "State": "Maharashtra",
+        "PostalCode": "400001",
+        "Country": "India",
+        "Balance": 0,
+        "CreditLimit": 100000,
+        "IsActive": true,
+        "Status": "Active",
+        "Rating": 5
+      }
+    ],
+    "Vendors": [
+      {
+        "Code": "VEND001",
+        "Name": "XYZ Suppliers",
+        "AccountType": "Vendor",
+        "AccountGroupCode": "SCRED",
+        "Type": "Company",
+        "Industry": "Manufacturing",
+        "Email": "sales@xyz.com",
+        "Phone": "+91-9876543211",
+        "Address": "456 Supplier Road",
+        "City": "Delhi",
+        "State": "Delhi",
+        "PostalCode": "110001",
+        "Country": "India",
+        "Balance": 0,
+        "CreditLimit": 200000,
+        "IsActive": true,
+        "Status": "Active",
+        "Rating": 4,
+        "PaymentTermsDays": 30,
+        "TaxId": "GSTIN123456789"
+      }
+    ]
+  }
+}

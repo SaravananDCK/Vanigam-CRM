@@ -1,0 +1,148 @@
+{
+  "AccountGroups": [
+    {
+      "Code": "CA",
+      "Name": "Current Assets",
+      "Nature": "Asset",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "FA",
+      "Name": "Fixed Assets",
+      "Nature": "Asset",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "INV",
+      "Name": "Investments",
+      "Nature": "Asset",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "CL",
+      "Name": "Current Liabilities",
+      "Nature": "Liability",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "LTL",
+      "Name": "Long Term Liabilities",
+      "Nature": "Liability",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "CAP",
+      "Name": "Capital Account",
+      "Nature": "Liability",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "REV",
+      "Name": "Direct Income",
+      "Nature": "Income",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "OI",
+      "Name": "Indirect Income",
+      "Nature": "Income",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "COGS",
+      "Name": "Direct Expenses",
+      "Nature": "Expense",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "OE",
+      "Name": "Indirect Expenses",
+      "Nature": "Expense",
+      "ParentGroupId": null,
+      "IsActive": true
+    },
+    {
+      "Code": "CASH",
+      "Name": "Cash in Hand",
+      "Nature": "Asset",
+      "ParentCode": "CA",
+      "IsActive": true
+    },
+    {
+      "Code": "BANK",
+      "Name": "Bank Accounts",
+      "Nature": "Asset",
+      "ParentCode": "CA",
+      "IsActive": true
+    },
+    {
+      "Code": "AR",
+      "Name": "Accounts Receivable",
+      "Nature": "Asset",
+      "ParentCode": "CA",
+      "IsActive": true
+    },
+    {
+      "Code": "STK",
+      "Name": "Stock in Hand",
+      "Nature": "Asset",
+      "ParentCode": "CA",
+      "IsActive": true
+    },
+    {
+      "Code": "AP",
+      "Name": "Accounts Payable",
+      "Nature": "Liability",
+      "ParentCode": "CL",
+      "IsActive": true
+    },
+    {
+      "Code": "SDEB",
+      "Name": "Sundry Debtors",
+      "Nature": "Asset",
+      "ParentCode": "AR",
+      "IsActive": true
+    },
+    {
+      "Code": "SCRED",
+      "Name": "Sundry Creditors",
+      "Nature": "Liability",
+      "ParentCode": "AP",
+      "IsActive": true
+    },
+    {
+      "Code": "TAX",
+      "Name": "Duties & Taxes",
+      "Nature": "Liability",
+      "ParentCode": "CL",
+      "IsActive": true
+    },
+    {
+      "Code": "SAL",
+      "Name": "Sales Accounts",
+      "Nature": "Income",
+      "ParentCode": "REV",
+      "IsActive": true
+    },
+    {
+      "Code": "PUR",
+      "Name": "Purchase Accounts",
+      "Nature": "Expense",
+      "ParentCode": "COGS",
+      "IsActive": true
+    }
+  ],
+  "Instructions": {
+    "Note": "Parent groups must be created before child groups. Use ParentCode to establish hierarchy relationships during seeding.",
+    "SeedingOrder": "Process top-level groups (ParentCode = null) first, then process child groups by matching ParentCode to parent's Code property."
+  }
+}

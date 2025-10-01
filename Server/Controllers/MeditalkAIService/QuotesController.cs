@@ -73,7 +73,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                     quote.Number = quoteData.Title;
                     quote.Status = quoteData.Status;
                     quote.OpportunityId = quoteData.OpportunityId;
-                    quote.CustomerId = quoteData.CustomerId;
+                    quote.PartyId = quoteData.CustomerId;
                     quote.JobId = quoteData.JobId;
                     quote.TotalAmount = quoteData.TotalAmount;
                 }
@@ -86,7 +86,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         Number = quoteData.Title,
                         Status = quoteData.Status,
                         OpportunityId = quoteData.OpportunityId,
-                        CustomerId = quoteData.CustomerId,
+                        PartyId = quoteData.CustomerId,
                         JobId = quoteData.JobId,
                         TotalAmount = quoteData.TotalAmount,
                         TenantId = CurrentUser.TenantId

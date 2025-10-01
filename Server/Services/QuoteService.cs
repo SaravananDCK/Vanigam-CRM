@@ -32,7 +32,7 @@ public class QuoteService(
             var quote = await Context.Quotes
                 .Include(q => q.Items)
                 .ThenInclude(qi => qi.InventoryItem)
-                .Include(q => q.Customer)
+                .Include(q => q.Party)
                 .Include(q => q.Job)
                 .FirstOrDefaultAsync(q => q.Oid == quoteId);
 
@@ -69,7 +69,7 @@ public class QuoteService(
                 TenantId = quote.TenantId,
                 Number = invoiceNumber,
                 Status = InvoiceStatus.Draft,
-                CustomerId = quote.CustomerId,
+                PartyId = quote.PartyId,
                 JobId = quote.JobId,
                 TotalAmount = quote.TotalAmount,
                 CreatedByUserId = quote.UpdatedByUserId,

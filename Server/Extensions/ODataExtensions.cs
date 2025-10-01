@@ -67,6 +67,22 @@ namespace Vanigam.CRM.Server.Extensions
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.AuditLog>(nameof(VanigamAccountingDbContext.AuditLogs));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.CustomField>(nameof(VanigamAccountingDbContext.CustomFields));
 
+            // Accounting Entities
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.AccountGroup>(nameof(VanigamAccountingDbContext.AccountGroups));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.LedgerAccount>(nameof(VanigamAccountingDbContext.LedgerAccounts));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Vendor>(nameof(VanigamAccountingDbContext.Vendors));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.BankAccount>(nameof(VanigamAccountingDbContext.BankAccounts));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Voucher>(nameof(VanigamAccountingDbContext.Vouchers));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.VoucherLine>(nameof(VanigamAccountingDbContext.VoucherLines));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.PurchaseOrder>(nameof(VanigamAccountingDbContext.PurchaseOrders));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.PurchaseOrderItem>(nameof(VanigamAccountingDbContext.PurchaseOrderItems));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.PurchaseInvoice>(nameof(VanigamAccountingDbContext.PurchaseInvoices));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.PurchaseInvoiceItem>(nameof(VanigamAccountingDbContext.PurchaseInvoiceItems));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.LedgerEntry>(nameof(VanigamAccountingDbContext.LedgerEntries));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.StockLedgerEntry>(nameof(VanigamAccountingDbContext.StockLedgerEntries));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.InvoiceItem>(nameof(VanigamAccountingDbContext.InvoiceItems));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.NumberSeries>(nameof(VanigamAccountingDbContext.NumberSeries));
+
             oDataBuilderVanigamAccounting.EntitySet<ApplicationUser>("ApplicationUsers");
             var usersType = oDataBuilderVanigamAccounting.StructuralTypes.First(x => x.ClrType == typeof(ApplicationUser));
             usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.Password)));

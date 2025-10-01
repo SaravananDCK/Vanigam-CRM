@@ -1,0 +1,116 @@
+@page "/edit-accountgroup"
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Validators
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<AccountGroup, EditAccountGroup>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+
+@* Custom Header with Edit Button *@
+<DetailPageTitleComponent TitleText="@Localizer["EditAccountGroup"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
+    <CustomBadge>
+        @* Floating Edit Button - Only visible in read-only mode *@
+        @if (IsEditButtonVisible)
+        {
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+        }
+    </CustomBadge>
+</DetailPageTitleComponent>
+
+<RadzenColumn SizeMD=12>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
+
+    @* Read-Only Mode Display *@
+    @if (IsReadOnlyModeVisible)
+    {
+        <RadzenCard class="rz-my-4">
+            <RadzenStack>
+                <div class="read-only-section-header">@Localizer["AccountGroupInformation"]</div>
+                <RadzenRow>
+                    <RadzenColumn Size="6">
+                        <div class="rz-p-4">
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Code"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Code ?? "-")</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Name"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Name ?? "-")</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Nature"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Nature.ToString())</RadzenText>
+                            </div>
+                        </div>
+                    </RadzenColumn>
+                    <RadzenColumn Size="6">
+                        <div class="rz-p-4">
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["ParentGroup"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.ParentGroup?.Name ?? "-")</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.IsActive ? Localizer["Active"] : Localizer["Inactive"])</RadzenText>
+                            </div>
+                        </div>
+                    </RadzenColumn>
+                </RadzenRow>
+                @if (CurrentObject.ChildGroups != null && CurrentObject.ChildGroups.Any())
+                {
+                    <div class="rz-p-4">
+                        <div class="read-only-section-header">@Localizer["ChildGroups"]</div>
+                        <RadzenDataList Data="@CurrentObject.ChildGroups" TItem="AccountGroup">
+                            <Template Context="child">
+                                <RadzenText TextStyle="TextStyle.Body1">@child.Code - @child.Name</RadzenText>
+                            </Template>
+                        </RadzenDataList>
+                    </div>
+                }
+            </RadzenStack>
+        </RadzenCard>
+    }
+
+    @* Editable Form Mode *@
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="AccountGroup" Data="@CurrentObject" Visible="@IsFormVisible" Submit="@SaveAndStayInEdit">
+        <RadzenStack>
+            <FluentValidationValidator Validator="new AccountGroupValidator(Localizer)" />
+            <ValidationSummary />
+            <VanigamAccountingFormField Text=@Localizer["Code"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Code" Name="txt_Code" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["Name"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["Nature"]>
+                <ChildContent>
+                    <RadzenDropDown @bind-Value="@CurrentObject.Nature" Data="@(Enum.GetValues(typeof(AccountNature)))" Name="dd_Nature" class="w-100" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["ParentGroup"]>
+                <ChildContent>
+                    <RadzenDropDown @bind-Value="@CurrentObject.ParentGroupId" Data="@ParentGroups" TextProperty="Name" ValueProperty="Oid" Name="dd_ParentGroup" class="w-100" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowClear="true" Placeholder="@Localizer["SelectParentGroup"]" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+            <VanigamAccountingFormField Text=@Localizer["Status"]>
+                <ChildContent>
+                    <RadzenCheckBox @bind-Value="@CurrentObject.IsActive" Name="chk_IsActive" />
+                </ChildContent>
+            </VanigamAccountingFormField>
+        </RadzenStack>
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            @if (IsCreateMode)
+            {
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+            }
+            else
+            {
+                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+            }
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenColumn>

@@ -65,7 +65,7 @@
                             <div class="rz-p-4">
                                 <div class="read-only-field rz-mb-3">
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Customer"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Customer?.Name ?? "-")</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Party?.Name ?? "-")</RadzenText>
                                 </div>
 
                                 <div class="read-only-field rz-mb-3">
@@ -140,7 +140,7 @@
                     </VanigamAccountingFormField>
                     <VanigamAccountingFormField Text=@Localizer["Customer"]>
                         <ChildContent>
-                            <RadzenDropDown @bind-Value="@CurrentObject.CustomerId"
+                            <RadzenDropDown @bind-Value="@CurrentObject.PartyId"
                                             Data="@Customers"
                                             TextProperty="Name"
                                             ValueProperty="Oid"
@@ -277,7 +277,7 @@
                 Title = CurrentObject.Number,
                 Status = CurrentObject.Status,
                 OpportunityId = CurrentObject.OpportunityId,
-                CustomerId = CurrentObject.CustomerId,
+                CustomerId = CurrentObject.PartyId,
                 JobId = CurrentObject.JobId,
                 TotalAmount = CurrentObject.TotalAmount,
                 Items = quoteItems

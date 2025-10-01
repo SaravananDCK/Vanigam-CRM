@@ -44,7 +44,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             return new ODataExpand<Invoice>()
                 .Expand(f => f.Job, f => f.Job.Title)
-                .Expand(f => f.Customer, f => f.Customer.Name)
+                .Expand(f => f.Party, f => f.Party.Name)
                 .Build();
         }
 

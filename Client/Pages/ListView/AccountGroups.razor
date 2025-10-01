@@ -1,0 +1,49 @@
+@page "/accountgroups"
+@using Vanigam.CRM.Client.Services
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<AccountGroup, AccountGroups>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject AccountGroupApiService AccountGroupApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["AccountGroups"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="AccountGroup" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="AccountGroup" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="accountgroup">
+                            <OpenPageCommonComponent T="AccountGroup" OpenObject="@accountgroup" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="AccountGroup" UsingObject="@accountgroup" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.Code) Title=@Localizer["Code"] Width="100px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.Nature) Title=@Localizer["Nature"] Width="120px">
+                        <Template Context="accountgroup">
+                            @(accountgroup.Nature.ToString())
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AccountGroup" Property="ParentGroup.Name" Title=@Localizer["ParentGroup"] Width="200px">
+                        <Template Context="accountgroup">
+                            @(accountgroup.ParentGroup?.Name ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.IsActive) Title=@Localizer["Status"] Width="100px">
+                        <Template Context="accountgroup">
+                            @(accountgroup.IsActive ? Localizer["Active"] : Localizer["Inactive"])
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

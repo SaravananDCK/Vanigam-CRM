@@ -14,7 +14,7 @@ public class QuotePdfService(
     public override async Task<Quote?> GetEntityWithIncludesAsync(Guid entityId)
     {
         return await Context.Quotes
-            .Include(q => q.Customer)
+            .Include(q => q.Party)
             .Include(q => q.Job)
             .Include(q => q.Items)
                 .ThenInclude(qi => qi.InventoryItem)
@@ -50,11 +50,11 @@ public class QuotePdfService(
         column.Item().PaddingTop(20).LineHorizontal(1);
 
         // Customer Info
-        if (quote.Customer != null)
+        if (quote.Party != null)
         {
             column.Item().PaddingTop(20).Column(col =>
             {
-                BuildCustomerInfo(quote.Customer, col);
+                BuildCustomerInfo(quote.Party, col);
             });
         }
 

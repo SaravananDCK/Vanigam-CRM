@@ -86,7 +86,7 @@ public abstract class BasePdfService<T>(
         column.Item().Text("Email: Your Email");
     }
 
-    protected void BuildCustomerInfo(Customer? customer, ColumnDescriptor column)
+    protected void BuildCustomerInfo(LedgerAccount? customer, ColumnDescriptor column)
     {
         if (customer == null) return;
 

@@ -1,0 +1,80 @@
+@page "/stockledgerentries"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<StockLedgerEntry, StockLedgerEntries>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject StockLedgerEntryApiService StockLedgerEntryApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["StockLedgerEntries"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="StockLedgerEntry" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="stockentry">
+                            <OpenPageCommonComponent T="StockLedgerEntry" OpenObject="@stockentry" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="StockLedgerEntry" UsingObject="@stockentry" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.EntryNumber) Title=@Localizer["EntryNumber"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.EntryDate) Title=@Localizer["EntryDate"] Width="120px">
+                        <Template Context="stockentry">
+                            @(stockentry.EntryDate.ToString("yyyy-MM-dd"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.MovementType) Title=@Localizer["MovementType"] Width="120px">
+                        <Template Context="stockentry">
+                            @(stockentry.MovementType.ToString())
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property="InventoryItem.Name" Title=@Localizer["Item"] Width="200px">
+                        <Template Context="stockentry">
+                            @(stockentry.InventoryItem?.Name ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property="Location.Name" Title=@Localizer["Location"] Width="150px">
+                        <Template Context="stockentry">
+                            @(stockentry.Location?.Name ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.QuantityIn) Title=@Localizer["QuantityIn"] Width="100px">
+                        <Template Context="stockentry">
+                            @(stockentry.QuantityIn.ToString("N2") ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.QuantityOut) Title=@Localizer["QuantityOut"] Width="100px">
+                        <Template Context="stockentry">
+                            @(stockentry.QuantityOut.ToString("N2") ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.Balance) Title=@Localizer["Balance"] Width="100px">
+                        <Template Context="stockentry">
+                            @(stockentry.Balance.ToString("N2"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.UnitCost) Title=@Localizer["UnitCost"] Width="120px">
+                        <Template Context="stockentry">
+                            @(stockentry.UnitCost.ToString("C2"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.TotalValue) Title=@Localizer["TotalValue"] Width="150px">
+                        <Template Context="stockentry">
+                            @(stockentry.TotalValue.ToString("C2"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.BatchNumber) Title=@Localizer["BatchNumber"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.Reference) Title=@Localizer["Reference"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="StockLedgerEntry" Property=@nameof(StockLedgerEntry.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

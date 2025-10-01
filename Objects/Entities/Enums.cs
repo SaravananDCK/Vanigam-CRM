@@ -18,4 +18,8 @@ namespace Vanigam.CRM.Objects.Entities
     public enum CustomerStatus { Active, Inactive, Prospect, Suspended }
     public enum ContactStatus { Active, Inactive }
     public enum ItemType { Product, InventoryItem, ServiceItem }
+    public enum AccountType { LedgerAccount, Customer, Vendor, BankAccount }
+    public enum VoucherType { Quote, Invoice, PurchaseOrder, PurchaseInvoice }
+    public enum EntryType { Debit, Credit }
+    public enum AccountNature { Asset = 1, Liability = 2, Income = 3, Expense = 4 }
 }

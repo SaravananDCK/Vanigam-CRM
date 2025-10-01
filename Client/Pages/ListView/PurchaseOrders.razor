@@ -1,0 +1,58 @@
+@page "/purchaseorders"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<PurchaseOrder, PurchaseOrders>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject PurchaseOrderApiService PurchaseOrderApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["PurchaseOrders"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="PurchaseOrder" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="purchaseorder">
+                            <OpenPageCommonComponent T="PurchaseOrder" OpenObject="@purchaseorder" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="PurchaseOrder" UsingObject="@purchaseorder" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.Number) Title=@Localizer["Number"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.VoucherDate) Title=@Localizer["Date"] Width="120px">
+                        <Template Context="purchaseorder">
+                            @(purchaseorder.VoucherDate.ToString("yyyy-MM-dd"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property="Vendor.Name" Title=@Localizer["Vendor"] Width="200px">
+                        <Template Context="purchaseorder">
+                            @(purchaseorder.Party?.Name ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="purchaseorder">
+                            @(purchaseorder.Status.ToString())
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.ExpectedDeliveryDate) Title=@Localizer["ExpectedDelivery"] Width="150px">
+                        <Template Context="purchaseorder">
+                            @(purchaseorder.ExpectedDeliveryDate?.ToString("yyyy-MM-dd") ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.TotalAmount) Title=@Localizer["TotalAmount"] Width="150px">
+                        <Template Context="purchaseorder">
+                            @(purchaseorder.TotalAmount.ToString("C2"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.Reference) Title=@Localizer["Reference"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

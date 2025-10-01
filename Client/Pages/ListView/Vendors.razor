@@ -1,0 +1,54 @@
+@page "/vendors"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<Vendor, Vendors>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject VendorApiService VendorApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["Vendors"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Vendor" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Vendor" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="vendor">
+                            <OpenPageCommonComponent T="Vendor" OpenObject="@vendor" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="Vendor" UsingObject="@vendor" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.Code) Title=@Localizer["Code"] Width="100px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.Email) Title=@Localizer["Email"] Width="200px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.Phone) Title=@Localizer["Phone"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.City) Title=@Localizer["City"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="vendor">
+                            @(vendor.Status.ToString())
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.Balance) Title=@Localizer["Balance"] Width="150px">
+                        <Template Context="vendor">
+                            @(vendor.Balance.ToString("C2"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.IsActive) Title=@Localizer["IsActive"] Width="100px">
+                        <Template Context="vendor">
+                            @(vendor.IsActive ? Localizer["Active"] : Localizer["Inactive"])
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

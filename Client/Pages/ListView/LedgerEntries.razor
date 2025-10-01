@@ -1,0 +1,60 @@
+@page "/ledgerentries"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<LedgerEntry, LedgerEntries>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject LedgerEntryApiService LedgerEntryApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["LedgerEntries"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="LedgerEntry" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="ledgerentry">
+                            <OpenPageCommonComponent T="LedgerEntry" OpenObject="@ledgerentry" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="LedgerEntry" UsingObject="@ledgerentry" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Property=@nameof(LedgerEntry.EntryNumber) Title=@Localizer["EntryNumber"] Width="120px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Property=@nameof(LedgerEntry.EntryDate) Title=@Localizer["EntryDate"] Width="120px">
+                        <Template Context="ledgerentry">
+                            @(ledgerentry.EntryDate.ToString("yyyy-MM-dd"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Property=@nameof(LedgerEntry.EntryType) Title=@Localizer["Type"] Width="100px">
+                        <Template Context="ledgerentry">
+                            @(ledgerentry.EntryType.ToString())
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Property="Account.Name" Title=@Localizer["Account"] Width="200px">
+                        <Template Context="ledgerentry">
+                            @(ledgerentry.Account?.Name ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Property=@nameof(LedgerEntry.Amount) Title=@Localizer["Amount"] Width="150px">
+                        <Template Context="ledgerentry">
+                            @(ledgerentry.Amount.ToString("C2"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Property=@nameof(LedgerEntry.Description) Title=@Localizer["Description"] Width="250px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Property=@nameof(LedgerEntry.IsReconciled) Title=@Localizer["Reconciled"] Width="100px">
+                        <Template Context="ledgerentry">
+                            @(ledgerentry.IsReconciled ? Localizer["Yes"] : Localizer["No"])
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Property=@nameof(LedgerEntry.Reference) Title=@Localizer["Reference"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerEntry" Property=@nameof(LedgerEntry.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>
