@@ -186,6 +186,25 @@ namespace Vanigam.CRM.Client.Layout
                 ]
             });
 
+            // Accounting Management
+            menuItems.Add(new MenuItemDto
+            {
+                Text = Localizer["Accounting"],
+                Icon = "fa-calculator",
+                ChildItems =
+                [
+                    new MenuItemDto { Text = Localizer["Account Groups"], Path = "accountgroups", Icon = ("fa-folder-tree") },
+                    new MenuItemDto { Text = Localizer["Ledger Accounts"], Path = "ledgeraccounts", Icon = ("fa-book") },
+                    new MenuItemDto { Text = Localizer["Bank Accounts"], Path = "bankaccounts", Icon = ("fa-building-columns") },
+                    new MenuItemDto { Text = Localizer["Vendors"], Path = "vendors", Icon = ("fa-truck-field") },
+                    new MenuItemDto { Text = Localizer["Tax Codes"], Path = "taxcodes", Icon = ("fa-percent") },
+                    new MenuItemDto { Text = Localizer["Vouchers"], Path = "vouchers", Icon = ("fa-receipt") },
+                    new MenuItemDto { Text = Localizer["Purchase Orders"], Path = "purchaseorders", Icon = ("fa-cart-shopping") },
+                    new MenuItemDto { Text = Localizer["Purchase Invoices"], Path = "purchaseinvoices", Icon = ("fa-file-invoice-dollar") },
+                    new MenuItemDto { Text = Localizer["Number Series"], Path = "numberseries", Icon = ("fa-hashtag") }
+                ]
+            });
+
             // System Management
             menuItems.Add(new MenuItemDto
             {

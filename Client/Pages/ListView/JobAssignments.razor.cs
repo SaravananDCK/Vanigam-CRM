@@ -23,7 +23,8 @@ namespace Vanigam.CRM.Client.Pages.ListView
             }
             catch (Exception ex)
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = Localizer[$"Load"] });
+                Logger.LogError(ex.Message, ex);
+                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = ex.Message });
             }
         }
 
@@ -52,7 +53,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             return new ODataExpand<JobAssignment>()
                 .Expand(f => f.Job, f => f.Job.Title)
-                .Expand(f => f.Technician, f => f.Technician.Name)
+                .Expand(f => f.Technician, f => f.Technician.FullName)
                 .Build();
         }
 

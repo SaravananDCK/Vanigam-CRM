@@ -8,8 +8,8 @@ namespace Vanigam.CRM.Client.Validators
     {
         public MaterialUsageValidator(IStringLocalizer localizer)
         {
-            RuleFor(c => c.JobId).NotEmpty().WithMessage(localizer["JobRequired"]);
-            RuleFor(c => c.InventoryItemId).NotEmpty().WithMessage(localizer["InventoryItemRequired"]);
+            RuleFor(c => c.VoucherId).NotEmpty().WithMessage(localizer["JobRequired"]);
+            RuleFor(c => c.ItemId).NotEmpty().WithMessage(localizer["InventoryItemRequired"]);
             RuleFor(c => c.Quantity).GreaterThan(0).WithMessage(localizer["QuantityMustBeGreaterThanZero"]);
         }
     }

@@ -7,6 +7,7 @@ namespace Vanigam.CRM.Server.Services;
 
 public class QuoteService(
     VanigamAccountingDbContext context,
+    NumberSeriesService numberSeriesService,
     ILogger<BaseService<Quote>> logger)
     : BaseService<Quote>(context, logger)
 {
@@ -14,7 +15,16 @@ public class QuoteService(
     {
         return Context.Quotes;
     }
+    protected override async Task OnCreatedAsync(Quote entity)
+    {
+        // Generate quote number automatically
+        if (string.IsNullOrEmpty(entity.Number))
+        {
+            entity.Number = await numberSeriesService.GenerateNextNumber("Quote", entity.TenantId);
+        }
 
+        await base.OnCreatedAsync(entity);
+    }
     /// <summary>
     /// Converts a Quote to an Invoice
     /// </summary>
@@ -31,7 +41,7 @@ public class QuoteService(
             // Get the quote with its items
             var quote = await Context.Quotes
                 .Include(q => q.Items)
-                .ThenInclude(qi => qi.InventoryItem)
+                .ThenInclude(qi => qi.Item)
                 .Include(q => q.Party)
                 .Include(q => q.Job)
                 .FirstOrDefaultAsync(q => q.Oid == quoteId);
@@ -89,8 +99,8 @@ public class QuoteService(
                 {
                     Oid = Guid.NewGuid(),
                     TenantId = quote.TenantId,
-                    InvoiceId = invoice.Oid,
-                    InventoryItemId = quoteItem.InventoryItemId,
+                    VoucherId = invoice.Oid,
+                    ItemId = quoteItem.ItemId,
                     Quantity = quoteItem.Quantity,
                     UnitPrice = quoteItem.UnitPrice,
                     CreatedByUserId = quote.UpdatedByUserId,

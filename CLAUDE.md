@@ -23,6 +23,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Connection strings support both PostgreSQL and SQL Server via `IsPostGreSQL` configuration flag
 - Database initialization and seeding happens in `VanigamAccountingDbContext.SeedInitialData()`
 
+## Code Generation Standards
+
+**CRITICAL**: When creating new entities, services, controllers, or UI components:
+
+1. **ALWAYS follow @EntityAndServicePatterns.md EXACTLY**
+2. **DO NOT add components or patterns not specified in the template**
+3. **DO NOT use non-existent components** (e.g., RadzenValidationMessage does not exist)
+4. **Verify each component exists** before using it
+5. **Use ValidationSummary for form validation errors** (not individual field validation messages)
+6. **Match the template structure precisely** - do not improvise or add extra features
+7. **Read the entire pattern file** before generating code
+8. **If unsure about a component or pattern**, ask for clarification rather than guessing
+
+**Validation Pattern (Correct)**:
+```razor
+<RadzenTemplateForm @ref="Form" TItem="Entity" Data="@CurrentObject" Submit="@FormSubmit">
+    <FluentValidationValidator TValidator="EntityValidator" />
+    <ValidationSummary />
+    <!-- Form fields here - NO individual field validation messages -->
+</RadzenTemplateForm>
+```
+
+When in doubt, re-read @EntityAndServicePatterns.md and ask for clarification rather than guessing.
+
 ## Architecture Overview
 
 ### Project Structure

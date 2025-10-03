@@ -1,271 +1,226 @@
 [
   {
-    "Title": "TCS Digital Infrastructure Modernization Quote",
+    "Number": "QT-0001",
     "Status": "Draft",
     "CustomerName": "Tata Consultancy Services",
     "JobTitle": "TCS Digital Infrastructure Modernization",
-    "TotalAmount": 2850000.00,
+    "TotalAmount": 1825000.00,
     "CreatedAtUtc": "2024-01-15T10:00:00Z",
     "Items": [
       {
-        "ItemName": "Cloud Migration Services",
-        "Quantity": 500,
-        "UnitPrice": 1200.00
+        "ItemName": "Dell OptiPlex 7090 Desktop",
+        "Quantity": 10,
+        "UnitPrice": 85000.00
       },
       {
-        "ItemName": "Security Enhancement",
-        "Quantity": 300,
-        "UnitPrice": 1500.00
+        "ItemName": "HP EliteBook 850 G8 Laptop",
+        "Quantity": 5,
+        "UnitPrice": 125000.00
       },
       {
-        "ItemName": "System Integration",
-        "Quantity": 400,
-        "UnitPrice": 1800.00
-      },
-      {
-        "ItemName": "Project Management",
-        "Quantity": 200,
-        "UnitPrice": 2000.00
+        "ItemName": "Cisco Catalyst 9300 Series Switch",
+        "Quantity": 2,
+        "UnitPrice": 350000.00
       }
     ]
   },
   {
-    "Title": "HDFC Core Banking System Implementation Quote",
+    "Number": "QT-0002",
     "Status": "Sent",
     "CustomerName": "HDFC Bank Limited",
     "JobTitle": "HDFC Core Banking System Implementation",
-    "TotalAmount": 4200000.00,
+    "TotalAmount": 1573000.00,
     "CreatedAtUtc": "2024-01-20T14:30:00Z",
     "Items": [
       {
-        "ItemName": "Core Banking Platform Development",
-        "Quantity": 800,
-        "UnitPrice": 2500.00
+        "ItemName": "Lenovo ThinkPad X1 Carbon",
+        "Quantity": 8,
+        "UnitPrice": 165000.00
       },
       {
-        "ItemName": "Real-time Processing Implementation",
-        "Quantity": 400,
-        "UnitPrice": 3000.00
+        "ItemName": "Fortinet FortiGate 100F Firewall",
+        "Quantity": 3,
+        "UnitPrice": 125000.00
       },
       {
-        "ItemName": "Mobile Integration",
-        "Quantity": 300,
-        "UnitPrice": 2200.00
+        "ItemName": "VMware vSphere Standard License",
+        "Quantity": 2,
+        "UnitPrice": 95000.00
       },
       {
-        "ItemName": "Compliance Features",
-        "Quantity": 250,
-        "UnitPrice": 2800.00
-      },
-      {
-        "ItemName": "Testing & Quality Assurance",
-        "Quantity": 350,
-        "UnitPrice": 1800.00
+        "ItemName": "Samsung 34-inch Curved Monitor",
+        "Quantity": 6,
+        "UnitPrice": 45000.00
       }
     ]
   },
   {
-    "Title": "Airtel 5G Network Management Platform Quote",
+    "Number": "QT-0003",
     "Status": "Accepted",
     "CustomerName": "Bharti Airtel Limited",
     "JobTitle": "Airtel 5G Network Management Deployment",
-    "TotalAmount": 3200000.00,
+    "TotalAmount": 1126000.00,
     "CreatedAtUtc": "2024-01-25T09:15:00Z",
     "Items": [
       {
-        "ItemName": "Network Management Software",
-        "Quantity": 600,
-        "UnitPrice": 2800.00
+        "ItemName": "Cisco Catalyst 9300 Series Switch",
+        "Quantity": 2,
+        "UnitPrice": 350000.00
       },
       {
-        "ItemName": "5G Infrastructure Integration",
-        "Quantity": 400,
-        "UnitPrice": 3500.00
+        "ItemName": "TP-Link Omada EAP660 HD Wi-Fi 6 Access Point",
+        "Quantity": 15,
+        "UnitPrice": 18000.00
       },
       {
-        "ItemName": "Monitoring & Analytics",
-        "Quantity": 300,
-        "UnitPrice": 2000.00
+        "ItemName": "Synology DS920+ 4-Bay NAS DiskStation",
+        "Quantity": 2,
+        "UnitPrice": 65000.00
       },
       {
-        "ItemName": "Performance Optimization",
+        "ItemName": "Cat6 Ethernet Cable (5 meter)",
         "Quantity": 200,
-        "UnitPrice": 2500.00
+        "UnitPrice": 450.00
+      },
+      {
+        "ItemName": "Patch Panel 24-Port Cat6",
+        "Quantity": 4,
+        "UnitPrice": 3500.00
       }
     ]
   },
   {
-    "Title": "Apollo EMR System Phase 1 Quote",
+    "Number": "QT-0004",
     "Status": "Draft",
     "CustomerName": "Apollo Hospitals Enterprise Ltd",
     "JobTitle": "Apollo EMR System Rollout - Phase 1",
-    "TotalAmount": 1850000.00,
+    "TotalAmount": 1515500.00,
     "CreatedAtUtc": "2024-02-01T11:45:00Z",
     "Items": [
       {
-        "ItemName": "EMR Software Development",
-        "Quantity": 400,
-        "UnitPrice": 2200.00
+        "ItemName": "Dell OptiPlex 7090 Desktop",
+        "Quantity": 15,
+        "UnitPrice": 85000.00
       },
       {
-        "ItemName": "Hospital Integration",
-        "Quantity": 200,
-        "UnitPrice": 2800.00
+        "ItemName": "Samsung 34-inch Curved Monitor",
+        "Quantity": 8,
+        "UnitPrice": 45000.00
       },
       {
-        "ItemName": "Staff Training Program",
-        "Quantity": 150,
-        "UnitPrice": 1500.00
+        "ItemName": "Microsoft Office 365 E5 License",
+        "Quantity": 50,
+        "UnitPrice": 3500.00
       },
       {
-        "ItemName": "Data Migration Services",
-        "Quantity": 100,
-        "UnitPrice": 3200.00
-      },
-      {
-        "ItemName": "Compliance Configuration",
-        "Quantity": 80,
-        "UnitPrice": 2500.00
+        "ItemName": "Epson L15150 A3+ Wi-Fi Duplex Printer",
+        "Quantity": 3,
+        "UnitPrice": 35000.00
       }
     ]
   },
   {
-    "Title": "Mahindra Manufacturing Analytics Platform Quote",
+    "Number": "QT-0005",
     "Status": "Sent",
     "CustomerName": "Mahindra & Mahindra Limited",
     "JobTitle": "Mahindra Manufacturing Analytics Platform",
-    "TotalAmount": 1650000.00,
+    "TotalAmount": 890000.00,
     "CreatedAtUtc": "2024-02-05T16:20:00Z",
     "Items": [
       {
-        "ItemName": "IoT Sensor Integration",
-        "Quantity": 300,
-        "UnitPrice": 2000.00
+        "ItemName": "HP EliteBook 850 G8 Laptop",
+        "Quantity": 6,
+        "UnitPrice": 125000.00
       },
       {
-        "ItemName": "Analytics Platform Development",
-        "Quantity": 250,
-        "UnitPrice": 2400.00
+        "ItemName": "TP-Link Omada EAP660 HD Wi-Fi 6 Access Point",
+        "Quantity": 5,
+        "UnitPrice": 18000.00
       },
       {
-        "ItemName": "Production Optimization Module",
-        "Quantity": 200,
-        "UnitPrice": 2200.00
-      },
-      {
-        "ItemName": "Predictive Maintenance System",
-        "Quantity": 150,
-        "UnitPrice": 2800.00
-      },
-      {
-        "ItemName": "Dashboard & Reporting",
-        "Quantity": 100,
-        "UnitPrice": 1800.00
+        "ItemName": "APC Smart-UPS 1500VA Battery Backup",
+        "Quantity": 4,
+        "UnitPrice": 25000.00
       }
     ]
   },
   {
-    "Title": "Wipro Collaboration Platform Quote",
+    "Number": "QT-0006",
     "Status": "Draft",
     "CustomerName": "Wipro Limited",
     "JobTitle": "Wipro Collaboration Platform Deployment",
-    "TotalAmount": 980000.00,
+    "TotalAmount": 712500.00,
     "CreatedAtUtc": "2024-02-10T08:00:00Z",
     "Items": [
       {
-        "ItemName": "Collaboration Software License",
-        "Quantity": 200,
-        "UnitPrice": 1800.00
-      },
-      {
-        "ItemName": "Knowledge Management System",
-        "Quantity": 150,
-        "UnitPrice": 2200.00
-      },
-      {
-        "ItemName": "Global Deployment Services",
+        "ItemName": "Microsoft Office 365 E5 License",
         "Quantity": 100,
-        "UnitPrice": 2500.00
+        "UnitPrice": 3500.00
       },
       {
-        "ItemName": "Integration with Existing Systems",
-        "Quantity": 80,
-        "UnitPrice": 2000.00
+        "ItemName": "Logitech MX Keys Advanced Wireless Keyboard",
+        "Quantity": 20,
+        "UnitPrice": 12000.00
       },
       {
-        "ItemName": "User Training & Support",
-        "Quantity": 120,
-        "UnitPrice": 1200.00
+        "ItemName": "Logitech MX Master 3 Wireless Mouse",
+        "Quantity": 20,
+        "UnitPrice": 8500.00
+      },
+      {
+        "ItemName": "Samsung 34-inch Curved Monitor",
+        "Quantity": 2,
+        "UnitPrice": 45000.00
       }
     ]
   },
   {
-    "Title": "Asian Paints Supply Chain Optimization Quote",
+    "Number": "QT-0007",
     "Status": "Accepted",
     "CustomerName": "Asian Paints Limited",
     "JobTitle": "Asian Paints Supply Chain Optimization",
-    "TotalAmount": 750000.00,
+    "TotalAmount": 620000.00,
     "CreatedAtUtc": "2024-02-12T13:30:00Z",
     "Items": [
       {
-        "ItemName": "Supply Chain Analysis",
-        "Quantity": 100,
-        "UnitPrice": 2500.00
+        "ItemName": "Dell OptiPlex 7090 Desktop",
+        "Quantity": 5,
+        "UnitPrice": 85000.00
       },
       {
-        "ItemName": "AI-Powered Optimization Engine",
-        "Quantity": 80,
-        "UnitPrice": 3000.00
-      },
-      {
-        "ItemName": "Distribution Network Integration",
-        "Quantity": 120,
-        "UnitPrice": 2000.00
-      },
-      {
-        "ItemName": "Inventory Management System",
-        "Quantity": 60,
-        "UnitPrice": 2200.00
-      },
-      {
-        "ItemName": "Performance Monitoring Tools",
-        "Quantity": 40,
-        "UnitPrice": 1800.00
+        "ItemName": "Samsung 34-inch Curved Monitor",
+        "Quantity": 5,
+        "UnitPrice": 45000.00
       }
     ]
   },
   {
-    "Title": "Dr. Reddy's Regulatory Compliance Platform Quote",
+    "Number": "QT-0008",
     "Status": "Sent",
     "CustomerName": "Dr. Reddy's Laboratories",
     "JobTitle": "Dr. Reddy's Regulatory Compliance System",
-    "TotalAmount": 1240000.00,
+    "TotalAmount": 882000.00,
     "CreatedAtUtc": "2024-02-15T10:15:00Z",
     "Items": [
       {
-        "ItemName": "Regulatory Compliance Software",
-        "Quantity": 200,
-        "UnitPrice": 2800.00
+        "ItemName": "Lenovo ThinkPad X1 Carbon",
+        "Quantity": 4,
+        "UnitPrice": 165000.00
       },
       {
-        "ItemName": "Quality Management System",
-        "Quantity": 150,
-        "UnitPrice": 2400.00
+        "ItemName": "Fortinet FortiGate 100F Firewall",
+        "Quantity": 1,
+        "UnitPrice": 125000.00
       },
       {
-        "ItemName": "Manufacturing Site Integration",
-        "Quantity": 100,
-        "UnitPrice": 2200.00
+        "ItemName": "Microsoft Office 365 E5 License",
+        "Quantity": 20,
+        "UnitPrice": 3500.00
       },
       {
-        "ItemName": "FDA/EMA Compliance Configuration",
-        "Quantity": 80,
-        "UnitPrice": 3000.00
-      },
-      {
-        "ItemName": "Documentation & Training",
-        "Quantity": 60,
-        "UnitPrice": 1500.00
+        "ItemName": "Western Digital 4TB External Hard Drive",
+        "Quantity": 5,
+        "UnitPrice": 8500.00
       }
     ]
   }

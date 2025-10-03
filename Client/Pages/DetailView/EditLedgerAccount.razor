@@ -1,0 +1,310 @@
+@page "/ledgeraccount/{oid:guid}"
+@using Vanigam.CRM.Client.Services
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<LedgerAccount, EditLedgerAccount>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject LedgerAccountApiService LedgerAccountApiService
+@inject AccountGroupApiService AccountGroupApiService
+
+<DetailPageTitleComponent TitleText="@Localizer[IsCreateMode ? "AddLedgerAccount" : "EditLedgerAccount"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
+    <CustomBadge>
+        @if (IsEditButtonVisible)
+        {
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+        }
+    </CustomBadge>
+</DetailPageTitleComponent>
+
+<RadzenStack Gap="1rem">
+    <RadzenTemplateForm @ref="Form" TItem="LedgerAccount" Data="@CurrentObject" Submit="@FormSubmit">
+        <FluentValidationValidator TValidator="LedgerAccountValidator" />
+        <ValidationSummary />
+
+        <RadzenRow Gap="1rem">
+            @* Basic Information *@
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenCard Variant="Variant.Outlined">
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H3" class="rz-mb-3">
+                        @Localizer["BasicInformation"]
+                    </RadzenText>
+
+                    <RadzenStack Gap="1rem">
+                        @* Code *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Code"]" Component="txt_Code" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Code
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.Code" Name="txt_Code" class="w-100" />
+                            }
+                        </div>
+
+                        @* Name *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Name"]" Component="txt_Name" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Name
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.Name" Name="txt_Name" class="w-100" />
+                            }
+                        </div>
+
+                        @* Account Type *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["AccountType"]" Component="ddl_AccountType" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.AccountType.ToString()
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenDropDown @bind-Value="@CurrentObject!.AccountType"
+                                                Data="@Enum.GetValues(typeof(AccountType))"
+                                                Name="ddl_AccountType"
+                                                class="w-100" />
+                            }
+                        </div>
+
+                        @* Account Group *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["AccountGroup"]" Component="ddl_AccountGroup" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.AccountGroup?.Name
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenDropDown @bind-Value="@CurrentObject!.AccountGroupId"
+                                                Data="@AccountGroups"
+                                                TextProperty="Name"
+                                                ValueProperty="Oid"
+                                                Name="ddl_AccountGroup"
+                                                class="w-100"
+                                                AllowClear="true"
+                                                Placeholder="@Localizer["SelectAccountGroup"]" />
+                            }
+                        </div>
+
+                        @* Description *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Description"]" Component="txt_Description" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Description
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextArea @bind-Value="@CurrentObject!.Description" Name="txt_Description" class="w-100" Rows="3" />
+                            }
+                        </div>
+
+                        @* Is Active *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["IsActive"]" Component="chk_IsActive" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <div>
+                                    @if (CurrentObject?.IsActive == true)
+                                    {
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
+                                    }
+                                    else
+                                    {
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <RadzenCheckBox @bind-Value="@CurrentObject!.IsActive" Name="chk_IsActive" />
+                            }
+                        </div>
+                    </RadzenStack>
+                </RadzenCard>
+            </RadzenColumn>
+
+            @* Contact Information *@
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenCard Variant="Variant.Outlined">
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H3" class="rz-mb-3">
+                        @Localizer["ContactInformation"]
+                    </RadzenText>
+
+                    <RadzenStack Gap="1rem">
+                        @* Email *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Email"]" Component="txt_Email" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Email
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.Email" Name="txt_Email" class="w-100" />
+                            }
+                        </div>
+
+                        @* Phone *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Phone"]" Component="txt_Phone" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Phone
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.Phone" Name="txt_Phone" class="w-100" />
+                            }
+                        </div>
+
+                        @* Address *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Address"]" Component="txt_Address" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Address
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextArea @bind-Value="@CurrentObject!.Address" Name="txt_Address" class="w-100" Rows="2" />
+                            }
+                        </div>
+
+                        @* City *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["City"]" Component="txt_City" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.City
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.City" Name="txt_City" class="w-100" />
+                            }
+                        </div>
+
+                        @* State *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["State"]" Component="txt_State" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.State
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.State" Name="txt_State" class="w-100" />
+                            }
+                        </div>
+
+                        @* Postal Code *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["PostalCode"]" Component="txt_PostalCode" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.PostalCode
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.PostalCode" Name="txt_PostalCode" class="w-100" />
+                            }
+                        </div>
+
+                        @* Country *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Country"]" Component="txt_Country" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Country
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.Country" Name="txt_Country" class="w-100" />
+                            }
+                        </div>
+                    </RadzenStack>
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+
+        <RadzenRow Gap="1rem">
+            @* Financial Information *@
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenCard Variant="Variant.Outlined">
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H3" class="rz-mb-3">
+                        @Localizer["FinancialInformation"]
+                    </RadzenText>
+
+                    <RadzenStack Gap="1rem">
+                        @* Balance *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Balance"]" Component="num_Balance" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Balance.ToString("C")
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenNumeric @bind-Value="@CurrentObject!.Balance" Name="num_Balance" class="w-100" TValue="decimal" Format="c" ReadOnly="true" />
+                            }
+                        </div>
+
+                        @* Credit Limit *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["CreditLimit"]" Component="num_CreditLimit" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.CreditLimit.ToString("C")
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenNumeric @bind-Value="@CurrentObject!.CreditLimit" Name="num_CreditLimit" class="w-100" TValue="decimal" Format="c" />
+                            }
+                        </div>
+                    </RadzenStack>
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+
+        @if (!IsReadOnlyMode)
+        {
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" class="rz-mt-4">
+                <RadzenButton Text="@Localizer["Cancel"]" Click="@CancelButtonClick" Variant="Variant.Text" ButtonStyle="ButtonStyle.Light" />
+                <RadzenButton Text="@Localizer["Save"]" ButtonType="ButtonType.Submit" IsBusy="@IsBusy" />
+            </RadzenStack>
+        }
+    </RadzenTemplateForm>
+</RadzenStack>

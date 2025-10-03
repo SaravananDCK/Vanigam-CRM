@@ -110,7 +110,7 @@ public abstract class BasePdfService<T>(
     }
 
     protected void BuildItemsTable<TItem>(IEnumerable<TItem> items, ColumnDescriptor column,
-        Func<TItem, int> getQuantity,
+        Func<TItem, double> getQuantity,
         Func<TItem, string> getDescription,
         Func<TItem, decimal> getUnitPrice) where TItem : class
     {
@@ -148,7 +148,7 @@ public abstract class BasePdfService<T>(
             {
                 var quantity = getQuantity(item);
                 var unitPrice = getUnitPrice(item);
-                var total = quantity * unitPrice;
+                var total = (decimal)quantity * unitPrice;
 
                 table.Cell().Element(CellStyle).Text(quantity.ToString());
                 table.Cell().Element(CellStyle).Text(getDescription(item));

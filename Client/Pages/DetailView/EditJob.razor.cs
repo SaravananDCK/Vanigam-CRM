@@ -20,7 +20,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 // If CustomerId is provided, set it on the new job
                 if (CustomerId.HasValue)
                 {
-                    CurrentObject.CustomerId = CustomerId.Value;
+                    CurrentObject.PartyId = CustomerId.Value;
                 }
 
                 IsReadOnlyMode = false; // Create mode - always editable

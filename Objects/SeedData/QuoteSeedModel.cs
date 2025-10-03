@@ -2,7 +2,7 @@ namespace Vanigam.CRM.Objects.SeedData;
 
 public class QuoteSeedModel
 {
-    public string Title { get; set; } = string.Empty;
+    public string Number { get; set; } = string.Empty;
     public string Status { get; set; } = "Draft";
     public string? CustomerName { get; set; }
     public string? JobTitle { get; set; }

@@ -1,0 +1,339 @@
+@page "/taxcode/{oid:guid}"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<TaxCode, EditTaxCode>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject TaxCodeApiService TaxCodeApiService
+@inject LedgerAccountApiService LedgerAccountApiService
+
+<DetailPageTitleComponent TitleText="@Localizer[IsCreateMode ? "AddTaxCode" : "EditTaxCode"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
+    <CustomBadge>
+        @if (IsEditButtonVisible)
+        {
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+        }
+    </CustomBadge>
+</DetailPageTitleComponent>
+
+<RadzenStack Gap="1rem">
+    <RadzenTemplateForm @ref="Form" TItem="TaxCode" Data="@CurrentObject" Submit="@FormSubmit">
+        <FluentValidationValidator TValidator="TaxCodeValidator" />
+        <ValidationSummary />
+
+        <RadzenRow Gap="1rem">
+            @* Basic Information *@
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenCard Variant="Variant.Outlined">
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H3" class="rz-mb-3">
+                        @Localizer["BasicInformation"]
+                    </RadzenText>
+
+                    <RadzenStack Gap="1rem">
+                        @* Code *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Code"]" Component="txt_Code" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Code
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.Code" Name="txt_Code" class="w-100" />
+                            }
+                        </div>
+
+                        @* Name *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Name"]" Component="txt_Name" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Name
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.Name" Name="txt_Name" class="w-100" />
+                            }
+                        </div>
+
+                        @* Description *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["Description"]" Component="txt_Description" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.Description
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextArea @bind-Value="@CurrentObject!.Description" Name="txt_Description" class="w-100" Rows="3" />
+                            }
+                        </div>
+
+                        @* Tax Type *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["TaxType"]" Component="ddl_TaxType" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.TaxType
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value="@CurrentObject!.TaxType" Name="ddl_TaxType" class="w-100" Placeholder="GST, VAT, etc." />
+                            }
+                        </div>
+
+                        @* Is Active *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["IsActive"]" Component="chk_IsActive" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <div>
+                                    @if (CurrentObject?.IsActive == true)
+                                    {
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
+                                    }
+                                    else
+                                    {
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <RadzenCheckBox @bind-Value="@CurrentObject!.IsActive" Name="chk_IsActive" />
+                            }
+                        </div>
+                    </RadzenStack>
+                </RadzenCard>
+            </RadzenColumn>
+
+            @* Tax Rates *@
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenCard Variant="Variant.Outlined">
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H3" class="rz-mb-3">
+                        @Localizer["TaxRates"]
+                    </RadzenText>
+
+                    <RadzenStack Gap="1rem">
+                        @* Tax Rate *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["TaxRate"]" Component="num_TaxRate" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.TaxRate.ToString("N2")%
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenNumeric @bind-Value="@CurrentObject!.TaxRate" Name="num_TaxRate" class="w-100" TValue="decimal" Format="0.00" Step="0.01M" />
+                            }
+                        </div>
+
+                        @* CGST Rate *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["CGST"]" Component="num_CGSTRate" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @(CurrentObject?.CGSTRate > 0 ? CurrentObject.CGSTRate.ToString("N2") + "%" : "-")
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenNumeric @bind-Value="@CurrentObject!.CGSTRate" Name="num_CGSTRate" class="w-100" TValue="decimal" Format="0.00" Step="0.01M" />
+                            }
+                        </div>
+
+                        @* SGST Rate *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["SGST"]" Component="num_SGSTRate" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @(CurrentObject?.SGSTRate > 0 ? CurrentObject.SGSTRate.ToString("N2") + "%" : "-")
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenNumeric @bind-Value="@CurrentObject!.SGSTRate" Name="num_SGSTRate" class="w-100" TValue="decimal" Format="0.00" Step="0.01M" />
+                            }
+                        </div>
+
+                        @* IGST Rate *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["IGST"]" Component="num_IGSTRate" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @(CurrentObject?.IGSTRate > 0 ? CurrentObject.IGSTRate.ToString("N2") + "%" : "-")
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenNumeric @bind-Value="@CurrentObject!.IGSTRate" Name="num_IGSTRate" class="w-100" TValue="decimal" Format="0.00" Step="0.01M" />
+                            }
+                        </div>
+
+                        @* UTGST Rate *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["UTGST"]" Component="num_UTGSTRate" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @(CurrentObject?.UTGSTRate > 0 ? CurrentObject.UTGSTRate.ToString("N2") + "%" : "-")
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenNumeric @bind-Value="@CurrentObject!.UTGSTRate" Name="num_UTGSTRate" class="w-100" TValue="decimal" Format="0.00" Step="0.01M" />
+                            }
+                        </div>
+
+                        @* Cess Rate *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["CessRate"]" Component="num_CessRate" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @(CurrentObject?.CessRate > 0 ? CurrentObject.CessRate.ToString("N2") + "%" : "-")
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenNumeric @bind-Value="@CurrentObject!.CessRate" Name="num_CessRate" class="w-100" TValue="decimal" Format="0.00" Step="0.01M" />
+                            }
+                        </div>
+
+                        @* Is Compound Tax *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["IsCompoundTax"]" Component="chk_IsCompoundTax" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @(CurrentObject?.IsCompoundTax == true ? Localizer["Yes"] : Localizer["No"])
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenCheckBox @bind-Value="@CurrentObject!.IsCompoundTax" Name="chk_IsCompoundTax" />
+                            }
+                        </div>
+                    </RadzenStack>
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+
+        <RadzenRow Gap="1rem">
+            @* Effective Dates *@
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenCard Variant="Variant.Outlined">
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H3" class="rz-mb-3">
+                        @Localizer["EffectiveDates"]
+                    </RadzenText>
+
+                    <RadzenStack Gap="1rem">
+                        @* Effective From *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["EffectiveFrom"]" Component="dt_EffectiveFrom" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.EffectiveFrom?.ToString("dd-MMM-yyyy")
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenDatePicker @bind-Value="@CurrentObject!.EffectiveFrom" Name="dt_EffectiveFrom" class="w-100" DateFormat="dd-MMM-yyyy" />
+                            }
+                        </div>
+
+                        @* Effective To *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["EffectiveTo"]" Component="dt_EffectiveTo" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.EffectiveTo?.ToString("dd-MMM-yyyy")
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenDatePicker @bind-Value="@CurrentObject!.EffectiveTo" Name="dt_EffectiveTo" class="w-100" DateFormat="dd-MMM-yyyy" />
+                            }
+                        </div>
+                    </RadzenStack>
+                </RadzenCard>
+            </RadzenColumn>
+
+            @* Account Mappings *@
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenCard Variant="Variant.Outlined">
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H3" class="rz-mb-3">
+                        @Localizer["AccountMappings"]
+                    </RadzenText>
+
+                    <RadzenStack Gap="1rem">
+                        @* Tax Payable Account *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["TaxPayableAccount"]" Component="ddl_TaxPayableAccount" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.TaxPayableAccount?.Name
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenDropDown @bind-Value="@CurrentObject!.TaxPayableAccountId"
+                                                Data="@LedgerAccounts"
+                                                TextProperty="Name"
+                                                ValueProperty="Oid"
+                                                Name="ddl_TaxPayableAccount"
+                                                class="w-100"
+                                                AllowClear="true"
+                                                Placeholder="@Localizer["SelectAccount"]" />
+                            }
+                        </div>
+
+                        @* Tax Receivable Account *@
+                        <div class="@(IsReadOnlyMode ? "read-only-field" : "")">
+                            <RadzenLabel Text="@Localizer["TaxReceivableAccount"]" Component="ddl_TaxReceivableAccount" />
+                            @if (IsReadOnlyMode)
+                            {
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject?.TaxReceivableAccount?.Name
+                                </RadzenText>
+                            }
+                            else
+                            {
+                                <RadzenDropDown @bind-Value="@CurrentObject!.TaxReceivableAccountId"
+                                                Data="@LedgerAccounts"
+                                                TextProperty="Name"
+                                                ValueProperty="Oid"
+                                                Name="ddl_TaxReceivableAccount"
+                                                class="w-100"
+                                                AllowClear="true"
+                                                Placeholder="@Localizer["SelectAccount"]" />
+                            }
+                        </div>
+                    </RadzenStack>
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+
+        @if (!IsReadOnlyMode)
+        {
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" class="rz-mt-4">
+                <RadzenButton Text="@Localizer["Cancel"]" Click="@CancelButtonClick" Variant="Variant.Text" ButtonStyle="ButtonStyle.Light" />
+                <RadzenButton Text="@Localizer["Save"]" ButtonType="ButtonType.Submit" IsBusy="@IsBusy" />
+            </RadzenStack>
+        }
+    </RadzenTemplateForm>
+</RadzenStack>

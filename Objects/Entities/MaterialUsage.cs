@@ -4,20 +4,8 @@ using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities
 {
-    public class MaterialUsage : BaseClass
+    public class MaterialUsage : VoucherLine
     {
-        [Required]
-        public Guid JobId { get; set; }
 
-        [ForeignKey(nameof(JobId))]
-        public Job Job { get; set; } = null!;
-
-        [Required]
-        public Guid InventoryItemId { get; set; }
-
-        [ForeignKey(nameof(InventoryItemId))]
-        public Item Item { get; set; } = null!;
-
-        public int Quantity { get; set; }
     }
 }

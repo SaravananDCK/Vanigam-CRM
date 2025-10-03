@@ -36,9 +36,9 @@
 
                 <RadzenDataGridColumn TItem="QuoteItemDTO" Property="Quantity" Title="@Localizer["Quantity"]" Width="120px">
                     <EditTemplate Context="item">
-                        <RadzenNumeric TValue="int" @bind-Value="item.Quantity"
+                        <RadzenNumeric TValue="double" @bind-Value="item.Quantity"
                                       Min="1"
-                                      Change="@(async (int value) => { item.Quantity = value; CalculateTotal(item); await NotifyChanges(); })"
+                                      Change="@(async (double value) => { item.Quantity = value; CalculateTotal(item); await NotifyChanges(); })"
                                       class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>

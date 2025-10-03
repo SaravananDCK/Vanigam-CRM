@@ -26,7 +26,8 @@ namespace Vanigam.CRM.Client.Pages.ListView
             }
             catch (Exception ex)
             {
-                NotificationService.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = Localizer[$"Load"] });
+                Logger.LogError(ex.Message, ex);
+                NotificationService.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = ex.Message });
             }
         }
 

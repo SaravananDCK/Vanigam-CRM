@@ -1,0 +1,80 @@
+@page "/numberseries"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<NumberSeries, NumberSeriesList>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject NumberSeriesApiService NumberSeriesApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["NumberSeries"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="NumberSeries" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="NumberSeries" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="numberseries">
+                            <OpenPageCommonComponent T="NumberSeries" OpenObject="@numberseries" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="NumberSeries" UsingObject="@numberseries" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.EntityType) Title=@Localizer["EntityType"] Width="150px">
+                        <Template Context="numberseries">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@numberseries.EntityType" />
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.Prefix) Title=@Localizer["Prefix"] Width="120px">
+                        <Template Context="numberseries">
+                            @(numberseries.Prefix ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.Suffix) Title=@Localizer["Suffix"] Width="120px">
+                        <Template Context="numberseries">
+                            @(numberseries.Suffix ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.StartNo) Title=@Localizer["StartNo"] Width="100px" />
+
+                    <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.CurrentNo) Title=@Localizer["CurrentNo"] Width="100px">
+                        <Template Context="numberseries">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="@numberseries.CurrentNo.ToString()" />
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.PaddingLength) Title=@Localizer["PaddingLength"] Width="120px" />
+
+                    <RadzenDataGridColumn TItem="NumberSeries" Title=@Localizer["Preview"] Width="150px" Filterable="false" Sortable="false">
+                        <Template Context="numberseries">
+                            @{
+                                var preview = $"{numberseries.Prefix}{numberseries.CurrentNo.ToString().PadLeft(numberseries.PaddingLength, '0')}{numberseries.Suffix}";
+                            }
+                            <RadzenText TextStyle="TextStyle.Body2"><strong>@preview</strong></RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.IsActive) Title=@Localizer["IsActive"] Width="100px">
+                        <Template Context="numberseries">
+                            @if (numberseries.IsActive)
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
+                            }
+                            else
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

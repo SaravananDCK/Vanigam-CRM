@@ -19,7 +19,8 @@ namespace Vanigam.CRM.Client.Pages.ListView
             }
             catch (Exception ex)
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = Localizer[$"Load"] });
+                Logger.LogError(ex.Message, ex);
+                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = ex.Message });
             }
         }
 
@@ -31,7 +32,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             // Filter by parent Quote if in embedded mode
             if (IsEmbeddedMode && QuoteId.HasValue)
             {
-                filter = filter.FilterByAnd(u => u.QuoteId == QuoteId.Value);
+                filter = filter.FilterByAnd(u => u.VoucherId == QuoteId.Value);
             }
 
             filter.BeginGroup()
@@ -43,8 +44,8 @@ namespace Vanigam.CRM.Client.Pages.ListView
         protected override string GetExpandString(LoadDataArgs args)
         {
             return new ODataExpand<QuoteItem>()
-                .Expand(f => f.Quote, f => f.Quote.Number)
-                .Expand(f => f.InventoryItem, f => f.InventoryItem.Name)
+                .Expand(f => f.Voucher, f => f.Voucher.Number)
+                .Expand(f => f.Item, f => f.Item.Name)
                 .Build();
         }
 

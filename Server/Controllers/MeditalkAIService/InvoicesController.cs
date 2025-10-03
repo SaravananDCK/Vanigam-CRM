@@ -89,8 +89,8 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         var newItem = new InvoiceItem
                         {
                             Oid = Guid.NewGuid(),
-                            InvoiceId = invoice.Oid,
-                            InventoryItemId = itemDto.InventoryItemId,
+                            VoucherId = invoice.Oid,
+                            ItemId = itemDto.InventoryItemId,
                             Quantity = itemDto.Quantity,
                             UnitPrice = itemDto.UnitPrice,
                             TenantId = CurrentUser.TenantId
@@ -106,7 +106,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
 
                         if (existingItem != null)
                         {
-                            existingItem.InventoryItemId = itemDto.InventoryItemId;
+                            existingItem.ItemId = itemDto.InventoryItemId;
                             existingItem.Quantity = itemDto.Quantity;
                             existingItem.UnitPrice = itemDto.UnitPrice;
                         }
@@ -136,15 +136,17 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
             try
             {
                 var items = await context.InvoiceItems
-                    .Where(i => i.InvoiceId == invoiceId)
-                    .Include(i => i.InventoryItem)
+                    .Where(i => i.VoucherId == invoiceId)
+                    .Include(i => i.Item)
                     .Select(i => new InvoiceItemDTO
                     {
                         Oid = i.Oid,
-                        InventoryItemId = i.InventoryItemId,
+                        InventoryItemId = i.ItemId,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
-                        InventoryItemName = i.InventoryItem != null ? i.InventoryItem.Name : null
+                        DiscountAmount = i.DiscountAmount,
+                        TaxAmount = i.TaxAmount,
+                        InventoryItemName = i.Item != null ? i.Item.Name : null
                     })
                     .ToListAsync();
 

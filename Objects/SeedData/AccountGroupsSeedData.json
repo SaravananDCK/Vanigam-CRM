@@ -120,10 +120,17 @@
       "IsActive": true
     },
     {
-      "Code": "TAX",
-      "Name": "Duties & Taxes",
+      "Code": "TAXP",
+      "Name": "Duties & Taxes Payable",
       "Nature": "Liability",
       "ParentCode": "CL",
+      "IsActive": true
+    },
+    {
+      "Code": "TAXI",
+      "Name": "Tax Input (Recoverable)",
+      "Nature": "Asset",
+      "ParentCode": "CA",
       "IsActive": true
     },
     {

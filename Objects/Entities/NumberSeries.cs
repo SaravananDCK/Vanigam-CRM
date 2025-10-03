@@ -16,7 +16,7 @@ public class NumberSeries : BaseClass
     public string? Suffix { get; set; }
 
     public long StartNo { get; set; } = 1;
-
+ 
     public long CurrentNo { get; set; } = 1;
 
     public int PaddingLength { get; set; } = 4;

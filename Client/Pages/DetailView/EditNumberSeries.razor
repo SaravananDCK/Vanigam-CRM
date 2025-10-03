@@ -1,0 +1,221 @@
+@page "/edit-numberseries"
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Validators
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<NumberSeries, EditNumberSeries>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+
+@* Custom Header with Edit Button *@
+<DetailPageTitleComponent TitleText="@Localizer["EditNumberSeries"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
+    <CustomBadge>
+        @* Floating Edit Button - Only visible in read-only mode *@
+        @if (IsEditButtonVisible)
+        {
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+        }
+    </CustomBadge>
+</DetailPageTitleComponent>
+
+<RadzenColumn SizeMD=12>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
+
+    @* Read-Only Mode Display *@
+    @if (IsReadOnlyModeVisible)
+    {
+        <RadzenCard class="rz-my-4">
+            <RadzenStack>
+                <div class="read-only-section-header">@Localizer["NumberSeriesInformation"]</div>
+                <RadzenRow>
+                    <RadzenColumn Size="6">
+                        <div class="rz-p-4">
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["EntityType"]:</strong>
+                                </RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @(CurrentObject.EntityType ?? "-")
+                                </RadzenText>
+                            </div>
+
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["Prefix"]:</strong>
+                                </RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @(CurrentObject.Prefix ?? "-")
+                                </RadzenText>
+                            </div>
+
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["Suffix"]:</strong>
+                                </RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @(CurrentObject.Suffix ?? "-")
+                                </RadzenText>
+                            </div>
+
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["PaddingLength"]:</strong>
+                                </RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject.PaddingLength
+                                </RadzenText>
+                            </div>
+                        </div>
+                    </RadzenColumn>
+                    <RadzenColumn Size="6">
+                        <div class="rz-p-4">
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["StartNo"]:</strong>
+                                </RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject.StartNo
+                                </RadzenText>
+                            </div>
+
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["CurrentNo"]:</strong>
+                                </RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject.CurrentNo
+                                </RadzenText>
+                            </div>
+
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["IsActive"]:</strong>
+                                </RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @if (CurrentObject.IsActive)
+                                    {
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
+                                    }
+                                    else
+                                    {
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
+                                    }
+                                </RadzenText>
+                            </div>
+
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["Preview"]:</strong>
+                                </RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @{
+                                        var preview = $"{CurrentObject.Prefix}{CurrentObject.CurrentNo.ToString().PadLeft(CurrentObject.PaddingLength, '0')}{CurrentObject.Suffix}";
+                                    }
+                                    <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@preview" />
+                                </RadzenText>
+                            </div>
+                        </div>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenCard>
+    }
+
+    @* Editable Form Mode *@
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="NumberSeries" Data="@CurrentObject" Visible="@IsFormVisible" Submit="@SaveAndStayInEdit">
+        <RadzenStack>
+            <FluentValidationValidator Validator="new NumberSeriesValidator(Localizer)" />
+            <ValidationSummary />
+
+            <RadzenRow>
+                <RadzenColumn SizeMD=6>
+                    <RadzenStack Gap="1rem">
+                        <RadzenFormField Text="@Localizer["EntityType"]" Variant="Variant.Outlined" AllowFloatingLabel=false>
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="@CurrentObject.EntityType" Name="txt_EntityType" class="w-100" />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenText TextStyle="TextStyle.Caption">@Localizer["EntityTypeHelper"]</RadzenText>
+                            </Helper>
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="@Localizer["Prefix"]" Variant="Variant.Outlined" AllowFloatingLabel=false>
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="@CurrentObject.Prefix" Name="txt_Prefix" class="w-100" />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenText TextStyle="TextStyle.Caption">@Localizer["PrefixHelper"]</RadzenText>
+                            </Helper>
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="@Localizer["Suffix"]" Variant="Variant.Outlined" AllowFloatingLabel=false>
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="@CurrentObject.Suffix" Name="txt_Suffix" class="w-100" />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenText TextStyle="TextStyle.Caption">@Localizer["SuffixHelper"]</RadzenText>
+                            </Helper>
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="@Localizer["PaddingLength"]" Variant="Variant.Outlined" AllowFloatingLabel=false>
+                            <ChildContent>
+                                <RadzenNumeric @bind-Value="@CurrentObject.PaddingLength" Name="num_PaddingLength" class="w-100" Min="1" Max="10" />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenText TextStyle="TextStyle.Caption">@Localizer["PaddingLengthHelper"]</RadzenText>
+                            </Helper>
+                        </RadzenFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+
+                <RadzenColumn SizeMD=6>
+                    <RadzenStack Gap="1rem">
+                        <RadzenFormField Text="@Localizer["StartNo"]" Variant="Variant.Outlined" AllowFloatingLabel=false>
+                            <ChildContent>
+                                <RadzenNumeric @bind-Value="@CurrentObject.StartNo" Name="num_StartNo" class="w-100" Min="1" />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenText TextStyle="TextStyle.Caption">@Localizer["StartNoHelper"]</RadzenText>
+                            </Helper>
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="@Localizer["CurrentNo"]" Variant="Variant.Outlined" AllowFloatingLabel=false>
+                            <ChildContent>
+                                <RadzenNumeric @bind-Value="@CurrentObject.CurrentNo" Name="num_CurrentNo" class="w-100" Min="1" />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenText TextStyle="TextStyle.Caption">@Localizer["CurrentNoHelper"]</RadzenText>
+                            </Helper>
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="@Localizer["IsActive"]" Variant="Variant.Outlined" AllowFloatingLabel=false>
+                            <ChildContent>
+                                <RadzenSwitch @bind-Value="@CurrentObject.IsActive" Name="chk_IsActive" />
+                            </ChildContent>
+                        </RadzenFormField>
+
+                        <RadzenCard Variant="Variant.Outlined" class="rz-mt-3">
+                            <RadzenStack Gap="0.5rem">
+                                <RadzenText TextStyle="TextStyle.Subtitle2">@Localizer["Preview"]</RadzenText>
+                                @{
+                                    var formPreview = $"{CurrentObject.Prefix}{CurrentObject.CurrentNo.ToString().PadLeft(CurrentObject.PaddingLength, '0')}{CurrentObject.Suffix}";
+                                }
+                                <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@formPreview" />
+                            </RadzenStack>
+                        </RadzenCard>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            @if (IsCreateMode)
+            {
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+            }
+            else
+            {
+                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+            }
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenColumn>

@@ -45,6 +45,10 @@ namespace Vanigam.CRM.Objects.Entities
         [ForeignKey(nameof(PartyId))]
         public LedgerAccount? Party { get; set; }
 
+        public virtual void CalculateTotal()
+        {
+           
+        }
         // Navigation properties
         public ICollection<VoucherLine> VoucherLines { get; set; } = new List<VoucherLine>();
         public ICollection<LedgerEntry> LedgerEntries { get; set; } = new List<LedgerEntry>();

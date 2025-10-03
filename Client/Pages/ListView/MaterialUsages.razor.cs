@@ -24,7 +24,8 @@ namespace Vanigam.CRM.Client.Pages.ListView
             }
             catch (Exception ex)
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = Localizer[$"Load"] });
+                Logger.LogError(ex.Message, ex);
+                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = ex.Message });
             }
         }
 
@@ -36,13 +37,13 @@ namespace Vanigam.CRM.Client.Pages.ListView
             // Add job filter if in embedded mode by job
             if (IsEmbeddedMode && JobId.HasValue)
             {
-                filter = filter.FilterByAnd(mu => mu.JobId == JobId.Value);
+                filter = filter.FilterByAnd(mu => mu.VoucherId == JobId.Value);
             }
 
             // Add inventory item filter if in embedded mode by inventory item
             if (IsEmbeddedMode && InventoryItemId.HasValue)
             {
-                filter = filter.FilterByAnd(mu => mu.InventoryItemId == InventoryItemId.Value);
+                filter = filter.FilterByAnd(mu => mu.ItemId == InventoryItemId.Value);
             }
 
             // No additional searchable string properties for MaterialUsage
@@ -57,7 +58,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         protected override string GetExpandString(LoadDataArgs args)
         {
             return new ODataExpand<MaterialUsage>()
-                .Expand(f => f.Job, f => f.Job.Title)
+                .Expand(f => f.Voucher, f => f.Voucher.Number)
                 .Expand(f => f.Item, f => f.Item.Name)
                 .Build();
         }

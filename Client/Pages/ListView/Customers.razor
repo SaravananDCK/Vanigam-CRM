@@ -20,6 +20,8 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Code) Title=@Localizer["Code"]>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Name) Title=@Localizer["Name"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Type) Title=@Localizer["Type"] Width="100px">

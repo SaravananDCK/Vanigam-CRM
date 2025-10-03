@@ -256,7 +256,7 @@ try
     //app.UseHeaderPropagation();
 
     app.UseRequestLocalization(options =>
-        options.AddSupportedCultures("en", "es").AddSupportedUICultures("en", "es").SetDefaultCulture("en"));
+        options.AddSupportedCultures("en-IN", "ta").AddSupportedUICultures("en-IN", "ta").SetDefaultCulture("en-IN"));
     app.UseStaticFiles();
     app.UseAuthentication();
     app.UseAuthorization();

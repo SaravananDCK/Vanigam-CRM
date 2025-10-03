@@ -39,7 +39,8 @@ namespace Vanigam.CRM.Client.Pages.ListView
             }
             catch (Exception ex)
             {
-                NotificationService.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = Localizer[$"Load"] });
+                Logger.LogError(ex.Message, ex);
+                NotificationService.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = ex.Message });
             }
         }
 
@@ -51,7 +52,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             // Add customer filter if in embedded mode
             if (IsEmbeddedMode && CustomerId.HasValue)
             {
-                filter = filter.FilterByAnd(j => j.CustomerId == CustomerId.Value);
+                filter = filter.FilterByAnd(j => j.PartyId == CustomerId.Value);
             }
 
             // Add status filter if selected
@@ -70,7 +71,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         protected override string GetExpandString(LoadDataArgs args)
         {
             return new ODataExpand<Job>()
-                .Expand(f => f.Customer, f => f.Customer.Name)
+                .Expand(f => f.Party, f => f.Party.Name)
                 .Build();
         }
         protected async Task AddButtonClick(MouseEventArgs args)
@@ -161,7 +162,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             // Add customer filter if in embedded mode
             if (IsEmbeddedMode && CustomerId.HasValue)
             {
-                filter = filter.FilterByAnd(j => j.CustomerId == CustomerId.Value);
+                filter = filter.FilterByAnd(j => j.PartyId == CustomerId.Value);
             }
 
             if (!string.IsNullOrEmpty(SearchString))

@@ -1,0 +1,87 @@
+{
+  "NumberSeries": [
+    {
+      "EntityType": "Quote",
+      "Prefix": "QT-",
+      "Suffix": null,
+      "StartNo": 1,
+      "CurrentNo": 1,
+      "PaddingLength": 4,
+      "IsActive": true
+    },
+    {
+      "EntityType": "Invoice",
+      "Prefix": "INV-",
+      "Suffix": null,
+      "StartNo": 1,
+      "CurrentNo": 1,
+      "PaddingLength": 4,
+      "IsActive": true
+    },
+    {
+      "EntityType": "PurchaseOrder",
+      "Prefix": "PO-",
+      "Suffix": null,
+      "StartNo": 1,
+      "CurrentNo": 1,
+      "PaddingLength": 4,
+      "IsActive": true
+    },
+    {
+      "EntityType": "PurchaseInvoice",
+      "Prefix": "PI-",
+      "Suffix": null,
+      "StartNo": 1,
+      "CurrentNo": 1,
+      "PaddingLength": 4,
+      "IsActive": true
+    },
+    {
+      "EntityType": "Customer",
+      "Prefix": "CUST-",
+      "Suffix": null,
+      "StartNo": 1,
+      "CurrentNo": 1,
+      "PaddingLength": 4,
+      "IsActive": true
+    },
+    {
+      "EntityType": "Vendor",
+      "Prefix": "VEND-",
+      "Suffix": null,
+      "StartNo": 1,
+      "CurrentNo": 1,
+      "PaddingLength": 4,
+      "IsActive": true
+    },
+    {
+      "EntityType": "BankAccount",
+      "Prefix": "BANK-",
+      "Suffix": null,
+      "StartNo": 1,
+      "CurrentNo": 1,
+      "PaddingLength": 4,
+      "IsActive": true
+    }
+  ],
+  "Instructions": {
+    "Note": "Number Series configuration for automatic document numbering",
+    "Usage": "Each EntityType corresponds to a Voucher descendant (Quote, Invoice, PurchaseOrder, PurchaseInvoice)",
+    "NumberFormat": "Prefix + PaddedNumber + Suffix (e.g., 'QT-0001', 'INV-0001')",
+    "Properties": {
+      "EntityType": "Name of the entity type (matches VoucherType enum values)",
+      "Prefix": "Text prefix for the number series (e.g., 'QT-', 'INV-')",
+      "Suffix": "Optional text suffix for the number series",
+      "StartNo": "Starting number for the series (default: 1)",
+      "CurrentNo": "Current number in the series (incremented with each new document)",
+      "PaddingLength": "Number of digits for padding (e.g., 4 gives '0001', '0002')",
+      "IsActive": "Whether this number series is active and should be used"
+    },
+    "Examples": {
+      "Quote": "QT-0001, QT-0002, QT-0003, ...",
+      "Invoice": "INV-0001, INV-0002, INV-0003, ...",
+      "PurchaseOrder": "PO-0001, PO-0002, PO-0003, ...",
+      "PurchaseInvoice": "PI-0001, PI-0002, PI-0003, ..."
+    }
+  }
+}

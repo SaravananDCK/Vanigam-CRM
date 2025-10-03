@@ -60,13 +60,16 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Quote" Property="Job.Title" Title=@Localizer["Job"] Visible="@(!IsEmbeddedMode)">
+                    <RadzenDataGridColumn TItem="Quote" Property="@nameof(Quote.Number)" Title=@Localizer["Number"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Number) Title=@Localizer["Title"]>
+                    <RadzenDataGridColumn TItem="Quote" Property="Job.Title" Title=@Localizer["Job"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Status) Title=@Localizer["Status"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.TotalAmount) Title=@Localizer["TotalAmount"]>
+                        <Template Context="item">
+                            @item.TotalAmount.ToString("C")
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

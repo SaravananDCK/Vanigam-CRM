@@ -58,9 +58,9 @@
                     @* Show Customer column only in standalone mode *@
                     @if (!IsEmbeddedMode)
                     {
-                        <RadzenDataGridColumn TItem="Job" Property="Customer.Name" Title=@Localizer["Customer"] Sortable="true">
+                        <RadzenDataGridColumn TItem="Job" Property="Party.Name" Title=@Localizer["Customer"] Sortable="true">
                             <Template Context="job">
-                                @job.Customer?.Name
+                                @job.Party?.Name
                             </Template>
                         </RadzenDataGridColumn>
                     }
@@ -79,9 +79,3 @@
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
-
-<style>
-    :root {
-        .rz-tabview.rz-tabview-top { flex-direction: row !important; }
-    }
-</style>

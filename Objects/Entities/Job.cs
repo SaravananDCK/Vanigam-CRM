@@ -5,7 +5,7 @@ using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities
 {
-    public class Job : BaseClass
+    public class Job : Voucher
     {
         [Required]
         [StringLength(200)]
@@ -19,10 +19,6 @@ namespace Vanigam.CRM.Objects.Entities
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public Priority Priority { get; set; } = Priority.Normal;
-        public Guid? CustomerId { get; set; }
-
-        [ForeignKey(nameof(CustomerId))]
-        public Customer? Customer { get; set; }
 
         public Guid? ContactId { get; set; }
 

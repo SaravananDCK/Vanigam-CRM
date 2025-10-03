@@ -17,7 +17,7 @@ public class InvoicePdfService(
             .Include(i => i.Party)
             .Include(i => i.Job)
             .Include(i => i.Items)
-                .ThenInclude(ii => ii.InventoryItem)
+                .ThenInclude(ii => ii.Item)
             .Include(i => i.Payments)
             .FirstOrDefaultAsync(i => i.Oid == entityId);
     }
@@ -71,7 +71,7 @@ public class InvoicePdfService(
                 invoice.Items,
                 column,
                 item => item.Quantity,
-                item => item.InventoryItem?.Name ?? "Item",
+                item => item.Item?.Name ?? "Item",
                 item => item.UnitPrice
             );
         }

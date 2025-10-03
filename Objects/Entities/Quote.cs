@@ -18,6 +18,13 @@ namespace Vanigam.CRM.Objects.Entities
         [ForeignKey(nameof(JobId))]
         public Job? Job { get; set; }
 
+        public override void CalculateTotal()
+        {
+            SubTotal = Items.Sum(i => (i.UnitPrice * (decimal)i.Quantity));
+            TaxAmount = Items.Sum(i => i.TaxAmount);
+            DiscountAmount = Items.Sum(i => i.DiscountAmount);
+            TotalAmount = Items.Sum(i => i.LineTotal);
+        }
         public ICollection<QuoteItem> Items { get; set; } = new List<QuoteItem>();
     }
 }

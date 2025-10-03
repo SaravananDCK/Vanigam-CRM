@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities;
@@ -11,6 +12,7 @@ public class AccountGroup : BaseClass
 
     public virtual Guid? ParentGroupId { get; set; }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public virtual AccountNature Nature { get; set; }
 
     [StringLength(20)]

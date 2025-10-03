@@ -12,7 +12,7 @@
         @if (IsEditButtonVisible)
         {
 
-            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]" />
         }
     </CustomBadge>
 </DetailPageTitleComponent>
@@ -32,6 +32,10 @@
                     <RadzenColumn Size="6">
                         <RadzenStack>
                             <div class="rz-p-4">
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Code"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Code ?? "-")</RadzenText>
+                                </div>
                                 <div class="read-only-field rz-mb-3">
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Name"]:</strong></RadzenText>
                                     <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Name ?? "-")</RadzenText>

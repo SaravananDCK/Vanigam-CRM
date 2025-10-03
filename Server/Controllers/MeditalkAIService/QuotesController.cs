@@ -122,8 +122,8 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         var newItem = new QuoteItem
                         {
                             Oid = Guid.NewGuid(),
-                            QuoteId = quote.Oid,
-                            InventoryItemId = itemDto.InventoryItemId,
+                            VoucherId = quote.Oid,
+                            ItemId = itemDto.InventoryItemId,
                             Quantity = itemDto.Quantity,
                             UnitPrice = itemDto.UnitPrice,
                             TenantId = CurrentUser.TenantId
@@ -139,7 +139,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
 
                         if (existingItem != null)
                         {
-                            existingItem.InventoryItemId = itemDto.InventoryItemId;
+                            existingItem.ItemId = itemDto.InventoryItemId;
                             existingItem.Quantity = itemDto.Quantity;
                             existingItem.UnitPrice = itemDto.UnitPrice;
                         }
@@ -152,7 +152,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                 // Return the updated quote with items
                 var savedQuote = await context.Quotes
                     .Include(q => q.Items)
-                    .ThenInclude(qi => qi.InventoryItem)
+                    .ThenInclude(qi => qi.Item)
                     .FirstOrDefaultAsync(q => q.Oid == quote.Oid);
 
                 return Ok(savedQuote);
@@ -170,15 +170,17 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
             try
             {
                 var items = await context.QuoteItems
-                    .Where(qi => qi.QuoteId == quoteId)
-                    .Include(qi => qi.InventoryItem)
+                    .Where(qi => qi.VoucherId == quoteId)
+                    .Include(qi => qi.Item)
                     .Select(qi => new QuoteItemDTO
                     {
                         Oid = qi.Oid,
-                        InventoryItemId = qi.InventoryItemId,
+                        InventoryItemId = qi.ItemId,
                         Quantity = qi.Quantity,
+                        DiscountAmount = qi.DiscountAmount,
+                        TaxAmount = qi.TaxAmount,
                         UnitPrice = qi.UnitPrice,
-                        InventoryItemName = qi.InventoryItem != null ? qi.InventoryItem.Name : null
+                        InventoryItemName = qi.Item != null ? qi.Item.Name : null
                     })
                     .ToListAsync();
 

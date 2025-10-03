@@ -27,12 +27,13 @@ public class InvoiceItemDTO
     public Guid? InventoryItemId { get; set; }
 
     [Required]
-    public int Quantity { get; set; }
+    public double Quantity { get; set; }
 
     [Required]
     public decimal UnitPrice { get; set; }
-
-    public decimal Total => Quantity * UnitPrice;
+    public decimal DiscountAmount { get; set; }
+    public decimal TaxAmount { get; set; }
+    public decimal Total => (decimal)Quantity * UnitPrice;
 
     // For UI display purposes
     public string? InventoryItemName { get; set; }

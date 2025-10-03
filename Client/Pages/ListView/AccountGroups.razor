@@ -8,42 +8,54 @@
 <RadzenStack>
     <ListPageTitleComponent TitleText=@Localizer["AccountGroups"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
     <RadzenRow>
-        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
-            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="AccountGroup" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
-                <EmptyTemplate>
+        <RadzenColumn SizeMD=12>
+            <RadzenCard>
+                @if (TreeDataSource != null && TreeDataSource.Any())
+                {
+                    <RadzenTree Data="@TreeDataSource"
+                                Style="width: 100%; height: 100%; overflow: auto;"
+                                @bind-Value="@SelectedItem">
+                        <RadzenTreeLevel TextProperty="Name"
+                                         ChildrenProperty="ChildGroups"
+                                        HasChildren="@((accountGroup) => ((AccountGroup)accountGroup).ChildGroups?.Any() == true)"
+                                        Expanded="@((accountGroup) => ShouldExpand((AccountGroup)accountGroup))">
+                            <Template>
+                                <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" Style="width: 100%;">
+                                    <RadzenIcon Icon="folder" Style="color: var(--rz-info);" />
+                                    <RadzenText TextStyle="TextStyle.Body1">
+                                        <strong>@context.Text</strong>
+                                    </RadzenText>
+                                    <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="@((context.Value as AccountGroup)?.Code)" class="rz-ml-2" />
+                                    <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="@((context.Value as AccountGroup)?.Nature.ToString())" class="rz-ml-1" />
+                                    @if ((context.Value as AccountGroup)?.IsActive == false)
+                                    {
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] class="rz-ml-1" />
+                                    }
+                                    <div style="margin-left: auto;">
+                                        <RadzenButton Icon="edit"
+                                                     ButtonStyle="ButtonStyle.Light"
+                                                     Size="ButtonSize.Small"
+                                                     Click="@(() => OpenEditDialog((AccountGroup)context.Value))"
+                                                     class="rz-mr-1" />
+                                        @* <RadzenButton Icon="delete"
+                                                     ButtonStyle="ButtonStyle.Danger"
+                                                     Size="ButtonSize.Small"
+                                                     Click="@(() => DeleteAccountGroup((AccountGroup)context.Value))" /> *@
+                                    </div>
+                                </RadzenStack>
+                            </Template>
+                        </RadzenTreeLevel>
+                    </RadzenTree>
+                }
+                else
+                {
                     <NoRecordComponent ShowAddButton="false" />
-                </EmptyTemplate>
-                <Columns>
-                    <RadzenDataGridColumn TItem="AccountGroup" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
-                        <Template Context="accountgroup">
-                            <OpenPageCommonComponent T="AccountGroup" OpenObject="@accountgroup" Open="@Open"></OpenPageCommonComponent>
-                            <DeletePageCommonComponent T="AccountGroup" UsingObject="@accountgroup" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
-                        </Template>
-                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.Code) Title=@Localizer["Code"] Width="100px">
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.Name) Title=@Localizer["Name"]>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.Nature) Title=@Localizer["Nature"] Width="120px">
-                        <Template Context="accountgroup">
-                            @(accountgroup.Nature.ToString())
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountGroup" Property="ParentGroup.Name" Title=@Localizer["ParentGroup"] Width="200px">
-                        <Template Context="accountgroup">
-                            @(accountgroup.ParentGroup?.Name ?? "-")
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.IsActive) Title=@Localizer["Status"] Width="100px">
-                        <Template Context="accountgroup">
-                            @(accountgroup.IsActive ? Localizer["Active"] : Localizer["Inactive"])
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountGroup" Property=@nameof(AccountGroup.Oid) Title=@Localizer["Oid"] Visible="false">
-                    </RadzenDataGridColumn>
-                </Columns>
-            </VanigamAccountingDataGrid>
+                }
+
+                <RadzenText TextStyle="TextStyle.Body2" class="rz-mt-3">
+                    @Localizer["Count"]: <b>@TotalCount</b>
+                </RadzenText>
+            </RadzenCard>
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>

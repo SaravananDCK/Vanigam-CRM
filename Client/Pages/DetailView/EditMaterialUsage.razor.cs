@@ -20,11 +20,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 // Pre-set parent IDs if provided (for embedded mode)
                 if (JobId.HasValue)
                 {
-                    CurrentObject.JobId = JobId.Value;
+                    CurrentObject.VoucherId = JobId.Value;
                 }
                 if (InventoryItemId.HasValue)
                 {
-                    CurrentObject.InventoryItemId = InventoryItemId.Value;
+                    CurrentObject.ItemId = InventoryItemId.Value;
                 }
             }
             else

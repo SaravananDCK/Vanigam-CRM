@@ -87,6 +87,7 @@ namespace Vanigam.CRM.Objects
         public DbSet<LedgerEntry> LedgerEntries { get; set; }
         public DbSet<StockLedgerEntry> StockLedgerEntries { get; set; }
         public DbSet<NumberSeries> NumberSeries { get; set; }
+        public DbSet<TaxCode> TaxCodes { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -169,7 +170,31 @@ namespace Vanigam.CRM.Objects
                 .HasValue<Quote>(VoucherType.Quote)
                 .HasValue<Invoice>(VoucherType.Invoice)
                 .HasValue<PurchaseOrder>(VoucherType.PurchaseOrder)
-                .HasValue<PurchaseInvoice>(VoucherType.PurchaseInvoice);
+                .HasValue<PurchaseInvoice>(VoucherType.PurchaseInvoice)
+                .HasValue<Job>(VoucherType.Job);
+            
+            // Configure TPH for Voucher hierarchy
+            modelBuilder.Entity<VoucherLine>()
+                .ToTable(nameof(VoucherLines))
+                .HasDiscriminator<VoucherLineType>(nameof(VoucherLine.LineType))
+                .HasValue<QuoteItem>(VoucherLineType.QuoteLine)
+                .HasValue<InvoiceItem>(VoucherLineType.InvoiceLine)
+                .HasValue<PurchaseOrderItem>(VoucherLineType.PurchaseOrderLine)
+                .HasValue<PurchaseInvoiceItem>(VoucherLineType.PurchaseInvoiceLine)
+                .HasValue<MaterialUsage>(VoucherLineType.MaterialUsageLine);
+
+            // Configure TaxCode relationships
+            modelBuilder.Entity<TaxCode>()
+                .HasOne(t => t.TaxPayableAccount)
+                .WithMany()
+                .HasForeignKey(t => t.TaxPayableAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TaxCode>()
+                .HasOne(t => t.TaxReceivableAccount)
+                .WithMany()
+                .HasForeignKey(t => t.TaxReceivableAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             var configurations = typeof(FileCategory).Assembly
             .GetTypes()
@@ -203,8 +228,10 @@ namespace Vanigam.CRM.Objects
                 await this.SeedTenantsAdmin();
                 await this.SeedRoleClaims();
                 await this.SeedAccountGroupData();
-                await this.SeedBankAccountData();
+                await this.SeedLedgerAccountData();
                 await this.SeedNumberSeriesData();
+                await this.SeedBankAccountData();
+                await this.SeedTaxCodeData();
                 await this.SeedLeadData();
                 await this.SeedCustomerData();
                 await this.SeedOpportunityData();
@@ -614,11 +641,14 @@ namespace Vanigam.CRM.Objects
                         continue;
                     }
 
+                    // Generate next bank account code using NumberSeriesService
+                    var bankAccountCode = await GenerateNextCode("BankAccount", demoTenant.Id);
+
                     var bankAccount = new BankAccount
                     {
                         Oid = Guid.NewGuid(),
                         TenantId = demoTenant.Id,
-                        Code = seedBankAccount.Code,
+                        Code = bankAccountCode,
                         Name = seedBankAccount.Name,
                         AccountType = Enum.TryParse<AccountType>(seedBankAccount.AccountType, out var accountType) ? accountType : AccountType.BankAccount,
                         AccountGroupId = accountGroup.Oid,
@@ -650,6 +680,94 @@ namespace Vanigam.CRM.Objects
             {
                 // Log the exception but don't throw to avoid breaking the seeding process
                 Console.WriteLine($"Error seeding BankAccount data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedLedgerAccountData()
+        {
+            // Check if LedgerAccount data already exists (excluding BankAccounts, Customers, Vendors)
+            if (await LedgerAccounts.Where(la => la.AccountType == AccountType.LedgerAccount).AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "LedgerAccountSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "LedgerAccountSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var ledgerAccountSeedData = System.Text.Json.JsonSerializer.Deserialize<List<LedgerAccountSeedModel>>(jsonContent);
+
+                if (ledgerAccountSeedData?.Any() != true)
+                    return;
+
+                var ledgerAccounts = new List<LedgerAccount>();
+                foreach (var seedLedgerAccount in ledgerAccountSeedData)
+                {
+                    // Find AccountGroup by Code
+                    var accountGroup = await AccountGroups.FirstOrDefaultAsync(ag => ag.Code == seedLedgerAccount.GroupCode);
+                    if (accountGroup == null)
+                    {
+                        Console.WriteLine($"AccountGroup not found for Code: {seedLedgerAccount.GroupCode}");
+                        continue;
+                    }
+
+                    var ledgerAccount = new LedgerAccount
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Code = seedLedgerAccount.Code,
+                        Name = seedLedgerAccount.Name,
+                        AccountType = AccountType.LedgerAccount,
+                        AccountGroupId = accountGroup.Oid,
+                        Description = seedLedgerAccount.Description,
+                        Balance = seedLedgerAccount.Balance,
+                        CreditLimit = seedLedgerAccount.CreditLimit,
+                        IsActive = seedLedgerAccount.IsActive,
+                        Address = seedLedgerAccount.Address,
+                        City = seedLedgerAccount.City,
+                        State = seedLedgerAccount.State,
+                        PostalCode = seedLedgerAccount.PostalCode,
+                        Country = seedLedgerAccount.Country,
+                        Email = seedLedgerAccount.Email,
+                        Phone = seedLedgerAccount.Phone,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    ledgerAccounts.Add(ledgerAccount);
+                }
+
+                await LedgerAccounts.AddRangeAsync(ledgerAccounts);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding LedgerAccount data: {ex.Message}");
             }
         }
 
@@ -727,6 +845,82 @@ namespace Vanigam.CRM.Objects
             {
                 // Log the exception but don't throw to avoid breaking the seeding process
                 Console.WriteLine($"Error seeding NumberSeries data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedTaxCodeData()
+        {
+            // Check if TaxCode data already exists
+            if (await TaxCodes.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "TaxCodeSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "TaxCodeSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var taxCodeSeedData = System.Text.Json.JsonSerializer.Deserialize<List<TaxCodeSeedModel>>(jsonContent);
+
+                if (taxCodeSeedData?.Any() != true)
+                    return;
+
+                var taxCodeList = new List<TaxCode>();
+                foreach (var seedTaxCode in taxCodeSeedData)
+                {
+                    var taxCode = new TaxCode
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Code = seedTaxCode.Code,
+                        Name = seedTaxCode.Name,
+                        TaxType = seedTaxCode.TaxType,
+                        TaxRate = seedTaxCode.TaxRate,
+                        CGSTRate = seedTaxCode.CGSTRate,
+                        SGSTRate = seedTaxCode.SGSTRate,
+                        IGSTRate = seedTaxCode.IGSTRate,
+                        UTGSTRate = seedTaxCode.UTGSTRate,
+                        CessRate = seedTaxCode.CessRate,
+                        IsActive = seedTaxCode.IsActive,
+                        IsCompoundTax = seedTaxCode.IsCompoundTax,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    taxCodeList.Add(taxCode);
+                }
+
+                await TaxCodes.AddRangeAsync(taxCodeList);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding TaxCode data: {ex.Message}");
             }
         }
 
@@ -863,11 +1057,16 @@ namespace Vanigam.CRM.Objects
                 var customers = new List<Customer>();
                 foreach (var seedCustomer in customerSeedData)
                 {
+                    // Generate next customer code using NumberSeriesService
+                    var customerCode = await GenerateNextCode("Customer", demoTenant.Id);
+
                     var customer = new Customer
                     {
                         Oid = Guid.NewGuid(),
                         TenantId = demoTenant.Id,
+                        Code = customerCode,
                         Name = seedCustomer.Name,
+                        AccountType = AccountType.Customer,
                         Type = Enum.TryParse<CustomerType>(seedCustomer.Type, out var type) ? type : CustomerType.Company,
                         Email = seedCustomer.Email,
                         Phone = seedCustomer.Phone,
@@ -1028,7 +1227,7 @@ namespace Vanigam.CRM.Objects
                         Oid = Guid.NewGuid(),
                         TenantId = demoTenant.Id,
                         Title = seedJob.Title,
-                        CustomerId = customer?.Oid,
+                        PartyId = customer?.Oid,
                         Description = seedJob.Description,
                         Status = Enum.TryParse<JobStatus>(seedJob.Status, out var status) ? status : JobStatus.Pending,
                         Priority = Enum.TryParse<Priority>(seedJob.Priority, out var priority) ? priority : Priority.Normal,
@@ -1527,7 +1726,7 @@ namespace Vanigam.CRM.Objects
                     {
                         Oid = Guid.NewGuid(),
                         TenantId = demoTenant.Id,
-                        Number = seedQuote.Title,
+                        Number = seedQuote.Number,
                         Status = Enum.TryParse<QuoteStatus>(seedQuote.Status, out var status) ? status : QuoteStatus.Draft,
                         PartyId = customer?.Oid,
                         JobId = job?.Oid,
@@ -1549,8 +1748,8 @@ namespace Vanigam.CRM.Objects
                         {
                             Oid = Guid.NewGuid(),
                             TenantId = demoTenant.Id,
-                            QuoteId = quote.Oid,
-                            InventoryItemId = inventoryItem?.Oid,
+                            VoucherId = quote.Oid,
+                            ItemId = inventoryItem?.Oid,
                             Quantity = seedItem.Quantity,
                             UnitPrice = seedItem.UnitPrice,
                             CreatedByUserId = ApplicationUser.SystemUserId,
@@ -1571,6 +1770,64 @@ namespace Vanigam.CRM.Objects
                 // Log error but don't throw to prevent seeding from failing completely
                 Console.WriteLine($"Error seeding Quote data: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Helper method to generate next code using NumberSeries
+        /// </summary>
+        private async Task<string> GenerateNextCode(string entityType, int tenantId)
+        {
+            // Find or create number series
+            var numberSeries = await NumberSeries
+                .FirstOrDefaultAsync(ns => ns.EntityType == entityType
+                    && ns.IsActive
+                    && ns.TenantId == tenantId
+                    && ns.IsNotDeleted);
+
+            if (numberSeries == null)
+            {
+                // Create default number series
+                var prefix = entityType switch
+                {
+                    "Customer" => "CUST-",
+                    "Vendor" => "VEND-",
+                    "BankAccount" => "BANK-",
+                    _ => $"{entityType.ToUpper().Substring(0, Math.Min(3, entityType.Length))}-"
+                };
+
+                numberSeries = new NumberSeries
+                {
+                    Oid = Guid.NewGuid(),
+                    TenantId = tenantId,
+                    EntityType = entityType,
+                    Prefix = prefix,
+                    Suffix = null,
+                    StartNo = 1,
+                    CurrentNo = 1,
+                    PaddingLength = 4,
+                    IsActive = true,
+                    CreatedByUserId = ApplicationUser.SystemUserId,
+                    CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                    UpdatedByUserId = ApplicationUser.SystemUserId,
+                    UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                    IsNotDeleted = true
+                };
+
+                await NumberSeries.AddAsync(numberSeries);
+                await SaveChangesAsync();
+            }
+
+            // Generate code
+            var currentNumber = numberSeries.CurrentNo;
+            var paddedNumber = currentNumber.ToString().PadLeft(numberSeries.PaddingLength, '0');
+            var code = $"{numberSeries.Prefix}{paddedNumber}{numberSeries.Suffix}";
+
+            // Increment
+            numberSeries.CurrentNo++;
+            numberSeries.UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
+            await SaveChangesAsync();
+
+            return code;
         }
     }
 }

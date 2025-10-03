@@ -1,0 +1,98 @@
+@page "/taxcodes"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<TaxCode, TaxCodes>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject TaxCodeApiService TaxCodeApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["TaxCodes"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="TaxCode" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="TaxCode" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="taxcode">
+                            <OpenPageCommonComponent T="TaxCode" OpenObject="@taxcode" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="TaxCode" UsingObject="@taxcode" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.Code) Title=@Localizer["Code"] Width="120px" />
+
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.Name) Title=@Localizer["Name"] Width="200px" />
+
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.TaxType) Title=@Localizer["TaxType"] Width="120px">
+                        <Template Context="taxcode">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@taxcode.TaxType" />
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.TaxRate) Title=@Localizer["TaxRate"] Width="100px">
+                        <Template Context="taxcode">
+                            @taxcode.TaxRate.ToString("N2")%
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.CGSTRate) Title=@Localizer["CGST"] Width="80px">
+                        <Template Context="taxcode">
+                            @if (taxcode.CGSTRate > 0)
+                            {
+                                @taxcode.CGSTRate.ToString("N2")<text>%</text>
+                            }
+                            else
+                            {
+                                <text>-</text>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.SGSTRate) Title=@Localizer["SGST"] Width="80px">
+                        <Template Context="taxcode">
+                            @if (taxcode.SGSTRate > 0)
+                            {
+                                @taxcode.SGSTRate.ToString("N2")<text>%</text>
+                            }
+                            else
+                            {
+                                <text>-</text>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.IGSTRate) Title=@Localizer["IGST"] Width="80px">
+                        <Template Context="taxcode">
+                            @if (taxcode.IGSTRate > 0)
+                            {
+                                @taxcode.IGSTRate.ToString("N2")<text>%</text>
+                            }
+                            else
+                            {
+                                <text>-</text>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.IsActive) Title=@Localizer["IsActive"] Width="100px">
+                        <Template Context="taxcode">
+                            @if (taxcode.IsActive)
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
+                            }
+                            else
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

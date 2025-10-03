@@ -17,7 +17,7 @@ public class QuotePdfService(
             .Include(q => q.Party)
             .Include(q => q.Job)
             .Include(q => q.Items)
-                .ThenInclude(qi => qi.InventoryItem)
+                .ThenInclude(qi => qi.Item)
             .FirstOrDefaultAsync(q => q.Oid == entityId);
     }
 
@@ -70,15 +70,50 @@ public class QuotePdfService(
                 quote.Items,
                 column,
                 item => item.Quantity,
-                item => item.InventoryItem?.Name ?? "Item",
+                item => item.Item?.Name ?? "Item",
                 item => item.UnitPrice
             );
         }
 
-        // Total
+        // Summary Section (SubTotal, Discount, Tax, Total)
         column.Item().PaddingTop(20).AlignRight().Column(col =>
         {
-            col.Item().Text($"Total: ${quote.TotalAmount:F2}").FontSize(14).SemiBold();
+            // SubTotal
+            col.Item().Row(row =>
+            {
+                row.AutoItem().Width(150).Text("SubTotal:").FontSize(11);
+                row.AutoItem().Width(100).AlignRight().Text($"₹{quote.SubTotal:N2}").FontSize(11);
+            });
+
+            // Discount Amount
+            if (quote.DiscountAmount > 0)
+            {
+                col.Item().PaddingTop(5).Row(row =>
+                {
+                    row.AutoItem().Width(150).Text("Discount:").FontSize(11);
+                    row.AutoItem().Width(100).AlignRight().Text($"- ₹{quote.DiscountAmount:N2}").FontSize(11);
+                });
+            }
+
+            // Tax Amount
+            if (quote.TaxAmount > 0)
+            {
+                col.Item().PaddingTop(5).Row(row =>
+                {
+                    row.AutoItem().Width(150).Text("Tax:").FontSize(11);
+                    row.AutoItem().Width(100).AlignRight().Text($"₹{quote.TaxAmount:N2}").FontSize(11);
+                });
+            }
+
+            // Separator line
+            col.Item().PaddingTop(10).PaddingBottom(5).Width(250).LineHorizontal(1);
+
+            // Total Amount
+            col.Item().Row(row =>
+            {
+                row.AutoItem().Width(150).Text("Total Amount:").FontSize(14).SemiBold();
+                row.AutoItem().Width(100).AlignRight().Text($"₹{quote.TotalAmount:N2}").FontSize(14).SemiBold();
+            });
         });
     }
 

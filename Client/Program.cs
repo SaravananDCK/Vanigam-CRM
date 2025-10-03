@@ -78,6 +78,10 @@ var jsRuntime = host.Services.GetRequiredService<Microsoft.JSInterop.IJSRuntime>
 var culture = await jsRuntime.InvokeAsync<string>("Radzen.getCulture");
 if (!string.IsNullOrEmpty(culture))
 {
+    if (culture=="en-US")
+    {
+        culture="en-IN";
+    }
     CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(culture);
     CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(culture);
 }

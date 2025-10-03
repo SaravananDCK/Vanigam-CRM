@@ -44,7 +44,7 @@
                         <RadzenStack>
                             <div class="rz-p-4">
                                 <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Title"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Number"]:</strong></RadzenText>
                                     <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Number ?? "-")</RadzenText>
                                 </div>
 
@@ -67,11 +67,6 @@
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Customer"]:</strong></RadzenText>
                                     <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Party?.Name ?? "-")</RadzenText>
                                 </div>
-
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["TotalAmount"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.TotalAmount.ToString("C"))</RadzenText>
-                                </div>
                             </div>
                         </RadzenStack>
                     </RadzenColumn>
@@ -80,11 +75,11 @@
                 @* Quote Items Display *@
                 @if (quoteItems != null && quoteItems.Any())
                 {
-                    <div class="read-only-section-header rz-mt-4">@Localizer["QuoteItems"]</div>
+                    <div class="read-only-section-header rz-mt-4">@Localizer["Items"]</div>
                     <RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                                     Data="@quoteItems" TItem="QuoteItemDTO" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" class="rz-mt-3">
                         <Columns>
-                            <RadzenDataGridColumn TItem="QuoteItemDTO" Property="Description" Title="@Localizer["Description"]" Width="300px" />
+                            <RadzenDataGridColumn TItem="QuoteItemDTO" Property="InventoryItemName" Title="@Localizer["Item"]" Width="300px" />
                             <RadzenDataGridColumn TItem="QuoteItemDTO" Property="Quantity" Title="@Localizer["Quantity"]" Width="100px">
                                 <Template Context="item">
                                     @item.Quantity.ToString("N2")
@@ -102,6 +97,54 @@
                             </RadzenDataGridColumn>
                         </Columns>
                     </RadzenDataGrid>
+
+                    @* Quote Summary Totals *@
+                    <RadzenRow class="rz-mt-4">
+                        <RadzenColumn Size="12" SizeMD="8"></RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenCard Variant="Variant.Outlined">
+                                <RadzenStack Gap="0.5rem">
+                                    <div class="read-only-field">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                            <strong>@Localizer["SubTotal"]:</strong>
+                                        </RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                            @CurrentObject.SubTotal.ToString("C")
+                                        </RadzenText>
+                                    </div>
+
+                                    <div class="read-only-field">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                            <strong>@Localizer["DiscountAmount"]:</strong>
+                                        </RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                            @CurrentObject.DiscountAmount.ToString("C")
+                                        </RadzenText>
+                                    </div>
+
+                                    <div class="read-only-field">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                            <strong>@Localizer["TaxAmount"]:</strong>
+                                        </RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                            @CurrentObject.TaxAmount.ToString("C")
+                                        </RadzenText>
+                                    </div>
+
+                                    <RadzenDivider />
+
+                                    <div class="read-only-field">
+                                        <RadzenText TextStyle="TextStyle.H6" TagName="TagName.Span" class="field-label">
+                                            <strong>@Localizer["TotalAmount"]:</strong>
+                                        </RadzenText>
+                                        <RadzenText TextStyle="TextStyle.H6" TagName="TagName.Span" class="field-value">
+                                            <strong>@CurrentObject.TotalAmount.ToString("C")</strong>
+                                        </RadzenText>
+                                    </div>
+                                </RadzenStack>
+                            </RadzenCard>
+                        </RadzenColumn>
+                    </RadzenRow>
                 }
             </RadzenStack>
         </RadzenCard>
@@ -117,9 +160,9 @@
             <RadzenCard class="rz-mb-4">
                 <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["QuoteInformation"]</RadzenText>
                 <RadzenStack>
-                    <VanigamAccountingFormField Text=@Localizer["Title"]>
+                    <VanigamAccountingFormField Text=@Localizer["Number"]>
                         <ChildContent>
-                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Title" />
+                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Title" ReadOnly="true" />
                         </ChildContent>
                     </VanigamAccountingFormField>
                     <VanigamAccountingFormField Text=@Localizer["Status"]>

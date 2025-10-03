@@ -27,9 +27,9 @@
                     @* Show Job column only when not embedded by Job *@
                     @if (!IsEmbeddedMode || !JobId.HasValue)
                     {
-                        <RadzenDataGridColumn TItem="MaterialUsage" Property="Job.Title" Title=@Localizer["Job"]>
+                        <RadzenDataGridColumn TItem="MaterialUsage" Property="Voucher.Number" Title=@Localizer["Job Number"]>
                             <Template Context="materialusage">
-                                @materialusage.Job?.Title
+                                @materialusage.Voucher?.Number
                             </Template>
                         </RadzenDataGridColumn>
                     }
