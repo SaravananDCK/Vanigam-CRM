@@ -1,5 +1,6 @@
 @page "/taxcode/{oid:guid}"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<TaxCode, EditTaxCode>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject TaxCodeApiService TaxCodeApiService
@@ -94,14 +95,8 @@
                             @if (IsReadOnlyMode)
                             {
                                 <div>
-                                    @if (CurrentObject?.IsActive == true)
-                                    {
-                                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
-                                    }
-                                    else
-                                    {
-                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
-                                    }
+                                    <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(CurrentObject?.IsActive ?? false)"
+                                                 Text="@(CurrentObject?.IsActive == true ? Localizer["Active"] : Localizer["Inactive"])" />
                                 </div>
                             }
                             else

@@ -1,0 +1,56 @@
+@page "/paymentallocations"
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
+@inherits Vanigam.CRM.Client.Components.BaseListView<PaymentAllocation, PaymentAllocations>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject PaymentAllocationApiService PaymentAllocationApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["PaymentAllocations"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="PaymentAllocation" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="PaymentAllocation" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="paymentallocation">
+                            <OpenPageCommonComponent T="PaymentAllocation" OpenObject="@paymentallocation" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="PaymentAllocation" UsingObject="@paymentallocation" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PaymentAllocation" Property="Payment.ReferenceNumber" Title=@Localizer["PaymentReference"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PaymentAllocation" Property="Invoice.Number" Title=@Localizer["InvoiceNumber"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PaymentAllocation" Property=@nameof(PaymentAllocation.Amount) Title=@Localizer["AllocatedAmount"] Width="150px">
+                        <Template Context="paymentallocation">
+                            @paymentallocation.Amount.ToString("C")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PaymentAllocation" Property=@nameof(PaymentAllocation.AppliedDate) Title=@Localizer["AppliedDate"] Width="150px">
+                        <Template Context="paymentallocation">
+                            @paymentallocation.AppliedDate.ToString("yyyy-MM-dd HH:mm")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PaymentAllocation" Property=@nameof(PaymentAllocation.InvoiceBalanceBefore) Title=@Localizer["BalanceBefore"] Width="130px">
+                        <Template Context="paymentallocation">
+                            @paymentallocation.InvoiceBalanceBefore.ToString("C")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PaymentAllocation" Property=@nameof(PaymentAllocation.InvoiceBalanceAfter) Title=@Localizer["BalanceAfter"] Width="130px">
+                        <Template Context="paymentallocation">
+                            @paymentallocation.InvoiceBalanceAfter.ToString("C")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PaymentAllocation" Property=@nameof(PaymentAllocation.Notes) Title=@Localizer["Notes"] Width="200px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PaymentAllocation" Property=@nameof(PaymentAllocation.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

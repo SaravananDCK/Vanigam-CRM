@@ -15,7 +15,6 @@ public class InvoicePdfService(
     {
         return await Context.Invoices
             .Include(i => i.Party)
-            .Include(i => i.Job)
             .Include(i => i.Items)
                 .ThenInclude(ii => ii.Item)
             .Include(i => i.Payments)
@@ -41,9 +40,9 @@ public class InvoicePdfService(
                 col.Item().Text($"Invoice #: {invoice.Number}").SemiBold();
                 col.Item().Text($"Date: {invoice.CreatedAtUtc?.ToString("MM/dd/yyyy") ?? DateTime.Now.ToString("MM/dd/yyyy")}");
                 col.Item().Text($"Status: {invoice.Status}");
-                if (invoice.Job != null)
+                if (invoice.Party != null)
                 {
-                    col.Item().Text($"Job: {invoice.Job.Title}");
+                    col.Item().Text($"Customer: {invoice.Party.Name}");
                 }
             });
         });
@@ -86,7 +85,7 @@ public class InvoicePdfService(
             // Show payments if any
             if (invoice.Payments.Any())
             {
-                var totalPaid = invoice.Payments.Sum(p => p.Amount);
+                var totalPaid = invoice.Payments.Sum(p => p.AllocatedAmount);
                 var balance = invoice.TotalAmount - totalPaid;
                 col.Item().PaddingTop(10).Text($"Payments: ${totalPaid:F2}");
                 col.Item().Text($"Balance Due: ${balance:F2}").FontSize(14).SemiBold()

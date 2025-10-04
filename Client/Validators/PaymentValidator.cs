@@ -8,8 +8,8 @@ namespace Vanigam.CRM.Client.Validators
     {
         public PaymentValidator(IStringLocalizer localizer)
         {
-            RuleFor(c => c.InvoiceId).NotEmpty().WithMessage(localizer["InvoiceRequired"]);
-            RuleFor(c => c.Amount).GreaterThan(0).WithMessage(localizer["AmountMustBeGreaterThanZero"]);
+            RuleFor(c => c.CustomerId).NotEmpty().WithMessage(localizer["CustomerRequired"]);
+            RuleFor(c => c.AllocatedAmount).GreaterThan(0).WithMessage(localizer["AllocatedAmountMustBeGreaterThanZero"]);
             RuleFor(c => c.PaidAt).NotEmpty().WithMessage(localizer["PaidAtRequired"]);
         }
     }

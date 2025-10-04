@@ -1,6 +1,7 @@
 @page "/invoices"
 @using Vanigam.CRM.Client.Services
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<Invoice, Invoices>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject InvoiceApiService InvoiceApiService
@@ -10,7 +11,7 @@
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Invoices"] : Localizer["Invoices"])
                             AddButtonClick=@AddButtonClick
                             SearchButtonClick=@Search
-                            ShowAdd=@(!IsEmbeddedMode || JobId.HasValue) />
+                            ShowAdd=@(!IsEmbeddedMode || PartyId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Invoice" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -31,11 +32,15 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Invoice" Property="Job.Title" Title=@Localizer["Job"] Visible="@(!IsEmbeddedMode)">
+                    <RadzenDataGridColumn TItem="Invoice" Property="Party.Name" Title=@Localizer["Customer"] Visible="@(!IsEmbeddedMode)">
+                        
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.Number) Title=@Localizer["Number"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.Status) Title=@Localizer["Status"]>
+                    <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="invoice">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(invoice.Status)" Text="@invoice.Status.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.TotalAmount) Title=@Localizer["TotalAmount"]>
                     </RadzenDataGridColumn>
@@ -48,7 +53,7 @@
 </RadzenStack>
 
 @code {
-    [Parameter] public Guid? JobId { get; set; }
+    [Parameter] public Guid? PartyId { get; set; }
     [Parameter] public bool IsEmbeddedMode { get; set; } = false;
     [Parameter] public string? EmbeddedTitle { get; set; }
 

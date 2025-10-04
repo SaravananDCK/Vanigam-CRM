@@ -5,6 +5,7 @@ using Vanigam.CRM.Objects.OData;
 using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Client.Helpers;
 using Vanigam.CRM.Client.Pages.DetailView;
 
 namespace Vanigam.CRM.Client.Pages.ListView
@@ -180,21 +181,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
             if (!stage.HasValue)
                 return BadgeStyle.Info; // For "All" option
 
-            return GetStageBadgeStyle(stage.Value);
+            return BadgeHelper.GetBadgeStyle(stage.Value);
         }
 
         protected BadgeStyle GetStageBadgeStyle(OpportunityStage stage)
         {
-            return stage switch
-            {
-                OpportunityStage.Prospecting => BadgeStyle.Light,
-                OpportunityStage.Qualified => BadgeStyle.Info,
-                OpportunityStage.Proposal => BadgeStyle.Warning,
-                OpportunityStage.Negotiation => BadgeStyle.Primary,
-                OpportunityStage.ClosedWon => BadgeStyle.Success,
-                OpportunityStage.ClosedLost => BadgeStyle.Danger,
-                _ => BadgeStyle.Secondary
-            };
+            return BadgeHelper.GetBadgeStyle(stage);
         }
 
         protected async Task OnStageTabChange(int tabIndex)

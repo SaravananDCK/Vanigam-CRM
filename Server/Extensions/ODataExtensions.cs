@@ -83,6 +83,8 @@ namespace Vanigam.CRM.Server.Extensions
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.InvoiceItem>(nameof(VanigamAccountingDbContext.InvoiceItems));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.NumberSeries>(nameof(VanigamAccountingDbContext.NumberSeries));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.TaxCode>(nameof(VanigamAccountingDbContext.TaxCodes));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.PaymentAllocation>(nameof(VanigamAccountingDbContext.PaymentAllocations));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.CustomerAdvance>(nameof(VanigamAccountingDbContext.CustomerAdvances));
 
             oDataBuilderVanigamAccounting.EntitySet<ApplicationUser>("ApplicationUsers");
             var usersType = oDataBuilderVanigamAccounting.StructuralTypes.First(x => x.ClrType == typeof(ApplicationUser));

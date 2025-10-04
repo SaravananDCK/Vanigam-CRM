@@ -1,5 +1,6 @@
 @page "/ledgeraccounts"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<LedgerAccount, LedgerAccounts>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject LedgerAccountApiService LedgerAccountApiService
@@ -49,14 +50,8 @@
 
                     <RadzenDataGridColumn TItem="LedgerAccount" Property=@nameof(LedgerAccount.IsActive) Title=@Localizer["IsActive"] Width="100px">
                         <Template Context="ledgeraccount">
-                            @if (ledgeraccount.IsActive)
-                            {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
-                            }
-                            else
-                            {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
-                            }
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(ledgeraccount.IsActive)"
+                                         Text="@(ledgeraccount.IsActive ? Localizer["Active"] : Localizer["Inactive"])" />
                         </Template>
                     </RadzenDataGridColumn>
 

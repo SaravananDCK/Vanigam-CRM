@@ -13,7 +13,7 @@ public class InvoiceBulkSaveDTO
 
     public InvoiceStatus Status { get; set; } = InvoiceStatus.Draft;
 
-    public Guid? JobId { get; set; }
+    public Guid? PartyId { get; set; }
 
     public decimal TotalAmount { get; set; }
 

@@ -7,77 +7,57 @@ using Vanigam.CRM.Client.Pages.DetailView;
 
 namespace Vanigam.CRM.Client.Pages.ListView
 {
-    public partial class Invoices
+    public partial class PaymentAllocations
     {
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try
             {
-                var result = await InvoiceApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await PaymentAllocationApiService.Get(filter: GetFilterString(args), expand: "Payment,Invoice", orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex.Message, ex);
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = ex.Message });
+                NotificationService.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = ex.Message });
             }
         }
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            var filter = new ODataFilter<Invoice>()
-                .FilterByAnd(args.Filter);
-
-            // Filter by parent Job if in embedded mode
-            if (IsEmbeddedMode && PartyId.HasValue)
-            {
-                filter = filter.FilterByAnd(u => u.PartyId == PartyId.Value);
-            }
-
-            filter.BeginGroup()
-                .ContainsOr(u => u.Number, SearchString)
-                .EndGroup();
-
-            return filter.Build();
-        }
-        protected override string GetExpandString(LoadDataArgs args)
-        {
-            return new ODataExpand<Invoice>()
-                .Expand(f => f.Party, f => f.Party.Name)
+            return new ODataFilter<PaymentAllocation>()
+                .FilterByAnd(args.Filter)
+                .BeginGroup()
+                .ContainsOr(u => u.Notes, SearchString)
+                .EndGroup()
                 .Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            var parameters = new Dictionary<string, object>();
-            if (IsEmbeddedMode && PartyId.HasValue)
-            {
-                parameters.Add("JobId", PartyId.Value);
-            }
-
-            await DialogService.OpenDialogAsync<EditInvoice>(Localizer["AddInvoice"], parameters.Count > 0 ? parameters : null, 100, 100);
+            await DialogService.OpenDialogAsync<EditPaymentAllocation>(Localizer["AddPaymentAllocation"], null, 30, 50);
             await GridReload();
         }
 
-        protected async Task EditRow(DataGridRowMouseEventArgs<Invoice> args)
+        protected async Task EditRow(DataGridRowMouseEventArgs<PaymentAllocation> args)
         {
             await Open(args.Data);
         }
 
-        private async Task Open(Invoice invoice)
+        private async Task Open(PaymentAllocation paymentallocation)
         {
-            await DialogService.OpenDialogAsync<EditInvoice>(Localizer["EditInvoice"], new Dictionary<string, object> { { "Oid", invoice.Oid } }, 100, 100);
+            await DialogService.OpenDialogAsync<EditPaymentAllocation>(Localizer["EditPaymentAllocation"], new Dictionary<string, object> { { "Oid", paymentallocation.Oid } }, 30, 50);
             await GridReload();
         }
 
-        protected async Task GridDeleteButtonClick(Invoice invoice)
+        protected async Task GridDeleteButtonClick(PaymentAllocation paymentallocation)
         {
             try
             {
                 if (await DialogService.Confirm(Localizer["DeleteRecord"]) == true)
                 {
-                    var deleteResult = await InvoiceApiService.Delete(oid:invoice.Oid);
+                    var deleteResult = await PaymentAllocationApiService.Delete(oid:paymentallocation.Oid);
 
                     if (deleteResult != null)
                     {

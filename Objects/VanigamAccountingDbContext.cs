@@ -88,6 +88,9 @@ namespace Vanigam.CRM.Objects
         public DbSet<StockLedgerEntry> StockLedgerEntries { get; set; }
         public DbSet<NumberSeries> NumberSeries { get; set; }
         public DbSet<TaxCode> TaxCodes { get; set; }
+        public DbSet<PaymentApplicationBase> PaymentApplications { get; set; }
+        public DbSet<PaymentAllocation> PaymentAllocations { get; set; }
+        public DbSet<CustomerAdvance> CustomerAdvances { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -190,6 +193,41 @@ namespace Vanigam.CRM.Objects
                 .HasForeignKey(t => t.TaxPayableAccountId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Configure PaymentApplicationBase TPH inheritance with discriminator
+            modelBuilder.Entity<PaymentApplicationBase>()
+                .ToTable(nameof(PaymentApplications))
+                .HasDiscriminator<string>("ApplicationType")
+                .HasValue<PaymentAllocation>("Allocation")
+                .HasValue<CustomerAdvance>("Advance");
+
+            // Configure Payment to PaymentApplicationBase relationship
+            modelBuilder.Entity<Payment>()
+                .HasMany(p => p.Applications)
+                .WithOne(a => a.Payment)
+                .HasForeignKey(a => a.PaymentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Payment to Customer relationship
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Customer)
+                .WithMany()
+                .HasForeignKey(p => p.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure Payment to BankAccount relationship
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.BankAccount)
+                .WithMany()
+                .HasForeignKey(p => p.BankAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure Invoice to PaymentAllocation relationship
+            modelBuilder.Entity<Invoice>()
+                .HasMany(i => i.Allocations)
+                .WithOne(a => a.Invoice)
+                .HasForeignKey(a => a.InvoiceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<TaxCode>()
                 .HasOne(t => t.TaxReceivableAccount)
                 .WithMany()
@@ -234,6 +272,7 @@ namespace Vanigam.CRM.Objects
                 await this.SeedTaxCodeData();
                 await this.SeedLeadData();
                 await this.SeedCustomerData();
+                await this.SeedInvoiceData();
                 await this.SeedOpportunityData();
                 await this.SeedJobData();
                 await this.SeedActivityData();
@@ -1101,6 +1140,91 @@ namespace Vanigam.CRM.Objects
             {
                 // Log the exception but don't throw to avoid breaking the seeding process
                 Console.WriteLine($"Error seeding Customer data: {ex.Message}");
+            }
+        }
+
+        public async Task SeedInvoiceData()
+        {
+            // Check if Invoice data already exists
+            if (await Invoices.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant ID
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Read the JSON file
+                var seedDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SeedData", "InvoiceSeedData.json");
+                if (!File.Exists(seedDataPath))
+                {
+                    // Try alternative path (development environment)
+                    var projectPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    while (projectPath != null && !Directory.GetFiles(projectPath, "*.csproj").Any())
+                    {
+                        projectPath = Directory.GetParent(projectPath)?.FullName;
+                    }
+                    if (projectPath != null)
+                    {
+                        seedDataPath = Path.Combine(Directory.GetParent(projectPath)?.FullName ?? "", "Objects", "SeedData", "InvoiceSeedData.json");
+                    }
+                }
+
+                if (!File.Exists(seedDataPath))
+                    return;
+
+                var jsonContent = await File.ReadAllTextAsync(seedDataPath);
+                var invoiceSeedData = System.Text.Json.JsonSerializer.Deserialize<List<InvoiceSeedModel>>(jsonContent);
+
+                if (invoiceSeedData?.Any() != true)
+                    return;
+
+                var invoices = new List<Invoice>();
+                foreach (var seedInvoice in invoiceSeedData)
+                {
+                    // Find customer by code
+                    var customer = await Customers.FirstOrDefaultAsync(c => c.Code == seedInvoice.CustomerCode && c.TenantId == demoTenant.Id);
+                    if (customer == null)
+                        continue;
+
+                    var invoiceDate = Instant.FromDateTimeUtc(DateTime.SpecifyKind(seedInvoice.Date, DateTimeKind.Utc)).ToDateTimeOffset();
+                    var dueDate = Instant.FromDateTimeUtc(DateTime.SpecifyKind(seedInvoice.DueDate, DateTimeKind.Utc)).ToDateTimeOffset();
+
+                    var invoice = new Invoice
+                    {
+                        Oid = Guid.NewGuid(),
+                        TenantId = demoTenant.Id,
+                        Number = seedInvoice.Number,
+                        PartyId = customer.Oid,
+                        VoucherDate = invoiceDate,
+                        DueDate = dueDate,
+                        Terms = seedInvoice.Description,
+                        SubTotal = seedInvoice.SubTotal,
+                        TaxAmount = seedInvoice.TaxAmount,
+                        TotalAmount = seedInvoice.TotalAmount,
+                        PaidAmount = 0,
+                        BalanceAmount = seedInvoice.TotalAmount,
+                        Status = Enum.TryParse<InvoiceStatus>(seedInvoice.Status, out var status) ? status : InvoiceStatus.Draft,
+                        VoucherType = VoucherType.Invoice,
+                        CreatedByUserId = ApplicationUser.SystemUserId,
+                        CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        UpdatedByUserId = ApplicationUser.SystemUserId,
+                        UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                        IsNotDeleted = true
+                    };
+
+                    invoices.Add(invoice);
+                }
+
+                await Invoices.AddRangeAsync(invoices);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error seeding Invoice data: {ex.Message}");
             }
         }
 

@@ -1,5 +1,6 @@
 @page "/taxcodes"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<TaxCode, TaxCodes>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject TaxCodeApiService TaxCodeApiService
@@ -78,14 +79,8 @@
 
                     <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.IsActive) Title=@Localizer["IsActive"] Width="100px">
                         <Template Context="taxcode">
-                            @if (taxcode.IsActive)
-                            {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
-                            }
-                            else
-                            {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
-                            }
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(taxcode.IsActive)"
+                                         Text="@(taxcode.IsActive ? Localizer["Active"] : Localizer["Inactive"])" />
                         </Template>
                     </RadzenDataGridColumn>
 

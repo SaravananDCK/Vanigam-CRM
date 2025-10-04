@@ -1,5 +1,6 @@
 @page "/activities"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @using NodaTime.Extensions
 @inherits Vanigam.CRM.Client.Components.BaseListView<Activity, Activities>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
@@ -57,9 +58,15 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Subject) Title=@Localizer["Subject"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Type) Title=@Localizer["Type"]>
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Type) Title=@Localizer["Type"] Width="150px">
+                        <Template Context="activity">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Type)" Text="@activity.Type.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Status) Title=@Localizer["Status"]>
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="activity">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Status)" Text="@activity.Status.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.ActivityDate) Title=@Localizer["ActivityDate"]>
                         <Template Context="activity">
@@ -71,7 +78,10 @@
                             @(activity.Duration?.ToString() ?? "-") @if(activity.Duration.HasValue) { <text>min</text> }
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Priority) Title=@Localizer["Priority"] Width="100px">
+                    <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Priority) Title=@Localizer["Priority"] Width="120px">
+                        <Template Context="activity">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Priority)" Text="@activity.Priority.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property="Lead.Name" Title=@Localizer["Lead"] Visible="@(!IsEmbeddedMode && LeadId == null)">
                     </RadzenDataGridColumn>

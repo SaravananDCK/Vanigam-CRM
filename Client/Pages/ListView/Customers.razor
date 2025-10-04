@@ -1,5 +1,6 @@
 @page "/customers"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<Customer, Customers>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject CustomerApiService CustomerApiService
@@ -48,7 +49,10 @@
                             }
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Status) Title=@Localizer["Status"] Width="100px">
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="customer">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(customer.Status)" Text="@customer.Status.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Rating) Title=@Localizer["Rating"] Width="80px">
                     </RadzenDataGridColumn>

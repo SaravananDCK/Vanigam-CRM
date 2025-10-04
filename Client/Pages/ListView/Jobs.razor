@@ -1,5 +1,6 @@
 @page "/jobs"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<Job, Jobs>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject JobApiService JobApiService
@@ -68,9 +69,15 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Description) Title=@Localizer["Description"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Status) Title=@Localizer["Status"]>
+                    <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="job">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(job.Status)" Text="@job.Status.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Priority) Title=@Localizer["Priority"]>
+                    <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Priority) Title=@Localizer["Priority"] Width="120px">
+                        <Template Context="job">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(job.Priority)" Text="@job.Priority.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

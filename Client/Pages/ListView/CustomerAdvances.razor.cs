@@ -7,77 +7,57 @@ using Vanigam.CRM.Client.Pages.DetailView;
 
 namespace Vanigam.CRM.Client.Pages.ListView
 {
-    public partial class Invoices
+    public partial class CustomerAdvances
     {
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try
             {
-                var result = await InvoiceApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
+                var result = await CustomerAdvanceApiService.Get(filter: GetFilterString(args), expand: "Payment,Payment.Customer", orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex.Message, ex);
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = ex.Message });
+                NotificationService.Notify(new NotificationMessage() { Severity = NotificationSeverity.Error, Summary = Localizer[$"Error"], Detail = ex.Message });
             }
         }
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            var filter = new ODataFilter<Invoice>()
-                .FilterByAnd(args.Filter);
-
-            // Filter by parent Job if in embedded mode
-            if (IsEmbeddedMode && PartyId.HasValue)
-            {
-                filter = filter.FilterByAnd(u => u.PartyId == PartyId.Value);
-            }
-
-            filter.BeginGroup()
-                .ContainsOr(u => u.Number, SearchString)
-                .EndGroup();
-
-            return filter.Build();
-        }
-        protected override string GetExpandString(LoadDataArgs args)
-        {
-            return new ODataExpand<Invoice>()
-                .Expand(f => f.Party, f => f.Party.Name)
+            return new ODataFilter<CustomerAdvance>()
+                .FilterByAnd(args.Filter)
+                .BeginGroup()
+                .ContainsOr(u => u.Reason, SearchString)
+                .EndGroup()
                 .Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            var parameters = new Dictionary<string, object>();
-            if (IsEmbeddedMode && PartyId.HasValue)
-            {
-                parameters.Add("JobId", PartyId.Value);
-            }
-
-            await DialogService.OpenDialogAsync<EditInvoice>(Localizer["AddInvoice"], parameters.Count > 0 ? parameters : null, 100, 100);
+            await DialogService.OpenDialogAsync<EditCustomerAdvance>(Localizer["AddCustomerAdvance"], null, 30, 50);
             await GridReload();
         }
 
-        protected async Task EditRow(DataGridRowMouseEventArgs<Invoice> args)
+        protected async Task EditRow(DataGridRowMouseEventArgs<CustomerAdvance> args)
         {
             await Open(args.Data);
         }
 
-        private async Task Open(Invoice invoice)
+        private async Task Open(CustomerAdvance customeradvance)
         {
-            await DialogService.OpenDialogAsync<EditInvoice>(Localizer["EditInvoice"], new Dictionary<string, object> { { "Oid", invoice.Oid } }, 100, 100);
+            await DialogService.OpenDialogAsync<EditCustomerAdvance>(Localizer["EditCustomerAdvance"], new Dictionary<string, object> { { "Oid", customeradvance.Oid } }, 30, 50);
             await GridReload();
         }
 
-        protected async Task GridDeleteButtonClick(Invoice invoice)
+        protected async Task GridDeleteButtonClick(CustomerAdvance customeradvance)
         {
             try
             {
                 if (await DialogService.Confirm(Localizer["DeleteRecord"]) == true)
                 {
-                    var deleteResult = await InvoiceApiService.Delete(oid:invoice.Oid);
+                    var deleteResult = await CustomerAdvanceApiService.Delete(oid:customeradvance.Oid);
 
                     if (deleteResult != null)
                     {

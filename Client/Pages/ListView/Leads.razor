@@ -1,5 +1,6 @@
 @page "/leads"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<Lead, Leads>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject LeadApiService LeadApiService
@@ -60,7 +61,10 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Industry) Title=@Localizer["Industry"] Width="120px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Status) Title=@Localizer["Status"] Width="100px">
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="lead">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(lead.Status)" Text="@lead.Status.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Source) Title=@Localizer["Source"] Width="120px">
                     </RadzenDataGridColumn>

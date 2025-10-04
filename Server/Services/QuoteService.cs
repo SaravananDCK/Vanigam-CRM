@@ -80,7 +80,6 @@ public class QuoteService(
                 Number = invoiceNumber,
                 Status = InvoiceStatus.Draft,
                 PartyId = quote.PartyId,
-                JobId = quote.JobId,
                 TotalAmount = quote.TotalAmount,
                 CreatedByUserId = quote.UpdatedByUserId,
                 CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),

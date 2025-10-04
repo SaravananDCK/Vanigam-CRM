@@ -1,5 +1,6 @@
 @page "/payments"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<Payment, Payments>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject PaymentApiService PaymentApiService
@@ -8,7 +9,7 @@
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Payments"] : Localizer["Payments"])
                             AddButtonClick=@AddButtonClick
                             SearchButtonClick=@Search
-                            ShowAdd=@(!IsEmbeddedMode || InvoiceId.HasValue) />
+                            ShowAdd=@(!IsEmbeddedMode || CustomerId.HasValue) />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Payment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -25,13 +26,16 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property="Invoice.Number" Title=@Localizer["Invoice"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Amount) Title=@Localizer["Amount"]>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.AllocatedAmount) Title=@Localizer["Amount"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Status) Title=@Localizer["Status"]>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="payment">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(payment.Status)" Text="@payment.Status.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.PaidAt) Title=@Localizer["PaidAt"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.ProviderReference) Title=@Localizer["ProviderReference"]>
+                    <RadzenDataGridColumn TItem="Payment" Property="Customer.Name" Title=@Localizer["ProviderReference"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>
@@ -42,7 +46,7 @@
 </RadzenStack>
 
 @code {
-    [Parameter] public Guid? InvoiceId { get; set; }
+    [Parameter] public Guid? CustomerId { get; set; }
     [Parameter] public bool IsEmbeddedMode { get; set; } = false;
     [Parameter] public string? EmbeddedTitle { get; set; }
 }

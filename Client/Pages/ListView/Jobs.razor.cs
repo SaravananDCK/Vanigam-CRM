@@ -5,6 +5,7 @@ using Vanigam.CRM.Objects.OData;
 using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Client.Helpers;
 using Vanigam.CRM.Client.Pages.DetailView;
 
 namespace Vanigam.CRM.Client.Pages.ListView
@@ -237,23 +238,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
             if (!status.HasValue)
                 return BadgeStyle.Info; // For "All" option
 
-            return GetStatusBadgeStyle(status.Value);
+            return BadgeHelper.GetBadgeStyle(status.Value);
         }
 
         protected BadgeStyle GetStatusBadgeStyle(JobStatus status)
         {
-            return status switch
-            {
-                JobStatus.Pending => BadgeStyle.Warning,
-                JobStatus.Assigned => BadgeStyle.Info,
-                JobStatus.Scheduled => BadgeStyle.Primary,
-                JobStatus.InProgress => BadgeStyle.Success,
-                JobStatus.OnHold => BadgeStyle.Secondary,
-                JobStatus.Completed => BadgeStyle.Success,
-                JobStatus.Cancelled => BadgeStyle.Danger,
-                JobStatus.Closed => BadgeStyle.Secondary,
-                _ => BadgeStyle.Light
-            };
+            return BadgeHelper.GetBadgeStyle(status);
         }
 
         protected int GetStatusCount(JobStatus status)

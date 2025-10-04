@@ -1,6 +1,7 @@
 @page "/accountgroups"
 @using Vanigam.CRM.Client.Services
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<AccountGroup, AccountGroups>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject AccountGroupApiService AccountGroupApiService
@@ -26,10 +27,10 @@
                                         <strong>@context.Text</strong>
                                     </RadzenText>
                                     <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="@((context.Value as AccountGroup)?.Code)" class="rz-ml-2" />
-                                    <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="@((context.Value as AccountGroup)?.Nature.ToString())" class="rz-ml-1" />
+                                    <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle((context.Value as AccountGroup)?.Nature ?? AccountNature.Asset)" Text="@((context.Value as AccountGroup)?.Nature.ToString())" class="rz-ml-1" />
                                     @if ((context.Value as AccountGroup)?.IsActive == false)
                                     {
-                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] class="rz-ml-1" />
+                                        <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(false)" Text=@Localizer["Inactive"] class="rz-ml-1" />
                                     }
                                     <div style="margin-left: auto;">
                                         <RadzenButton Icon="edit"

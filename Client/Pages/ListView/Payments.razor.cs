@@ -30,30 +30,26 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 .FilterByAnd(args.Filter);
 
             // Filter by parent Invoice if in embedded mode
-            if (IsEmbeddedMode && InvoiceId.HasValue)
+            if (IsEmbeddedMode && CustomerId.HasValue)
             {
-                filter = filter.FilterByAnd(u => u.InvoiceId == InvoiceId.Value);
+                filter = filter.FilterByAnd(u => u.CustomerId == CustomerId.Value);
             }
-
-            filter.BeginGroup()
-                .ContainsOr(u => u.ProviderReference, SearchString)
-                .EndGroup();
-
+            
             return filter.Build();
         }
         protected override string GetExpandString(LoadDataArgs args)
         {
             return new ODataExpand<Payment>()
-                .Expand(f => f.Invoice, f => f.Invoice.Number)
+                .Expand(f => f.Customer, f => f.Customer.Name)
                 .Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
             var parameters = new Dictionary<string, object>();
-            if (IsEmbeddedMode && InvoiceId.HasValue)
+            if (IsEmbeddedMode && CustomerId.HasValue)
             {
-                parameters.Add("InvoiceId", InvoiceId.Value);
+                parameters.Add("CustomerId", CustomerId.Value);
             }
 
             await DialogService.OpenDialogAsync<EditPayment>(Localizer["AddPayment"], parameters.Count > 0 ? parameters : null, 100, 100);

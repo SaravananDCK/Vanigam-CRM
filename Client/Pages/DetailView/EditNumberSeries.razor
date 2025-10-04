@@ -1,6 +1,7 @@
 @page "/edit-numberseries"
 @using Vanigam.CRM.Objects.Entities
 @using Vanigam.CRM.Client.Validators
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<NumberSeries, EditNumberSeries>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
@@ -90,14 +91,8 @@
                                     <strong>@Localizer["IsActive"]:</strong>
                                 </RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
-                                    @if (CurrentObject.IsActive)
-                                    {
-                                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
-                                    }
-                                    else
-                                    {
-                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
-                                    }
+                                    <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(CurrentObject.IsActive)"
+                                                 Text="@(CurrentObject.IsActive ? Localizer["Active"] : Localizer["Inactive"])" />
                                 </RadzenText>
                             </div>
 

@@ -43,7 +43,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                     // Update invoice properties
                     invoice.Number = invoiceData.Number;
                     invoice.Status = invoiceData.Status;
-                    invoice.JobId = invoiceData.JobId;
+                    invoice.PartyId = invoiceData.PartyId;
                     invoice.TotalAmount = invoiceData.TotalAmount;
                 }
                 else
@@ -54,7 +54,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         Oid = Guid.NewGuid(),
                         Number = invoiceData.Number,
                         Status = invoiceData.Status,
-                        JobId = invoiceData.JobId,
+                        PartyId = invoiceData.PartyId,
                         TotalAmount = invoiceData.TotalAmount,
                         TenantId = CurrentUser.TenantId
                     };

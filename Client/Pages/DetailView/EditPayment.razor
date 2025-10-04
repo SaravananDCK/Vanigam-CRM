@@ -11,7 +11,7 @@
         @if (IsEditButtonVisible)
         {
 
-            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]" />
         }
     </CustomBadge>
 </DetailPageTitleComponent>
@@ -31,10 +31,17 @@
                         <RadzenStack>
                             <div class="rz-p-4">
                                 <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Amount"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Amount.ToString("C"))</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Allocated Amount"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.AllocatedAmount.ToString("C"))</RadzenText>
                                 </div>
-
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Payment Amount"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.PaymentAmount.ToString("C"))</RadzenText>
+                                </div>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Unallocated Amount"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.UnallocatedAmount.ToString("C"))</RadzenText>
+                                </div>
                                 <div class="read-only-field rz-mb-3">
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
                                     <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
@@ -51,8 +58,8 @@
                                 </div>
 
                                 <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["ProviderReference"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.ProviderReference ?? "-")</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Customer"]:</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject?.Customer?.Name ?? "-")</RadzenText>
                                 </div>
                             </div>
                         </RadzenStack>
@@ -67,26 +74,125 @@
         <RadzenStack>
             <FluentValidationValidator Validator="new PaymentValidator(Localizer)" />
             <ValidationSummary />
-            <VanigamAccountingFormField Text=@Localizer["Amount"]>
+            <VanigamAccountingFormField Text=@Localizer["Customer"]>
                 <ChildContent>
-                    <RadzenNumeric @bind-Value="@CurrentObject.Amount" Name="numeric_Amount" />
+                    <CustomerDropDownDataGrid @bind-Value="@CurrentObject.CustomerId" Change="@OnCustomerChanged"></CustomerDropDownDataGrid>
                 </ChildContent>
             </VanigamAccountingFormField>
+
+            <RadzenRow>
+                <RadzenColumn Size="6">
+                    <VanigamAccountingFormField Text=@Localizer["PaymentAmount"]>
+                        <ChildContent>
+                            <RadzenNumeric TValue="decimal" @bind-Value="@CurrentObject.PaymentAmount" Name="numeric_PaymentAmount"
+                                           Change="@OnPaymentAmountChanged" ShowUpDown="false" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="6">
+                    <VanigamAccountingFormField Text=@Localizer["PaymentDate"]>
+                        <ChildContent>
+                            <RadzenDatePicker @bind-Value="@CurrentObject.PaymentDate" Name="date_PaymentDate" ShowTime="true" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                </RadzenColumn>
+            </RadzenRow>
+
+            <RadzenRow>
+                <RadzenColumn Size="6">
+                    <VanigamAccountingFormField Text=@Localizer["PaymentMethod"]>
+                        <ChildContent>
+                            <RadzenTextBox @bind-Value="@CurrentObject.PaymentMethod" Name="txt_PaymentMethod" class="w-100" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="6">
+                    <VanigamAccountingFormField Text=@Localizer["ReferenceNumber"]>
+                        <ChildContent>
+                            <RadzenTextBox @bind-Value="@CurrentObject.ReferenceNumber" Name="txt_ReferenceNumber" class="w-100" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                </RadzenColumn>
+            </RadzenRow>
+
             <VanigamAccountingFormField Text=@Localizer["Status"]>
                 <ChildContent>
                     <PaymentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                                                                                                                                      </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["PaidAt"]>
-                <ChildContent>
-                    <RadzenDatePicker @bind-Value="@CurrentObject.PaidAt" Name="date_PaidAt" ShowTime="true" />
                 </ChildContent>
             </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["ProviderReference"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.ProviderReference" Name="txt_ProviderReference" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+
+            @* Invoice Allocation Section *@
+            @if (pendingInvoices.Any() && CurrentObject.PaymentAmount > 0)
+            {
+                <RadzenCard class="rz-mt-4">
+                    <RadzenStack>
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+                            <RadzenText TextStyle="TextStyle.H6">@Localizer["AllocateToInvoices"]</RadzenText>
+                            <RadzenButton Text="@Localizer["AutoAllocate"]" Icon="autorenew" ButtonStyle="ButtonStyle.Primary"
+                                         Size="ButtonSize.Small" Click="@AutoAllocate" />
+                        </RadzenStack>
+
+                        <RadzenDataGrid Data="@allocations" TItem="PaymentAllocationModel" AllowFiltering="false" AllowPaging="false">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="PaymentAllocationModel" Width="50px">
+                                    <Template Context="alloc">
+                                        <RadzenCheckBox @bind-Value="@alloc.IsSelected" TValue="bool" Change="@(() => OnAllocationChanged(alloc))" />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="PaymentAllocationModel" Property="InvoiceNumber" Title="@Localizer["InvoiceNumber"]" Width="150px" />
+                                <RadzenDataGridColumn TItem="PaymentAllocationModel" Property="InvoiceDate" Title="@Localizer["InvoiceDate"]" Width="120px">
+                                    <Template Context="alloc">
+                                        @alloc.InvoiceDate.ToString("yyyy-MM-dd")
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="PaymentAllocationModel" Property="DueDate" Title="@Localizer["DueDate"]" Width="120px">
+                                    <Template Context="alloc">
+                                        @(alloc.DueDate?.ToString("yyyy-MM-dd") ?? "-")
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="PaymentAllocationModel" Property="TotalAmount" Title="@Localizer["TotalAmount"]" Width="130px">
+                                    <Template Context="alloc">
+                                        @alloc.TotalAmount.ToString("C")
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="PaymentAllocationModel" Property="BalanceAmount" Title="@Localizer["BalanceAmount"]" Width="130px">
+                                    <Template Context="alloc">
+                                        <RadzenBadge Text="@alloc.BalanceAmount.ToString("C")" BadgeStyle="BadgeStyle.Warning" />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="PaymentAllocationModel" Property="AllocatedAmount" Title="@Localizer["AllocatedAmount"]" Width="150px">
+                                    <Template Context="alloc">
+                                        <RadzenNumeric @bind-Value="@alloc.AllocatedAmount" TValue="decimal"
+                                                      Change="@(() => OnAllocationChanged(alloc))"
+                                                      Min="0" Max="@alloc.BalanceAmount"
+                                                      ShowUpDown="false" class="w-100" />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+
+                        <RadzenCard Variant="Variant.Outlined" class="rz-mt-3">
+                            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="2rem">
+                                <RadzenStack Gap="0.5rem">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2">@Localizer["PaymentAmount"]:</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.H6">@CurrentObject.PaymentAmount.ToString("C")</RadzenText>
+                                </RadzenStack>
+                                <RadzenStack Gap="0.5rem">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2">@Localizer["AllocatedAmount"]:</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.H6">@totalAllocated.ToString("C")</RadzenText>
+                                </RadzenStack>
+                                <RadzenStack Gap="0.5rem">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2">@Localizer["UnallocatedAmount"]:</RadzenText>
+                                    <RadzenBadge Text="@remainingAmount.ToString("C")"
+                                                BadgeStyle="@(remainingAmount > 0 ? BadgeStyle.Success : BadgeStyle.Secondary)"
+                                                Style="font-size: 1.2rem; padding: 0.5rem 1rem;" />
+                                </RadzenStack>
+                            </RadzenStack>
+                        </RadzenCard>
+                    </RadzenStack>
+                </RadzenCard>
+            }
+
         </RadzenStack>
 
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">

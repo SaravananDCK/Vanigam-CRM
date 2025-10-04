@@ -1,0 +1,69 @@
+@page "/customeradvances"
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
+@inherits Vanigam.CRM.Client.Components.BaseListView<CustomerAdvance, CustomerAdvances>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject CustomerAdvanceApiService CustomerAdvanceApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["CustomerAdvances"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="CustomerAdvance" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="customeradvance">
+                            <OpenPageCommonComponent T="CustomerAdvance" OpenObject="@customeradvance" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="CustomerAdvance" UsingObject="@customeradvance" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Property="Payment.Customer.Name" Title=@Localizer["Customer"] Width="200px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Property="Payment.ReferenceNumber" Title=@Localizer["PaymentReference"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Property=@nameof(CustomerAdvance.Amount) Title=@Localizer["AdvanceAmount"] Width="150px">
+                        <Template Context="customeradvance">
+                            @customeradvance.Amount.ToString("C")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Property=@nameof(CustomerAdvance.BalanceAmount) Title=@Localizer["BalanceAmount"] Width="150px">
+                        <Template Context="customeradvance">
+                            <RadzenBadge Text="@customeradvance.BalanceAmount.ToString("C")"
+                                         BadgeStyle="@(customeradvance.BalanceAmount > 0 ? BadgeStyle.Success : BadgeStyle.Secondary)" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Property=@nameof(CustomerAdvance.AppliedDate) Title=@Localizer["AppliedDate"] Width="150px">
+                        <Template Context="customeradvance">
+                            @customeradvance.AppliedDate.ToString("yyyy-MM-dd")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Property=@nameof(CustomerAdvance.Reason) Title=@Localizer["Reason"] Width="200px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Property=@nameof(CustomerAdvance.IsAvailableForAllocation) Title=@Localizer["Available"] Width="100px">
+                        <Template Context="customeradvance">
+                            @if (customeradvance.IsAvailableForAllocation && customeradvance.BalanceAmount > 0)
+                            {
+                                <RadzenBadge Text="@Localizer["Yes"]" BadgeStyle="BadgeStyle.Success" />
+                            }
+                            else
+                            {
+                                <RadzenBadge Text="@Localizer["No"]" BadgeStyle="BadgeStyle.Secondary" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Property=@nameof(CustomerAdvance.ExpiryDate) Title=@Localizer["ExpiryDate"] Width="130px">
+                        <Template Context="customeradvance">
+                            @(customeradvance.ExpiryDate?.ToString("yyyy-MM-dd") ?? "-")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="CustomerAdvance" Property=@nameof(CustomerAdvance.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

@@ -4,6 +4,7 @@ using Vanigam.CRM.Objects.OData;
 using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Client.Helpers;
 using Vanigam.CRM.Client.Pages.DetailView;
 
 namespace Vanigam.CRM.Client.Pages.ListView
@@ -180,28 +181,12 @@ namespace Vanigam.CRM.Client.Pages.ListView
             if (!status.HasValue)
                 return BadgeStyle.Info; // For "All" option
 
-            return status.Value switch
-            {
-                LeadStatus.New => BadgeStyle.Secondary,
-                LeadStatus.Contacted => BadgeStyle.Info,
-                LeadStatus.Qualified => BadgeStyle.Success,
-                LeadStatus.Converted => BadgeStyle.Success,
-                LeadStatus.Lost => BadgeStyle.Danger,
-                _ => BadgeStyle.Light
-            };
+            return BadgeHelper.GetBadgeStyle(status.Value);
         }
 
         protected BadgeStyle GetStatusBadgeStyle(LeadStatus status)
         {
-            return status switch
-            {
-                LeadStatus.New => BadgeStyle.Warning,
-                LeadStatus.Contacted => BadgeStyle.Info,
-                LeadStatus.Qualified => BadgeStyle.Success,
-                LeadStatus.Converted => BadgeStyle.Success,
-                LeadStatus.Lost => BadgeStyle.Danger,
-                _ => BadgeStyle.Light
-            };
+            return BadgeHelper.GetBadgeStyle(status);
         }
         protected string GetIcon(LeadStatus status)
         {

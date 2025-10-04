@@ -1,5 +1,6 @@
 @page "/numberseries"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<NumberSeries, NumberSeriesList>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject NumberSeriesApiService NumberSeriesApiService
@@ -60,14 +61,8 @@
 
                     <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.IsActive) Title=@Localizer["IsActive"] Width="100px">
                         <Template Context="numberseries">
-                            @if (numberseries.IsActive)
-                            {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
-                            }
-                            else
-                            {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
-                            }
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(numberseries.IsActive)"
+                                         Text="@(numberseries.IsActive ? Localizer["Active"] : Localizer["Inactive"])" />
                         </Template>
                     </RadzenDataGridColumn>
 

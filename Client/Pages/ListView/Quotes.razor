@@ -1,5 +1,6 @@
 @page "/quotes"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<Quote, Quotes>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject QuoteApiService QuoteApiService
@@ -64,7 +65,10 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property="Job.Title" Title=@Localizer["Job"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Status) Title=@Localizer["Status"]>
+                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="quote">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(quote.Status)" Text="@quote.Status.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.TotalAmount) Title=@Localizer["TotalAmount"]>
                         <Template Context="item">
