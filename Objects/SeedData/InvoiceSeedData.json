@@ -1,0 +1,167 @@
+[
+  {
+    "Number": "INV-2024-001",
+    "CustomerCode": "CUST-0001",
+    "Date": "2024-01-15",
+    "DueDate": "2024-02-14",
+    "Description": "Monthly Service Charges - January 2024",
+    "SubTotal": 50000.00,
+    "TaxAmount": 9000.00,
+    "TotalAmount": 59000.00,
+    "Status": "Sent"
+  },
+  {
+    "Number": "INV-2024-002",
+    "CustomerCode": "CUST-0001",
+    "Date": "2024-02-15",
+    "DueDate": "2024-03-15",
+    "Description": "Monthly Service Charges - February 2024",
+    "SubTotal": 52000.00,
+    "TaxAmount": 9360.00,
+    "TotalAmount": 61360.00,
+    "Status": "Sent"
+  },
+  {
+    "Number": "INV-2024-003",
+    "CustomerCode": "CUST-0001",
+    "Date": "2024-03-15",
+    "DueDate": "2024-04-14",
+    "Description": "Monthly Service Charges - March 2024",
+    "SubTotal": 48000.00,
+    "TaxAmount": 8640.00,
+    "TotalAmount": 56640.00,
+    "Status": "Sent"
+  },
+  {
+    "Number": "INV-2024-004",
+    "CustomerCode": "CUST-0001",
+    "Date": "2024-04-15",
+    "DueDate": "2024-05-15",
+    "Description": "Monthly Service Charges - April 2024",
+    "SubTotal": 55000.00,
+    "TaxAmount": 9900.00,
+    "TotalAmount": 64900.00,
+    "Status": "Sent"
+  },
+  {
+    "Number": "INV-2024-005",
+    "CustomerCode": "CUST-0001",
+    "Date": "2024-05-15",
+    "DueDate": "2024-06-14",
+    "Description": "Monthly Service Charges - May 2024",
+    "SubTotal": 53000.00,
+    "TaxAmount": 9540.00,
+    "TotalAmount": 62540.00,
+    "Status": "Sent"
+  },
+  {
+    "Number": "INV-2024-006",
+    "CustomerCode": "CUST-0002",
+    "Date": "2024-03-10",
+    "DueDate": "2024-04-09",
+    "Description": "Product Installation and Setup",
+    "SubTotal": 75000.00,
+    "TaxAmount": 13500.00,
+    "TotalAmount": 88500.00,
+    "Status": "PartiallyPaid"
+  },
+  {
+    "Number": "INV-2024-007",
+    "CustomerCode": "CUST-0002",
+    "Date": "2024-04-20",
+    "DueDate": "2024-05-20",
+    "Description": "Additional Equipment Supply",
+    "SubTotal": 45000.00,
+    "TaxAmount": 8100.00,
+    "TotalAmount": 53100.00,
+    "Status": "Sent"
+  },
+  {
+    "Number": "INV-2024-008",
+    "CustomerCode": "CUST-0003",
+    "Date": "2024-02-05",
+    "DueDate": "2024-03-05",
+    "Description": "Consulting Services - Q1 2024",
+    "SubTotal": 120000.00,
+    "TaxAmount": 21600.00,
+    "TotalAmount": 141600.00,
+    "Status": "Paid"
+  },
+  {
+    "Number": "INV-2024-009",
+    "CustomerCode": "CUST-0003",
+    "Date": "2024-05-05",
+    "DueDate": "2024-06-05",
+    "Description": "Consulting Services - Q2 2024",
+    "SubTotal": 125000.00,
+    "TaxAmount": 22500.00,
+    "TotalAmount": 147500.00,
+    "Status": "Sent"
+  },
+  {
+    "Number": "INV-2024-010",
+    "CustomerCode": "CUST-0004",
+    "Date": "2024-01-20",
+    "DueDate": "2024-02-19",
+    "Description": "Annual Maintenance Contract - 2024",
+    "SubTotal": 80000.00,
+    "TaxAmount": 14400.00,
+    "TotalAmount": 94400.00,
+    "Status": "Paid"
+  },
+  {
+    "Number": "INV-2024-011",
+    "CustomerCode": "CUST-0005",
+    "Date": "2024-03-25",
+    "DueDate": "2024-04-24",
+    "Description": "Software License Renewal",
+    "SubTotal": 95000.00,
+    "TaxAmount": 17100.00,
+    "TotalAmount": 112100.00,
+    "Status": "Overdue"
+  },
+  {
+    "Number": "INV-2024-012",
+    "CustomerCode": "CUST-0006",
+    "Date": "2024-04-10",
+    "DueDate": "2024-05-10",
+    "Description": "Training Services - Batch 1",
+    "SubTotal": 35000.00,
+    "TaxAmount": 6300.00,
+    "TotalAmount": 41300.00,
+    "Status": "Sent"
+  },
+  {
+    "Number": "INV-2024-013",
+    "CustomerCode": "CUST-0007",
+    "Date": "2024-05-01",
+    "DueDate": "2024-05-31",
+    "Description": "Emergency Repair Services",
+    "SubTotal": 28000.00,
+    "TaxAmount": 5040.00,
+    "TotalAmount": 33040.00,
+    "Status": "Sent"
+  },
+  {
+    "Number": "INV-2024-014",
+    "CustomerCode": "CUST-0008",
+    "Date": "2024-05-15",
+    "DueDate": "2024-06-14",
+    "Description": "Custom Development - Phase 1",
+    "SubTotal": 150000.00,
+    "TaxAmount": 27000.00,
+    "TotalAmount": 177000.00,
+    "Status": "Draft"
+  },
+  {
+    "Number": "INV-2024-015",
+    "CustomerCode": "CUST-0009",
+    "Date": "2024-05-20",
+    "DueDate": "2024-06-19",
+    "Description": "Cloud Infrastructure Setup",
+    "SubTotal": 110000.00,
+    "TaxAmount": 19800.00,
+    "TotalAmount": 129800.00,
+    "Status": "Sent"
+  }
+]

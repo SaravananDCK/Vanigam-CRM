@@ -1,0 +1,184 @@
+[
+  {
+    "Code": "CASH001",
+    "Name": "Cash Account",
+    "GroupCode": "CASH",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "SAL001",
+    "Name": "Sales Account",
+    "GroupCode": "SAL",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "SAL002",
+    "Name": "Sales Return",
+    "GroupCode": "SAL",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "PUR001",
+    "Name": "Purchase Account",
+    "GroupCode": "PUR",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "PUR002",
+    "Name": "Purchase Return",
+    "GroupCode": "PUR",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP001",
+    "Name": "Office Rent",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP002",
+    "Name": "Electricity Expense",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP003",
+    "Name": "Telephone Expense",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP004",
+    "Name": "Travelling Expense",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP005",
+    "Name": "Professional Fees",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP006",
+    "Name": "Audit Fees",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP007",
+    "Name": "Insurance Premium",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP008",
+    "Name": "Printing & Stationery",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP009",
+    "Name": "Bank Charges",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP010",
+    "Name": "Internet Expense",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "CAP001",
+    "Name": "Owner's Capital",
+    "GroupCode": "CAP",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "LOAN001",
+    "Name": "Bank Loan",
+    "GroupCode": "LTL",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX001",
+    "Name": "SGST Payable",
+    "GroupCode": "TAXP",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX002",
+    "Name": "CGST Payable",
+    "GroupCode": "TAXP",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX003",
+    "Name": "IGST Payable",
+    "GroupCode": "TAXP",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX004",
+    "Name": "SGST Input",
+    "GroupCode": "TAXI",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX005",
+    "Name": "CGST Input",
+    "GroupCode": "TAXI",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX006",
+    "Name": "IGST Input",
+    "GroupCode": "TAXI",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX007",
+    "Name": "TDS Payable",
+    "GroupCode": "TAXP",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX008",
+    "Name": "TDS Receivable",
+    "GroupCode": "TAXI",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "STK001",
+    "Name": "Stock in Hand",
+    "GroupCode": "STK",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  }
+]
