@@ -32,7 +32,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             // Filter by parent Invoice if in embedded mode
             if (IsEmbeddedMode && CustomerId.HasValue)
             {
-                filter = filter.FilterByAnd(u => u.CustomerId == CustomerId.Value);
+                filter = filter.FilterByAnd(u => u.PartyId == CustomerId.Value);
             }
             
             return filter.Build();
@@ -40,7 +40,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         protected override string GetExpandString(LoadDataArgs args)
         {
             return new ODataExpand<Payment>()
-                .Expand(f => f.Customer, f => f.Customer.Name)
+                .Expand(f => f.Party, f => f.Party.Name)
                 .Build();
         }
 

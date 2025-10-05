@@ -9,23 +9,14 @@ namespace Vanigam.CRM.Objects.Entities
     /// Represents a payment received from a customer
     /// Supports both single invoice payments and bulk payments across multiple invoices
     /// </summary>
-    public class Payment : BaseClass
+    public class Payment : Voucher
     {
-        /// <summary>
-        /// Customer making the payment (required for bulk payments)
-        /// </summary>
-        [Required]
-        public Guid? CustomerId { get; set; }
-
-        [ForeignKey(nameof(CustomerId))]
-        public Customer Customer { get; set; } = null!;
-
         /// <summary>
         /// Total payment amount received
         /// </summary>
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal PaymentAmount { get; set; }
+        public decimal PaymentAmount { get => TotalAmount; set { TotalAmount = value; } }
 
         /// <summary>
         /// Amount allocated to invoices
@@ -40,16 +31,16 @@ namespace Vanigam.CRM.Objects.Entities
         public decimal UnallocatedAmount { get; set; }
 
         /// <summary>
-        /// Date when payment was received
-        /// </summary>
-        [Required]
-        public DateTimeOffset PaymentDate { get; set; }
-
-        /// <summary>
         /// Payment method used (Cash, Bank Transfer, Cheque, Card, UPI, etc.)
         /// </summary>
-        [StringLength(50)]
-        public string? PaymentMethod { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
+
+        /// <summary>
+        /// Payment status
+        /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public PaymentStatus? Status { get; set; }
 
         /// <summary>
         /// Reference number (Cheque No, UTR ID, Transaction ID, etc.)
@@ -66,21 +57,9 @@ namespace Vanigam.CRM.Objects.Entities
         public BankAccount? BankAccount { get; set; }
 
         /// <summary>
-        /// Payment status
-        /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
-
-        /// <summary>
         /// Date when payment was confirmed/cleared
         /// </summary>
         public DateTimeOffset? PaidAt { get; set; }
-
-        /// <summary>
-        /// Additional notes about the payment
-        /// </summary>
-        [StringLength(500)]
-        public string? Notes { get; set; }
 
         /// <summary>
         /// Collection of payment applications (allocations to invoices and advances)

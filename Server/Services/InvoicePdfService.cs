@@ -17,7 +17,7 @@ public class InvoicePdfService(
             .Include(i => i.Party)
             .Include(i => i.Items)
                 .ThenInclude(ii => ii.Item)
-            .Include(i => i.Payments)
+            .Include(i => i.Allocations)
             .FirstOrDefaultAsync(i => i.Oid == entityId);
     }
 
@@ -83,9 +83,9 @@ public class InvoicePdfService(
             col.Item().Text($"Total: ${invoice.TotalAmount:F2}").FontSize(14).SemiBold();
 
             // Show payments if any
-            if (invoice.Payments.Any())
+            if (invoice.Allocations.Any())
             {
-                var totalPaid = invoice.Payments.Sum(p => p.AllocatedAmount);
+                var totalPaid = invoice.Allocations.Sum(p => p.Amount);
                 var balance = invoice.TotalAmount - totalPaid;
                 col.Item().PaddingTop(10).Text($"Payments: ${totalPaid:F2}");
                 col.Item().Text($"Balance Due: ${balance:F2}").FontSize(14).SemiBold()

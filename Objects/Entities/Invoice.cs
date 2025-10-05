@@ -30,12 +30,6 @@ namespace Vanigam.CRM.Objects.Entities
         public ICollection<PaymentAllocation> Allocations { get; set; } = new List<PaymentAllocation>();
 
         /// <summary>
-        /// Legacy payments collection (deprecated, use Allocations instead)
-        /// </summary>
-        [Obsolete("Use Allocations collection instead for better payment tracking")]
-        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
-
-        /// <summary>
         /// Calculates and updates the balance amount and invoice status based on paid amount
         /// </summary>
         public void UpdateBalance()

@@ -26,6 +26,7 @@ namespace Vanigam.CRM.Objects.Entities
     public enum PurchaseInvoiceStatus
     {
         Draft,
+        Posted,
         Received,
         Verified,
         Paid,

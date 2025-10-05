@@ -52,7 +52,7 @@ public class PaymentDTO
     [Required]
     public decimal Amount { get; set; }
 
-    public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
+    public PaymentStatus? Status { get; set; }
 
     public DateTimeOffset? PaidAt { get; set; }
 
@@ -63,5 +63,61 @@ public class PaymentDTO
     public bool IsDeleted { get; set; } = false;
 
     // Indicates if this is a new payment
+    public bool IsNew => !Oid.HasValue;
+}
+
+public class PaymentBulkSaveDTO
+{
+    public Guid? Oid { get; set; }
+
+    public Guid? PartyId { get; set; }
+
+    [Required]
+    public decimal PaymentAmount { get; set; }
+
+    [Required]
+    public DateTimeOffset VoucherDate { get; set; }
+
+    [Required]
+    public PaymentMethod PaymentMethod { get; set; }
+
+    [StringLength(100)]
+    public string? ReferenceNumber { get; set; }
+
+    public Guid? BankAccountId { get; set; }
+
+    public PaymentStatus? Status { get; set; }
+
+    public decimal AllocatedAmount { get; set; }
+
+    public decimal UnallocatedAmount { get; set; }
+
+    public List<PaymentAllocationDTO> Allocations { get; set; } = new List<PaymentAllocationDTO>();
+}
+
+public class PaymentAllocationDTO
+{
+    public Guid? Oid { get; set; }
+
+    [Required]
+    public Guid InvoiceId { get; set; }
+
+    [Required]
+    public decimal Amount { get; set; }
+
+    public string InvoiceNumber { get; set; } = string.Empty;
+
+    // Additional properties for UI display
+    public DateTimeOffset InvoiceDate { get; set; }
+    public DateTimeOffset? DueDate { get; set; }
+    public decimal TotalAmount { get; set; }
+    public decimal BalanceAmount { get; set; }
+    public decimal AllocatedAmount { get; set; }
+    public bool IsSelected { get; set; }
+
+    // Indicates if this allocation should be deleted
+    public bool IsDeleted { get; set; } = false;
+
+    // Indicates if this is a new allocation
     public bool IsNew => !Oid.HasValue;
 }

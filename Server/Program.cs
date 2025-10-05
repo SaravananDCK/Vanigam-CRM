@@ -105,6 +105,12 @@ builder.Services.AddScoped(typeof(SummaryService<,>));
 // Register webhook services
 builder.Services.AddScoped<WebhookLeadService>();
 
+// Register ledger posting service
+builder.Services.AddScoped<LedgerPostingService>();
+
+// Register contract coverage service
+builder.Services.AddScoped<ContractCoverageService>();
+
 // Register PDF generation services
 builder.Services.AddScoped<QuotePdfService>();
 builder.Services.AddScoped<InvoicePdfService>();

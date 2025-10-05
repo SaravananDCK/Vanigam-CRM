@@ -5,6 +5,7 @@ using System.Net;
 using Vanigam.CRM.Helpers;
 using Vanigam.CRM.Objects.Entities;
 using NodaTime;
+using Vanigam.CRM.Objects.DTOs;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
@@ -14,35 +15,60 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         [Inject] private InvoiceApiService InvoiceApiService { get; set; }
         [Inject] private CustomerAdvanceApiService CustomerAdvanceApiService { get; set; }
         [Inject] private PaymentAllocationApiService PaymentAllocationApiService { get; set; }
+        [Inject] private BankAccountApiService BankAccountApiService { get; set; }
 
         private List<Invoice> pendingInvoices = new();
-        private List<PaymentAllocationModel> allocations = new();
+        private List<PaymentAllocationDTO> allocations = new();
+        private List<BankAccount> bankAccounts = new();
         private decimal totalAllocated = 0;
         private decimal remainingAmount = 0;
 
         protected override async Task OnInitializedAsync()
         {
+            // Load bank accounts
+            await LoadBankAccounts();
+
             if (Oid == Guid.Empty)
             {
                 CurrentObject = new();
-                CurrentObject.PaymentDate = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
+                CurrentObject.VoucherDate = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
                 CurrentObject.Status = Objects.Entities.PaymentStatus.Pending;
+                CurrentObject.PaymentMethod = Objects.Entities.PaymentMethod.Cash;
                 IsReadOnlyMode = false; // Create mode - always editable
             }
             else
             {
-                CurrentObject = await PaymentApiService.GetByOid(oid: Oid, expand: "Customer,Applications");
+                CurrentObject = await PaymentApiService.GetByOid(oid: Oid, expand: "Customer,Applications,BankAccount");
                 IsReadOnlyMode = true; // Edit mode - start in read-only
             }
 
             await InitEditContext();
         }
 
+        private async Task LoadBankAccounts()
+        {
+            try
+            {
+                var result = await BankAccountApiService.Get(filter: "IsActive eq true and IsNotDeleted eq true", orderBy: "Name", top: 100);
+                bankAccounts = result.Value.ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message, ex);
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Error"],
+                    Detail = Localizer["ErrorLoadingBankAccounts"]
+                });
+            }
+        }
+
         private async Task OnCustomerChanged()
         {
-            if (CurrentObject.CustomerId.HasValue && CurrentObject.CustomerId.Value != Guid.Empty)
+            if (CurrentObject.PartyId.HasValue && CurrentObject.PartyId.Value != Guid.Empty)
             {
-                await LoadPendingInvoices(CurrentObject.CustomerId.Value);
+                await LoadPendingInvoices(CurrentObject.PartyId.Value);
             }
             else
             {
@@ -61,7 +87,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 pendingInvoices = result.Value.ToList();
 
                 // Initialize allocations
-                allocations = pendingInvoices.Select(inv => new PaymentAllocationModel
+                allocations = pendingInvoices.Select(inv => new PaymentAllocationDTO
                 {
                     InvoiceId = inv.Oid,
                     InvoiceNumber = inv.Number,
@@ -102,7 +128,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             var remainingToAllocate = CurrentObject.PaymentAmount;
 
-            foreach (var allocation in allocations.OrderBy(a => a.DueDate))
+            // Only allocate to invoice lines (exclude Customer Advance line)
+            foreach (var allocation in allocations.Where(a => a.InvoiceId != Guid.Empty).OrderBy(a => a.DueDate))
             {
                 if (remainingToAllocate <= 0)
                 {
@@ -118,12 +145,43 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 }
             }
 
+
+            // Remove existing Customer Advance line if present
+            var existingAdvanceLine = allocations.FirstOrDefault(a => a.InvoiceId == Guid.Empty);
+            if (existingAdvanceLine != null)
+            {
+                allocations.Remove(existingAdvanceLine);
+            }
+            // If there's excess payment (overpayment), add Customer Advance line
+            if (remainingToAllocate > 0)
+            {
+                // Add new Customer Advance line for excess amount
+                allocations.Add(new PaymentAllocationDTO
+                {
+                    InvoiceId = Guid.Empty, // Empty GUID indicates this is a Customer Advance
+                    InvoiceNumber = "Customer Advance",
+                    InvoiceDate = CurrentObject.VoucherDate,
+                    DueDate = null,
+                    TotalAmount = remainingToAllocate,
+                    BalanceAmount = remainingToAllocate,
+                    AllocatedAmount = remainingToAllocate,
+                    Amount = remainingToAllocate,
+                    IsSelected = true
+                });
+            }
+
             CalculateTotals();
             StateHasChanged();
         }
 
-        private void OnAllocationChanged(PaymentAllocationModel allocation)
+        private void OnAllocationChanged(PaymentAllocationDTO allocation)
         {
+            // Don't allow manual changes to Customer Advance line - it auto-calculates
+            if (allocation.InvoiceId == Guid.Empty)
+            {
+                return;
+            }
+
             if (allocation.AllocatedAmount > allocation.BalanceAmount)
             {
                 allocation.AllocatedAmount = allocation.BalanceAmount;
@@ -135,166 +193,81 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
 
             allocation.IsSelected = allocation.AllocatedAmount > 0;
+
+            // Remove Customer Advance line if it exists (user is manually allocating)
+            var existingAdvanceLine = allocations.FirstOrDefault(a => a.InvoiceId == Guid.Empty);
+            if (existingAdvanceLine != null)
+            {
+                allocations.Remove(existingAdvanceLine);
+            }
+
             CalculateTotals();
         }
 
         private void CalculateTotals()
         {
-            totalAllocated = allocations.Sum(a => a.AllocatedAmount);
+            totalAllocated = allocations.Where(a => a.InvoiceId != Guid.Empty).Sum(a => a.AllocatedAmount);
             remainingAmount = CurrentObject.PaymentAmount - totalAllocated;
             CurrentObject.AllocatedAmount = totalAllocated;
             CurrentObject.UnallocatedAmount = remainingAmount;
         }
 
-        public class PaymentAllocationModel
+        private async Task SaveBulkPayment()
         {
-            public Guid InvoiceId { get; set; }
-            public string InvoiceNumber { get; set; } = string.Empty;
-            public DateTimeOffset InvoiceDate { get; set; }
-            public DateTimeOffset? DueDate { get; set; }
-            public decimal TotalAmount { get; set; }
-            public decimal BalanceAmount { get; set; }
-            public decimal AllocatedAmount { get; set; }
-            public bool IsSelected { get; set; }
-        }
+            if (CurrentObject == null) return;
 
-        protected async Task FormSubmit()
-        {
             IsBusy = true;
             try
             {
-                if (Oid == Guid.Empty)
+                // Prepare bulk save DTO with payment and allocations
+                var bulkData = new PaymentBulkSaveDTO
                 {
-                    // Create new payment
-                    CurrentObject = await PaymentApiService.Create(CurrentObject);
+                    Oid = IsCreateMode ? null : CurrentObject.Oid,
+                    PartyId = CurrentObject.PartyId,
+                    PaymentAmount = CurrentObject.PaymentAmount,
+                    VoucherDate = CurrentObject.VoucherDate,
+                    PaymentMethod = CurrentObject.PaymentMethod,
+                    ReferenceNumber = CurrentObject.ReferenceNumber,
+                    BankAccountId = CurrentObject.BankAccountId,
+                    Status = CurrentObject.Status,
+                    AllocatedAmount = totalAllocated,
+                    UnallocatedAmount = remainingAmount,
+                    Allocations = allocations
+                        .Where(a => a.IsSelected && a.AllocatedAmount > 0 && a.InvoiceId != Guid.Empty) // Exclude Customer Advance line
+                        .Select(a => new PaymentAllocationDTO
+                        {
+                            InvoiceId = a.InvoiceId,
+                            Amount = a.AllocatedAmount,
+                            AllocatedAmount = a.AllocatedAmount,
+                            InvoiceNumber = a.InvoiceNumber
+                        }).ToList()
+                };
 
-                    // Create allocations if any
-                    var selectedAllocations = allocations.Where(a => a.IsSelected && a.AllocatedAmount > 0).ToList();
-                    if (selectedAllocations.Any())
+                var savedPayment = await PaymentApiService.BulkSavePaymentWithAllocationsAsync(bulkData);
+
+                if (savedPayment != null)
+                {
+                    CurrentObject = savedPayment;
+
+                    if (IsCreateMode)
                     {
-                        // Create each payment allocation
-                        foreach (var alloc in selectedAllocations)
-                        {
-                            var paymentAllocation = new PaymentAllocation
-                            {
-                                Oid = Guid.NewGuid(),
-                                PaymentId = CurrentObject.Oid,
-                                InvoiceId = alloc.InvoiceId,
-                                Amount = alloc.AllocatedAmount,
-                                AppliedDate = CurrentObject.PaymentDate,
-                                InvoiceBalanceBefore = alloc.BalanceAmount,
-                                InvoiceBalanceAfter = alloc.BalanceAmount - alloc.AllocatedAmount,
-                                Notes = $"Payment allocation for {alloc.InvoiceNumber}",
-                                TenantId = CurrentObject.TenantId,
-                                CreatedByUserId = CurrentObject.CreatedByUserId,
-                                CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
-                                UpdatedByUserId = CurrentObject.UpdatedByUserId,
-                                UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
-                                IsNotDeleted = true
-                            };
-
-                            await PaymentAllocationApiService.Create(paymentAllocation);
-                        }
-
-                        // Update payment allocated amount
-                        CurrentObject.AllocatedAmount = totalAllocated;
-                        CurrentObject.UnallocatedAmount = CurrentObject.PaymentAmount - totalAllocated;
-                        var result = await PaymentApiService.Update(oid: CurrentObject.Oid, CurrentObject);
-                        if (result.IsPreconditionFailed())
-                        {
-                            HasChanges = true;
-                            CanEdit = false;
-                            ErrorVisible = true;
-                            NotificationService.Notify(new NotificationMessage
-                            {
-                                Severity = NotificationSeverity.Error,
-                                Summary = Localizer["Error"],
-                                Detail = Localizer["ConcurrencyError"]
-                            });
-                            return;
-                        }
-
-                        // Update invoices with new balances
-                        foreach (var alloc in selectedAllocations)
-                        {
-                            try
-                            {
-                                var invoice = await InvoiceApiService.GetByOid(oid: alloc.InvoiceId);
-                                if (invoice != null)
-                                {
-                                    invoice.PaidAmount += alloc.AllocatedAmount;
-                                    invoice.BalanceAmount = invoice.TotalAmount - invoice.PaidAmount;
-
-                                    // Update status
-                                    if (invoice.BalanceAmount <= 0)
-                                    {
-                                        invoice.Status = InvoiceStatus.Paid;
-                                        invoice.BalanceAmount = 0;
-                                    }
-                                    else if (invoice.PaidAmount > 0)
-                                    {
-                                        invoice.Status = InvoiceStatus.PartiallyPaid;
-                                    }
-
-                                    await InvoiceApiService.Update(oid: invoice.Oid, invoice);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.LogError($"Error updating invoice {alloc.InvoiceNumber}: {ex.Message}", ex);
-                            }
-                        }
+                        // Navigate to edit mode for the newly created payment
+                        NavigationManager.NavigateTo($"/edit-payment?oid={savedPayment.Oid}");
+                    }
+                    else
+                    {
+                        await EnableReadOnlyModeAsync();
                     }
 
-                    // Create customer advance for unallocated amount if any
-                    if (CurrentObject.UnallocatedAmount > 0)
+                    NotificationService.Notify(new NotificationMessage
                     {
-                        var advance = new CustomerAdvance
-                        {
-                            Oid = Guid.NewGuid(),
-                            PaymentId = CurrentObject.Oid,
-                            Amount = CurrentObject.UnallocatedAmount,
-                            BalanceAmount = CurrentObject.UnallocatedAmount,
-                            AppliedDate = CurrentObject.PaymentDate,
-                            Reason = "Overpayment / Advance Payment",
-                            IsAvailableForAllocation = true,
-                            TenantId = CurrentObject.TenantId,
-                            CreatedByUserId = CurrentObject.CreatedByUserId,
-                            CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
-                            UpdatedByUserId = CurrentObject.UpdatedByUserId,
-                            UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
-                            IsNotDeleted = true
-                        };
-
-                        // Save the customer advance separately
-                        await CustomerAdvanceApiService.Create(advance);
-
-                        // Update payment to reflect advance as allocated
-                        CurrentObject.AllocatedAmount += CurrentObject.UnallocatedAmount;
-                        CurrentObject.UnallocatedAmount = 0;
-                        await PaymentApiService.Update(oid: CurrentObject.Oid, CurrentObject);
-                    }
+                        Severity = NotificationSeverity.Success,
+                        Summary = Localizer["Success"],
+                        Detail = allocations.Any(a => a.IsSelected)
+                            ? Localizer[$"Payment saved with {allocations.Count(a => a.IsSelected)} allocations"]
+                            : Localizer["PaymentSavedSuccessfully"]
+                    });
                 }
-                else
-                {
-                    var result = await PaymentApiService.Update(oid: Oid, CurrentObject);
-                    if (result.IsPreconditionFailed())
-                    {
-                        HasChanges = true;
-                        CanEdit = false;
-                        return;
-                    }
-                }
-
-                NotificationService.Notify(new NotificationMessage
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = Localizer["SavedSuccessfully!"],
-                    Detail = allocations.Any()
-                        ? Localizer[$"Payment saved with {allocations.Count(a => a.IsSelected)} allocations"]
-                        : Localizer["PaymentSaved"]
-                });
-                DialogService.CloseDialog(CurrentObject);
             }
             catch (HttpRequestException ex)
             {
@@ -307,6 +280,12 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     ErrorVisible = true;
                 }
                 Logger.LogError(ex.Message, ex);
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Error"],
+                    Detail = ex.Message
+                });
             }
             catch (Exception ex)
             {
@@ -319,18 +298,51 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     Detail = ex.Message
                 });
             }
-            IsBusy = false;
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
-        protected override async Task SaveAndStayInEdit()
+        protected override async Task EnableReadOnlyModeAsync()
         {
-            await FormSubmit();
-            // After successful save, switch back to read-only mode
-            if (!ErrorVisible && !ShowNotUniqueAlert)
+            await base.EnableReadOnlyModeAsync();
+            if (CurrentObject?.PartyId.HasValue == true)
             {
-                IsReadOnlyMode = true;
-                StateHasChanged();
+                await LoadPendingInvoices(CurrentObject.PartyId.Value);
             }
+        }
+
+        /// <summary>
+        /// Determines if the selected payment method requires a bank account.
+        /// </summary>
+        private bool RequiresBankAccount()
+        {
+            if (CurrentObject == null)
+                return false;
+
+            return CurrentObject.PaymentMethod switch
+            {
+                Objects.Entities.PaymentMethod.BankTransfer => true,
+                Objects.Entities.PaymentMethod.Cheque => true,
+                Objects.Entities.PaymentMethod.Card => true,
+                Objects.Entities.PaymentMethod.UPI => true,
+                Objects.Entities.PaymentMethod.NetBanking => true,
+                _ => false // Cash, Wallet, Other don't require bank account
+            };
+        }
+
+        /// <summary>
+        /// Handles payment method changes. Clears bank account if cash/wallet selected.
+        /// </summary>
+        private void OnPaymentMethodChanged(object value)
+        {
+            if (!RequiresBankAccount())
+            {
+                // Clear bank account for cash/wallet/other payments
+                CurrentObject.BankAccountId = null;
+            }
+            StateHasChanged();
         }
 
     }

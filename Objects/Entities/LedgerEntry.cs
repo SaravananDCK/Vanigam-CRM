@@ -42,5 +42,12 @@ namespace Vanigam.CRM.Objects.Entities
 
         [StringLength(200)]
         public string? ReconciledBy { get; set; }
+
+        // PostgreSQL generated columns for reporting
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal DebitAmount { get; private set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal CreditAmount { get; private set; }
     }
 }

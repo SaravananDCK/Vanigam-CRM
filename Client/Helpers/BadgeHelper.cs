@@ -120,7 +120,7 @@ namespace Vanigam.CRM.Client.Helpers
         #endregion
 
         #region PaymentStatus
-        public static BadgeStyle GetBadgeStyle(PaymentStatus status)
+        public static BadgeStyle GetBadgeStyle(PaymentStatus? status)
         {
             return status switch
             {

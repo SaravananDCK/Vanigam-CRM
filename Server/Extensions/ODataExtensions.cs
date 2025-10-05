@@ -58,6 +58,7 @@ namespace Vanigam.CRM.Server.Extensions
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Attachment>(nameof(VanigamAccountingDbContext.Attachments));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.GPSPoint>(nameof(VanigamAccountingDbContext.GPSPoints));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Contract>(nameof(VanigamAccountingDbContext.Contracts));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.ContractCoverageRule>(nameof(VanigamAccountingDbContext.ContractCoverageRules));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Sla>(nameof(VanigamAccountingDbContext.Slas));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.RecurringJob>(nameof(VanigamAccountingDbContext.RecurringJobs));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Location>(nameof(VanigamAccountingDbContext.Locations));

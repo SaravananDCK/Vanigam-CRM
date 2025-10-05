@@ -3,7 +3,7 @@ using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Components.ComboBoxes;
 
-public class PaymentStatusEnumDropDown : VanigamSimpleDropDown<PaymentStatus>
+public class PaymentStatusEnumDropDown : VanigamSimpleDropDown<PaymentStatus?>
 {
     public override async Task SetParametersAsync(ParameterView parameters)
     {

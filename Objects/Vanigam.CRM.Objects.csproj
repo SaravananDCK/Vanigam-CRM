@@ -76,4 +76,9 @@
 	  <Folder Include="Migrations\PostGreSQL\Functions\" />
 	  <Folder Include="Migrations\PostGreSQL\Triggers\" />
 	</ItemGroup>
+
+	<!-- Embed all SQL files in Database folder as resources -->
+	<ItemGroup>
+		<EmbeddedResource Include="Database\**\*.sql" />
+	</ItemGroup>
 </Project>

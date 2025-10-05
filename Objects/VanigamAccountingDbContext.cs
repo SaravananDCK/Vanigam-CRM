@@ -45,6 +45,7 @@ namespace Vanigam.CRM.Objects
         public DbSet<Attachment> Attachments => Set<Attachment>();
         public DbSet<GPSPoint> GPSPoints => Set<GPSPoint>();
         public DbSet<Contract> Contracts => Set<Contract>();
+        public DbSet<ContractCoverageRule> ContractCoverageRules => Set<ContractCoverageRule>();
         public DbSet<Sla> Slas => Set<Sla>();
         public DbSet<RecurringJob> RecurringJobs => Set<RecurringJob>();
         public DbSet<Location> Locations => Set<Location>();
@@ -91,6 +92,7 @@ namespace Vanigam.CRM.Objects
         public DbSet<PaymentApplicationBase> PaymentApplications { get; set; }
         public DbSet<PaymentAllocation> PaymentAllocations { get; set; }
         public DbSet<CustomerAdvance> CustomerAdvances { get; set; }
+        public DbSet<TenantAccountingSettings> TenantAccountingSettings { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -166,6 +168,15 @@ namespace Vanigam.CRM.Objects
                 .Property(e => e.EntryType)
                 .HasConversion<string>();
 
+            // Configure DebitAmount and CreditAmount as PostgreSQL generated columns
+            modelBuilder.Entity<LedgerEntry>()
+                .Property(e => e.DebitAmount)
+                .HasComputedColumnSql("CASE WHEN \"EntryType\" = 'Debit' THEN \"Amount\" ELSE 0 END", stored: true);
+
+            modelBuilder.Entity<LedgerEntry>()
+                .Property(e => e.CreditAmount)
+                .HasComputedColumnSql("CASE WHEN \"EntryType\" = 'Credit' THEN \"Amount\" ELSE 0 END", stored: true);
+
             // Configure TPH for Voucher hierarchy
             modelBuilder.Entity<Voucher>()
                 .ToTable(nameof(Vouchers))
@@ -174,6 +185,7 @@ namespace Vanigam.CRM.Objects
                 .HasValue<Invoice>(VoucherType.Invoice)
                 .HasValue<PurchaseOrder>(VoucherType.PurchaseOrder)
                 .HasValue<PurchaseInvoice>(VoucherType.PurchaseInvoice)
+                .HasValue<Payment>(VoucherType.Payment)
                 .HasValue<Job>(VoucherType.Job);
             
             // Configure TPH for Voucher hierarchy
@@ -200,19 +212,17 @@ namespace Vanigam.CRM.Objects
                 .HasValue<PaymentAllocation>("Allocation")
                 .HasValue<CustomerAdvance>("Advance");
 
+            // Configure Payment PaymentMethod enum to be stored as string
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.PaymentMethod)
+                .HasConversion<string>();
+
             // Configure Payment to PaymentApplicationBase relationship
             modelBuilder.Entity<Payment>()
                 .HasMany(p => p.Applications)
                 .WithOne(a => a.Payment)
                 .HasForeignKey(a => a.PaymentId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            // Configure Payment to Customer relationship
-            modelBuilder.Entity<Payment>()
-                .HasOne(p => p.Customer)
-                .WithMany()
-                .HasForeignKey(p => p.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // Configure Payment to BankAccount relationship
             modelBuilder.Entity<Payment>()
@@ -247,19 +257,6 @@ namespace Vanigam.CRM.Objects
         }
         public async Task SeedInitialData()
         {
-            var beforeUpdate = new string[]
-            {
-            };
-            var functions = new string[]
-            {
-
-            };
-            var triggers = new string[]
-            {
-
-            };
-            var afterUpdate = functions.Concat(triggers).ToArray();
-
             if (!await this.Database.CanConnectAsync())
             {
                 await this.Database.EnsureCreatedAsync();
@@ -281,27 +278,108 @@ namespace Vanigam.CRM.Objects
                 await this.SeedInventoryItemData();
                 await this.SeedServiceItemData();
                 await this.SeedQuoteData();
-                //foreach (var fn in beforeUpdate)
-                //{
-                //    await using var stream = typeof(Party).Assembly.GetManifestResourceStream(fn);
-                //    if (stream != null)
-                //    {
-                //        using var reader = new StreamReader(stream);
-                //        await this.Database.ExecuteSqlRawAsync(await reader.ReadToEndAsync());
-                //    }
-                //}
 
-                //foreach (var fn in afterUpdate)
-                //{
-                //    await using var stream = typeof(Party).Assembly.GetManifestResourceStream(fn);
-                //    if (stream != null)
-                //    {
-                //        using var reader = new StreamReader(stream);
-                //        await this.Database.ExecuteSqlRawAsync(await reader.ReadToEndAsync());
-                //    }
-                //}
+                // Execute database constraints and triggers (PostgreSQL only)
+                await this.ExecuteDatabaseConstraints();
             }
 
+        }
+
+        /// <summary>
+        /// Executes all SQL files from the Database folder (embedded resources).
+        /// Automatically detects and runs PostgreSQL or MSSQL scripts based on provider.
+        /// </summary>
+        private async Task ExecuteDatabaseConstraints()
+        {
+            try
+            {
+                // Determine database provider
+                var isPostgreSQL = Database.ProviderName?.Contains("Npgsql", StringComparison.OrdinalIgnoreCase) ?? false;
+                var isSqlServer = Database.ProviderName?.Contains("SqlServer", StringComparison.OrdinalIgnoreCase) ?? false;
+
+                if (!isPostgreSQL && !isSqlServer)
+                {
+                    Console.WriteLine("Skipping database constraints - unsupported database provider");
+                    return;
+                }
+
+                Console.WriteLine($"Executing database scripts for {(isPostgreSQL ? "PostgreSQL" : "SQL Server")}...");
+
+                // Get all embedded SQL resources from the Database folder
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceNames = assembly.GetManifestResourceNames()
+                    .Where(r => r.Contains(".Database.") && r.EndsWith(".sql", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (!resourceNames.Any())
+                {
+                    Console.WriteLine("No embedded SQL resources found in Database folder");
+                    return;
+                }
+
+                Console.WriteLine($"Found {resourceNames.Count} SQL script(s) to execute");
+
+                foreach (var resourceName in resourceNames)
+                {
+                    try
+                    {
+                        // Filter by database provider
+                        var isPostgreSQLScript = resourceName.Contains("PostgreSQL", StringComparison.OrdinalIgnoreCase);
+                        var isSqlServerScript = resourceName.Contains("MSSQL", StringComparison.OrdinalIgnoreCase) ||
+                                              resourceName.Contains("SqlServer", StringComparison.OrdinalIgnoreCase);
+
+                        // Skip if script doesn't match current provider
+                        if (isPostgreSQL && !isPostgreSQLScript && isSqlServerScript)
+                        {
+                            Console.WriteLine($"Skipping SQL Server script: {resourceName}");
+                            continue;
+                        }
+
+                        if (isSqlServer && !isSqlServerScript && isPostgreSQLScript)
+                        {
+                            Console.WriteLine($"Skipping PostgreSQL script: {resourceName}");
+                            continue;
+                        }
+
+                        Console.WriteLine($"Executing: {resourceName}");
+
+                        // Read embedded resource
+                        await using var stream = assembly.GetManifestResourceStream(resourceName);
+                        if (stream == null)
+                        {
+                            Console.WriteLine($"Could not load resource: {resourceName}");
+                            continue;
+                        }
+
+                        using var reader = new StreamReader(stream);
+                        var sqlContent = await reader.ReadToEndAsync();
+
+                        if (string.IsNullOrWhiteSpace(sqlContent))
+                        {
+                            Console.WriteLine($"Empty SQL content in: {resourceName}");
+                            continue;
+                        }
+
+                        // Execute the SQL script
+                        await Database.ExecuteSqlRawAsync(sqlContent);
+
+                        Console.WriteLine($"Successfully executed: {resourceName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error executing {resourceName}: {ex.Message}");
+                        // Continue with next script instead of failing
+                    }
+                }
+
+                Console.WriteLine("Database scripts execution completed");
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't throw to avoid breaking the seeding process
+                Console.WriteLine($"Error executing database scripts: {ex.Message}");
+                Console.WriteLine("You may need to run SQL files manually if constraints are not applied");
+            }
         }
 
         public async Task SeedTenantsAdmin()
