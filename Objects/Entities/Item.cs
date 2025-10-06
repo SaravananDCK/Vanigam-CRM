@@ -37,6 +37,11 @@ namespace Vanigam.CRM.Objects.Entities
         public decimal UnitPrice { get; set; }  // price charged to customer
         public decimal? Cost { get; set; }
         
+        public Guid? CategoryId { get; set; }
+
+        [ForeignKey(nameof(CategoryId))]
+        public ItemCategory? Category { get; set; }
+        
         public Guid? LocationId { get; set; }
 
         [ForeignKey(nameof(LocationId))]

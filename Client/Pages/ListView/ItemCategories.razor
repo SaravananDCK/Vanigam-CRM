@@ -1,0 +1,45 @@
+@page "/itemcategories"
+@using Vanigam.CRM.Objects.Entities
+@inherits Vanigam.CRM.Client.Components.BaseListView<ItemCategory, ItemCategories>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject ItemCategoryApiService ItemCategoryApiService
+
+<RadzenStack>
+    <ListPageTitleComponent TitleText=@Localizer["ItemCategories"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <RadzenRow>
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="ItemCategory" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+                <EmptyTemplate>
+                    <NoRecordComponent ShowAddButton="false" />
+                </EmptyTemplate>
+                <Columns>
+                    <RadzenDataGridColumn TItem="ItemCategory" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                        <Template Context="itemcategory">
+                            <OpenPageCommonComponent T="ItemCategory" OpenObject="@itemcategory" Open="@Open"></OpenPageCommonComponent>
+                            <DeletePageCommonComponent T="ItemCategory" UsingObject="@itemcategory" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                        </Template>
+                        <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ItemCategory" Property=@nameof(ItemCategory.Name) Title=@Localizer["Name"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ItemCategory" Property=@nameof(ItemCategory.Description) Title=@Localizer["Description"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ItemCategory" Property=@nameof(ItemCategory.IsActive) Title=@Localizer["IsActive"]>
+                        <Template Context="itemcategory">
+                            @if (itemcategory.IsActive)
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
+                            }
+                            else
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ItemCategory" Property=@nameof(ItemCategory.Oid) Title=@Localizer["Oid"] Visible="false">
+                    </RadzenDataGridColumn>
+                </Columns>
+            </VanigamAccountingDataGrid>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>

@@ -36,6 +36,7 @@ namespace Vanigam.CRM.Objects
         public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
         public DbSet<Product> Products => Set<Product>();
         public DbSet<ServiceItem> ServiceItems => Set<ServiceItem>();
+        public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
         public DbSet<MaterialUsage> MaterialUsages => Set<MaterialUsage>();
         public DbSet<Quote> Quotes => Set<Quote>();
         public DbSet<QuoteItem> QuoteItems => Set<QuoteItem>();

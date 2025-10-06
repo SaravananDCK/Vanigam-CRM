@@ -45,6 +45,7 @@ namespace Vanigam.CRM.Server.Extensions
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Product>(nameof(VanigamAccountingDbContext.Products));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.InventoryItem>(nameof(VanigamAccountingDbContext.InventoryItems));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.ServiceItem>(nameof(VanigamAccountingDbContext.ServiceItems));
+            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.ItemCategory>(nameof(VanigamAccountingDbContext.ItemCategories));
 
             //oDataBuilderVanigamAccounting.EntityType<InventoryItem>().DerivesFrom<Item>();
             //oDataBuilderVanigamAccounting.EntityType<Product>().DerivesFrom<Item>();

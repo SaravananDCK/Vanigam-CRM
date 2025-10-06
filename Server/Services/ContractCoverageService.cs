@@ -112,8 +112,11 @@ public class ContractCoverageService(
             // This works for both PostgreSQL and SQL Server with minor syntax differences
             var isPostgreSQL = context.Database.IsNpgsql();
 
-            FormattableString query = isPostgreSQL
-                ? $@"SELECT
+            FormattableString query;
+
+            if (isPostgreSQL)
+            {
+                query = $@"SELECT
                     COALESCE(SUM(mu.""Quantity""), 0) AS ""QuantityUsed"",
                     COALESCE(SUM(CAST(mu.""Quantity"" AS DECIMAL) * mu.""UnitPrice""), 0) AS ""ValueUsed"",
                     COALESCE(SUM(mu.""ChargedAmount""), 0) AS ""ChargedAmount"",
@@ -129,8 +132,11 @@ public class ContractCoverageService(
                     AND mu.""IsNotDeleted"" = true
                 WHERE c.""Oid"" = {contractId}
                     AND c.""IsNotDeleted"" = true
-                    AND c.""IsActive"" = true"
-                : $@"SELECT
+                    AND c.""IsActive"" = true";
+            }
+            else
+            {
+                query = $@"SELECT
                     COALESCE(SUM(mu.[Quantity]), 0) AS [QuantityUsed],
                     COALESCE(SUM(CAST(mu.[Quantity] AS DECIMAL) * mu.[UnitPrice]), 0) AS [ValueUsed],
                     COALESCE(SUM(mu.[ChargedAmount]), 0) AS [ChargedAmount],
@@ -147,6 +153,7 @@ public class ContractCoverageService(
                 WHERE c.[Oid] = {contractId}
                     AND c.[IsNotDeleted] = 1
                     AND c.[IsActive] = 1";
+            }
 
             var usage = await context.Database
                 .SqlQuery<ContractItemUsageDTO>(query)
@@ -175,8 +182,11 @@ public class ContractCoverageService(
         {
             var isPostgreSQL = context.Database.IsNpgsql();
 
-            FormattableString query = isPostgreSQL
-                ? $@"SELECT
+            FormattableString query;
+
+            if (isPostgreSQL)
+            {
+                query = $@"SELECT
                     COALESCE(SUM(CAST(mu.""Quantity"" AS DECIMAL) * mu.""UnitPrice""), 0) AS ""TotalValueUsed"",
                     COALESCE(SUM(mu.""ChargedAmount""), 0) AS ""TotalChargedAmount"",
                     COALESCE(SUM(mu.""WaivedAmount""), 0) AS ""TotalWaivedAmount"",
@@ -191,8 +201,11 @@ public class ContractCoverageService(
                     AND mu.""IsNotDeleted"" = true
                 WHERE c.""Oid"" = {contractId}
                     AND c.""IsNotDeleted"" = true
-                    AND c.""IsActive"" = true"
-                : $@"SELECT
+                    AND c.""IsActive"" = true";
+            }
+            else
+            {
+                query = $@"SELECT
                     COALESCE(SUM(CAST(mu.[Quantity] AS DECIMAL) * mu.[UnitPrice]), 0) AS [TotalValueUsed],
                     COALESCE(SUM(mu.[ChargedAmount]), 0) AS [TotalChargedAmount],
                     COALESCE(SUM(mu.[WaivedAmount]), 0) AS [TotalWaivedAmount],
@@ -208,6 +221,7 @@ public class ContractCoverageService(
                 WHERE c.[Oid] = {contractId}
                     AND c.[IsNotDeleted] = 1
                     AND c.[IsActive] = 1";
+            }
 
             var usage = await context.Database
                 .SqlQuery<ContractTotalUsageDTO>(query)
