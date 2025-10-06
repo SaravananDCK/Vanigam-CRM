@@ -15,16 +15,16 @@
         @* Floating Edit Button - Only visible in read-only mode *@
         @if (IsEditButtonVisible)
         {
-            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
+            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]" />
         }
         @* Conversion Button - Only in read-only mode for accepted quotes *@
         @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvertToInvoice)
         {
             <RadzenButton Text="@Localizer["ConvertToInvoice"]"
-                         Icon="receipt"
-                         ButtonStyle="ButtonStyle.Success"
-                         Size="ButtonSize.Small"
-                         Click="@ShowConversionDialog" />
+                          Icon="receipt"
+                          ButtonStyle="ButtonStyle.Success"
+                          Size="ButtonSize.Small"
+                          Click="@ShowConversionDialog" />
         }
     </CustomBadge>
 </DetailPageTitleComponent>
@@ -203,8 +203,8 @@
             @* Quote Items Section *@
             <RadzenCard class="rz-mb-4">
                 <EditableQuoteItems Items="@quoteItems"
-                                   ItemsChanged="@OnQuoteItemsChanged"
-                                   TotalAmountChanged="@OnTotalAmountChanged" />
+                                    ItemsChanged="@OnQuoteItemsChanged"
+                                    TotalAmountChanged="@OnTotalAmountChanged" />
             </RadzenCard>
         </RadzenStack>
 
@@ -333,16 +333,8 @@
                 CurrentObject = savedQuote;
                 hasQuoteItemChanges = false;
 
-                if (IsCreateMode)
-                {
-                    // Navigate to edit mode for the newly created quote
-                    NavigationManager.NavigateTo($"/edit-quote?oid={savedQuote.Oid}");
-                }
-                else
-                {
-                    await LoadQuoteItems(); // Refresh items
-                    await EnableReadOnlyModeAsync();
-                }
+                await LoadQuoteItems(); // Refresh items
+                await EnableReadOnlyModeAsync();
 
                 NotificationService.Notify(new NotificationMessage
                 {

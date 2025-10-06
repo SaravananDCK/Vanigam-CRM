@@ -33,7 +33,12 @@ namespace Vanigam.CRM.Objects.Entities
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ItemType Type { get; set; }
-        
+
+        public Guid? TaxCodeId { get; set; }
+
+        [ForeignKey(nameof(TaxCodeId))]
+        public TaxCode? TaxCode { get; set; }
+
         public decimal UnitPrice { get; set; }  // price charged to customer
         public decimal? Cost { get; set; }
         

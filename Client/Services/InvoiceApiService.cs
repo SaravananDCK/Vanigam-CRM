@@ -28,7 +28,7 @@ public class InvoiceApiService(
             var json = JsonSerializer.Serialize(invoiceData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"api/invoice/bulk-save", content);
+            var response = await httpClient.PostAsync($"odata/VanigamAccountingService/invoices/bulk-save", content);
 
             if (response.IsSuccessStatusCode)
             {

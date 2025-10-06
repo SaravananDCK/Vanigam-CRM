@@ -20,7 +20,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
     : BaseODataServiceController<Payment, PaymentService>(context, userManager, roleManager,
         service, null)
     {
-        [HttpPost("/api/payment/bulk-save")]
+        [HttpPost("bulk-save")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Payment>> BulkSavePaymentWithAllocations([FromBody] PaymentBulkSaveDTO paymentData)
         {
@@ -67,7 +67,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         Status = paymentData.Status,
                         AllocatedAmount = paymentData.AllocatedAmount,
                         UnallocatedAmount = paymentData.UnallocatedAmount,
-                        TenantId = CurrentUser.TenantId,
+                        TenantId = service.TenantId,
                         CreatedByUserId = CurrentUser.Id.ToString(),
                         CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
                         UpdatedByUserId = CurrentUser.Id.ToString(),
@@ -111,7 +111,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         InvoiceBalanceBefore = invoice.BalanceAmount,
                         InvoiceBalanceAfter = invoice.BalanceAmount - allocDto.Amount,
                         Notes = $"Payment allocation for {allocDto.InvoiceNumber}",
-                        TenantId = CurrentUser.TenantId,
+                        TenantId = service.TenantId,
                         CreatedByUserId = CurrentUser.Id.ToString(),
                         CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
                         UpdatedByUserId = CurrentUser.Id.ToString(),
@@ -148,7 +148,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         AppliedDate = payment.VoucherDate,
                         Reason = "Overpayment / Advance Payment",
                         IsAvailableForAllocation = true,
-                        TenantId = CurrentUser.TenantId,
+                        TenantId = service.TenantId,
                         CreatedByUserId = CurrentUser.Id.ToString(),
                         CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
                         UpdatedByUserId = CurrentUser.Id.ToString(),

@@ -48,7 +48,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                 return BadRequest(new { Error = "Failed to retrieve status summary" });
             }
         }
-        [HttpPost("/api/quote/bulk-save")]
+        [HttpPost("bulk-save")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Quote>> BulkSaveQuoteWithItems([FromBody] QuoteBulkSaveDTO quoteData)
         {
@@ -89,7 +89,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         PartyId = quoteData.CustomerId,
                         JobId = quoteData.JobId,
                         TotalAmount = quoteData.TotalAmount,
-                        TenantId = CurrentUser.TenantId
+                        TenantId = service.TenantId
                     };
 
                     context.Quotes.Add(quote);
@@ -126,7 +126,9 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                             ItemId = itemDto.InventoryItemId,
                             Quantity = itemDto.Quantity,
                             UnitPrice = itemDto.UnitPrice,
-                            TenantId = CurrentUser.TenantId
+                            TaxCodeId = itemDto.TaxCodeId,
+                            TaxAmount = itemDto.TaxAmount,
+                            TenantId = service.TenantId
                         };
 
                         context.QuoteItems.Add(newItem);
@@ -142,6 +144,8 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                             existingItem.ItemId = itemDto.InventoryItemId;
                             existingItem.Quantity = itemDto.Quantity;
                             existingItem.UnitPrice = itemDto.UnitPrice;
+                            existingItem.TaxCodeId = itemDto.TaxCodeId;
+                            existingItem.TaxAmount = itemDto.TaxAmount;
                         }
                     }
                 }

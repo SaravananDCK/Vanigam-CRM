@@ -186,6 +186,9 @@
             if (item != null)
             {
                 quoteItemDTO.InventoryItemName = item.Name;
+                quoteItemDTO.UnitPrice = item.UnitPrice;
+                quoteItemDTO.TaxCodeId = item.TaxCodeId;
+                quoteItemDTO.TaxAmount = (item.TaxCode?.TaxRate??0) * item.UnitPrice;
                 // You might want to set default price from inventory item if available
             }
         }

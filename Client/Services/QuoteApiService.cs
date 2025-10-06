@@ -29,7 +29,7 @@ public class QuoteApiService(
             var json = JsonSerializer.Serialize(quoteData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"api/quote/bulk-save", content);
+            var response = await httpClient.PostAsync($"odata/VanigamAccountingService/quotes/bulk-save", content);
 
             if (response.IsSuccessStatusCode)
             {

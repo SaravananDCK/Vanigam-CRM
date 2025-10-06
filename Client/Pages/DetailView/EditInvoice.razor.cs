@@ -44,7 +44,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             try
             {
-                var filter = $"InvoiceId eq {Oid} and IsNotDeleted eq true";
+                var filter = $"Oid eq {Oid} and IsNotDeleted eq true";
                 var result = await InvoiceItemApiService.Get(filter: filter, orderBy: "CreatedAtUtc", top: 100);
 
                 invoiceItems = result.Value.Select(item => new InvoiceItemDTO
@@ -126,17 +126,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 if (savedInvoice != null)
                 {
                     CurrentObject = savedInvoice;
-
-                    if (IsCreateMode)
-                    {
-                        // Navigate to edit mode for the newly created invoice
-                        NavigationManager.NavigateTo($"/edit-invoice?oid={savedInvoice.Oid}");
-                    }
-                    else
-                    {
-                        await EnableReadOnlyModeAsync();
-                    }
-
+                    await EnableReadOnlyModeAsync();
                     NotificationService.Notify(new NotificationMessage
                     {
                         Severity = NotificationSeverity.Success,

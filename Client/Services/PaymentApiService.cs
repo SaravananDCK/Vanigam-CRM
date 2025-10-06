@@ -28,7 +28,7 @@ public class PaymentApiService(
             var json = JsonSerializer.Serialize(paymentData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"api/payment/bulk-save", content);
+            var response = await httpClient.PostAsync($"odata/VanigamAccountingService/payments/bulk-save", content);
 
             if (response.IsSuccessStatusCode)
             {

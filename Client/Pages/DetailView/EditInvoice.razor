@@ -155,14 +155,14 @@
             <RadzenCard class="rz-mb-4">
                 <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["InvoiceInformation"]</RadzenText>
                 <RadzenStack>
+                    <VanigamAccountingFormField Text=@Localizer["Number"]>
+                        <ChildContent>
+                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" ReadOnly="true" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
                     <VanigamAccountingFormField Text=@Localizer["Customer"]>
                         <ChildContent>
                             <CustomerDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["Number"]>
-                        <ChildContent>
-                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" />
                         </ChildContent>
                     </VanigamAccountingFormField>
                     <VanigamAccountingFormField Text=@Localizer["Status"]>

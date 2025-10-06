@@ -1657,6 +1657,9 @@ namespace Vanigam.CRM.Objects
                 if (productSeedData?.Any() != true)
                     return;
 
+                // Get default tax code (GST 18%)
+                var defaultTaxCode = await TaxCodes.FirstOrDefaultAsync(tc => tc.Code == "GST18" && tc.TenantId == demoTenant.Id);
+
                 var products = new List<Product>();
                 foreach (var seedProduct in productSeedData)
                 {
@@ -1669,6 +1672,7 @@ namespace Vanigam.CRM.Objects
                         Type = Enum.TryParse<ItemType>(seedProduct.Type, out var type) ? type : ItemType.Product,
                         UnitPrice = seedProduct.UnitPrice,
                         Cost = seedProduct.Cost,
+                        TaxCodeId = defaultTaxCode?.Oid,
                         CreatedByUserId = ApplicationUser.SystemUserId,
                         CreatedAtUtc = DateTime.TryParse(seedProduct.CreatedAtUtc, out var createdAt) ?
                             Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :
@@ -1726,6 +1730,9 @@ namespace Vanigam.CRM.Objects
                 if (inventoryItemSeedData?.Any() != true)
                     return;
 
+                // Get default tax code (GST 18%)
+                var defaultTaxCode = await TaxCodes.FirstOrDefaultAsync(tc => tc.Code == "GST18" && tc.TenantId == demoTenant.Id);
+
                 var inventoryItems = new List<InventoryItem>();
                 foreach (var seedInventoryItem in inventoryItemSeedData)
                 {
@@ -1739,6 +1746,7 @@ namespace Vanigam.CRM.Objects
                         UnitPrice = seedInventoryItem.UnitPrice,
                         Cost = seedInventoryItem.Cost,
                         QuantityOnHand = seedInventoryItem.QuantityOnHand,
+                        TaxCodeId = defaultTaxCode?.Oid,
                         CreatedByUserId = ApplicationUser.SystemUserId,
                         CreatedAtUtc = DateTime.TryParse(seedInventoryItem.CreatedAtUtc, out var createdAt) ?
                             Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :
@@ -1796,6 +1804,9 @@ namespace Vanigam.CRM.Objects
                 if (serviceItemSeedData?.Any() != true)
                     return;
 
+                // Get default tax code (GST 18%)
+                var defaultTaxCode = await TaxCodes.FirstOrDefaultAsync(tc => tc.Code == "GST18" && tc.TenantId == demoTenant.Id);
+
                 var serviceItems = new List<ServiceItem>();
                 foreach (var seedServiceItem in serviceItemSeedData)
                 {
@@ -1809,6 +1820,7 @@ namespace Vanigam.CRM.Objects
                         UnitPrice = seedServiceItem.UnitPrice,
                         Cost = seedServiceItem.Cost,
                         HourlyRate = seedServiceItem.HourlyRate,
+                        TaxCodeId = defaultTaxCode?.Oid,
                         CreatedByUserId = ApplicationUser.SystemUserId,
                         CreatedAtUtc = DateTime.TryParse(seedServiceItem.CreatedAtUtc, out var createdAt) ?
                             Instant.FromDateTimeUtc(DateTime.SpecifyKind(createdAt, DateTimeKind.Utc)).ToDateTimeOffset() :

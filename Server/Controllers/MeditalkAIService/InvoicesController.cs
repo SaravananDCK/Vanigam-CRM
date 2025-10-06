@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Results;
 using Microsoft.EntityFrameworkCore;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.DTOs;
@@ -19,7 +20,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
     : BaseODataServiceController<Invoice, InvoiceService>(context, userManager, roleManager,
         service, null)
     {
-        [HttpPost("/api/invoice/bulk-save")]
+        [HttpPost("bulk-save")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Invoice>> BulkSaveInvoiceWithPayments([FromBody] InvoiceBulkSaveDTO invoiceData)
         {
@@ -56,7 +57,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         Status = invoiceData.Status,
                         PartyId = invoiceData.PartyId,
                         TotalAmount = invoiceData.TotalAmount,
-                        TenantId = CurrentUser.TenantId
+                        TenantId = service.TenantId
                     };
 
                     context.Invoices.Add(invoice);
@@ -93,7 +94,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                             ItemId = itemDto.InventoryItemId,
                             Quantity = itemDto.Quantity,
                             UnitPrice = itemDto.UnitPrice,
-                            TenantId = CurrentUser.TenantId
+                            TenantId = service.TenantId
                         };
 
                         context.InvoiceItems.Add(newItem);
@@ -120,7 +121,6 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                 var savedInvoice = await context.Invoices
                     .Include(i => i.Items)
                     .FirstOrDefaultAsync(i => i.Oid == invoice.Oid);
-
                 return Ok(savedInvoice);
             }
             catch (Exception ex)

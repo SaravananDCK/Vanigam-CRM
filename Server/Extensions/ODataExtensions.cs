@@ -40,7 +40,9 @@ namespace Vanigam.CRM.Server.Extensions
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.JobAssignment>(nameof(VanigamAccountingDbContext.JobAssignments));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Appointment>(nameof(VanigamAccountingDbContext.Appointments));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.TimeSheet>(nameof(VanigamAccountingDbContext.TimeSheets));
-            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Invoice>(nameof(VanigamAccountingDbContext.Invoices));
+            var invoicesEntitySet = oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Invoice>(nameof(VanigamAccountingDbContext.Invoices));
+            invoicesEntitySet.EntityType.Collection.Action("bulk-save")
+                .ReturnsFromEntitySet<Invoice>(nameof(VanigamAccountingDbContext.Invoices));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Item>(nameof(VanigamAccountingDbContext.Items));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Product>(nameof(VanigamAccountingDbContext.Products));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.InventoryItem>(nameof(VanigamAccountingDbContext.InventoryItems));
@@ -52,9 +54,13 @@ namespace Vanigam.CRM.Server.Extensions
             //oDataBuilderVanigamAccounting.EntityType<ServiceItem>().DerivesFrom<Item>();
 
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.MaterialUsage>(nameof(VanigamAccountingDbContext.MaterialUsages));
-            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Quote>(nameof(VanigamAccountingDbContext.Quotes));
+            var quotesEntitySet = oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Quote>(nameof(VanigamAccountingDbContext.Quotes));
+            quotesEntitySet.EntityType.Collection.Action("bulk-save")
+                .ReturnsFromEntitySet<Quote>(nameof(VanigamAccountingDbContext.Quotes));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.QuoteItem>(nameof(VanigamAccountingDbContext.QuoteItems));
-            oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Payment>(nameof(VanigamAccountingDbContext.Payments));
+            var paymentsEntitySet = oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Payment>(nameof(VanigamAccountingDbContext.Payments));
+            paymentsEntitySet.EntityType.Collection.Action("bulk-save")
+                .ReturnsFromEntitySet<Payment>(nameof(VanigamAccountingDbContext.Payments));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.JobReport>(nameof(VanigamAccountingDbContext.JobReports));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Attachment>(nameof(VanigamAccountingDbContext.Attachments));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.GPSPoint>(nameof(VanigamAccountingDbContext.GPSPoints));
