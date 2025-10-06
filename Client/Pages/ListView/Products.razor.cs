@@ -36,7 +36,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         }
         protected override string GetExpandString(LoadDataArgs args)
         {
-            return string.Empty;
+            return nameof(Item.TaxCode);
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)

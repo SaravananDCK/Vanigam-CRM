@@ -16,6 +16,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
     UserManager<ApplicationUser> userManager,
     RoleManager<ApplicationRole> roleManager,
     QuoteService service,
+    NumberSeriesService numberSeriesService,
     SummaryService<Quote, QuoteStatus> summaryService,
     ILogger<QuotesController> logger)
     : BaseODataServiceController<Quote, QuoteService>(context, userManager, roleManager,
@@ -70,7 +71,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         return NotFound("Quote not found");
 
                     // Update quote properties
-                    quote.Number = quoteData.Title;
+                    //quote.Number = quoteData.Title;
                     quote.Status = quoteData.Status;
                     quote.OpportunityId = quoteData.OpportunityId;
                     quote.PartyId = quoteData.CustomerId;
@@ -83,7 +84,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                     quote = new Quote
                     {
                         Oid = Guid.NewGuid(),
-                        Number = quoteData.Title,
+                        Number = await numberSeriesService.GenerateNextNumber(nameof(Quote),service.TenantId),
                         Status = quoteData.Status,
                         OpportunityId = quoteData.OpportunityId,
                         PartyId = quoteData.CustomerId,

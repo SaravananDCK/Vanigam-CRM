@@ -162,39 +162,58 @@
                 <RadzenStack>
                     <VanigamAccountingFormField Text=@Localizer["Number"]>
                         <ChildContent>
-                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Title" ReadOnly="true" />
+                            @if (string.IsNullOrEmpty(CurrentObject.Number))
+                            {
+                                <RadzenText TextStyle="TextStyle.Button" Text="New Quote" class="rz-m-2" Style="color: var(--rz-success);" />
+                            }
+                            else
+                            {
+                                <RadzenText Text="@CurrentObject.Number" class="rz-m-2" />
+                            }
+                            
                         </ChildContent>
                     </VanigamAccountingFormField>
+                    <VanigamAccountingFormField Text=@Localizer["Quotation For"]>
+                        <ChildContent>
+                            <RadzenRadioButtonList @bind-Value=@QuotationFor TValue="int" JustifyContent="JustifyContent.Start" class="rz-m-2">
+                                <Items>
+                                    <RadzenRadioButtonListItem Text="Customer" Value="0"/>
+                                    <RadzenRadioButtonListItem Text="Opportunity" Value="1"/>
+                                </Items>
+                            </RadzenRadioButtonList>
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                    @if (QuotationFor == 1)
+                    {
+                        <VanigamAccountingFormField Text=@Localizer["Opportunity"]>
+                            <ChildContent>
+                                <RadzenDropDown @bind-Value="@CurrentObject.OpportunityId"
+                                                Data="@Opportunities"
+                                                TextProperty="Title"
+                                                ValueProperty="Oid"
+                                                Placeholder="@Localizer["Select Opportunity"]"
+                                                AllowClear="true"
+                                                class="w-100" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    }
+                    else
+                    {
+                        <VanigamAccountingFormField Text=@Localizer["Customer"]>
+                            <ChildContent>
+                                <RadzenDropDown @bind-Value="@CurrentObject.PartyId"
+                                                Data="@Customers"
+                                                TextProperty="Name"
+                                                ValueProperty="Oid"
+                                                Placeholder="@Localizer["Select Customer"]"
+                                                AllowClear="true"
+                                                class="w-100" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    }
                     <VanigamAccountingFormField Text=@Localizer["Status"]>
                         <ChildContent>
                             <QuoteStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["Opportunity"]>
-                        <ChildContent>
-                            <RadzenDropDown @bind-Value="@CurrentObject.OpportunityId"
-                                            Data="@Opportunities"
-                                            TextProperty="Title"
-                                            ValueProperty="Oid"
-                                            Placeholder="@Localizer["Select Opportunity"]"
-                                            AllowClear="true"
-                                            class="w-100" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["Customer"]>
-                        <ChildContent>
-                            <RadzenDropDown @bind-Value="@CurrentObject.PartyId"
-                                            Data="@Customers"
-                                            TextProperty="Name"
-                                            ValueProperty="Oid"
-                                            Placeholder="@Localizer["Select Customer"]"
-                                            AllowClear="true"
-                                            class="w-100" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["TotalAmount"]>
-                        <ChildContent>
-                            <RadzenNumeric @bind-Value="@CurrentObject.TotalAmount" Name="numeric_TotalAmount" ReadOnly="true" />
                         </ChildContent>
                     </VanigamAccountingFormField>
                 </RadzenStack>

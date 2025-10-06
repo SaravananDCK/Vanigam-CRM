@@ -11,7 +11,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditQuote
     {
         [Inject] private QuoteApiService QuoteApiService { get; set; }
-
+        private int QuotationFor { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)

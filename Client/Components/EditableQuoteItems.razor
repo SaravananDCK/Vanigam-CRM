@@ -6,14 +6,15 @@
 @inject NotificationService NotificationService
 
 <RadzenStack>
-    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["QuoteItems"]</RadzenText>
-
     @* Add New Item Button *@
-    <RadzenButton Text="@Localizer["AddItem"]"
-                 Icon="add"
-                 ButtonStyle="ButtonStyle.Success"
-                 Size="ButtonSize.Small"
-                 Click="@AddNewItem" />
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+        <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["Items"]</RadzenText>
+        <RadzenButton Text="@Localizer["AddItem"]"
+                      Icon="add"
+                      ButtonStyle="ButtonStyle.Success"
+                      Size="ButtonSize.Small"
+                      Click="@AddNewItem"/>
+    </RadzenStack>
 
     @* Items List *@
     @if (Items?.Any() == true)
@@ -23,13 +24,13 @@
                        EditMode="Radzen.DataGridEditMode.Single" RowUpdate="@OnRowUpdate"
                        class="rz-mt-3">
             <Columns>
-                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="ItemName" Title="@Localizer["Item"]" Width="200px">
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="InventoryItemName" Title="@Localizer["Item"]" Width="200px">
                     <EditTemplate Context="item">
                         <InventoryItemDropDownDataGrid @bind-Value="item.InventoryItemId"
                                        TextProperty="Name"
                                        ValueProperty="Oid"
                                        Placeholder="@Localizer["SelectItem"]"
-                                                       Change="@(async (object value) => { item.InventoryItemId = (Guid?)value; await OnInventoryItemChanged(value as Item,item); })"
+                                                       Change="@(async (object value) => { item.InventoryItemId = (Guid?)value; await OnInventoryItemChanged(value as Guid?,item); })"
                                        class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
@@ -90,11 +91,9 @@
                 <RadzenColumn Size="8">
                 </RadzenColumn>
                 <RadzenColumn Size="4">
-                    <RadzenStack>
-                        <div class="d-flex justify-content-between">
-                            <RadzenText TextStyle="TextStyle.H6">@Localizer["TotalAmount"]:</RadzenText>
-                            <RadzenText TextStyle="TextStyle.H6">@TotalAmount.ToString("C")</RadzenText>
-                        </div>
+                    <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.End">
+                        <RadzenText TextStyle="TextStyle.H6">@Localizer["TotalAmount"]:</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6">@TotalAmount.ToString("C")</RadzenText>
                     </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>
@@ -104,108 +103,8 @@
     {
         <RadzenCard class="rz-mt-3">
             <RadzenText TextStyle="TextStyle.Body1" class="rz-color-secondary">
-                @Localizer["NoQuoteItems"]
+                @Localizer["No Items"]
             </RadzenText>
         </RadzenCard>
     }
 </RadzenStack>
-
-@code {
-    [Parameter] public List<QuoteItemDTO> Items { get; set; } = new();
-    [Parameter] public EventCallback<List<QuoteItemDTO>> ItemsChanged { get; set; }
-    [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
-
-    private RadzenDataGrid<QuoteItemDTO> itemsGrid = null!;
-    private QuoteItemDTO? itemBeingEdited;
-
-    public decimal TotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
-
-    private async Task AddNewItem()
-    {
-        var newItem = new QuoteItemDTO
-        {
-            Quantity = 1,
-            UnitPrice = 0,
-        };
-
-        Items.Add(newItem);
-        await NotifyChanges();
-
-        // Start editing the new item immediately
-        await Task.Delay(100); // Small delay to ensure the grid is updated
-        await EditRow(newItem);
-    }
-
-    private async Task EditRow(QuoteItemDTO item)
-    {
-        itemBeingEdited = item;
-        await itemsGrid.EditRow(item);
-    }
-
-    private async Task SaveRow(QuoteItemDTO item)
-    {
-        await itemsGrid.UpdateRow(item);
-    }
-
-    private async Task CancelEdit(QuoteItemDTO item)
-    {
-        itemsGrid.CancelEditRow(item);
-
-        // If it's a new item and user cancels, remove it
-        if (item.IsNew)
-        {
-            Items.Remove(item);
-            await NotifyChanges();
-        }
-    }
-
-    private async Task OnRowUpdate(QuoteItemDTO item)
-    {
-        CalculateTotal(item);
-        await NotifyChanges();
-    }
-
-    private async Task DeleteItem(QuoteItemDTO item)
-    {
-        if (item.IsNew)
-        {
-            Items.Remove(item);
-        }
-        else
-        {
-            item.IsDeleted = true;
-        }
-
-        await NotifyChanges();
-    }
-
-    private async Task OnInventoryItemChanged(Item item, QuoteItemDTO quoteItemDTO)
-    {
-        if (quoteItemDTO.InventoryItemId.HasValue)
-        {
-            if (item != null)
-            {
-                quoteItemDTO.InventoryItemName = item.Name;
-                quoteItemDTO.UnitPrice = item.UnitPrice;
-                quoteItemDTO.TaxCodeId = item.TaxCodeId;
-                quoteItemDTO.TaxAmount = (item.TaxCode?.TaxRate??0) * item.UnitPrice;
-                // You might want to set default price from inventory item if available
-            }
-        }
-
-        CalculateTotal(quoteItemDTO);
-        await NotifyChanges();
-    }
-
-    private void CalculateTotal(QuoteItemDTO item)
-    {
-        // Total is calculated automatically in the DTO property
-    }
-
-    private async Task NotifyChanges()
-    {
-        await ItemsChanged.InvokeAsync(Items);
-        await TotalAmountChanged.InvokeAsync(TotalAmount);
-        StateHasChanged();
-    }
-}

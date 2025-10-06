@@ -51,7 +51,7 @@
                 JustifyContent="JustifyContent.End" Style="height: 70px;">
                 <AuthorizeView Roles="@ApplicationRole.SuperUserRole">
                     <RadzenButton Click="@SwapTenantClick" Icon="@FadIcon("fa-starship")"
-                        ButtonStyle="ButtonStyle.Primary" Style="margin-right:5px" />
+                        ButtonStyle="ButtonStyle.Primary" Style="margin-right:5px" class="fa-small"/>
                 </AuthorizeView>
                 <CulturePicker />
                 <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick"

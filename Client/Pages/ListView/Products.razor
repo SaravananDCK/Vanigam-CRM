@@ -24,7 +24,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Product" Property=@nameof(Item.SKU) Title=@Localizer["SKU"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Product" Property=@nameof(InventoryItem.QuantityOnHand) Title=@Localizer["QuantityOnHand"]>
+                    <RadzenDataGridColumn TItem="Product" Property="TaxCode.Name" Title=@Localizer["Tax"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Product" Property=@nameof(Item.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>
