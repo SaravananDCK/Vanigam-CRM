@@ -12,7 +12,7 @@ namespace Vanigam.CRM.Objects.Entities
         public string Title { get; set; } = string.Empty;
 
         [Required]
-        public Guid CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
 
         [ForeignKey(nameof(CustomerId))]
         public Customer Customer { get; set; } = null!;

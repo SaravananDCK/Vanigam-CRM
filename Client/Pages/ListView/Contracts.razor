@@ -28,8 +28,31 @@
                     <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.Title) Title=@Localizer["Title"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.StartDate) Title=@Localizer["StartDate"]>
+                        <Template Context="contract">
+                            @contract.StartDate?.ToString("yyyy-MM-dd")
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.EndDate) Title=@Localizer["EndDate"]>
+                        <Template Context="contract">
+                            @contract.EndDate?.ToString("yyyy-MM-dd")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.IsActive) Title=@Localizer["Status"] Width="100px">
+                        <Template Context="contract">
+                            @if (contract.IsActive)
+                            {
+                                <RadzenBadge Text=@Localizer["Active"] BadgeStyle="BadgeStyle.Success" />
+                            }
+                            else
+                            {
+                                <RadzenBadge Text=@Localizer["Inactive"] BadgeStyle="BadgeStyle.Secondary" />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.CoverageType) Title=@Localizer["Coverage"] Width="120px">
+                        <Template Context="contract">
+                            @contract.CoverageType.ToString()
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

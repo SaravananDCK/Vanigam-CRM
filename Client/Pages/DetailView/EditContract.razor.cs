@@ -14,7 +14,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (Oid == Guid.Empty)
                 CurrentObject = new();
             else
-                CurrentObject = await ContractApiService.GetByOid(oid: Oid);
+                CurrentObject = await ContractApiService.GetByOid(oid: Oid, expand: "Customer");
 
             await InitEditContext();
         }
