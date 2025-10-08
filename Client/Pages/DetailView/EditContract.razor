@@ -23,11 +23,10 @@
     @if (IsReadOnlyModeVisible)
     {
         <RadzenCard class="rz-my-4">
-            <RadzenStack>
-                @* Contract Information Section *@
-                <div class="read-only-section-header">@Localizer["ContractInformation"]</div>
-                <RadzenRow>
-                    <RadzenColumn Size="6">
+            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client">
+                <Tabs>
+                    @* Basic Info Tab *@
+                    <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-file-contract")" class="fa-small">
                         <div class="rz-p-4">
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
@@ -55,6 +54,14 @@
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["Duration"]:</strong>
+                                </RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    @CurrentObject.Duration.ToString()
+                                </RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
                                     <strong>@Localizer["EndDate"]:</strong>
                                 </RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
@@ -77,8 +84,10 @@
                                 </RadzenText>
                             </div>
                         </div>
-                    </RadzenColumn>
-                    <RadzenColumn Size="6">
+                    </RadzenTabsItem>
+
+                    @* Coverage Details Tab *@
+                    <RadzenTabsItem Text="@Localizer["CoverageDetails"]" Icon="@FadIcon("fa-shield-alt")" class="fa-small">
                         <div class="rz-p-4">
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
@@ -111,90 +120,127 @@
                                     @(CurrentObject.PartsReplacementLimit?.ToString("N2") ?? "-")
                                 </RadzenText>
                             </div>
-                            <div class="read-only-field rz-mb-3">
-                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
-                                    <strong>@Localizer["Terms"]:</strong>
-                                </RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
-                                    @(CurrentObject.Terms ?? "-")
-                                </RadzenText>
-                            </div>
                         </div>
-                    </RadzenColumn>
-                </RadzenRow>
-            </RadzenStack>
+                    </RadzenTabsItem>
+
+                    @* Terms Tab - Conditional *@
+                    @if (!string.IsNullOrEmpty(CurrentObject.Terms))
+                    {
+                        <RadzenTabsItem Text="@Localizer["Terms"]" Icon="@FadIcon("fa-file-alt")" class="fa-small">
+                            <div class="rz-p-4">
+                                <div class="read-only-field">
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                        <strong>@Localizer["Terms"]:</strong>
+                                    </RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                        @CurrentObject.Terms
+                                    </RadzenText>
+                                </div>
+                            </div>
+                        </RadzenTabsItem>
+                    }
+                </Tabs>
+            </RadzenTabs>
         </RadzenCard>
     }
 
     @* Editable Form Mode *@
     <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Contract" Data="@CurrentObject" Visible="@IsFormVisible" Submit="@SaveAndStayInEdit">
-        <RadzenStack>
-            <FluentValidationValidator Validator="new ContractValidator(Localizer)" />
-            <ValidationSummary />
+        <FluentValidationValidator Validator="new ContractValidator(Localizer)" />
+        <ValidationSummary />
 
-            <VanigamAccountingFormField Text=@Localizer["Customer"]>
-                <ChildContent>
-                    <CustomerDropDownDataGrid @bind-Value="@CurrentObject.CustomerId" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4">
+            <Tabs>
+                @* Basic Info Tab *@
+                <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-file-contract")" class="fa-small">
+                    <RadzenStack Gap="1rem" class="rz-p-4">
+                        <VanigamAccountingFormField Text=@Localizer["Customer"]>
+                            <ChildContent>
+                                <CustomerDropDownDataGrid @bind-Value="@CurrentObject.CustomerId" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Duration"]>
+                            <ChildContent>
+                                <ContractDurationEnumDropDown Value="@CurrentObject.Duration"
+                                                              ValueChanged="@((ContractDuration value) => { OnDurationChanged(value); })" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
 
-            <VanigamAccountingFormField Text=@Localizer["Title"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["StartDate"]>
+                            <ChildContent>
+                                <RadzenDatePicker Value="@CurrentObject.StartDate"
+                                                  ValueChanged="@((DateTimeOffset? value) => { OnStartDateChanged(value); })"
+                                                  Name="date_StartDate"
+                                                  class="w-100" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
 
-            <VanigamAccountingFormField Text=@Localizer["StartDate"]>
-                <ChildContent>
-                    <RadzenDatePicker @bind-Value="@CurrentObject.StartDate" Name="date_StartDate" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Title"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
 
-            <VanigamAccountingFormField Text=@Localizer["EndDate"]>
-                <ChildContent>
-                    <RadzenDatePicker @bind-Value="@CurrentObject.EndDate" Name="date_EndDate" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+                        
+                        <VanigamAccountingFormField Text=@Localizer["EndDate"]>
+                            <ChildContent>
+                                <RadzenTextBox Value="@(CurrentObject.EndDate?.ToString("yyyy-MM-dd") ?? "-")"
+                                               ReadOnly="true"
+                                               class="w-100"
+                                               Style="background-color: #f5f5f5;" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
 
-            <VanigamAccountingFormField Text=@Localizer["Status"]>
-                <ChildContent>
-                    <RadzenCheckBox @bind-Value="@CurrentObject.IsActive" Name="chk_IsActive" />
-                    <RadzenLabel Text=@Localizer["Active"] Component="chk_IsActive" style="margin-left: 8px;" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Status"]>
+                            <ChildContent>
+                                <RadzenCheckBox @bind-Value="@CurrentObject.IsActive" Name="chk_IsActive" />
+                                <RadzenLabel Text=@Localizer["Active"] Component="chk_IsActive" style="margin-left: 8px;" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    </RadzenStack>
+                </RadzenTabsItem>
 
-            <VanigamAccountingFormField Text=@Localizer["CoverageType"]>
-                <ChildContent>
-                    <RadzenDropDown @bind-Value="@CurrentObject.CoverageType"
-                                    Data="@(Enum.GetValues(typeof(ContractCoverageType)).Cast<ContractCoverageType>())"
-                                    Name="ddl_CoverageType"
-                                    Style="width: 100%;" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+                @* Coverage Details Tab *@
+                <RadzenTabsItem Text="@Localizer["CoverageDetails"]" Icon="@FadIcon("fa-shield-alt")" class="fa-small">
+                    <RadzenStack Gap="1rem" class="rz-p-4">
+                        <VanigamAccountingFormField Text=@Localizer["CoverageType"]>
+                            <ChildContent>
+                                <ContractCoverageTypeEnumDropDown @bind-Value="@CurrentObject.CoverageType" Style="width: 100%;"/>
+                            </ChildContent>
+                        </VanigamAccountingFormField>
 
-            <VanigamAccountingFormField Text=@Localizer["IncludesPartsReplacement"]>
-                <ChildContent>
-                    <RadzenCheckBox @bind-Value="@CurrentObject.IncludesPartsReplacement" Name="chk_IncludesPartsReplacement" />
-                    <RadzenLabel Text=@Localizer["Yes"] Component="chk_IncludesPartsReplacement" style="margin-left: 8px;" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["IncludesPartsReplacement"]>
+                            <ChildContent>
+                                <RadzenCheckBox @bind-Value="@CurrentObject.IncludesPartsReplacement" Name="chk_IncludesPartsReplacement" />
+                                <RadzenLabel Text=@Localizer["Yes"] Component="chk_IncludesPartsReplacement" style="margin-left: 8px;" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
 
-            <VanigamAccountingFormField Text=@Localizer["PartsReplacementLimit"]>
-                <ChildContent>
-                    <RadzenNumeric @bind-Value="@CurrentObject.PartsReplacementLimit"
-                                   Name="num_PartsReplacementLimit"
-                                   Format="n2"
-                                   ShowUpDown="false"
-                                   Style="width: 100%;" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["PartsReplacementLimit"]>
+                            <ChildContent>
+                                <RadzenNumeric @bind-Value="@CurrentObject.PartsReplacementLimit"
+                                               Name="num_PartsReplacementLimit"
+                                               Format="n2"
+                                               ShowUpDown="false"
+                                               Style="width: 100%;" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    </RadzenStack>
+                </RadzenTabsItem>
 
-            <VanigamAccountingFormField Text=@Localizer["Terms"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Terms" Name="txt_Terms" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-        </RadzenStack>
+                @* Terms Tab *@
+                <RadzenTabsItem Text="@Localizer["Terms"]" Icon="@FadIcon("fa-file-alt")" class="fa-small">
+                    <RadzenStack Gap="1rem" class="rz-p-4">
+                        <VanigamAccountingFormField Text=@Localizer["Terms"]>
+                            <ChildContent>
+                                <RadzenTextArea @bind-Value="@CurrentObject.Terms" Name="txt_Terms" Rows="4" class="w-100" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    </RadzenStack>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
             @if (IsCreateMode)
             {

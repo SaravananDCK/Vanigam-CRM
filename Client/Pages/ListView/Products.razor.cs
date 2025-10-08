@@ -41,7 +41,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["AddInventoryItem"], null, 100, 100);
+            await DialogService.OpenDialogAsync<EditProduct>(Localizer["Add Product"], null, 100, 100);
             await GridReload();
         }
 
@@ -50,19 +50,19 @@ namespace Vanigam.CRM.Client.Pages.ListView
             await Open(args.Data);
         }
 
-        private async Task Open(Product inventoryitem)
+        private async Task Open(Product product)
         {
-            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["EditInventoryItem"], new Dictionary<string, object> { { "Oid", inventoryitem.Oid } }, 100, 100);
+            await DialogService.OpenDialogAsync<EditProduct>(Localizer["Edit Product"], new Dictionary<string, object> { { "Oid", product.Oid } }, 100, 100);
             await GridReload();
         }
 
-        protected async Task GridDeleteButtonClick(Product inventoryitem)
+        protected async Task GridDeleteButtonClick(Product product)
         {
             try
             {
                 if (await DialogService.Confirm(Localizer["DeleteRecord"]) == true)
                 {
-                    var deleteResult = await ProductApiService.Delete(oid:inventoryitem.Oid);
+                    var deleteResult = await ProductApiService.Delete(oid:product.Oid);
 
                     if (deleteResult != null)
                     {

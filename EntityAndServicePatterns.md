@@ -270,40 +270,67 @@ namespace Vanigam.CRM.Client.Pages.ListView
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
 
-    @* Read-Only Mode Display *@
+    @* Read-Only Mode Display with Tabs *@
     @if (IsReadOnlyModeVisible)
     {
         <RadzenCard class="rz-my-4">
-            <RadzenStack>
-                @* Section Header Example *@
-                <div class="read-only-section-header">@Localizer["{EntityName}Information"]</div>
-                <RadzenRow>
-                    <RadzenColumn Size="6">
+            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client">
+                <Tabs>
+                    @* Basic Info Tab *@
+                    <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
                         <div class="rz-p-4">
                             <div class="read-only-field rz-mb-3">
-                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["FieldName"]:</strong></RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.FieldValue ?? "-")</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Name"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Name ?? "-")</RadzenText>
                             </div>
                             <!-- Add more read-only fields here -->
                         </div>
-                    </RadzenColumn>
-                    <RadzenColumn Size="6">
+                    </RadzenTabsItem>
+
+                    @* Additional Tabs - Organize fields by logical groupings *@
+                    <RadzenTabsItem Text="@Localizer["AdditionalInfo"]" Icon="@FadIcon("fa-list")" class="fa-small">
                         <div class="rz-p-4">
-                            <!-- Additional fields in second column -->
+                            <!-- Add additional read-only fields here -->
                         </div>
-                    </RadzenColumn>
-                </RadzenRow>
-            </RadzenStack>
+                    </RadzenTabsItem>
+
+                    @* Add more tabs as needed for complex entities *@
+                </Tabs>
+            </RadzenTabs>
         </RadzenCard>
     }
 
-    @* Editable Form Mode *@
+    @* Editable Form Mode with Tabs *@
     <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="{EntityName}" Data="@CurrentObject" Visible="@IsFormVisible" Submit="@SaveAndStayInEdit">
-        <RadzenStack>
-            <FluentValidationValidator Validator="new {EntityName}Validator(Localizer)" />
-            <ValidationSummary />
-            <!-- Add entity-specific form fields here -->
-        </RadzenStack>
+        <FluentValidationValidator Validator="new {EntityName}Validator(Localizer)" />
+        <ValidationSummary />
+
+        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4">
+            <Tabs>
+                @* Basic Info Tab - Primary entity fields *@
+                <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
+                    <RadzenStack Gap="1rem" class="rz-p-4">
+                        <!-- Add primary entity fields here -->
+                        <VanigamAccountingFormField Text=@Localizer["Name"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <!-- Add more basic fields -->
+                    </RadzenStack>
+                </RadzenTabsItem>
+
+                @* Additional Tabs - Organize fields by logical groupings *@
+                <RadzenTabsItem Text="@Localizer["AdditionalInfo"]" Icon="@FadIcon("fa-list")" class="fa-small">
+                    <RadzenStack Gap="1rem" class="rz-p-4">
+                        <!-- Add additional entity fields here -->
+                    </RadzenStack>
+                </RadzenTabsItem>
+
+                @* Add more tabs as needed for complex entities *@
+            </Tabs>
+        </RadzenTabs>
+
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
             @if (IsCreateMode)
             {
@@ -344,6 +371,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class Edit{EntityName}
     {
         [Inject] private {EntityName}ApiService {EntityName}ApiService { get; set; }
+
+        private int EditTabIndex { get; set; } = 0;
+        private int ReadOnlyTabIndex { get; set; } = 0;
 
         protected override async Task OnInitializedAsync()
         {
@@ -422,6 +452,130 @@ namespace Vanigam.CRM.Client.Validators
 - **ListView**: `{EntityName}s.razor` (plural, e.g., `Customers.razor`, `Jobs.razor`)
 - **DetailView**: `Edit{EntityName}.razor` (e.g., `EditCustomer.razor`, `EditJob.razor`)
 - **Route**: ListView uses `/{entityname}s`, DetailView uses `/edit-{entityname}` (lowercase)
+
+## DetailView Tabbed Form Pattern
+
+**IMPORTANT**: For complex entities with many fields (10+ fields), use a tabbed interface in **both read-only and edit modes** to organize fields logically.
+
+**Benefits**:
+- **Improved UX**: Reduces visual clutter and cognitive load
+- **Logical Grouping**: Related fields are organized together
+- **Better Navigation**: Users can quickly find specific field categories
+- **Mobile Friendly**: Tabs work well on smaller screens
+- **Consistent Experience**: Same tab structure in both read-only and edit modes
+
+**Tab Organization Guidelines**:
+1. **Basic Info**: Primary identification fields (Code, Name, Type, Status)
+2. **Contact Info**: Email, Phone, Website, Social media
+3. **Address**: Street, City, State, Postal Code, Country
+4. **Business/Additional Info**: Entity-specific details (Revenue, Employee Count, etc.)
+5. **Additional Tabs**: Add more tabs for complex entities as needed
+
+**Implementation Requirements**:
+- Add both `private int EditTabIndex { get; set; } = 0;` and `private int ReadOnlyTabIndex { get; set; } = 0;` properties in code-behind
+- Use `@bind-SelectedIndex="EditTabIndex"` for edit mode tabs
+- Use `@bind-SelectedIndex="ReadOnlyTabIndex"` for read-only mode tabs
+- Set `RenderMode="TabRenderMode.Client"` for better performance
+- **Edit Mode**: Wrap each tab content in `<RadzenStack Gap="1rem" class="rz-p-4">` for form fields
+- **Read-Only Mode**: Wrap each tab content in `<div class="rz-p-4">` for read-only fields
+- **Icons**: Always add Font Awesome icons using `Icon="@FadIcon("fa-icon-name")"` with `class="fa-small"`
+- Place tabs inside the `RadzenTemplateForm` for edit mode, after validation components
+
+**Example: Read-Only Mode with Tabs** (from EditCustomer.razor):
+```razor
+@* Read-Only Mode Display with Tabs *@
+@if (IsReadOnlyModeVisible)
+{
+    <RadzenCard class="rz-my-4">
+        <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client">
+            <Tabs>
+                <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
+                    <div class="rz-p-4">
+                        <div class="read-only-field rz-mb-3">
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Code"]:</strong></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Code ?? "-")</RadzenText>
+                        </div>
+                        <!-- More read-only fields -->
+                    </div>
+                </RadzenTabsItem>
+
+                <RadzenTabsItem Text="@Localizer["ContactInfo"]" Icon="@FadIcon("fa-phone")" class="fa-small">
+                    <div class="rz-p-4">
+                        <!-- Contact info read-only fields -->
+                    </div>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    </RadzenCard>
+}
+```
+
+**Example: Edit Mode with Tabs** (from EditCustomer.razor):
+```razor
+<RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Customer" Data="@CurrentObject" Visible="@IsFormVisible" Submit="@SaveAndStayInEdit">
+    <FluentValidationValidator Validator="new CustomerValidator(Localizer)" />
+    <ValidationSummary />
+
+    <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4">
+        <Tabs>
+            <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
+                <RadzenStack Gap="1rem" class="rz-p-4">
+                    <VanigamAccountingFormField Text=@Localizer["Code"]>
+                        <ChildContent>
+                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Code" Name="txt_Code" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                    <!-- More form fields -->
+                </RadzenStack>
+            </RadzenTabsItem>
+
+            <RadzenTabsItem Text="@Localizer["ContactInfo"]" Icon="@FadIcon("fa-phone")" class="fa-small">
+                <RadzenStack Gap="1rem" class="rz-p-4">
+                    <!-- Contact info form fields -->
+                </RadzenStack>
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
+
+    <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+        @if (IsCreateMode)
+        {
+            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+        }
+        else
+        {
+            <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+            <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+        }
+    </RadzenStack>
+</RadzenTemplateForm>
+```
+
+**Recommended Font Awesome Icons for Common Tab Categories**:
+- **Basic/General Info**: `fa-info`, `fa-info-circle`, `fa-file-alt`
+- **Contact Information**: `fa-phone`, `fa-address-book`, `fa-envelope`
+- **Address/Location**: `fa-map-marker-alt`, `fa-home`, `fa-map-pin`
+- **Business/Company**: `fa-building`, `fa-briefcase`, `fa-industry`
+- **Financial/Pricing**: `fa-dollar-sign`, `fa-credit-card`, `fa-wallet`
+- **Schedule/Dates**: `fa-calendar`, `fa-calendar-alt`, `fa-clock`
+- **Status/Assignment**: `fa-tasks`, `fa-check-circle`, `fa-clipboard-check`
+- **Documents/Files**: `fa-file`, `fa-paperclip`, `fa-folder`
+- **Comments/Notes**: `fa-comment`, `fa-comments`, `fa-sticky-note`
+- **Settings/Config**: `fa-cog`, `fa-sliders-h`, `fa-wrench`
+- **Personal Info**: `fa-user`, `fa-user-circle`, `fa-id-card`
+- **Inventory/Products**: `fa-box`, `fa-shopping-cart`, `fa-cubes`
+
+**Icon Usage Pattern**:
+- Use `Icon="@FadIcon("fa-icon-name")"` for Font Awesome icons
+- Add `class="fa-small"` to tabs for proper icon sizing
+- Icons are rendered using the `FadIcon()` helper function (defined in base components)
+- Always use Font Awesome 5 icon names (with `fa-` prefix)
+
+**When to Use Tabbed Forms**:
+- ✅ **Use tabs**: Entities with 10+ fields that can be logically grouped
+- ✅ **Use tabs**: Complex entities with distinct categories (e.g., Customer, Job, Invoice)
+- ❌ **Don't use tabs**: Simple entities with 5-8 fields (single form is better)
+- ❌ **Don't use tabs**: Entities where all fields are related to same concept
 
 ## DetailView Read-Only Mode Formatting Standards
 

@@ -3,28 +3,19 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
-    public partial class EditCustomer
+    public partial class EditProduct
     {
-        [Inject] private CustomerApiService CustomerApiService { get; set; }
-
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
-
+        [Inject] private ProductApiService ProductApiService { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
-            {
-                CurrentObject = new();
-                IsReadOnlyMode = false; // Create mode - always editable
-            }
+                CurrentObject = new Product();
             else
-            {
-                CurrentObject = await CustomerApiService.GetByOid(oid: Oid);
-                IsReadOnlyMode = true; // Edit mode - start in read-only
-            }
+                CurrentObject = (Product)await ProductApiService.GetByOid(oid: Oid);
 
             await InitEditContext();
         }
@@ -36,11 +27,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             {
                 if (Oid == Guid.Empty)
                 {
-                    CurrentObject = await CustomerApiService.Create(CurrentObject);
+                    CurrentObject = (Product)await ProductApiService.Create(CurrentObject);
                 }
                 else
                 {
-                    var result = await CustomerApiService.Update(oid: Oid, CurrentObject);
+                    var result = await ProductApiService.Update(oid: Oid, CurrentObject);
                     if(result.IsPreconditionFailed())
                     {
                         HasChanges = true;
@@ -69,7 +60,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             IsBusy = false;
         }
 
-
         protected override async Task SaveAndStayInEdit()
         {
             await FormSubmit();
@@ -77,19 +67,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (!ErrorVisible && !ShowNotUniqueAlert)
             {
                 IsReadOnlyMode = true;
-                StateHasChanged();
-            }
-        }
-
-        protected async Task ReloadButtonClick()
-        {
-            // Reload the current object from the API
-            if (Oid != Guid.Empty)
-            {
-                CurrentObject = await CustomerApiService.GetByOid(oid: Oid);
-                await InitEditContext();
-                HasChanges = false;
-                CanEdit = true;
                 StateHasChanged();
             }
         }

@@ -32,6 +32,11 @@
                             @contract.StartDate?.ToString("yyyy-MM-dd")
                         </Template>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.Duration) Title=@Localizer["Duration"] Width="120px">
+                        <Template Context="contract">
+                            @contract.Duration.ToString()
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Contract" Property=@nameof(Contract.EndDate) Title=@Localizer["EndDate"]>
                         <Template Context="contract">
                             @contract.EndDate?.ToString("yyyy-MM-dd")

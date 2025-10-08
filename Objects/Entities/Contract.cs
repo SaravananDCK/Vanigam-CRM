@@ -18,7 +18,28 @@ namespace Vanigam.CRM.Objects.Entities
         public Customer Customer { get; set; } = null!;
 
         public DateTimeOffset? StartDate { get; set; }
-        public DateTimeOffset? EndDate { get; set; }
+
+        /// <summary>
+        /// Duration of the contract in months
+        /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ContractDuration Duration { get; set; } = ContractDuration.Annual;
+
+        /// <summary>
+        /// Computed end date based on StartDate and Duration
+        /// </summary>
+        [NotMapped]
+        public DateTimeOffset? EndDate
+        {
+            get
+            {
+                if (StartDate.HasValue)
+                {
+                    return StartDate.Value.AddMonths((int)Duration);
+                }
+                return null;
+            }
+        }
 
         [StringLength(5000)]
         public string? Terms { get; set; }

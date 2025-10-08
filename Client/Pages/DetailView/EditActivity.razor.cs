@@ -11,7 +11,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditActivity
     {
         [Inject] private ActivityApiService ActivityApiService { get; set; }
-
+        private int ActivityFor { get; set; }
         [Parameter] public Guid? LeadId { get; set; }
         [Parameter] public Guid? OpportunityId { get; set; }
 

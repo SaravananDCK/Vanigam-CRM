@@ -94,7 +94,35 @@
         <RadzenStack>
             <FluentValidationValidator Validator="new ActivityValidator(Localizer)" />
             <ValidationSummary />
-
+            @if (LeadId == null && OpportunityId==null)
+            {
+                <VanigamAccountingFormField Text=@Localizer["Activity For"]>
+                    <ChildContent>
+                        <RadzenRadioButtonList @bind-Value=@ActivityFor TValue="int" JustifyContent="JustifyContent.Start" class="rz-m-2">
+                            <Items>
+                                <RadzenRadioButtonListItem Text="Lead" Value="0"/>
+                                <RadzenRadioButtonListItem Text="Opportunity" Value="1"/>
+                            </Items>
+                        </RadzenRadioButtonList>
+                    </ChildContent>
+                </VanigamAccountingFormField>
+                @if (ActivityFor == 0)
+                {
+                    <VanigamAccountingFormField Text=@Localizer["Lead"]>
+                        <ChildContent>
+                            <LeadDropDownDataGrid @bind-Value="CurrentObject.LeadId"/>
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                }
+                else if (ActivityFor == 1)
+                {
+                    <VanigamAccountingFormField Text=@Localizer["Opportunity"]>
+                        <ChildContent>
+                            <OpportunityDropDownDataGrid @bind-Value="CurrentObject.OpportunityId" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
+                }
+            }
             <VanigamAccountingFormField Text=@Localizer["Subject"]>
                 <ChildContent>
                     <VanigamAccountingTextBox @bind-Value="@CurrentObject.Subject" Name="txt_Subject" />
@@ -130,17 +158,7 @@
                     <PriorityEnumDropDown @bind-Value="@CurrentObject.Priority" />
                 </ChildContent>
             </VanigamAccountingFormField>
-
-            @if (CurrentObject.LeadId.HasValue)
-            {
-                <VanigamAccountingFormField Text=@Localizer["Lead"]>
-                    <ChildContent>
-                        <VanigamAccountingTextBox Value="@(CurrentObject.Lead?.Name ?? "")" Name="txt_LeadName" Disabled="true" />
-                    </ChildContent>
-                </VanigamAccountingFormField>
-            }
-
-            @if (CurrentObject.OpportunityId.HasValue)
+            @if (CurrentObject.Opportunity!=null)
             {
                 <VanigamAccountingFormField Text=@Localizer["Opportunity"]>
                     <ChildContent>

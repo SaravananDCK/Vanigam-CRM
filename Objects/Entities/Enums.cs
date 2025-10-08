@@ -28,4 +28,14 @@ namespace Vanigam.CRM.Objects.Entities
     // Contract Coverage Enums
     public enum ContractCoverageType { FullCoverage, PartialCoverage, LaborOnly }
     public enum CoverageRuleType { Free, Chargeable, PartiallyChargeable }
+
+    // Contract Duration Enum
+    public enum ContractDuration {
+        Monthly = 1,
+        Quarterly = 3,
+        SemiAnnual = 6,
+        Annual = 12,
+        Biennial = 24,
+        Triennial = 36
+    }
 }

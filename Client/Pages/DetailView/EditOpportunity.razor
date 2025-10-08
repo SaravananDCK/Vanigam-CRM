@@ -35,9 +35,9 @@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
         <RadzenCard class="rz-my-4">
-            <RadzenTabs @bind-SelectedIndex="SelectedInfoTabIndex" RenderMode="TabRenderMode.Client">
+            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client">
                 <Tabs>
-                    <RadzenTabsItem Text="@Localizer["OpportunityInformation"]">
+                    <RadzenTabsItem Text="@Localizer["OpportunityInformation"]" Icon="@FadIcon("fa-handshake")" class="fa-small">
                         <RadzenStack>
                             <RadzenRow>
                                 <RadzenColumn Size="6">
@@ -95,7 +95,7 @@
                     </RadzenTabsItem>
                     @if (CurrentObject.Lead != null)
                     {
-                        <RadzenTabsItem Text="@Localizer["LeadInformation"]">
+                        <RadzenTabsItem Text="@Localizer["LeadInformation"]" Icon="@FadIcon("fa-user-tie")" class="fa-small">
                             <RadzenStack>
                                 <RadzenRow>
                                     <RadzenColumn Size="6">
@@ -169,50 +169,64 @@
 
     @* Editable Form Mode *@
     <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Opportunity" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@SaveAndStayInEdit">
-        <RadzenStack>
-            <FluentValidationValidator Validator="new OpportunityValidator(Localizer)" />
-            <ValidationSummary />
-            <VanigamAccountingFormField Text=@Localizer["Title"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Description"]>
-                <ChildContent>
-                    <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="txt_Description" Rows="3" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["EstimatedValue"]>
-                <ChildContent>
-                    <RadzenNumeric @bind-Value="@CurrentObject.EstimatedValue" Name="numeric_EstimatedValue" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Probability"]>
-                <ChildContent>
-                    <RadzenNumeric @bind-Value="@CurrentObject.Probability" Name="numeric_Probability" Min="0" Max="100" Step="5" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Source"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Source" Name="txt_Source" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Stage"]>
-                <ChildContent>
-                    <OpportunityStageEnumDropDown @bind-Value="@CurrentObject.Stage" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["ExpectedCloseDate"]>
-                <ChildContent>
-                    <RadzenDatePicker @bind-Value="@CurrentObject.ExpectedCloseDate" Name="date_ExpectedCloseDate" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Comments"]>
-                <ChildContent>
-                    <RadzenTextArea @bind-Value="@CurrentObject.Comments" Name="txt_Comments" Rows="3" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-        </RadzenStack>
+        <FluentValidationValidator Validator="new OpportunityValidator(Localizer)" />
+        <ValidationSummary />
+
+        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4">
+            <Tabs>
+                @* Basic Info Tab *@
+                <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-handshake")" class="fa-small">
+                    <RadzenStack Gap="1rem" class="rz-p-4">
+                        <VanigamAccountingFormField Text=@Localizer["Title"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Description"]>
+                            <ChildContent>
+                                <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="txt_Description" Rows="3" class="w-100" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["EstimatedValue"]>
+                            <ChildContent>
+                                <RadzenNumeric @bind-Value="@CurrentObject.EstimatedValue" Name="numeric_EstimatedValue" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Source"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Source" Name="txt_Source" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    </RadzenStack>
+                </RadzenTabsItem>
+
+                @* Details Tab *@
+                <RadzenTabsItem Text="@Localizer["Details"]" Icon="@FadIcon("fa-list-ul")" class="fa-small">
+                    <RadzenStack Gap="1rem" class="rz-p-4">
+                        <VanigamAccountingFormField Text=@Localizer["Stage"]>
+                            <ChildContent>
+                                <OpportunityStageEnumDropDown @bind-Value="@CurrentObject.Stage" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Probability"]>
+                            <ChildContent>
+                                <RadzenNumeric @bind-Value="@CurrentObject.Probability" Name="numeric_Probability" Min="0" Max="100" Step="5" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["ExpectedCloseDate"]>
+                            <ChildContent>
+                                <RadzenDatePicker @bind-Value="@CurrentObject.ExpectedCloseDate" Name="date_ExpectedCloseDate" class="w-100" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Comments"]>
+                            <ChildContent>
+                                <RadzenTextArea @bind-Value="@CurrentObject.Comments" Name="txt_Comments" Rows="3" class="w-100" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    </RadzenStack>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
 
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
             @if (IsCreateMode)

@@ -10,6 +10,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     {
         [Inject] private VendorApiService VendorApiService { get; set; }
 
+        private int EditTabIndex { get; set; } = 0;
+        private int ReadOnlyTabIndex { get; set; } = 0;
+
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)

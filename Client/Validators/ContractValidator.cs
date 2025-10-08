@@ -22,12 +22,9 @@ namespace Vanigam.CRM.Client.Validators
                 .NotNull()
                 .WithMessage(localizer["StartDateRequired"]);
 
-            RuleFor(c => c.EndDate)
-                .NotNull()
-                .WithMessage(localizer["EndDateRequired"])
-                .GreaterThan(c => c.StartDate)
-                .When(c => c.StartDate.HasValue && c.EndDate.HasValue)
-                .WithMessage(localizer["EndDateMustBeAfterStartDate"]);
+            RuleFor(c => c.Duration)
+                .IsInEnum()
+                .WithMessage(localizer["DurationRequired"]);
 
             RuleFor(c => c.PartsReplacementLimit)
                 .GreaterThanOrEqualTo(0)
