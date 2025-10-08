@@ -46,7 +46,7 @@ public partial class ConvertLeadToOpportunityDialog
                     Summary = Localizer["Success"],
                     Detail = Localizer["LeadConvertedSuccessfully"]
                 });
-                DialogService.CloseDialog();
+                DialogService.CloseDialog(Lead);
                 await OnConverted.InvokeAsync(opportunity);
             }
         }

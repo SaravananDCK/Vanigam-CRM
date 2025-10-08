@@ -88,7 +88,7 @@
                             }
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.EstimatedBudget) Title=@Localizer["EstimatedBudget"] Width="130px">
+                    <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.EstimatedBudget) Title=@Localizer["EstimatedBudget"] Width="130px" TextAlign="TextAlign.Right">
                         <Template Context="lead">
                             @(lead.EstimatedBudget?.ToString("C") ?? "-")
                         </Template>

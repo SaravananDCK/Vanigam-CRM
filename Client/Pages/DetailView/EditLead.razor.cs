@@ -98,15 +98,15 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 {
                     { "Lead", CurrentObject }
                 },
-                50, 40);
+                50, 50);
 
             if (result != null)
             {
                 // Refresh the current object to show updated status
                 CurrentObject = await LeadApiService.GetByOid(oid: Oid);
                 StateHasChanged();
+                DialogService.CloseDialog(CurrentObject);
             }
         }
-
     }
 }

@@ -6,9 +6,9 @@
 
 <RadzenStack>
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Opportunities"] : Localizer["Opportunities"])
-                            AddButtonClick=@AddButtonClick
+                            AddButtonClick=@AddButtonClick 
                             SearchButtonClick=@Search
-                            ShowAdd=@(!IsEmbeddedMode || LeadId.HasValue)>
+                            ShowAdd=false>
         <RadioButtons>
             @* Stage Filter Bar using RadzenTabs *@
             <RadzenTabs RenderMode="TabRenderMode.Client" SelectedIndexChanged="OnStageTabChange"
@@ -23,7 +23,7 @@
                     {
                         <RadzenTabsItem>
                             <Template>
-                                <FilterTabTemplate Text="@Localizer[stage.ToString()]" Count="@(GetStageCount(stage).ToString())" Icon="@FadIcon(GetIcon(stage))" Style="@GetStageBadgeStyle(stage)" ></FilterTabTemplate>
+                                <FilterTabTemplate Text="@Localizer[stage.GetDisplayDescription().ToString()]" Count="@(GetStageCount(stage).ToString())" Icon="@FadIcon(GetIcon(stage))" Style="@GetStageBadgeStyle(stage)" ></FilterTabTemplate>
                             </Template>
                         </RadzenTabsItem>
                     }
