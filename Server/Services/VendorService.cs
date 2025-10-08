@@ -13,4 +13,11 @@ public class VendorService(
     {
         return Context.Vendors;
     }
+    protected override async Task OnCreatedAsync(Vendor item)
+    {
+        if (string.IsNullOrEmpty(item.Code))
+        {
+            item.Code = await Context.GenerateNextCode(nameof(Vendor), TenantId);
+        }
+    }
 }

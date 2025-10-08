@@ -1990,7 +1990,7 @@ namespace Vanigam.CRM.Objects
         /// <summary>
         /// Helper method to generate next code using NumberSeries
         /// </summary>
-        private async Task<string> GenerateNextCode(string entityType, int tenantId)
+        public async Task<string> GenerateNextCode(string entityType, int? tenantId)
         {
             // Find or create number series
             var numberSeries = await NumberSeries

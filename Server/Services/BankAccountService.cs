@@ -13,4 +13,11 @@ public class BankAccountService(
     {
         return Context.BankAccounts;
     }
+    protected override async Task OnCreatedAsync(BankAccount item)
+    {
+        if (string.IsNullOrEmpty(item.Code))
+        {
+            item.Code = await Context.GenerateNextCode(nameof(BankAccount), TenantId);
+        }
+    }
 }

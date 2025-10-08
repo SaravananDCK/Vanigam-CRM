@@ -8,6 +8,7 @@ namespace Vanigam.CRM.Server.Services;
 
 public class LeadService(
     VanigamAccountingDbContext context,
+    CustomerService customerService,
     ILogger<BaseService<Lead>> logger)
     : BaseService<Lead>(context, logger)
 {
@@ -152,15 +153,16 @@ public class LeadService(
             var customer = new Customer
             {
                 Oid = Guid.NewGuid(),
-                TenantId = lead.TenantId,
-                Name = lead.Organization ?? lead.Name, // Use organization name if available, otherwise use lead name
-                Industry = lead.Industry,
+                Code = await Context.GenerateNextCode(nameof(Customer),lead?.TenantId),
+                TenantId = lead?.TenantId,
+                Name = lead?.Organization ?? lead?.Name, // Use organization name if available, otherwise use lead name
+                Industry = lead?.Industry,
                 Address = FormatAddress(lead),
-                Email = lead.Email,
-                Phone = lead.Phone,
-                CreatedByUserId = lead.CreatedByUserId,
+                Email = lead?.Email,
+                Phone = lead?.Phone,
+                CreatedByUserId = lead?.CreatedByUserId,
                 CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
-                UpdatedByUserId = lead.UpdatedByUserId,
+                UpdatedByUserId = lead?.UpdatedByUserId,
                 UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
                 IsNotDeleted = true
             };

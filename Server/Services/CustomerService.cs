@@ -13,6 +13,14 @@ public class CustomerService(
     {
         return Context.Customers;
     }
+
+    protected override async Task OnCreatedAsync(Customer item)
+    {
+        if (string.IsNullOrEmpty(item.Code))
+        {
+            item.Code = await Context.GenerateNextCode(nameof(Customer), TenantId);
+        }
+    }
 }
 
 
