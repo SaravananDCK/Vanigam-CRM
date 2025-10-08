@@ -8,7 +8,6 @@ namespace Vanigam.CRM.Server.Services;
 
 public class LeadService(
     VanigamAccountingDbContext context,
-    CustomerService customerService,
     ILogger<BaseService<Lead>> logger)
     : BaseService<Lead>(context, logger)
 {
