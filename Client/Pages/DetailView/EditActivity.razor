@@ -131,13 +131,13 @@
 
             <VanigamAccountingFormField Text=@Localizer["Type"]>
                 <ChildContent>
-                    <RadzenDropDown @bind-Value="@CurrentObject.Type" Name="dd_Type" Data="@ActivityTypes" class="w-100" />
+                    <ActivityTypeEnumDropDown @bind-Value="@CurrentObject.Type" />
                 </ChildContent>
             </VanigamAccountingFormField>
 
             <VanigamAccountingFormField Text=@Localizer["Status"]>
                 <ChildContent>
-                    <RadzenDropDown @bind-Value="@CurrentObject.Status" Name="dd_Status" Data="@ActivityStatuses" class="w-100" />
+                    <ActivityStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                 </ChildContent>
             </VanigamAccountingFormField>
 

@@ -56,6 +56,9 @@ public class OpportunityDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<
         ApiService = OpportunityApiService;
         Width = 35;
         Height = 50;
+
+        ValueProperty = nameof(Opportunity.Oid);
+        TextProperty = nameof(Opportunity.Title);
     }
 
     protected override void BuildRenderTree(RenderTreeBuilder builder)
@@ -65,7 +68,7 @@ public class OpportunityDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<
         {
             builder2.OpenComponent<RadzenDropDownDataGridColumn>(0);
             builder2.AddAttribute(1, "Property", nameof(Opportunity.Title));
-            builder2.AddAttribute(2, "Title", "Title");
+            builder2.AddAttribute(2, "Title", nameof(Opportunity.Title));
             builder2.CloseComponent();
         };
     }

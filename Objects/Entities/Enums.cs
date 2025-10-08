@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
 namespace Vanigam.CRM.Objects.Entities
 {
     public enum LeadStatus { New, Contacted, Qualified, Converted, Lost }
@@ -11,7 +14,7 @@ namespace Vanigam.CRM.Objects.Entities
     public enum PaymentMethod { Cash, BankTransfer, Cheque, Card, UPI, Wallet, NetBanking, Other }
     public enum AssetStatus { Active, InRepair, Decommissioned, UnderWarranty }
     public enum Priority { Low, Normal, High, Critical }
-    public enum OpportunityStage { Prospecting, Qualified, Proposal, Negotiation, ClosedWon, ClosedLost }
+    public enum OpportunityStage { Prospecting, Qualified, Proposal, Negotiation, [Display(Description = "Closed Won")] ClosedWon, [Display(Description = "Closed Lost")] ClosedLost }
     public enum ActivityStatus { NotStarted, InProgress, Pending, Completed, Cancelled }
     public enum ActivityType { Call, Email, Meeting, Task, Note,LeadConversion, CustomerConversion }
     public enum ContactType { Individual, Company }
