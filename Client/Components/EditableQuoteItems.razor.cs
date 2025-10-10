@@ -79,7 +79,7 @@ public partial class EditableQuoteItems
         {
             if (itemId!=null)
             {
-                var item = await InventoryItemApiService.GetByOid(oid: itemId.Value);
+                var item = await ItemApiService.GetByOid(oid: itemId.Value);
                 if (item != null)
                 {
                     quoteItemDTO.InventoryItemName = item.Name;
