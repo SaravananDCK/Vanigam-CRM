@@ -112,6 +112,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 // Refresh the current object to show updated status
                 CurrentObject = await OpportunityApiService.GetByOid(expand: "Lead", oid: Oid);
                 StateHasChanged();
+                DialogService.CloseDialog();
             }
         }
 

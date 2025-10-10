@@ -52,7 +52,10 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Description) Title=@Localizer["Description"] Width="200px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.EstimatedValue) Title=@Localizer["EstimatedValue"]>
+                    <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.EstimatedValue) Title=@Localizer["EstimatedValue"] TextAlign="TextAlign.Right">
+                        <Template Context="opportunity">
+                            @(opportunity.EstimatedValue.ToString("C") ?? "-")
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Probability) Title=@Localizer["Probability"] Width="100px">
                         <Template Context="opportunity">
@@ -60,10 +63,21 @@
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Stage) Title=@Localizer["Stage"]>
+                        <Template Context="opportunity">
+                            <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(opportunity.Stage)" Text="@opportunity.Stage.GetDisplayDescription().ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Source) Title=@Localizer["Source"] Width="120px">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.ExpectedCloseDate) Title=@Localizer["ExpectedCloseDate"]>
+                        <Template Context="opportunity">
+                            @if (opportunity.ExpectedCloseDate.HasValue)
+                            {
+                                <span class="@(opportunity.ExpectedCloseDate < DateTime.Today ? "text-danger" : opportunity.ExpectedCloseDate <= DateTime.Today.AddDays(3) ? "text-warning" : "")">
+                                    @opportunity.ExpectedCloseDate.Value.ToString("MM/dd/yyyy")
+                                </span>
+                            }
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

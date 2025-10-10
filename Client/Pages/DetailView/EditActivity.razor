@@ -1,6 +1,7 @@
 @page "/edit-activity"
 @using Vanigam.CRM.Objects.Entities
 @using Vanigam.CRM.Client.Validators
+@using Vanigam.CRM.Client.Helpers 
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<Activity, EditActivity>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
@@ -34,11 +35,15 @@
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Type"]:</strong></RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Type.ToString() ?? "-")</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(CurrentObject.Type)" Text="@(CurrentObject.Type.GetDisplayDescription().ToString() ?? "-")" />
+                                </RadzenText>
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString() ?? "-")</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@(CurrentObject.Status.GetDisplayDescription().ToString() ?? "-")" />
+                                </RadzenText>
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["ActivityDate"]:</strong></RadzenText>
@@ -50,7 +55,9 @@
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Priority"]:</strong></RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Priority.ToString())</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(CurrentObject.Priority)" Text="@CurrentObject.Priority.ToString()" />
+                                </RadzenText>
                             </div>
                         </div>
                     </RadzenColumn>

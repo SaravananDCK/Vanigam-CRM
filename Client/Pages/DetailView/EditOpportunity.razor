@@ -11,7 +11,6 @@
         @* Floating Edit Button - Only visible in read-only mode *@
         @if (IsEditButtonVisible)
         {
-
             <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
         }
 
@@ -70,7 +69,9 @@
                                         <div class="rz-p-4">
                                             <div class="read-only-field rz-mb-3">
                                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Stage"]:</strong></RadzenText>
-                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Stage.ToString())</RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                                    <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Stage)" Text="@CurrentObject.Stage.GetDisplayDescription().ToString()" />
+                                                </RadzenText>
                                             </div>
 
                                             <div class="read-only-field rz-mb-3">
@@ -133,7 +134,9 @@
                                             <div class="rz-p-4">
                                                 <div class="read-only-field rz-mb-3">
                                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
-                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Lead.Status.ToString())</RadzenText>
+                                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                                        <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Lead.Status)" Text="@CurrentObject.Lead.Status.ToString()" />
+                                                    </RadzenText>
                                                 </div>
 
                                                 <div class="read-only-field rz-mb-3">
