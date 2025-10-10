@@ -52,7 +52,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(ServiceItem serviceItem)
         {
-            await DialogService.OpenDialogAsync<EditInventoryItem>(Localizer["EditInventoryItem"], new Dictionary<string, object> { { "Oid", serviceItem.Oid } }, 100, 100);
+            await DialogService.OpenDialogAsync<EditServiceItem>(Localizer["EditInventoryItem"], new Dictionary<string, object> { { "Oid", serviceItem.Oid } }, 100, 100);
             await GridReload();
         }
 

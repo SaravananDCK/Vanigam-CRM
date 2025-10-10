@@ -5,6 +5,13 @@
     "Type": "Product",
     "UnitPrice": 85000.00,
     "Cost": 72000.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": 36,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 8500.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Dell",
+    "ModelNumber": "OptiPlex 7090",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -13,6 +20,13 @@
     "Type": "Product",
     "UnitPrice": 125000.00,
     "Cost": 105000.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": 24,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 12500.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "HP",
+    "ModelNumber": "EliteBook 850 G8",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -21,6 +35,13 @@
     "Type": "Product",
     "UnitPrice": 165000.00,
     "Cost": 145000.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": 36,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 16500.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Lenovo",
+    "ModelNumber": "ThinkPad X1 Carbon Gen 9",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -29,6 +50,13 @@
     "Type": "Product",
     "UnitPrice": 350000.00,
     "Cost": 285000.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": 60,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 35000.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Cisco",
+    "ModelNumber": "C9300-48P",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -37,6 +65,13 @@
     "Type": "Product",
     "UnitPrice": 125000.00,
     "Cost": 95000.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": 36,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 18000.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Fortinet",
+    "ModelNumber": "FortiGate 100F",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -45,6 +80,13 @@
     "Type": "Product",
     "UnitPrice": 95000.00,
     "Cost": 75000.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "VMware",
+    "ModelNumber": "vSphere Standard",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -53,6 +95,13 @@
     "Type": "Product",
     "UnitPrice": 3500.00,
     "Cost": 2800.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Microsoft",
+    "ModelNumber": "Office 365 E5",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -61,6 +110,13 @@
     "Type": "Product",
     "UnitPrice": 45000.00,
     "Cost": 38000.00,
+    "WarrantyPeriodMonths": 24,
+    "GuaranteePeriodMonths": 36,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 4500.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Samsung",
+    "ModelNumber": "S34J55W",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -69,6 +125,13 @@
     "Type": "Product",
     "UnitPrice": 35000.00,
     "Cost": 28000.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": 24,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 5000.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Epson",
+    "ModelNumber": "L15150",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -77,6 +140,13 @@
     "Type": "Product",
     "UnitPrice": 25000.00,
     "Cost": 20000.00,
+    "WarrantyPeriodMonths": 24,
+    "GuaranteePeriodMonths": 36,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 3500.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "APC",
+    "ModelNumber": "SMT1500I",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -85,6 +155,13 @@
     "Type": "Product",
     "UnitPrice": 18000.00,
     "Cost": 14500.00,
+    "WarrantyPeriodMonths": 36,
+    "GuaranteePeriodMonths": 60,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 2500.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "TP-Link",
+    "ModelNumber": "EAP660 HD",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -93,6 +170,13 @@
     "Type": "Product",
     "UnitPrice": 65000.00,
     "Cost": 52000.00,
+    "WarrantyPeriodMonths": 24,
+    "GuaranteePeriodMonths": 36,
+    "IsAmcEligible": true,
+    "AmcAnnualRate": 8000.00,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Synology",
+    "ModelNumber": "DS920+",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -101,6 +185,13 @@
     "Type": "Product",
     "UnitPrice": 8500.00,
     "Cost": 6800.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": false,
+    "Manufacturer": "Logitech",
+    "ModelNumber": "MX Master 3",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -109,6 +200,13 @@
     "Type": "Product",
     "UnitPrice": 12000.00,
     "Cost": 9500.00,
+    "WarrantyPeriodMonths": 12,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": false,
+    "Manufacturer": "Logitech",
+    "ModelNumber": "MX Keys",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -117,6 +215,13 @@
     "Type": "Product",
     "UnitPrice": 8500.00,
     "Cost": 7200.00,
+    "WarrantyPeriodMonths": 36,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Western Digital",
+    "ModelNumber": "My Passport 4TB",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -125,6 +230,13 @@
     "Type": "Product",
     "UnitPrice": 12000.00,
     "Cost": 9800.00,
+    "WarrantyPeriodMonths": 60,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Kingston",
+    "ModelNumber": "KF432C16BB/32",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -133,6 +245,13 @@
     "Type": "Product",
     "UnitPrice": 8500.00,
     "Cost": 7000.00,
+    "WarrantyPeriodMonths": 60,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Samsung",
+    "ModelNumber": "970 EVO Plus",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -141,6 +260,13 @@
     "Type": "Product",
     "UnitPrice": 35000.00,
     "Cost": 28500.00,
+    "WarrantyPeriodMonths": 36,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "NVIDIA",
+    "ModelNumber": "RTX 3060",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -149,6 +275,13 @@
     "Type": "Product",
     "UnitPrice": 32000.00,
     "Cost": 27500.00,
+    "WarrantyPeriodMonths": 36,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "Intel",
+    "ModelNumber": "i7-12700K",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   },
   {
@@ -157,6 +290,13 @@
     "Type": "Product",
     "UnitPrice": 18000.00,
     "Cost": 15200.00,
+    "WarrantyPeriodMonths": 36,
+    "GuaranteePeriodMonths": null,
+    "IsAmcEligible": false,
+    "AmcAnnualRate": null,
+    "RequiresPurchaseProof": true,
+    "Manufacturer": "ASUS",
+    "ModelNumber": "ROG STRIX B550-F",
     "CreatedAtUtc": "2024-01-10T00:00:00Z"
   }
 ]

@@ -20,7 +20,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
-                CurrentObject = new();
+                CurrentObject = new AmcContract(); // Default to AMC contract type for new contracts
             else
                 CurrentObject = await ContractApiService.GetByOid(oid: Oid, expand: "Customer");
 

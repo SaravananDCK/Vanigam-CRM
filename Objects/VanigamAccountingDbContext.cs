@@ -130,6 +130,29 @@ namespace Vanigam.CRM.Objects
                 .HasValue<Product>(ItemType.Product)
                 .HasValue<ServiceItem>(ItemType.ServiceItem);
 
+            // Configure TPH for Contract hierarchy with ContractType discriminator
+            modelBuilder.Entity<Contract>()
+                .ToTable(nameof(Contracts))
+                .HasDiscriminator<ContractType>(nameof(Contract.ContractType))
+                .HasValue<WarrantyContract>(ContractType.Warranty)
+                .HasValue<AmcContract>(ContractType.AMC)
+                .HasValue<GuaranteeContract>(ContractType.Guarantee)
+                .HasValue<ServiceContract>(ContractType.ServiceContract);
+
+            // Configure Contract self-referencing hierarchy (Parent-Child for warranty->AMC conversion)
+            modelBuilder.Entity<Contract>()
+                .HasOne(c => c.ParentContract)
+                .WithMany(c => c.ChildContracts)
+                .HasForeignKey(c => c.ParentContractId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure Contract to Invoice relationship
+            modelBuilder.Entity<Contract>()
+                .HasOne(c => c.Invoice)
+                .WithMany()
+                .HasForeignKey(c => c.InvoiceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Configure AccountGroup self-referencing hierarchy
             modelBuilder.Entity<AccountGroup>()
                 .HasOne(g => g.ParentGroup)

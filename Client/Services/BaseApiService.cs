@@ -132,7 +132,7 @@ public abstract class BaseApiService<T> where T : IETag
 
         var response = await HttpClient.SendAsync(httpRequestMessage);
 
-        return await response.ReadAsync<T>();
+        return await VanigamAccountingHttpResponseMessageExtensions.ReadAsync<T>(response);
     }
 
     void OnUpdate(HttpRequestMessage requestMessage) { }

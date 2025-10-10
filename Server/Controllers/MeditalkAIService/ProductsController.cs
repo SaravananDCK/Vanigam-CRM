@@ -6,12 +6,11 @@ using Vanigam.CRM.Server.Services;
 
 namespace Vanigam.CRM.Server.Controllers.MeditalkAIService;
 
-[Route($"odata/VanigamAccountingService/{nameof(VanigamAccountingDbContext.InventoryItems)}")]
-    public class InventoryItemsController(
+[Route($"odata/VanigamAccountingService/{nameof(VanigamAccountingDbContext.Products)}")]
+public class ProductsController(
     VanigamAccountingDbContext context,
     UserManager<ApplicationUser> userManager,
     RoleManager<ApplicationRole> roleManager,
-    InventoryItemService service)
-    : BaseODataServiceController<InventoryItem, InventoryItemService>(context, userManager, roleManager,
+    ProductService service)
+    : BaseODataServiceController<Product, ProductService>(context, userManager, roleManager,
         service, null);
-

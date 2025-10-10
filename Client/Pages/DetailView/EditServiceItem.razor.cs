@@ -7,19 +7,15 @@ using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
-    public partial class EditProduct
+    public partial class EditServiceItem
     {
-        [Inject] private ProductApiService ProductApiService { get; set; }
-
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
-
+        [Inject] private ServiceItemApiService ServiceItemApiService { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
-                CurrentObject = new Product();
+                CurrentObject = new ServiceItem();
             else
-                CurrentObject = (Product)await ProductApiService.GetByOid(oid: Oid);
+                CurrentObject = (ServiceItem)await ServiceItemApiService.GetByOid(oid: Oid);
 
             await InitEditContext();
         }
@@ -31,11 +27,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             {
                 if (Oid == Guid.Empty)
                 {
-                    CurrentObject = (Product)await ProductApiService.Create(CurrentObject);
+                    CurrentObject = (ServiceItem)await ServiceItemApiService.Create(CurrentObject);
                 }
                 else
                 {
-                    var result = await ProductApiService.Update(oid: Oid, CurrentObject);
+                    var result = await ServiceItemApiService.Update(oid: Oid, CurrentObject);
                     if(result.IsPreconditionFailed())
                     {
                         HasChanges = true;

@@ -31,9 +31,8 @@ namespace Vanigam.CRM.Objects.Entities
         /// </summary>
         public Guid? InventoryItemCategoryId { get; set; }
 
-        // Note: Add FK when InventoryItemCategory entity exists
-        // [ForeignKey(nameof(InventoryItemCategoryId))]
-        // public InventoryItemCategory? Category { get; set; }
+        [ForeignKey(nameof(InventoryItemCategoryId))]
+        public ItemCategory? Category { get; set; }
 
         /// <summary>
         /// Type of coverage for this rule
@@ -77,5 +76,34 @@ namespace Vanigam.CRM.Objects.Entities
 
         [StringLength(500)]
         public string? Notes { get; set; }
+
+        // ========== NEW FIELDS for Warranty Tracking ==========
+
+        /// <summary>
+        /// Link to specific invoice item (for warranty contracts)
+        /// Allows tracking which invoice item this warranty rule covers
+        /// </summary>
+        public Guid? InvoiceItemId { get; set; }
+
+        [ForeignKey(nameof(InvoiceItemId))]
+        public InvoiceItem? InvoiceItem { get; set; }
+
+        /// <summary>
+        /// Serial number of the specific item covered (optional)
+        /// Used for tracking individual product warranties
+        /// </summary>
+        [StringLength(100)]
+        public string? SerialNumber { get; set; }
+
+        /// <summary>
+        /// Warranty/guarantee end date for this specific item (can override contract end date)
+        /// Different products in same contract may have different warranty periods
+        /// </summary>
+        public DateTimeOffset? ItemWarrantyEndDate { get; set; }
+
+        /// <summary>
+        /// Quantity of this item covered (for warranty contracts from invoice)
+        /// </summary>
+        public double? CoveredQuantity { get; set; }
     }
 }

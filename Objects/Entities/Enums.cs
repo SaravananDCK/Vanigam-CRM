@@ -42,4 +42,12 @@ namespace Vanigam.CRM.Objects.Entities
         Biennial = 24,
         Triennial = 36
     }
+    // Contract Type Enum (TPH Discriminator)
+    public enum ContractType
+    {
+        Warranty,        // Free manufacturer/seller warranty
+        AMC,             // Annual Maintenance Contract (paid)
+        Guarantee,       // Extended guarantee period
+        ServiceContract  // General service agreement
+    }
 }
