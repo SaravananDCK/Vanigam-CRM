@@ -11,7 +11,6 @@
         @* Floating Edit Button - Only visible in read-only mode *@
         @if (IsEditButtonVisible)
         {
-
             <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]" />
         }
     </CustomBadge>
@@ -48,7 +47,9 @@
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.ToString()" />
+                                </RadzenText>
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Rating"]:</strong></RadzenText>

@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using NodaTime;
+using NodaTime.Extensions;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
-using NodaTime;
-using NodaTime.Extensions;
+using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.OData;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
@@ -52,6 +54,14 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             return Instant.FromDateTimeOffset(activityDate).ToDateTimeUtc().ToString("yyyy-MM-dd HH:mm") + " UTC";
         }
 
+        protected string GetExpandString()
+        {
+            return new ODataExpand<Activity>()
+                .Expand(f => f.Lead, f => f.Lead.Name)
+                .Expand(f => f.Opportunity, f => f.Opportunity.Title)
+                .Build();
+        }
+
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -71,10 +81,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             else
             {
-                CurrentObject = await ActivityApiService.GetByOid(oid: Oid);
+                CurrentObject = await ActivityApiService.GetByOid(oid: Oid, expand: GetExpandString());
                 IsReadOnlyMode = true; // Edit mode - start in read-only
             }
-
             await InitEditContext();
         }
         

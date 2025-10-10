@@ -42,7 +42,7 @@ public partial class ConvertOpportunityToCustomerDialog
                     Summary = Localizer["Success"],
                     Detail = Localizer["OpportunityConvertedSuccessfully"]
                 });
-                DialogService.CloseDialog();
+                DialogService.CloseDialog(Opportunity);
                 await OnConverted.InvokeAsync(customer);
             }
         }

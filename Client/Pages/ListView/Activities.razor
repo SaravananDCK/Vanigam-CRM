@@ -60,12 +60,12 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Type) Title=@Localizer["Type"] Width="150px">
                         <Template Context="activity">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Type)" Text="@activity.Type.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Type)" Text="@activity.Type.GetDisplayDescription().ToString()" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="activity">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Status)" Text="@activity.Status.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Status)" Text="@activity.Status.GetDisplayDescription().ToString()" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.ActivityDate) Title=@Localizer["ActivityDate"]>
