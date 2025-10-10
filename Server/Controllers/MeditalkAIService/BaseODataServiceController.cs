@@ -94,13 +94,12 @@ public abstract class BaseODataServiceController<T, K> : ODataController where T
     //[Authorize(Policy = "IsRead")]
     [EnableQuery(MaxExpansionDepth = 10, MaxAnyAllExpressionDepth = 10, MaxNodeCount = 1000)]
     [HttpGet("/odata/MeditalkAIService/{Controller}(Oid={Oid})")]
-    public async Task<SingleResult<T>> Get(Guid key)
+    public async Task<IEnumerable<T>> Get(Guid key)
     {
         try
         {
             var items = await Service.GetAsync(key, Request);
-            var result = SingleResult.Create(items);
-            return result;
+            return items;
         }
         catch (Exception ex)
         {

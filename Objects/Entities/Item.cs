@@ -21,10 +21,9 @@ namespace Vanigam.CRM.Objects.Entities
     [JsonDerivedType(typeof(InventoryItem), "#Vanigam.CRM.Objects.Entities.InventoryItem")]
     [JsonDerivedType(typeof(Product), "#Vanigam.CRM.Objects.Entities.Product")]
     [JsonDerivedType(typeof(ServiceItem), "#Vanigam.CRM.Objects.Entities.ServiceItem")]
-    [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization, TypeDiscriminatorPropertyName = "@odata.type")]
+    [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor, TypeDiscriminatorPropertyName = "@odata.type")]
     public abstract class Item : BaseClass
     {
-        protected Item() { }
         [Required]
         [StringLength(200)]
         public string Name { get; set; } = string.Empty;

@@ -132,7 +132,9 @@ public abstract class BaseApiService<T> where T : IETag
 
         var response = await HttpClient.SendAsync(httpRequestMessage);
 
-        return await VanigamAccountingHttpResponseMessageExtensions.ReadAsync<T>(response);
+       var result= await response.ReadAsync<Radzen.ODataServiceResult<T>>(GetJsonConverters());
+       return result.Value.FirstOrDefault();
+       //return await VanigamAccountingHttpResponseMessageExtensions.ReadAsync<T>(response);
     }
 
     void OnUpdate(HttpRequestMessage requestMessage) { }
