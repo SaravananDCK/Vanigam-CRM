@@ -2,6 +2,7 @@
 using Radzen.Blazor;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.OData;
 
 namespace Vanigam.CRM.Client.Components;
 
@@ -10,9 +11,13 @@ public partial class EditableQuoteItems
     [Parameter] public List<QuoteItemDTO> Items { get; set; } = new();
     [Parameter] public EventCallback<List<QuoteItemDTO>> ItemsChanged { get; set; }
     [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
+    [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
+    [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
     private RadzenDataGrid<QuoteItemDTO> itemsGrid = null!;
     private QuoteItemDTO itemBeingEdited;
     public decimal TotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
+    public decimal TaxAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount) ?? 0;
+    public decimal DiscountAmt => Items?.Where(i => !i.IsDeleted).Sum(i => i.DiscountAmount) ?? 0;
 
     private async Task AddNewItem()
     {
@@ -72,20 +77,20 @@ public partial class EditableQuoteItems
 
         await NotifyChanges();
     }
-
+    private Item Item;
     private async Task OnInventoryItemChanged(Guid? itemId, QuoteItemDTO quoteItemDTO)
     {
         if (quoteItemDTO.InventoryItemId.HasValue)
         {
             if (itemId!=null)
             {
-                var item = await ItemApiService.GetByOid(oid: itemId.Value);
-                if (item != null)
+                Item = await ItemApiService.GetByOid(oid: itemId.Value, expand: GetExpandString());
+                if (Item != null)
                 {
-                    quoteItemDTO.InventoryItemName = item.Name;
-                    quoteItemDTO.UnitPrice = item.UnitPrice;
-                    quoteItemDTO.TaxCodeId = item.TaxCodeId;
-                    quoteItemDTO.TaxAmount = (item.TaxCode?.TaxRate ?? 0) * item.UnitPrice;
+                    quoteItemDTO.InventoryItemName = Item.Name;
+                    quoteItemDTO.UnitPrice = Item.UnitPrice;
+                    quoteItemDTO.TaxCodeId = Item.TaxCodeId;
+                    quoteItemDTO.TaxAmount = (Item.TaxCode?.TaxRate / 100 ?? 0) * Item.UnitPrice;
                     // You might want to set default price from inventory item if available
                 }
             }
@@ -95,15 +100,25 @@ public partial class EditableQuoteItems
         await NotifyChanges();
     }
 
+    protected string GetExpandString()
+    {
+        return new ODataExpand<Item>()
+            .Expand(f => f.TaxCode, f => f.TaxCode.TaxRate)
+            .Build();
+    }
+
     private void CalculateTotal(QuoteItemDTO item)
     {
         // Total is calculated automatically in the DTO property
+        item.TaxAmount = (Item.TaxCode?.TaxRate / 100 ?? 0) * item.UnitPrice * (decimal)item.Quantity;
     }
 
     private async Task NotifyChanges()
     {
         await ItemsChanged.InvokeAsync(Items);
         await TotalAmountChanged.InvokeAsync(TotalAmount);
+        await TotalTaxChanged.InvokeAsync(TaxAmount);
+        await DiscountChanged.InvokeAsync(DiscountAmt);
         StateHasChanged();
     }
 }

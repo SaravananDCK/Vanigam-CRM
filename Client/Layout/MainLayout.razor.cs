@@ -179,9 +179,10 @@ namespace Vanigam.CRM.Client.Layout
                 Icon = "fa-inventory",
                 ChildItems =
                 [
-                    new MenuItemDto { Text = Localizer["Products"], Path = "products", Icon = ("fa-boxes") },
-                    new MenuItemDto { Text = Localizer["Inventory Items"], Path = "inventoryitems", Icon = ("fa-boxes") },
-                    new MenuItemDto { Text = Localizer["Service Items"], Path = "serviceitems", Icon = ("fa-boxes") },
+                    //new MenuItemDto { Text = Localizer["Products"], Path = "products", Icon = ("fa-boxes") },
+                    //new MenuItemDto { Text = Localizer["Inventory Items"], Path = "inventoryitems", Icon = ("fa-boxes") },
+                    //new MenuItemDto { Text = Localizer["Service Items"], Path = "serviceitems", Icon = ("fa-boxes") },
+                    new MenuItemDto { Text = Localizer["Items"], Path = "items", Icon = ("fa-boxes") },
                     new MenuItemDto { Text = Localizer["Material Usage"], Path = "materialusages", Icon = ("fa-wrench") }
                 ]
             });

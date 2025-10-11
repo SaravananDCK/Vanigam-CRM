@@ -24,62 +24,81 @@
                        EditMode="Radzen.DataGridEditMode.Single" RowUpdate="@OnRowUpdate"
                        class="rz-mt-3">
             <Columns>
-                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="InventoryItemName" Title="@Localizer["Item"]" Width="200px">
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property=@nameof(QuoteItemDTO.InventoryItemName) Title="@Localizer["Item"]" Width="200px">
                     <EditTemplate Context="item">
                         <ProductDropDownDataGrid @bind-Value="item.InventoryItemId"
-                                       TextProperty="Name"
-                                       ValueProperty="Oid"
-                                       Placeholder="@Localizer["SelectItem"]"
-                                                       Change="@(async (object value) => { item.InventoryItemId = (Guid?)value; await OnInventoryItemChanged(value as Guid?,item); })"
+                                                 TextProperty="Name"
+                                                 ValueProperty="Oid"
+                                                 Placeholder="@Localizer["SelectItem"]"
+                                                 Change="@(async (object value) => { item.InventoryItemId = (Guid?)value; await OnInventoryItemChanged(value as Guid?,item); })"
+                                                 class="w-100" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property=@nameof(QuoteItemDTO.Quantity) Width="120px" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["Quantity"]</div>
+                    </HeaderTemplate>
+                    <EditTemplate Context="item">
+                        <RadzenNumeric TValue="double" @bind-Value="item.Quantity"
+                                       Min="1"
+                                       Change="@(async (double value) => { item.Quantity = value; CalculateTotal(item); await NotifyChanges(); })"
                                        class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="Quantity" Title="@Localizer["Quantity"]" Width="120px">
-                    <EditTemplate Context="item">
-                        <RadzenNumeric TValue="double" @bind-Value="item.Quantity"
-                                      Min="1"
-                                      Change="@(async (double value) => { item.Quantity = value; CalculateTotal(item); await NotifyChanges(); })"
-                                      class="w-100" />
-                    </EditTemplate>
-                </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="UnitPrice" Title="@Localizer["UnitPrice"]" Width="120px">
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property=@nameof(QuoteItemDTO.UnitPrice) Width="120px" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["UnitPrice"]</div>
+                    </HeaderTemplate>
                     <Template Context="item">
                         @item.UnitPrice.ToString("C")
                     </Template>
                     <EditTemplate Context="item">
                         <RadzenNumeric TValue="decimal" @bind-Value="item.UnitPrice"
-                                      Format="C"
-                                      Change="@(async (decimal value) => { item.UnitPrice = value; CalculateTotal(item); await NotifyChanges(); })"
-                                      class="w-100" />
+                                       Format="C"
+                                       Change="@(async (decimal value) => { item.UnitPrice = value; CalculateTotal(item); await NotifyChanges(); })"
+                                       class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="QuoteItemDTO" Property="Total" Title="@Localizer["Total"]" Width="120px">
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property=@nameof(QuoteItemDTO.TaxAmount) Width="120px" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["TaxAmount"]</div>
+                    </HeaderTemplate>
+                    <Template Context="item">
+                        @item.TaxAmount.ToString("C")
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property=@nameof(QuoteItemDTO.Total) Width="120px" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["Total"]</div>
+                    </HeaderTemplate>
                     <Template Context="item">
                         @item.Total.ToString("C")
                     </Template>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="QuoteItemDTO" Title="@Localizer["Actions"]" Width="150px" Filterable="false" Sortable="false">
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Width="150px" Filterable="false" Sortable="false" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["Actions"]</div>
+                    </HeaderTemplate>
                     <Template Context="item">
                         <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light"
-                                     Variant="Variant.Flat" Size="ButtonSize.Small"
-                                     Click="@(() => EditRow(item))" />
+                                      Variant="Variant.Flat" Size="ButtonSize.Small"
+                                      Click="@(() => EditRow(item))" />
                         <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger"
-                                     Variant="Variant.Flat" Size="ButtonSize.Small"
-                                     Click="@(() => DeleteItem(item))"
-                                     class="rz-ml-2" />
+                                      Variant="Variant.Flat" Size="ButtonSize.Small"
+                                      Click="@(() => DeleteItem(item))"
+                                      class="rz-ml-2" />
                     </Template>
                     <EditTemplate Context="item">
                         <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success"
-                                     Variant="Variant.Flat" Size="ButtonSize.Small"
-                                     Click="@(() => SaveRow(item))" />
+                                      Variant="Variant.Flat" Size="ButtonSize.Small"
+                                      Click="@(() => SaveRow(item))" />
                         <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light"
-                                     Variant="Variant.Flat" Size="ButtonSize.Small"
-                                     Click="@(() => CancelEdit(item))"
-                                     class="rz-ml-2" />
+                                      Variant="Variant.Flat" Size="ButtonSize.Small"
+                                      Click="@(() => CancelEdit(item))"
+                                      class="rz-ml-2" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
             </Columns>
@@ -88,10 +107,24 @@
         @* Totals Display *@
         <RadzenCard class="rz-mt-3">
             <RadzenRow>
-                <RadzenColumn Size="8">
-                </RadzenColumn>
+                <RadzenColumn Size="8" />
                 <RadzenColumn Size="4">
-                    <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.End">
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
+                        <RadzenText TextStyle="TextStyle.H6">@Localizer["Discount"]:</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6">@DiscountAmt.ToString("C")</RadzenText>
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="8" />
+                <RadzenColumn Size="4">
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
+                        <RadzenText TextStyle="TextStyle.H6">@Localizer["TaxAmount"]:</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6">@TaxAmount.ToString("C")</RadzenText>
+                    </RadzenStack>
+                </RadzenColumn>
+
+                <RadzenColumn Size="8" />
+                <RadzenColumn Size="4">
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
                         <RadzenText TextStyle="TextStyle.H6">@Localizer["TotalAmount"]:</RadzenText>
                         <RadzenText TextStyle="TextStyle.H6">@TotalAmount.ToString("C")</RadzenText>
                     </RadzenStack>
