@@ -223,7 +223,9 @@
             <RadzenCard class="rz-mb-4">
                 <EditableQuoteItems Items="@quoteItems"
                                     ItemsChanged="@OnQuoteItemsChanged"
-                                    TotalAmountChanged="@OnTotalAmountChanged" />
+                                    TotalAmountChanged="@OnTotalAmountChanged"
+                                    TotalTaxChanged="@OnTotalTaxAmountChanged"
+                                    DiscountChanged="@OnDiscountAmountChanged"/>
             </RadzenCard>
         </RadzenStack>
 
@@ -322,6 +324,22 @@
         if (CurrentObject != null)
         {
             CurrentObject.TotalAmount = totalAmount;
+            StateHasChanged();
+        }
+    }
+    private async Task OnTotalTaxAmountChanged(decimal taxAmount)
+    {
+        if (CurrentObject != null)
+        {
+            CurrentObject.TaxAmount = taxAmount;
+            StateHasChanged();
+        }
+    }
+    private async Task OnDiscountAmountChanged(decimal discountAmount)
+    {
+        if (CurrentObject != null)
+        {
+            CurrentObject.DiscountAmount = discountAmount;
             StateHasChanged();
         }
     }

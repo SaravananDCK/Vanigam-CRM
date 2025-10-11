@@ -39,7 +39,7 @@ public class QuoteItemDTO
     public Guid? TaxCodeId { get; set; }
     public decimal TaxAmount { get; set; }
 
-    public decimal Total => (decimal)(Quantity * (double)UnitPrice);
+    public decimal Total => ((decimal)(Quantity * (double)UnitPrice) + TaxAmount);
 
     // For UI display purposes
     public string? InventoryItemName { get; set; }

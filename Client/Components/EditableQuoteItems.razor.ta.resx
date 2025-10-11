@@ -123,6 +123,9 @@
   <data name="SelectItem" xml:space="preserve">
     <value>Select Item</value>
   </data>
+  <data name="TaxAmount" xml:space="preserve">
+    <value>Tax Amount</value>
+  </data>
   <data name="TotalAmount" xml:space="preserve">
     <value>Total Amount</value>
   </data>
