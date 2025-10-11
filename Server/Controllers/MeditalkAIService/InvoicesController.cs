@@ -26,106 +26,17 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
         {
             try
             {
-                using var transaction = await context.Database.BeginTransactionAsync();
-
-                Invoice invoice;
-                bool isUpdate = invoiceData.Oid.HasValue;
-
-                if (isUpdate)
-                {
-                    // Update existing invoice
-                    invoice = await context.Invoices
-                        .Include(i => i.Items)
-                        .FirstOrDefaultAsync(i => i.Oid == invoiceData.Oid.Value);
-
-                    if (invoice == null)
-                        return NotFound("Invoice not found");
-
-                    // Update invoice properties
-                    invoice.Number = invoiceData.Number;
-                    invoice.Status = invoiceData.Status;
-                    invoice.PartyId = invoiceData.PartyId;
-                    invoice.TotalAmount = invoiceData.TotalAmount;
-                }
-                else
-                {
-                    // Create new invoice
-                    invoice = new Invoice
-                    {
-                        Oid = Guid.NewGuid(),
-                        Number = invoiceData.Number,
-                        Status = invoiceData.Status,
-                        PartyId = invoiceData.PartyId,
-                        TotalAmount = invoiceData.TotalAmount,
-                        TenantId = service.TenantId
-                    };
-
-                    context.Invoices.Add(invoice);
-                }
-
-                await context.SaveChangesAsync();
-
-                // Handle invoice items
-                if (isUpdate)
-                {
-                    // Remove deleted items
-                    var deletedItemIds = invoiceData.Items
-                        .Where(i => i.IsDeleted && i.Oid.HasValue)
-                        .Select(i => i.Oid.Value)
-                        .ToList();
-
-                    if (deletedItemIds.Any())
-                    {
-                        var itemsToDelete = invoice.Items.Where(i => deletedItemIds.Contains(i.Oid)).ToList();
-                        context.InvoiceItems.RemoveRange(itemsToDelete);
-                    }
-                }
-
-                // Add or update items
-                foreach (var itemDto in invoiceData.Items.Where(i => !i.IsDeleted))
-                {
-                    if (itemDto.IsNew)
-                    {
-                        // Add new item
-                        var newItem = new InvoiceItem
-                        {
-                            Oid = Guid.NewGuid(),
-                            VoucherId = invoice.Oid,
-                            ItemId = itemDto.InventoryItemId,
-                            Quantity = itemDto.Quantity,
-                            UnitPrice = itemDto.UnitPrice,
-                            TenantId = service.TenantId
-                        };
-
-                        context.InvoiceItems.Add(newItem);
-                    }
-                    else if (itemDto.Oid.HasValue)
-                    {
-                        // Update existing item
-                        var existingItem = await context.InvoiceItems
-                            .FirstOrDefaultAsync(i => i.Oid == itemDto.Oid.Value);
-
-                        if (existingItem != null)
-                        {
-                            existingItem.ItemId = itemDto.InventoryItemId;
-                            existingItem.Quantity = itemDto.Quantity;
-                            existingItem.UnitPrice = itemDto.UnitPrice;
-                        }
-                    }
-                }
-
-                await context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                // Return the updated invoice with items
-                var savedInvoice = await context.Invoices
-                    .Include(i => i.Items)
-                    .FirstOrDefaultAsync(i => i.Oid == invoice.Oid);
+                // Use service method which ensures proper ledger posting
+                var savedInvoice = await service.BulkSaveInvoiceWithItems(invoiceData);
                 return Ok(savedInvoice);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error saving invoice: {ex.Message}");
+                return BadRequest(new { error = $"Error saving invoice: {ex.Message}" });
             }
         }
 

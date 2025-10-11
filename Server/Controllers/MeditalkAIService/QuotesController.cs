@@ -49,122 +49,24 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                 return BadRequest(new { Error = "Failed to retrieve status summary" });
             }
         }
+
         [HttpPost("bulk-save")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Quote>> BulkSaveQuoteWithItems([FromBody] QuoteBulkSaveDTO quoteData)
         {
             try
             {
-                using var transaction = await context.Database.BeginTransactionAsync();
-
-                Quote quote;
-                bool isUpdate = quoteData.Oid.HasValue;
-
-                if (isUpdate)
-                {
-                    // Update existing quote
-                    quote = await context.Quotes
-                        .Include(q => q.Items)
-                        .FirstOrDefaultAsync(q => q.Oid == quoteData.Oid.Value);
-
-                    if (quote == null)
-                        return NotFound("Quote not found");
-
-                    // Update quote properties
-                    //quote.Number = quoteData.Title;
-                    quote.Status = quoteData.Status;
-                    quote.OpportunityId = quoteData.OpportunityId;
-                    quote.PartyId = quoteData.CustomerId;
-                    quote.JobId = quoteData.JobId;
-                    quote.TotalAmount = quoteData.TotalAmount;
-                }
-                else
-                {
-                    // Create new quote
-                    quote = new Quote
-                    {
-                        Oid = Guid.NewGuid(),
-                        Number = await numberSeriesService.GenerateNextNumber(nameof(Quote),service.TenantId),
-                        Status = quoteData.Status,
-                        OpportunityId = quoteData.OpportunityId,
-                        PartyId = quoteData.CustomerId,
-                        JobId = quoteData.JobId,
-                        TotalAmount = quoteData.TotalAmount,
-                        TenantId = service.TenantId
-                    };
-
-                    context.Quotes.Add(quote);
-                }
-
-                await context.SaveChangesAsync();
-
-                // Handle quote items
-                if (isUpdate)
-                {
-                    // Remove deleted items
-                    var deletedItemIds = quoteData.Items
-                        .Where(i => i.IsDeleted && i.Oid.HasValue)
-                        .Select(i => i.Oid.Value)
-                        .ToList();
-
-                    if (deletedItemIds.Any())
-                    {
-                        var itemsToDelete = quote.Items.Where(i => deletedItemIds.Contains(i.Oid)).ToList();
-                        context.QuoteItems.RemoveRange(itemsToDelete);
-                    }
-                }
-
-                // Add or update items
-                foreach (var itemDto in quoteData.Items.Where(i => !i.IsDeleted))
-                {
-                    if (itemDto.IsNew)
-                    {
-                        // Add new item
-                        var newItem = new QuoteItem
-                        {
-                            Oid = Guid.NewGuid(),
-                            VoucherId = quote.Oid,
-                            ItemId = itemDto.InventoryItemId,
-                            Quantity = itemDto.Quantity,
-                            UnitPrice = itemDto.UnitPrice,
-                            TaxCodeId = itemDto.TaxCodeId,
-                            TaxAmount = itemDto.TaxAmount,
-                            TenantId = service.TenantId
-                        };
-
-                        context.QuoteItems.Add(newItem);
-                    }
-                    else if (itemDto.Oid.HasValue)
-                    {
-                        // Update existing item
-                        var existingItem = await context.QuoteItems
-                            .FirstOrDefaultAsync(qi => qi.Oid == itemDto.Oid.Value);
-
-                        if (existingItem != null)
-                        {
-                            existingItem.ItemId = itemDto.InventoryItemId;
-                            existingItem.Quantity = itemDto.Quantity;
-                            existingItem.UnitPrice = itemDto.UnitPrice;
-                            existingItem.TaxCodeId = itemDto.TaxCodeId;
-                            existingItem.TaxAmount = itemDto.TaxAmount;
-                        }
-                    }
-                }
-
-                await context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                // Return the updated quote with items
-                var savedQuote = await context.Quotes
-                    .Include(q => q.Items)
-                    .ThenInclude(qi => qi.Item)
-                    .FirstOrDefaultAsync(q => q.Oid == quote.Oid);
-
+                // Use service method (quotes don't affect ledger until converted to invoices)
+                var savedQuote = await service.BulkSaveQuoteWithItems(quoteData);
                 return Ok(savedQuote);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error saving quote: {ex.Message}");
+                return BadRequest(new { error = $"Error saving quote: {ex.Message}" });
             }
         }
 

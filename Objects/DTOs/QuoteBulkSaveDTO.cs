@@ -21,6 +21,10 @@ public class QuoteBulkSaveDTO
 
     public decimal TotalAmount { get; set; }
 
+    public decimal SubTotal { get; set; }
+
+    public decimal TaxAmount { get; set; }
+
     public List<QuoteItemDTO> Items { get; set; } = new List<QuoteItemDTO>();
 }
 
@@ -35,11 +39,11 @@ public class QuoteItemDTO
 
     [Required]
     public decimal UnitPrice { get; set; }
-    public decimal DiscountAmount { get; set; }
+    public decimal? DiscountAmount { get; set; }
     public Guid? TaxCodeId { get; set; }
-    public decimal TaxAmount { get; set; }
+    public decimal? TaxAmount { get; set; }
 
-    public decimal Total => ((decimal)(Quantity * (double)UnitPrice) + TaxAmount);
+    public decimal Total => ((decimal)(Quantity * (double)UnitPrice) + (TaxAmount ?? 0));
 
     // For UI display purposes
     public string? InventoryItemName { get; set; }

@@ -85,8 +85,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private void CalculateTotalAmount()
         {
             var subTotal = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.Total);
-            var totalDiscount = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.DiscountAmount);
-            var totalTax = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount);
+            var totalDiscount = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.DiscountAmount ?? 0);
+            var totalTax = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount ?? 0);
 
             CurrentObject.SubTotal = subTotal;
             CurrentObject.DiscountAmount = totalDiscount;

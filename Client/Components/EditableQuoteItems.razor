@@ -66,7 +66,7 @@
                         <div style="padding-right: 20px;">@Localizer["TaxAmount"]</div>
                     </HeaderTemplate>
                     <Template Context="item">
-                        @item.TaxAmount.ToString("C")
+                        @((item.TaxAmount ?? 0).ToString("C"))
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="QuoteItemDTO" Property=@nameof(QuoteItemDTO.Total) Width="120px" TextAlign="TextAlign.Right">

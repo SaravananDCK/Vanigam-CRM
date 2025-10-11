@@ -108,6 +108,9 @@ builder.Services.AddScoped<WebhookLeadService>();
 // Register ledger posting service
 builder.Services.AddScoped<LedgerPostingService>();
 
+// Register contract auto-creation service
+builder.Services.AddScoped<ContractAutoCreationService>();
+
 // Register contract coverage service
 builder.Services.AddScoped<ContractCoverageService>();
 

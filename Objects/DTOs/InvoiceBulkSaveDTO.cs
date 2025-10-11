@@ -17,6 +17,12 @@ public class InvoiceBulkSaveDTO
 
     public decimal TotalAmount { get; set; }
 
+    public decimal SubTotal { get; set; }
+
+    public decimal TaxAmount { get; set; }
+
+    public DateTimeOffset VoucherDate { get; set; } = DateTimeOffset.UtcNow;
+
     public List<InvoiceItemDTO> Items { get; set; } = new List<InvoiceItemDTO>();
 }
 
@@ -31,8 +37,8 @@ public class InvoiceItemDTO
 
     [Required]
     public decimal UnitPrice { get; set; }
-    public decimal DiscountAmount { get; set; }
-    public decimal TaxAmount { get; set; }
+    public decimal? DiscountAmount { get; set; }
+    public decimal? TaxAmount { get; set; }
     public decimal Total => (decimal)Quantity * UnitPrice;
 
     // For UI display purposes

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Vanigam.CRM.Objects;
+using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Server.Services;
@@ -25,6 +26,165 @@ public class QuoteService(
 
         await base.OnCreatedAsync(entity);
     }
+
+    /// <summary>
+    /// Bulk save quote with items. Handles create/update of quote and its items.
+    /// Note: Quotes do not affect ledger entries until they are converted to invoices.
+    /// </summary>
+    public async Task<Quote> BulkSaveQuoteWithItems(QuoteBulkSaveDTO quoteData)
+    {
+        await using var transaction = await Context.Database.BeginTransactionAsync();
+        try
+        {
+            Quote quote;
+            bool isUpdate = quoteData.Oid.HasValue;
+
+            if (isUpdate)
+            {
+                // Load existing quote
+                quote = await Context.Quotes
+                    .Include(q => q.Items)
+                    .FirstOrDefaultAsync(q => q.Oid == quoteData.Oid.Value);
+
+                if (quote == null)
+                    throw new InvalidOperationException("Quote not found");
+
+                // Update quote properties
+                quote.Status = quoteData.Status;
+                quote.OpportunityId = quoteData.OpportunityId;
+                quote.PartyId = quoteData.CustomerId;
+                quote.JobId = quoteData.JobId;
+                quote.TotalAmount = quoteData.TotalAmount;
+                quote.SubTotal = quoteData.SubTotal;
+                quote.TaxAmount = quoteData.TaxAmount;
+
+                // Handle quote items
+                await HandleQuoteItems(quote, quoteData.Items);
+
+                // Call base update without lifecycle hooks to avoid nested transactions
+                Context.Quotes.Update(quote);
+                await Context.SaveChangesAsync();
+            }
+            else
+            {
+                // Generate quote number
+                var quoteNumber = await numberSeriesService.GenerateNextNumber(nameof(Quote), TenantId);
+
+                // Create new quote
+                quote = new Quote
+                {
+                    Oid = Guid.NewGuid(),
+                    Number = quoteNumber,
+                    Status = quoteData.Status,
+                    OpportunityId = quoteData.OpportunityId,
+                    PartyId = quoteData.CustomerId,
+                    JobId = quoteData.JobId,
+                    TotalAmount = quoteData.TotalAmount,
+                    SubTotal = quoteData.SubTotal,
+                    TaxAmount = quoteData.TaxAmount,
+                    TenantId = TenantId
+                };
+
+                // Add quote items
+                foreach (var itemDto in quoteData.Items.Where(i => !i.IsDeleted))
+                {
+                    var newItem = new QuoteItem
+                    {
+                        Oid = Guid.NewGuid(),
+                        VoucherId = quote.Oid,
+                        ItemId = itemDto.InventoryItemId,
+                        Quantity = itemDto.Quantity,
+                        UnitPrice = itemDto.UnitPrice,
+                        TaxCodeId = itemDto.TaxCodeId,
+                        TaxAmount = itemDto.TaxAmount ?? 0,
+                        DiscountAmount = itemDto.DiscountAmount ?? 0,
+                        TenantId = TenantId
+                    };
+
+                    Context.QuoteItems.Add(newItem);
+                }
+
+                // Call base create without lifecycle hooks to avoid nested transactions
+                Context.Quotes.Add(quote);
+                await Context.SaveChangesAsync();
+            }
+
+            await transaction.CommitAsync();
+
+            // Reload quote with items
+            var savedQuote = await Context.Quotes
+                .Include(q => q.Items)
+                .ThenInclude(qi => qi.Item)
+                .FirstOrDefaultAsync(q => q.Oid == quote.Oid);
+
+            return savedQuote!;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Handles adding, updating, and deleting quote items
+    /// </summary>
+    private async Task HandleQuoteItems(Quote quote, List<QuoteItemDTO> items)
+    {
+        // Remove deleted items
+        var deletedItemIds = items
+            .Where(i => i.IsDeleted && i.Oid.HasValue)
+            .Select(i => i.Oid.Value)
+            .ToList();
+
+        if (deletedItemIds.Any())
+        {
+            var itemsToDelete = quote.Items.Where(i => deletedItemIds.Contains(i.Oid)).ToList();
+            Context.QuoteItems.RemoveRange(itemsToDelete);
+        }
+
+        // Add or update items
+        foreach (var itemDto in items.Where(i => !i.IsDeleted))
+        {
+            if (itemDto.IsNew)
+            {
+                // Add new item
+                var newItem = new QuoteItem
+                {
+                    Oid = Guid.NewGuid(),
+                    VoucherId = quote.Oid,
+                    ItemId = itemDto.InventoryItemId,
+                    Quantity = itemDto.Quantity,
+                    UnitPrice = itemDto.UnitPrice,
+                    TaxCodeId = itemDto.TaxCodeId,
+                    TaxAmount = itemDto.TaxAmount ?? 0,
+                    DiscountAmount = itemDto.DiscountAmount ?? 0,
+                    TenantId = TenantId
+                };
+
+                Context.QuoteItems.Add(newItem);
+            }
+            else if (itemDto.Oid.HasValue)
+            {
+                // Update existing item
+                var existingItem = await Context.QuoteItems
+                    .FirstOrDefaultAsync(qi => qi.Oid == itemDto.Oid.Value);
+
+                if (existingItem != null)
+                {
+                    existingItem.ItemId = itemDto.InventoryItemId;
+                    existingItem.Quantity = itemDto.Quantity;
+                    existingItem.UnitPrice = itemDto.UnitPrice;
+                    existingItem.TaxCodeId = itemDto.TaxCodeId;
+                    existingItem.TaxAmount = itemDto.TaxAmount ?? 0;
+                    existingItem.DiscountAmount = itemDto.DiscountAmount ?? 0;
+                }
+            }
+        }
+
+        await Context.SaveChangesAsync();
+    }
+
     /// <summary>
     /// Converts a Quote to an Invoice
     /// </summary>

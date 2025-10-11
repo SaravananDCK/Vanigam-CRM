@@ -61,8 +61,14 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.VoucherDate) Title=@Localizer["Date"]>
+                        <Template>
+                            @context.VoucherDate.ToHumanDateTime()
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property="@nameof(Quote.Number)" Title=@Localizer["Number"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
+                    
                     <RadzenDataGridColumn TItem="Quote" Property="Party.Name" Title=@Localizer["Customer"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Status) Title=@Localizer["Status"] Width="120px">

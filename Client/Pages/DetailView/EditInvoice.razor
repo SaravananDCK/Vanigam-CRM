@@ -77,12 +77,12 @@
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="DiscountAmount" Title="@Localizer["Discount"]" Width="120px">
                                 <Template Context="item">
-                                    @item.DiscountAmount.ToString("C")
+                                    @((item.DiscountAmount ?? 0).ToString("C"))
                                 </Template>
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="TaxAmount" Title="@Localizer["Tax"]" Width="120px">
                                 <Template Context="item">
-                                    @item.TaxAmount.ToString("C")
+                                    @((item.TaxAmount ?? 0).ToString("C"))
                                 </Template>
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="LineTotal" Title="@Localizer["LineTotal"]" Width="120px">

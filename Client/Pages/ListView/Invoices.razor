@@ -25,17 +25,21 @@
                                 <OpenPageCommonComponent T="Invoice" OpenObject="@invoice" Open="@Open"></OpenPageCommonComponent>
                                 <DeletePageCommonComponent T="Invoice" UsingObject="@invoice" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
                                 <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="preview" Size="ButtonSize.ExtraSmall"
-                                             Click="@(() => PreviewPdf(invoice.Oid))" Title="@Localizer["Preview PDF"]" />
+                                              Click="@(() => PreviewPdf(invoice.Oid))" Title="@Localizer["Preview PDF"]" />
                                 <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="download" Size="ButtonSize.ExtraSmall"
-                                             Click="@(() => DownloadPdf(invoice.Oid))" Title="@Localizer["Download PDF"]" />
+                                              Click="@(() => DownloadPdf(invoice.Oid))" Title="@Localizer["Download PDF"]" />
                             </RadzenStack>
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Invoice" Property="Party.Name" Title=@Localizer["Customer"] Visible="@(!IsEmbeddedMode)">
-                        
+                    <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.VoucherDate) Title=@Localizer["Date"]>
+                        <Template>
+                            @context.VoucherDate.ToHumanDateTime()
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.Number) Title=@Localizer["Number"]>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Invoice" Property="Party.Name" Title=@Localizer["Customer"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="invoice">
