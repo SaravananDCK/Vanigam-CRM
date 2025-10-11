@@ -7,7 +7,7 @@
     "IsActive": true
   },
   {
-    "Code": "SAL001",
+    "Code": "SALES",
     "Name": "Sales Account",
     "GroupCode": "SAL",
     "AccountType": "LedgerAccount",
@@ -21,7 +21,7 @@
     "IsActive": true
   },
   {
-    "Code": "PUR001",
+    "Code": "PURCHASES",
     "Name": "Purchase Account",
     "GroupCode": "PUR",
     "AccountType": "LedgerAccount",
