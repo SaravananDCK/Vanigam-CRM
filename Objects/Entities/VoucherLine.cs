@@ -36,7 +36,7 @@ namespace Vanigam.CRM.Objects.Entities
         public decimal UnitPrice { get; set; } = 0;
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal DiscountPercent { get; set; } = 0;
+        public double DiscountPercent { get; set; } = 0;
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; } = 0;

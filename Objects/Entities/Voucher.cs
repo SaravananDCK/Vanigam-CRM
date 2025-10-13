@@ -35,8 +35,13 @@ namespace Vanigam.CRM.Objects.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal TaxAmount { get; set; } = 0;
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public DiscountType DiscountType { get; set; }
+        
         [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; } = 0;
+
+        public double DiscountPercent { get; set; } = 0;
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; } = 0;

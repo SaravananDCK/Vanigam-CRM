@@ -26,6 +26,7 @@ namespace Vanigam.CRM.Objects.Entities
     public enum VoucherType { Quote, Invoice, [Display(Description = "Purchase Order")] PurchaseOrder, [Display(Description = "Purchase Invoice")] PurchaseInvoice, Job, Payment }
     public enum VoucherLineType { [Display(Description = "Quote Line")] QuoteLine, [Display(Description = "Invoice Line")] InvoiceLine, [Display(Description = "Purchase Order Line")] PurchaseOrderLine, [Display(Description = "Purchase Invoice Line")] PurchaseInvoiceLine, [Display(Description = "Material Usage Line")] MaterialUsageLine }
     public enum EntryType { Debit, Credit }
+    public enum DiscountType { Percentage, Amount }
     public enum AccountNature { Asset = 1, Liability = 2, Income = 3, Expense = 4 }
 
     // Contract Coverage Enums
