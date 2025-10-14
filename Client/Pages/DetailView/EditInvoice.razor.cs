@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
+using Vanigam.CRM.Client.Pages.ListView;
 using Vanigam.CRM.Helpers;
-using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.DTOs;
+using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.OData;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
@@ -26,48 +28,70 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             else
             {
-                CurrentObject = await InvoiceApiService.GetByOid(oid: Oid);
+                CurrentObject = await InvoiceApiService.GetByOid(oid: Oid, expand: GetExpandString());
                 IsReadOnlyMode = true; // Edit mode - start in read-only
                 await LoadInvoiceItems();
             }
 
             await InitEditContext();
         }
-
+        protected string GetExpandString()
+        {
+            return new ODataExpand<Invoice>()
+                .Expand(f => f.Party, f => f.Party.Name)
+                .Build();
+        }
         private async Task LoadInvoiceItems()
         {
-            if (Oid == Guid.Empty)
-            {
-                invoiceItems = new List<InvoiceItemDTO>();
-                return;
-            }
-
             try
             {
-                var filter = $"Oid eq {Oid} and IsNotDeleted eq true";
-                var result = await InvoiceItemApiService.Get(filter: filter, orderBy: "CreatedAtUtc", top: 100);
-
-                invoiceItems = result.Value.Select(item => new InvoiceItemDTO
+                if (Oid != Guid.Empty)
                 {
-                    Oid = item.Oid,
-                    InventoryItemId = item.Item.Oid,
-                    InventoryItemName = item.Item?.Name ?? "-",
-                    Quantity = item.Quantity,
-                    UnitPrice = item.UnitPrice,
-                    DiscountAmount = item.DiscountAmount,
-                    TaxAmount = item.TaxAmount
-                }).ToList();
+                    invoiceItems = await InvoiceApiService.GetInvoiceItemsForEditingAsync(Oid);
+                }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message, ex);
                 NotificationService.Notify(new NotificationMessage
                 {
                     Severity = NotificationSeverity.Error,
                     Summary = Localizer["Error"],
-                    Detail = ex.Message
+                    Detail = Localizer["FailedToLoadInvoiceItems"]
                 });
             }
+
+            //if (Oid == Guid.Empty)
+            //{
+            //    invoiceItems = new List<InvoiceItemDTO>();
+            //    return;
+            //}
+
+            //try
+            //{
+            //    var filter = $"Oid eq {Oid} and IsNotDeleted eq true";
+            //    var result = await InvoiceItemApiService.Get(filter: filter, orderBy: "CreatedAtUtc", top: 100);
+
+            //    invoiceItems = result.Value.Select(item => new InvoiceItemDTO
+            //    {
+            //        Oid = item.Oid,
+            //        InventoryItemId = item.Item.Oid,
+            //        InventoryItemName = item.Item?.Name ?? "-",
+            //        Quantity = item.Quantity,
+            //        UnitPrice = item.UnitPrice,
+            //        DiscountAmount = item.DiscountAmount,
+            //        TaxAmount = item.TaxAmount
+            //    }).ToList();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.LogError(ex.Message, ex);
+            //    NotificationService.Notify(new NotificationMessage
+            //    {
+            //        Severity = NotificationSeverity.Error,
+            //        Summary = Localizer["Error"],
+            //        Detail = ex.Message
+            //    });
+            //}
         }
 
         private void OnInvoiceItemsChanged(List<InvoiceItemDTO> updatedItems)
@@ -133,6 +157,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                         Summary = Localizer["Success"],
                         Detail = Localizer["InvoiceSavedSuccessfully"]
                     });
+                    DialogService.CloseDialog(CurrentObject);
                 }
             }
             catch (HttpRequestException ex)

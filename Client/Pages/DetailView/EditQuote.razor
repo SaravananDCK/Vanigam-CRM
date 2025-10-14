@@ -344,58 +344,6 @@
         }
     }
 
-    private async Task SaveBulkQuote()
-    {
-        if (CurrentObject == null) return;
-
-        IsBusy = true;
-        try
-        {
-            var bulkData = new QuoteBulkSaveDTO
-            {
-                Oid = IsCreateMode ? null : CurrentObject.Oid,
-                Title = CurrentObject.Number,
-                Status = CurrentObject.Status,
-                OpportunityId = CurrentObject.OpportunityId,
-                CustomerId = CurrentObject.PartyId,
-                JobId = CurrentObject.JobId,
-                TotalAmount = CurrentObject.TotalAmount,
-                Items = quoteItems
-            };
-
-            var savedQuote = await QuoteApiService.BulkSaveQuoteWithItemsAsync(bulkData);
-
-            if (savedQuote != null)
-            {
-                CurrentObject = savedQuote;
-                hasQuoteItemChanges = false;
-
-                await LoadQuoteItems(); // Refresh items
-                await EnableReadOnlyModeAsync();
-
-                NotificationService.Notify(new NotificationMessage
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = Localizer["Success"],
-                    Detail = Localizer["QuoteSavedSuccessfully"]
-                });
-            }
-        }
-        catch (Exception ex)
-        {
-            NotificationService.Notify(new NotificationMessage
-            {
-                Severity = NotificationSeverity.Error,
-                Summary = Localizer["Error"],
-                Detail = ex.Message
-            });
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
     protected override async Task EnableReadOnlyModeAsync()
     {
         await base.EnableReadOnlyModeAsync();

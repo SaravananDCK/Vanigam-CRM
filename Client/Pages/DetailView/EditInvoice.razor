@@ -157,7 +157,15 @@
                 <RadzenStack>
                     <VanigamAccountingFormField Text=@Localizer["Number"]>
                         <ChildContent>
-                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" ReadOnly="true" />
+                            @if (string.IsNullOrEmpty(CurrentObject.Number))
+                            {
+                                <RadzenText TextStyle="TextStyle.Button" Text="New Quote" class="rz-m-2" Style="color: var(--rz-success);" />
+                            }
+                            else
+                            {
+                                <RadzenText Text="@CurrentObject.Number" class="rz-m-2" />
+                            }
+                            @*<VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" ReadOnly="true" />*@
                         </ChildContent>
                     </VanigamAccountingFormField>
                     <VanigamAccountingFormField Text=@Localizer["Customer"]>
@@ -168,11 +176,6 @@
                     <VanigamAccountingFormField Text=@Localizer["Status"]>
                         <ChildContent>
                             <InvoiceStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["TotalAmount"]>
-                        <ChildContent>
-                            <RadzenNumeric @bind-Value="@CurrentObject.TotalAmount" Name="numeric_TotalAmount" ReadOnly="true" />
                         </ChildContent>
                     </VanigamAccountingFormField>
                 </RadzenStack>

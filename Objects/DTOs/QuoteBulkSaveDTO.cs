@@ -18,7 +18,8 @@ public class QuoteBulkSaveDTO
     public Guid? CustomerId { get; set; }
 
     public Guid? JobId { get; set; }
-
+    public decimal DiscountAmount { get; set; }
+    public double DiscountPercentage { get; set; }
     public decimal TotalAmount { get; set; }
 
     public decimal SubTotal { get; set; }
@@ -39,11 +40,11 @@ public class QuoteItemDTO
 
     [Required]
     public decimal UnitPrice { get; set; }
-    public decimal? DiscountAmount { get; set; }
+    public decimal DiscountAmount { get; set; } = 0;
     public Guid? TaxCodeId { get; set; }
     public decimal? TaxAmount { get; set; }
 
-    public decimal Total => ((decimal)(Quantity * (double)UnitPrice) + (TaxAmount ?? 0));
+    public decimal Total => (decimal)(Quantity * (double)UnitPrice) - DiscountAmount;
 
     // For UI display purposes
     public string? InventoryItemName { get; set; }

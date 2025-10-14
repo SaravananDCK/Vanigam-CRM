@@ -123,6 +123,12 @@
   <data name="DiscountAmount" xml:space="preserve">
     <value>Discount Amount</value>
   </data>
+  <data name="DiscountPercent" xml:space="preserve">
+    <value>Discount Percent</value>
+  </data>
+  <data name="DiscountType" xml:space="preserve">
+    <value>Discount Type</value>
+  </data>
   <data name="EditQuote" xml:space="preserve">
     <value>Edit Quote</value>
   </data>

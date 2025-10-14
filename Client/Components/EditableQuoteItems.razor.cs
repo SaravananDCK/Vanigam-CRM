@@ -90,7 +90,7 @@ public partial class EditableQuoteItems
                     quoteItemDTO.InventoryItemName = Item.Name;
                     quoteItemDTO.UnitPrice = Item.UnitPrice;
                     quoteItemDTO.TaxCodeId = Item.TaxCodeId;
-                    quoteItemDTO.TaxAmount = (Item.TaxCode?.TaxRate / 100 ?? 0) * Item.UnitPrice;
+                    quoteItemDTO.TaxAmount = (decimal)(Item.TaxCode?.TaxRate / 100 ?? 0) * Item.UnitPrice;
                     // You might want to set default price from inventory item if available
                 }
             }
@@ -110,7 +110,7 @@ public partial class EditableQuoteItems
     private void CalculateTotal(QuoteItemDTO item)
     {
         // Total is calculated automatically in the DTO property
-        item.TaxAmount = (Item.TaxCode?.TaxRate / 100 ?? 0) * item.UnitPrice * (decimal)item.Quantity;
+        item.TaxAmount = (decimal)(Item.TaxCode?.TaxRate / 100 ?? 0) * item.UnitPrice * (decimal)item.Quantity;
     }
 
     private async Task NotifyChanges()

@@ -27,7 +27,7 @@ public class TaxCode : BaseClass
     [Range(0, 100)]
     [DisplayName("Tax Rate (%)")]
     [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
-    public virtual decimal TaxRate { get; set; }
+    public virtual double TaxRate { get; set; }
 
     [DisplayName("Is Compound Tax")]
     public virtual bool IsCompoundTax { get; set; } = false;
@@ -47,27 +47,27 @@ public class TaxCode : BaseClass
     [DisplayName("CGST Rate (%)")]
     [Range(0, 100)]
     [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
-    public virtual decimal CGSTRate { get; set; }
+    public virtual double CGSTRate { get; set; }
 
     [DisplayName("SGST Rate (%)")]
     [Range(0, 100)]
     [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
-    public virtual decimal SGSTRate { get; set; }
+    public virtual double SGSTRate { get; set; }
 
     [DisplayName("IGST Rate (%)")]
     [Range(0, 100)]
     [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
-    public virtual decimal IGSTRate { get; set; }
+    public virtual double IGSTRate { get; set; }
 
     [DisplayName("UTGST Rate (%)")]
     [Range(0, 100)]
     [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
-    public virtual decimal UTGSTRate { get; set; }
+    public virtual double UTGSTRate { get; set; }
 
     [DisplayName("Cess Rate (%)")]
     [Range(0, 100)]
     [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
-    public virtual decimal CessRate { get; set; }
+    public virtual double CessRate { get; set; }
 
     // Account Mapping for Tax Posting
     [DisplayName("Tax Payable Account")]

@@ -57,6 +57,9 @@ public class QuoteService(
                 quote.TotalAmount = quoteData.TotalAmount;
                 quote.SubTotal = quoteData.SubTotal;
                 quote.TaxAmount = quoteData.TaxAmount;
+                quote.DiscountAmount = quoteData.DiscountAmount;
+                quote.DiscountPercent = quoteData.DiscountPercentage;
+                quote.DiscountType = quoteData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
 
                 // Handle quote items
                 await HandleQuoteItems(quote, quoteData.Items);
@@ -82,6 +85,9 @@ public class QuoteService(
                     TotalAmount = quoteData.TotalAmount,
                     SubTotal = quoteData.SubTotal,
                     TaxAmount = quoteData.TaxAmount,
+                    DiscountAmount = quoteData.DiscountAmount,
+                    DiscountPercent = quoteData.DiscountPercentage,
+                    DiscountType = quoteData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
                     TenantId = TenantId
                 };
 
@@ -97,7 +103,7 @@ public class QuoteService(
                         UnitPrice = itemDto.UnitPrice,
                         TaxCodeId = itemDto.TaxCodeId,
                         TaxAmount = itemDto.TaxAmount ?? 0,
-                        DiscountAmount = itemDto.DiscountAmount ?? 0,
+                        DiscountAmount = itemDto.DiscountAmount,
                         TenantId = TenantId
                     };
 
@@ -158,7 +164,7 @@ public class QuoteService(
                     UnitPrice = itemDto.UnitPrice,
                     TaxCodeId = itemDto.TaxCodeId,
                     TaxAmount = itemDto.TaxAmount ?? 0,
-                    DiscountAmount = itemDto.DiscountAmount ?? 0,
+                    DiscountAmount = itemDto.DiscountAmount,
                     TenantId = TenantId
                 };
 
@@ -177,7 +183,7 @@ public class QuoteService(
                     existingItem.UnitPrice = itemDto.UnitPrice;
                     existingItem.TaxCodeId = itemDto.TaxCodeId;
                     existingItem.TaxAmount = itemDto.TaxAmount ?? 0;
-                    existingItem.DiscountAmount = itemDto.DiscountAmount ?? 0;
+                    existingItem.DiscountAmount = itemDto.DiscountAmount;
                 }
             }
         }
