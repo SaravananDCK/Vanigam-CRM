@@ -6,15 +6,16 @@
 @inject ItemApiService ItemApiService
 
 <RadzenStack>
-    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["InvoiceItems"]</RadzenText>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+        <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["InvoiceItems"]</RadzenText>
 
-    @* Add New Item Button *@
-    <RadzenButton Text="@Localizer["AddItem"]"
-                  Icon="add"
-                  ButtonStyle="ButtonStyle.Success"
-                  Size="ButtonSize.Small"
-                  Click="@AddNewItem" />
-
+        @* Add New Item Button *@
+        <RadzenButton Text="@Localizer["AddItem"]"
+                      Icon="add"
+                      ButtonStyle="ButtonStyle.Success"
+                      Size="ButtonSize.Small"
+                      Click="@AddNewItem" />
+    </RadzenStack>
     @* Items List *@
     @if (Items?.Any() == true)
     {
@@ -29,12 +30,12 @@
                     </Template>
                     <EditTemplate Context="item">
                         <ItemDropDownDataGrid @bind-Value="item.InventoryItemId"
-                                                       Change="@(async (object value) => { await OnInventoryItemChanged(item, value); })"
-                                                       class="w-100" />
+                                              Change="@(async (object value) => { await OnInventoryItemChanged(item, value); })"
+                                              class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="Quantity" Title="@Localizer["Quantity"]" Width="120px">
+                <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="Quantity" Title="@Localizer["Quantity"]" Width="120px" TextAlign="TextAlign.Right">
                     <EditTemplate Context="item">
                         <RadzenNumeric TValue="double" @bind-Value="item.Quantity"
                                        Min="1"
@@ -43,7 +44,7 @@
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="UnitPrice" Title="@Localizer["UnitPrice"]" Width="150px">
+                <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="UnitPrice" Title="@Localizer["UnitPrice"]" Width="150px" TextAlign="TextAlign.Right">
                     <Template Context="item">
                         @item.UnitPrice.ToString("C")
                     </Template>
@@ -56,13 +57,13 @@
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="Total" Title="@Localizer["Total"]" Width="150px">
+                <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="Total" Title="@Localizer["Total"]" Width="150px" TextAlign="TextAlign.Right">
                     <Template Context="item">
                         @item.Total.ToString("C")
                     </Template>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="InvoiceItemDTO" Title="@Localizer["Actions"]" Width="150px" Filterable="false" Sortable="false">
+                <RadzenDataGridColumn TItem="InvoiceItemDTO" Title="@Localizer["Actions"]" Width="150px" Filterable="false" Sortable="false" TextAlign="TextAlign.Right">
                     <Template Context="item">
                         <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light"
                                       Variant="Variant.Flat" Size="ButtonSize.Small"
@@ -91,11 +92,9 @@
                 <RadzenColumn Size="8">
                 </RadzenColumn>
                 <RadzenColumn Size="4">
-                    <RadzenStack>
-                        <div class="d-flex justify-content-between">
-                            <RadzenText TextStyle="TextStyle.H6">@Localizer["TotalAmount"]:</RadzenText>
-                            <RadzenText TextStyle="TextStyle.H6">@TotalAmount.ToString("C")</RadzenText>
-                        </div>
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
+                        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right">@Localizer["TotalAmount"]:</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right" Style="width: 200px">@TotalAmount.ToString("C")</RadzenText>
                     </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>

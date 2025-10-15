@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -40,7 +41,10 @@ namespace Vanigam.CRM.Objects.Entities
         
         [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; } = 0;
-
+        
+        [DisplayName("Discount (%)")]
+        [Range(0, 100)]
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
         public double DiscountPercent { get; set; } = 0;
 
         [Column(TypeName = "decimal(18,2)")]

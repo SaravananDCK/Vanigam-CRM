@@ -46,7 +46,7 @@
                             <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(invoice.Status)" Text="@invoice.Status.ToString()" />
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.TotalAmount) Title=@Localizer["TotalAmount"]>
+                    <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.TotalAmount) Title=@Localizer["TotalAmount"] TextAlign="TextAlign.Right">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Invoice" Property=@nameof(Invoice.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

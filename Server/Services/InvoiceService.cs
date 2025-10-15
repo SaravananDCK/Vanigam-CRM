@@ -7,6 +7,7 @@ namespace Vanigam.CRM.Server.Services;
 
 public class InvoiceService(
     VanigamAccountingDbContext context,
+    NumberSeriesService numberSeriesService,
     ILogger<BaseService<Invoice>> logger,
     LedgerPostingService ledgerPostingService,
     ContractAutoCreationService contractAutoCreationService)
@@ -193,11 +194,12 @@ public class InvoiceService(
             }
             else
             {
+                var invoiceNumber = await numberSeriesService.GenerateNextNumber(nameof(Invoice), TenantId);
                 // Create new invoice
                 invoice = new Invoice
                 {
                     Oid = Guid.NewGuid(),
-                    Number = invoiceData.Number,
+                    Number = invoiceNumber,
                     Status = invoiceData.Status,
                     PartyId = invoiceData.PartyId,
                     TotalAmount = invoiceData.TotalAmount,
