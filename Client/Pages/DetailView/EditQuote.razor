@@ -170,15 +170,15 @@
                             {
                                 <RadzenText Text="@CurrentObject.Number" class="rz-m-2" />
                             }
-                            
+
                         </ChildContent>
                     </VanigamAccountingFormField>
                     <VanigamAccountingFormField Text=@Localizer["Quotation For"]>
                         <ChildContent>
                             <RadzenRadioButtonList @bind-Value=@QuotationFor TValue="int" JustifyContent="JustifyContent.Start" class="rz-m-2">
                                 <Items>
-                                    <RadzenRadioButtonListItem Text="Customer" Value="0"/>
-                                    <RadzenRadioButtonListItem Text="Opportunity" Value="1"/>
+                                    <RadzenRadioButtonListItem Text="Customer" Value="0" />
+                                    <RadzenRadioButtonListItem Text="Opportunity" Value="1" />
                                 </Items>
                             </RadzenRadioButtonList>
                         </ChildContent>
@@ -216,17 +216,26 @@
                             <QuoteStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                         </ChildContent>
                     </VanigamAccountingFormField>
+
+                    <VanigamAccountingFormField Text=@Localizer["DiscountType"]>
+                        <ChildContent>
+                            <DiscountTypeEnumDropDown @bind-Value="@CurrentObject.DiscountType" />
+                        </ChildContent>
+                    </VanigamAccountingFormField>
                 </RadzenStack>
             </RadzenCard>
 
             @* Quote Items Section *@
-            <RadzenCard class="rz-mb-4">
-                <EditableQuoteItems Items="@quoteItems"
-                                    ItemsChanged="@OnQuoteItemsChanged"
-                                    TotalAmountChanged="@OnTotalAmountChanged"
-                                    TotalTaxChanged="@OnTotalTaxAmountChanged"
-                                    DiscountChanged="@OnDiscountAmountChanged"/>
-            </RadzenCard>
+        <RadzenCard class="rz-mb-4">
+            <EditableQuoteItems Items="@quoteItems"
+                                ItemsChanged="@OnQuoteItemsChanged"
+                                TotalAmountChanged="@OnTotalAmountChanged"
+                                TotalTaxChanged="@OnTotalTaxAmountChanged"
+                                DiscountChanged="@OnDiscountAmountChanged"
+                                DiscountPercentageChanged="@OnDiscountPercentageChanged"
+                                SubTotalChanged="@OnSubTotalChanged"
+                                Quote="@CurrentObject" />
+        </RadzenCard>
         </RadzenStack>
 
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
@@ -343,7 +352,19 @@
             StateHasChanged();
         }
     }
-
+    
+    private async Task OnDiscountPercentageChanged(double discountPercent)
+    {
+        if (CurrentObject != null)
+        {
+            CurrentObject.DiscountPercent = discountPercent;
+            if (CurrentObject.DiscountPercent > 0)
+            {
+                await OnDiscountAmountChanged(CurrentObject.DiscountAmount);
+            }
+            StateHasChanged();
+        }
+    }
     protected override async Task EnableReadOnlyModeAsync()
     {
         await base.EnableReadOnlyModeAsync();
