@@ -16,6 +16,8 @@ public class InvoiceBulkSaveDTO
     public Guid? PartyId { get; set; }
 
     public decimal TotalAmount { get; set; }
+    public decimal DiscountAmount { get; set; }
+    public double DiscountPercentage { get; set; }
 
     public decimal SubTotal { get; set; }
 
@@ -37,8 +39,9 @@ public class InvoiceItemDTO
 
     [Required]
     public decimal UnitPrice { get; set; }
-    public decimal? DiscountAmount { get; set; }
+    public decimal DiscountAmount { get; set; } = 0;
     public decimal? TaxAmount { get; set; }
+    public Guid? TaxCodeId { get; set; }
     public decimal Total => (decimal)Quantity * UnitPrice;
 
     // For UI display purposes

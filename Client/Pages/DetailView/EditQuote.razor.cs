@@ -170,5 +170,14 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 StateHasChanged();
             }
         }
+
+        private async Task OnDiscountTypeChanged(DiscountType type)
+        {
+            if (CurrentObject != null)
+            {
+                CurrentObject.DiscountType = type;
+                StateHasChanged();
+            }
+        }
     }
 }

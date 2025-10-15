@@ -109,7 +109,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private void CalculateTotalAmount()
         {
             var subTotal = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.Total);
-            var totalDiscount = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.DiscountAmount ?? 0);
+            var totalDiscount = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.DiscountAmount);
             var totalTax = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount ?? 0);
 
             CurrentObject.SubTotal = subTotal;
@@ -118,6 +118,52 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             CurrentObject.TotalAmount = subTotal - totalDiscount + totalTax;
         }
 
+        private async Task OnSubTotalChanged(decimal subTotal)
+        {
+            if (CurrentObject != null)
+            {
+                CurrentObject.SubTotal = subTotal;
+                StateHasChanged();
+            }
+        }
+
+        private async Task OnDiscountTypeChanged(DiscountType type)
+        {
+            if (CurrentObject != null)
+            {
+                CurrentObject.DiscountType = type;
+                StateHasChanged();
+            }
+        }
+        private async Task OnTotalTaxAmountChanged(decimal taxAmount)
+        {
+            if (CurrentObject != null)
+            {
+                CurrentObject.TaxAmount = taxAmount;
+                StateHasChanged();
+            }
+        }
+        private async Task OnDiscountAmountChanged(decimal discountAmount)
+        {
+            if (CurrentObject != null)
+            {
+                CurrentObject.DiscountAmount = discountAmount;
+                StateHasChanged();
+            }
+        }
+
+        private async Task OnDiscountPercentageChanged(double discountPercent)
+        {
+            if (CurrentObject != null)
+            {
+                CurrentObject.DiscountPercent = discountPercent;
+                if (CurrentObject.DiscountPercent > 0)
+                {
+                    await OnDiscountAmountChanged(CurrentObject.DiscountAmount);
+                }
+                StateHasChanged();
+            }
+        }
         private async Task SaveBulkInvoice()
         {
             if (CurrentObject == null) return;
@@ -133,6 +179,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     Status = CurrentObject.Status,
                     PartyId = CurrentObject.PartyId,
                     TotalAmount = CurrentObject.TotalAmount,
+                    SubTotal = CurrentObject.SubTotal,
+                    TaxAmount = CurrentObject.TaxAmount,
+                    DiscountAmount = CurrentObject.DiscountAmount,
+                    DiscountPercentage = CurrentObject.DiscountPercent,
                     Items = invoiceItems.Select(i => new InvoiceItemDTO
                     {
                         Oid = i.Oid,

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Radzen.Blazor;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
@@ -15,6 +16,7 @@ public partial class EditableQuoteItems
     [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
     [Parameter] public EventCallback<double> DiscountPercentageChanged { get; set; }
+    [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
     [Parameter] public EventCallback<decimal> SubTotalChanged { get; set; }
     private RadzenDataGrid<QuoteItemDTO> itemsGrid = null!;
     private QuoteItemDTO itemBeingEdited;
@@ -73,7 +75,7 @@ public partial class EditableQuoteItems
             await NotifyChanges();
         }
     }
-
+   
     private async Task OnRowUpdate(QuoteItemDTO item)
     {
         CalculateTotal(item);
@@ -92,7 +94,7 @@ public partial class EditableQuoteItems
         }
         await NotifyChanges();
     }
-    private Item Item;
+    private Item Item { get; set; }
     private async Task OnInventoryItemChanged(Guid? itemId, QuoteItemDTO quoteItemDTO)
     {
         if (quoteItemDTO.InventoryItemId.HasValue)
@@ -173,6 +175,7 @@ public partial class EditableQuoteItems
         await DiscountChanged.InvokeAsync(DiscountAmt);
         await DiscountPercentageChanged.InvokeAsync(DiscountPercentage);
         await TotalAmountChanged.InvokeAsync(GrandTotalAmount);
+        await DiscountTypeChanged.InvokeAsync(Quote.DiscountType);
         StateHasChanged();
     }
 }

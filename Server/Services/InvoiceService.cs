@@ -167,7 +167,9 @@ public class InvoiceService(
                 invoice.SubTotal = invoiceData.SubTotal;
                 invoice.TaxAmount = invoiceData.TaxAmount;
                 invoice.VoucherDate = invoiceData.VoucherDate;
-
+                invoice.DiscountAmount = invoiceData.DiscountAmount;
+                invoice.DiscountPercent = invoiceData.DiscountPercentage;
+                invoice.DiscountType = invoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
                 // Handle invoice items
                 await HandleInvoiceItems(invoice, invoiceData.Items);
 
@@ -206,6 +208,9 @@ public class InvoiceService(
                     SubTotal = invoiceData.SubTotal,
                     TaxAmount = invoiceData.TaxAmount,
                     VoucherDate = invoiceData.VoucherDate,
+                    DiscountAmount = invoiceData.DiscountAmount,
+                    DiscountPercent = invoiceData.DiscountPercentage,
+                    DiscountType = invoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
                     TenantId = TenantId
                 };
 
@@ -219,7 +224,7 @@ public class InvoiceService(
                         ItemId = itemDto.InventoryItemId,
                         Quantity = itemDto.Quantity,
                         UnitPrice = itemDto.UnitPrice,
-                        DiscountAmount = itemDto.DiscountAmount ?? 0,
+                        DiscountAmount = itemDto.DiscountAmount,
                         TaxAmount = itemDto.TaxAmount ?? 0,
                         TenantId = TenantId
                     };
@@ -295,7 +300,7 @@ public class InvoiceService(
                     ItemId = itemDto.InventoryItemId,
                     Quantity = itemDto.Quantity,
                     UnitPrice = itemDto.UnitPrice,
-                    DiscountAmount = itemDto.DiscountAmount ?? 0,
+                    DiscountAmount = itemDto.DiscountAmount,
                     TaxAmount = itemDto.TaxAmount ?? 0,
                     TenantId = TenantId
                 };
@@ -313,7 +318,7 @@ public class InvoiceService(
                     existingItem.ItemId = itemDto.InventoryItemId;
                     existingItem.Quantity = itemDto.Quantity;
                     existingItem.UnitPrice = itemDto.UnitPrice;
-                    existingItem.DiscountAmount = itemDto.DiscountAmount ?? 0;
+                    existingItem.DiscountAmount = itemDto.DiscountAmount;
                     existingItem.TaxAmount = itemDto.TaxAmount ?? 0;
                 }
             }
