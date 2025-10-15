@@ -13,16 +13,16 @@
                       Icon="add"
                       ButtonStyle="ButtonStyle.Success"
                       Size="ButtonSize.Small"
-                      Click="@AddNewItem"/>
+                      Click="@AddNewItem" />
     </RadzenStack>
 
     @* Items List *@
     @if (Items?.Any() == true)
     {
         <RadzenDataGrid @ref="itemsGrid" Data="@Items.Where(i => !i.IsDeleted)" TItem="QuoteItemDTO"
-                       AllowFiltering="false" AllowPaging="false" AllowSorting="false"
-                       EditMode="Radzen.DataGridEditMode.Single" RowUpdate="@OnRowUpdate"
-                       class="rz-mt-3">
+                        AllowFiltering="false" AllowPaging="false" AllowSorting="false"
+                        EditMode="Radzen.DataGridEditMode.Single" RowUpdate="@OnRowUpdate"
+                        class="rz-mt-3">
             <Columns>
                 <RadzenDataGridColumn TItem="QuoteItemDTO" Property=@nameof(QuoteItemDTO.InventoryItemName) Title="@Localizer["Item"]" Width="200px">
                     <EditTemplate Context="item">
@@ -61,6 +61,22 @@
                                        class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="QuoteItemDTO" Property=@nameof(QuoteItemDTO.DiscountAmount) Width="120px" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["Discount Amount"]</div>
+                    </HeaderTemplate>
+                    <Template Context="item">
+                        @item.DiscountAmount.ToString("C")
+                    </Template>
+                    @*<EditTemplate Context="item">
+                            <RadzenNumeric TValue="decimal?" @bind-Value="item.DiscountAmount"
+                                           Format="C"
+                                           Change="@(async (decimal? value) => { item.DiscountAmount = value; CalculateTotal(item); await NotifyChanges(); })"
+                                           class="w-100" />
+                        </EditTemplate>*@
+                </RadzenDataGridColumn>
+
                 <RadzenDataGridColumn TItem="QuoteItemDTO" Property=@nameof(QuoteItemDTO.TaxAmount) Width="120px" TextAlign="TextAlign.Right">
                     <HeaderTemplate>
                         <div style="padding-right: 20px;">@Localizer["TaxAmount"]</div>
@@ -107,26 +123,57 @@
         @* Totals Display *@
         <RadzenCard class="rz-mt-3">
             <RadzenRow>
+                @if (Quote.DiscountType == DiscountType.Percentage)
+                {
+                    <RadzenColumn Size="8" />
+                    <RadzenColumn Size="4">
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
+                            <RadzenText TextStyle="TextStyle.H6">@Localizer["Discount %"]:</RadzenText>
+                            <RadzenNumeric TValue="double" @bind-Value="DiscountPercentage" Style="width: 200px"
+                                           Format="n0" TextAlign="TextAlign.Right"
+                                           Change="@(async (double value) => { DiscountPercentage = value; await CalculateDiscount((decimal)value); await NotifyChanges(); })"
+                                           class="w-100" />
+                        </RadzenStack>
+                    </RadzenColumn>
+                }
                 <RadzenColumn Size="8" />
                 <RadzenColumn Size="4">
                     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
                         <RadzenText TextStyle="TextStyle.H6">@Localizer["Discount"]:</RadzenText>
-                        <RadzenText TextStyle="TextStyle.H6">@DiscountAmt.ToString("C")</RadzenText>
-                    </RadzenStack>
-                </RadzenColumn>
-                <RadzenColumn Size="8" />
-                <RadzenColumn Size="4">
-                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
-                        <RadzenText TextStyle="TextStyle.H6">@Localizer["TaxAmount"]:</RadzenText>
-                        <RadzenText TextStyle="TextStyle.H6">@TaxAmount.ToString("C")</RadzenText>
+                        @if (Quote.DiscountType == DiscountType.Percentage)
+                        {
+                            <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right" Style="width: 200px">@DiscountAmt.ToString("C")</RadzenText>
+                        }
+                        else
+                        {
+                            <RadzenNumeric TValue="decimal" @bind-Value="DiscountAmt" Style="width: 200px" Format="C" TextAlign="TextAlign.Right" class="w-100"
+                                           Change="@(async (decimal value) => { DiscountAmt = value; await CalculateDiscount(value); await NotifyChanges(); })" />
+                        }
+
                     </RadzenStack>
                 </RadzenColumn>
 
                 <RadzenColumn Size="8" />
                 <RadzenColumn Size="4">
                     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
-                        <RadzenText TextStyle="TextStyle.H6">@Localizer["TotalAmount"]:</RadzenText>
-                        <RadzenText TextStyle="TextStyle.H6">@TotalAmount.ToString("C")</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right">@Localizer["Sub Total"]:</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right" Style="width: 200px">@SubTotalAmount.ToString("C")</RadzenText>
+                    </RadzenStack>
+                </RadzenColumn>
+
+                <RadzenColumn Size="8" />
+                <RadzenColumn Size="4">
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
+                        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right">@Localizer["Tax"]:</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right" Style="width: 200px">@TaxAmount.ToString("C")</RadzenText>
+                    </RadzenStack>
+                </RadzenColumn>
+
+                <RadzenColumn Size="8" />
+                <RadzenColumn Size="4">
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
+                        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right">@Localizer["Grand Total"]:</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right" Style="width: 200px">@GrandTotalAmount.ToString("C")</RadzenText>
                     </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>

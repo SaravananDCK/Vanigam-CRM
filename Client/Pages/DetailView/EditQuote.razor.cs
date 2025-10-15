@@ -121,6 +121,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     CustomerId = CurrentObject.PartyId,
                     JobId = CurrentObject.JobId,
                     TotalAmount = CurrentObject.TotalAmount,
+                    SubTotal = CurrentObject.SubTotal,
+                    TaxAmount = CurrentObject.TaxAmount,
+                    DiscountAmount = CurrentObject.DiscountAmount,
+                    DiscountPercentage = CurrentObject.DiscountPercent,
                     Items = quoteItems
                 };
 
@@ -155,6 +159,15 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             finally
             {
                 IsBusy = false;
+            }
+        }
+
+        private async Task OnSubTotalChanged(decimal subTotal)
+        {
+            if (CurrentObject != null)
+            {
+                CurrentObject.SubTotal = subTotal;
+                StateHasChanged();
             }
         }
     }

@@ -13,7 +13,6 @@
         @* Floating Edit Button - Only visible in read-only mode *@
         @if (IsEditButtonVisible)
         {
-
             <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
         }
     </CustomBadge>
@@ -126,8 +125,7 @@
                                         </RadzenText>
                                     </div>
 
-                                    <RadzenDivider />
-
+                                    <hr style="border: 1px solid #ccc; margin: 5px 0;" />
                                     <div class="read-only-field">
                                         <RadzenText TextStyle="TextStyle.H6" TagName="TagName.Span" class="field-label">
                                             <strong>@Localizer["TotalAmount"]:</strong>
@@ -159,7 +157,7 @@
                         <ChildContent>
                             @if (string.IsNullOrEmpty(CurrentObject.Number))
                             {
-                                <RadzenText TextStyle="TextStyle.Button" Text="New Quote" class="rz-m-2" Style="color: var(--rz-success);" />
+                                <RadzenText TextStyle="TextStyle.Button" Text="New Invoice" class="rz-m-2" Style="color: var(--rz-success);" />
                             }
                             else
                             {
