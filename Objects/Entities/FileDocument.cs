@@ -19,7 +19,11 @@ public class FileDocument: BaseClass
     public string FileSizeStr { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public FileTypes FileType { get; set; }
-    
+
+    [ForeignKey(nameof(LedgerAccountId))]
+    public LedgerAccount LedgerAccount { get; set; }
+    public Guid? LedgerAccountId { get; set; }
+
     [ForeignKey(nameof(CategoryId))]
     public FileCategory Category { get; set; }
     public Guid? CategoryId { get; set; }

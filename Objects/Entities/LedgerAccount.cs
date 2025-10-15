@@ -61,5 +61,6 @@ namespace Vanigam.CRM.Objects.Entities
 
         // Navigation property - Single collection for all transactions (both debit and credit)
         public ICollection<LedgerEntry> Transactions { get; set; } = new List<LedgerEntry>();
+        public ICollection<FileDocument> FileDocuments { get; set; } = new List<FileDocument>();
     }
 }
