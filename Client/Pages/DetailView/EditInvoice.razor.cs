@@ -167,7 +167,21 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private async Task SaveBulkInvoice()
         {
             if (CurrentObject == null) return;
+            // Check if invoice is not posted and show confirmation dialog
+            if (CurrentObject.Status != InvoiceStatus.Posted)
+            {
+                var confirmResult = await DialogService.Confirm(
+                    Localizer["DoYouWantToPostThisInvoice"],
+                    Localizer["PostInvoice"],
+                    new ConfirmOptions() { OkButtonText = Localizer["Yes"], CancelButtonText = Localizer["No"] }
+                );
 
+                if (confirmResult == true)
+                {
+                    // User chose to post the invoice
+                    CurrentObject.Status = InvoiceStatus.Posted;
+                }
+            }
             IsBusy = true;
             try
             {
