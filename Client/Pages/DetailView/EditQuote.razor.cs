@@ -103,11 +103,15 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 // Refresh quote to show any updated information
                 CurrentObject = await QuoteApiService.GetByOid(oid: Oid);
                 StateHasChanged();
+                DialogService.CloseDialog(CurrentObject);
             }
         }
         private async Task SaveBulkQuote()
         {
             if (CurrentObject == null) return;
+            
+            var isValid = EditContext.Validate();
+            if (!isValid) return;
 
             IsBusy = true;
             try

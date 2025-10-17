@@ -38,6 +38,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         protected string GetExpandString()
         {
             return new ODataExpand<Invoice>()
+                .Expand(f => f.Items)
                 .Expand(f => f.Party, f => f.Party.Name)
                 .Build();
         }
@@ -167,6 +168,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private async Task SaveBulkInvoice()
         {
             if (CurrentObject == null) return;
+
+            var isValid = EditContext.Validate();
+            if (!isValid) return;
+
             // Check if invoice is not posted and show confirmation dialog
             if (CurrentObject.Status != InvoiceStatus.Posted)
             {
