@@ -8,6 +8,13 @@ using Vanigam.CRM.Objects.Contracts;
 namespace Vanigam.CRM.Objects.Entities
 {
     // Base class for all vouchers using Table-Per-Hierarchy (TPH) inheritance
+    [JsonDerivedType(typeof(Invoice), "#Vanigam.CRM.Objects.Entities.Invoice")]
+    [JsonDerivedType(typeof(Job), "#Vanigam.CRM.Objects.Entities.Job")]
+    [JsonDerivedType(typeof(Payment), "#Vanigam.CRM.Objects.Entities.Payment")]
+    [JsonDerivedType(typeof(PurchaseInvoice), "#Vanigam.CRM.Objects.Entities.PurchaseInvoice")]
+    [JsonDerivedType(typeof(PurchaseOrder), "#Vanigam.CRM.Objects.Entities.PurchaseOrder")]
+    [JsonDerivedType(typeof(Quote), "#Vanigam.CRM.Objects.Entities.Quote")]
+    [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor, TypeDiscriminatorPropertyName = "@odata.type")]
     public abstract class Voucher : BaseClass
     {
         [Required]

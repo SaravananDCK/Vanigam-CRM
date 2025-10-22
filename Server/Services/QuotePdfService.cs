@@ -16,7 +16,7 @@ public class QuotePdfService(
         return await Context.Quotes
             .Include(q => q.Party)
             .Include(q => q.Job)
-            .Include(q => q.Items)
+            .Include(q => q.VoucherLines)
                 .ThenInclude(qi => qi.Item)
             .FirstOrDefaultAsync(q => q.Oid == entityId);
     }
@@ -64,10 +64,10 @@ public class QuotePdfService(
     public override void BuildDocumentContent(Quote quote, ColumnDescriptor column)
     {
         // Items Table
-        if (quote.Items.Any())
+        if (quote.VoucherLines.Any())
         {
             BuildItemsTable(
-                quote.Items,
+                quote.VoucherLines,
                 column,
                 item => item.Quantity,
                 item => item.Item?.Name ?? "Item",

@@ -8,7 +8,7 @@ namespace Vanigam.CRM.Objects.Entities
     public enum AppointmentStatus { Scheduled, [Display(Description = "Checked-In")] CheckedIn, [Display(Description = "In-Progress")] InProgress, Completed, Missed, Cancelled }
     public enum AssignmentStatus { Pending, Accepted, Rejected, [Display(Description = "En-Route")] EnRoute, Arrived, Paused, Finished }
     public enum TechnicianStatus { Available, Busy, Offline, [Display(Description = "On-Leave")] OnLeave }
-    public enum QuoteStatus { Draft, Sent, Accepted, Rejected, Expired }
+    public enum QuoteStatus { Draft, Sent, Accepted,Converted, Rejected, Expired }
     public enum InvoiceStatus { Draft,Posted, Sent, Paid, [Display(Description = "Partially-Paid")] PartiallyPaid, Overdue, Cancelled }
     public enum PaymentStatus { Successful, Failed, Pending, Refunded }
     public enum PaymentMethod { Cash, BankTransfer, Cheque, Card, UPI, Wallet, NetBanking, Other }

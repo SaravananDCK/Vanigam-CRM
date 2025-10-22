@@ -46,11 +46,11 @@ public class ContractAutoCreationService(
 
             // Load invoice with items and item details
             var invoiceWithItems = await context.Invoices
-                .Include(i => i.Items)
+                .Include(i => i.VoucherLines)
                     .ThenInclude(ii => ii.Item)
                 .FirstOrDefaultAsync(i => i.Oid == invoice.Oid);
 
-            if (invoiceWithItems == null || !invoiceWithItems.Items.Any())
+            if (invoiceWithItems == null || !invoiceWithItems.VoucherLines.OfType<InvoiceItem>().Any())
             {
                 logger.LogInformation("Invoice {InvoiceNumber} has no items - skipping contract creation", invoice.Number);
                 return;
@@ -85,7 +85,7 @@ public class ContractAutoCreationService(
     private async Task CreateWarrantyContracts(Invoice invoice)
     {
         // Get items with warranty
-        var itemsWithWarranty = invoice.Items
+        var itemsWithWarranty = invoice.VoucherLines.OfType<InvoiceItem>()
             .Where(ii => ii.Item != null && ii.Item.WarrantyPeriodMonths.HasValue && ii.Item.WarrantyPeriodMonths > 0)
             .ToList();
 
@@ -190,7 +190,7 @@ public class ContractAutoCreationService(
     private async Task CreateGuaranteeContracts(Invoice invoice)
     {
         // Get items with guarantee period
-        var itemsWithGuarantee = invoice.Items
+        var itemsWithGuarantee = invoice.VoucherLines.OfType<InvoiceItem>()
             .Where(ii => ii.Item != null && ii.Item.GuaranteePeriodMonths.HasValue && ii.Item.GuaranteePeriodMonths > 0)
             .ToList();
 

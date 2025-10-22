@@ -38,7 +38,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         protected string GetExpandString()
         {
             return new ODataExpand<Invoice>()
-                .Expand(f => f.Items)
+                .Expand(f => f.VoucherLines)
                 .Expand(f => f.Party, f => f.Party.Name)
                 .Build();
         }

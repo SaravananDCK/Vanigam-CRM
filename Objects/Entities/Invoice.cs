@@ -22,8 +22,6 @@ namespace Vanigam.CRM.Objects.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal BalanceAmount { get; set; }
 
-        public ICollection<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
-
         /// <summary>
         /// Payment allocations applied to this invoice
         /// </summary>

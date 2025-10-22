@@ -153,7 +153,7 @@ public class InvoiceService(
             {
                 // Load existing invoice
                 invoice = await Context.Invoices
-                    .Include(i => i.Items)
+                    .Include(i => i.VoucherLines.OfType<InvoiceItem>())
                     .FirstOrDefaultAsync(i => i.Oid == invoiceData.Oid.Value);
 
                 if (invoice == null)
@@ -258,7 +258,7 @@ public class InvoiceService(
 
             // Reload invoice with items
             var savedInvoice = await Context.Invoices
-                .Include(i => i.Items)
+                .Include(i => i.VoucherLines.OfType<InvoiceItem>())
                 .FirstOrDefaultAsync(i => i.Oid == invoice.Oid);
 
             return savedInvoice!;
@@ -283,7 +283,7 @@ public class InvoiceService(
 
         if (deletedItemIds.Any())
         {
-            var itemsToDelete = invoice.Items.Where(i => deletedItemIds.Contains(i.Oid)).ToList();
+            var itemsToDelete = invoice.VoucherLines.OfType<InvoiceItem>().Where(i => deletedItemIds.Contains(i.Oid)).ToList();
             Context.InvoiceItems.RemoveRange(itemsToDelete);
         }
 

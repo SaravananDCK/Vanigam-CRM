@@ -1973,7 +1973,7 @@ namespace Vanigam.CRM.Objects
                         CreatedAtUtc = DateTime.TryParse(seedQuote.CreatedAtUtc, out var createdAt) ?
                             DateTime.SpecifyKind(createdAt, DateTimeKind.Utc).ToDateTimeOffset() :
                             SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
-                        Items = new List<QuoteItem>()
+                        VoucherLines = new List<VoucherLine>()
                     };
 
                     // Add quote items
@@ -1994,7 +1994,7 @@ namespace Vanigam.CRM.Objects
                             CreatedAtUtc = quote.CreatedAtUtc
                         };
 
-                        quote.Items.Add(quoteItem);
+                        quote.VoucherLines.Add(quoteItem);
                     }
 
                     quotes.Add(quote);

@@ -6,6 +6,12 @@ using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities
 {
+    [JsonDerivedType(typeof(InvoiceItem), "#Vanigam.CRM.Objects.Entities.InvoiceItem")]
+    [JsonDerivedType(typeof(QuoteItem), "#Vanigam.CRM.Objects.Entities.QuoteItem")]
+    [JsonDerivedType(typeof(PurchaseInvoiceItem), "#Vanigam.CRM.Objects.Entities.PurchaseInvoiceItem")]
+    [JsonDerivedType(typeof(PurchaseOrderItem), "#Vanigam.CRM.Objects.Entities.PurchaseOrderItem")]
+    [JsonDerivedType(typeof(MaterialUsage), "#Vanigam.CRM.Objects.Entities.MaterialUsage")]
+    [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor, TypeDiscriminatorPropertyName = "@odata.type")]
     public abstract class VoucherLine : BaseClass
     {
         [Required]

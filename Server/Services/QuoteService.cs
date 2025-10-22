@@ -43,7 +43,7 @@ public class QuoteService(
             {
                 // Load existing quote
                 quote = await Context.Quotes
-                    .Include(q => q.Items)
+                    .Include(q => q.VoucherLines)
                     .FirstOrDefaultAsync(q => q.Oid == quoteData.Oid.Value);
 
                 if (quote == null)
@@ -119,7 +119,7 @@ public class QuoteService(
 
             // Reload quote with items
             var savedQuote = await Context.Quotes
-                .Include(q => q.Items)
+                .Include(q => q.VoucherLines)
                 .ThenInclude(qi => qi.Item)
                 .FirstOrDefaultAsync(q => q.Oid == quote.Oid);
 
@@ -145,7 +145,7 @@ public class QuoteService(
 
         if (deletedItemIds.Any())
         {
-            var itemsToDelete = quote.Items.Where(i => deletedItemIds.Contains(i.Oid)).ToList();
+            var itemsToDelete = quote.VoucherLines.OfType<QuoteItem>().Where(i => deletedItemIds.Contains(i.Oid)).ToList();
             Context.QuoteItems.RemoveRange(itemsToDelete);
         }
 
@@ -206,12 +206,11 @@ public class QuoteService(
         {
             // Get the quote with its items
             var quote = await Context.Quotes
-                .Include(q => q.Items)
-                .ThenInclude(qi => qi.Item)
+                .Include(q => q.VoucherLines)
+                .ThenInclude(vl => vl.Item)
                 .Include(q => q.Party)
                 .Include(q => q.Job)
                 .FirstOrDefaultAsync(q => q.Oid == quoteId);
-
             if (quote == null)
             {
                 throw new InvalidOperationException($"Quote with ID {quoteId} not found");
@@ -256,9 +255,10 @@ public class QuoteService(
 
             // Add invoice to context
             Context.Invoices.Add(invoice);
-
-            // Create invoice items from quote items
-            foreach (var quoteItem in quote.Items)
+            quote.Status = QuoteStatus.Converted;
+            Context.Quotes.Update(quote);
+            // Create invoice items from quote items (use VoucherLines with TPH)
+            foreach (var quoteItem in quote.VoucherLines.OfType<QuoteItem>())
             {
                 var invoiceItem = new InvoiceItem
                 {
@@ -268,6 +268,9 @@ public class QuoteService(
                     ItemId = quoteItem.ItemId,
                     Quantity = quoteItem.Quantity,
                     UnitPrice = quoteItem.UnitPrice,
+                    TaxCodeId = quoteItem.TaxCodeId,
+                    TaxAmount = quoteItem.TaxAmount,
+                    DiscountAmount = quoteItem.DiscountAmount,
                     CreatedByUserId = quote.UpdatedByUserId,
                     CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
                     UpdatedByUserId = quote.UpdatedByUserId,

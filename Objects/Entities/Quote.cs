@@ -20,11 +20,10 @@ namespace Vanigam.CRM.Objects.Entities
 
         public override void CalculateTotal()
         {
-            SubTotal = Items.Sum(i => (i.UnitPrice * (decimal)i.Quantity));
-            TaxAmount = Items.Sum(i => i.TaxAmount);
-            DiscountAmount = Items.Sum(i => i.DiscountAmount);
-            TotalAmount = Items.Sum(i => i.LineTotal);
+            SubTotal = VoucherLines.OfType<QuoteItem>().Sum(i => (i.UnitPrice * (decimal)i.Quantity));
+            TaxAmount = VoucherLines.OfType<QuoteItem>().Sum(i => i.TaxAmount);
+            DiscountAmount = VoucherLines.OfType<QuoteItem>().Sum(i => i.DiscountAmount);
+            TotalAmount = VoucherLines.OfType<QuoteItem>().Sum(i => i.LineTotal);
         }
-        public ICollection<QuoteItem> Items { get; set; } = new List<QuoteItem>();
     }
 }

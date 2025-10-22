@@ -15,7 +15,7 @@ public class InvoicePdfService(
     {
         return await Context.Invoices
             .Include(i => i.Party)
-            .Include(i => i.Items)
+            .Include(i => i.VoucherLines)
                 .ThenInclude(ii => ii.Item)
             .Include(i => i.Allocations)
             .FirstOrDefaultAsync(i => i.Oid == entityId);
@@ -64,10 +64,10 @@ public class InvoicePdfService(
     public override void BuildDocumentContent(Invoice invoice, ColumnDescriptor column)
     {
         // Items Table
-        if (invoice.Items.Any())
+        if (invoice.VoucherLines.OfType<InvoiceItem>().Any())
         {
             BuildItemsTable(
-                invoice.Items,
+                invoice.VoucherLines.OfType<InvoiceItem>(),
                 column,
                 item => item.Quantity,
                 item => item.Item?.Name ?? "Item",
