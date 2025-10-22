@@ -123,6 +123,9 @@
   <data name="DiscountAmount" xml:space="preserve">
     <value>Discount Amount</value>
   </data>
+  <data name="DoYouWantToPostThisInvoice" xml:space="preserve">
+    <value>Do you want to post this Invoice.</value>
+  </data>
   <data name="EditInvoice" xml:space="preserve">
     <value>Edit Invoice</value>
   </data>
@@ -131,6 +134,9 @@
   </data>
   <data name="InvoiceSavedSuccessfully" xml:space="preserve">
     <value>Invoice Saved Successfully</value>
+  </data>
+  <data name="PostInvoice" xml:space="preserve">
+    <value>Post Invoice</value>
   </data>
   <data name="SubTotal" xml:space="preserve">
     <value>Sub Total</value>

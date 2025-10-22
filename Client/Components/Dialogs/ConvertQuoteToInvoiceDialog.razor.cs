@@ -44,7 +44,7 @@ public partial class ConvertQuoteToInvoiceDialog
                     Summary = Localizer["Success"],
                     Detail = Localizer["QuoteConvertedSuccessfully"]
                 });
-                DialogService.CloseDialog();
+                DialogService.CloseDialog(invoice);
                 await OnConverted.InvokeAsync(invoice);
             }
         }
