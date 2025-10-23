@@ -43,7 +43,7 @@ public class InvoiceItemDTO
     public decimal? TaxAmount { get; set; }
     public Guid? TaxCodeId { get; set; }
     public decimal Total => (decimal)Quantity * UnitPrice;
-
+    public decimal TotalIncTax => Total + (TaxAmount ?? 0) - DiscountAmount;
     // For UI display purposes
     public string? InventoryItemName { get; set; }
 

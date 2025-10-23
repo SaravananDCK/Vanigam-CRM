@@ -50,6 +50,13 @@
                                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
                                     <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
                                 </div>
+                                @if (CurrentObject.QuoteId != null)
+                                {
+                                    <div class="read-only-field rz-mb-3">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Quote"]:</strong></RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Quote.Number ?? "-")</RadzenText>
+                                    </div>
+                                }
                             </div>
                         </RadzenStack>
                     </RadzenColumn>
@@ -62,30 +69,35 @@
                     <RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                                     Data="@invoiceItems" TItem="InvoiceItemDTO" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" class="rz-mt-3">
                         <Columns>
-                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="InventoryItemName" Title="@Localizer["Item"]" Width="300px" />
-                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="Quantity" Title="@Localizer["Quantity"]" Width="100px">
+                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="@nameof(InvoiceItemDTO.InventoryItemName)" Title="@Localizer["Item"]" Width="300px" />
+                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="@nameof(InvoiceItemDTO.Quantity)" Title="@Localizer["Quantity"]" Width="100px" TextAlign="TextAlign.Right">
                                 <Template Context="item">
-                                    @item.Quantity.ToString("N2")
+                                    @item.Quantity
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="UnitPrice" Title="@Localizer["UnitPrice"]" Width="120px">
+                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="@nameof(InvoiceItemDTO.UnitPrice)" Title="@Localizer["UnitPrice"]" Width="120px" TextAlign="TextAlign.Right">
                                 <Template Context="item">
                                     @item.UnitPrice.ToString("C")
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="DiscountAmount" Title="@Localizer["Discount"]" Width="120px">
+                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="@nameof(InvoiceItemDTO.DiscountAmount)" Title="@Localizer["Discount"]" Width="120px" TextAlign="TextAlign.Right">
                                 <Template Context="item">
                                     @(item.DiscountAmount.ToString("C"))
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="TaxAmount" Title="@Localizer["Tax"]" Width="120px">
+                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="@nameof(InvoiceItemDTO.TaxAmount)" Title="@Localizer["Tax"]" Width="120px" TextAlign="TextAlign.Right">
                                 <Template Context="item">
                                     @((item.TaxAmount ?? 0).ToString("C"))
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="LineTotal" Title="@Localizer["LineTotal"]" Width="120px">
+                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="@nameof(InvoiceItemDTO.Total)" Title="@Localizer["Line Total"]" Width="120px" TextAlign="TextAlign.Right">
                                 <Template Context="item">
                                     @item.Total.ToString("C")
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="@nameof(InvoiceItemDTO.TotalIncTax)" Title="@Localizer["Total Inc.Tax"]" Width="120px" TextAlign="TextAlign.Right">
+                                <Template Context="item">
+                                    @item.TotalIncTax.ToString("C")
                                 </Template>
                             </RadzenDataGridColumn>
                         </Columns>
@@ -96,7 +108,7 @@
                         <RadzenColumn Size="12" SizeMD="8"></RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="4">
                             <RadzenCard Variant="Variant.Outlined">
-                                <RadzenStack Gap="0.5rem">
+                                <RadzenStack Gap="0.5rem" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
                                     <div class="read-only-field">
                                         <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
                                             <strong>@Localizer["SubTotal"]:</strong>
@@ -108,7 +120,7 @@
 
                                     <div class="read-only-field">
                                         <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
-                                            <strong>@Localizer["DiscountAmount"]:</strong>
+                                            <strong>@Localizer["Discount"]:</strong>
                                         </RadzenText>
                                         <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
                                             @CurrentObject.DiscountAmount.ToString("C")
@@ -117,7 +129,7 @@
 
                                     <div class="read-only-field">
                                         <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
-                                            <strong>@Localizer["TaxAmount"]:</strong>
+                                            <strong>@Localizer["Tax"]:</strong>
                                         </RadzenText>
                                         <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
                                             @CurrentObject.TaxAmount.ToString("C")
@@ -127,7 +139,7 @@
                                     <hr style="border: 1px solid #ccc; margin: 5px 0;" />
                                     <div class="read-only-field">
                                         <RadzenText TextStyle="TextStyle.H6" TagName="TagName.Span" class="field-label">
-                                            <strong>@Localizer["TotalAmount"]:</strong>
+                                            <strong>@Localizer["Grand Total"]:</strong>
                                         </RadzenText>
                                         <RadzenText TextStyle="TextStyle.H6" TagName="TagName.Span" class="field-value">
                                             <strong>@CurrentObject.TotalAmount.ToString("C")</strong>

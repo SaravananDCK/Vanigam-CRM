@@ -153,7 +153,7 @@ public class InvoiceService(
             {
                 // Load existing invoice
                 invoice = await Context.Invoices
-                    .Include(i => i.VoucherLines.OfType<InvoiceItem>())
+                    .Include(i => i.VoucherLines)
                     .FirstOrDefaultAsync(i => i.Oid == invoiceData.Oid.Value);
 
                 if (invoice == null)
@@ -258,7 +258,7 @@ public class InvoiceService(
 
             // Reload invoice with items
             var savedInvoice = await Context.Invoices
-                .Include(i => i.VoucherLines.OfType<InvoiceItem>())
+                .Include(i => i.VoucherLines)
                 .FirstOrDefaultAsync(i => i.Oid == invoice.Oid);
 
             return savedInvoice!;

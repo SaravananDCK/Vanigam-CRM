@@ -69,7 +69,7 @@
                     <RadzenDataGridColumn TItem="Quote" Property="@nameof(Quote.Number)" Title=@Localizer["Number"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
                     
-                    <RadzenDataGridColumn TItem="Quote" Property="Party.Name" Title=@Localizer["Customer"] Visible="@(!IsEmbeddedMode)">
+                    <RadzenDataGridColumn TItem="Quote" Property="@PropertyExtensions.GetPropertyFullPath((Quote i) => i.Party.Name)" Title=@Localizer["Customer"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="quote">

@@ -135,8 +135,8 @@ public partial class EditableQuoteItems
     private void CalculateTotal(QuoteItemDTO item)
     {
         // Total is calculated automatically in the DTO property
-        item.TaxAmount = ((decimal)Item.TaxCode?.TaxRate / 100) * item.Total;
-        GrandTotalAmount = SubTotalAmount + TaxAmount - DiscountAmt;
+        item.TaxAmount = ((decimal)Item.TaxCode?.TaxRate / 100) * (item.Total - item.DiscountAmount);
+        GrandTotalAmount = Math.Round(SubTotalAmount + TaxAmount - DiscountAmt);
     }
     private async Task CalculateDiscount(decimal discount)
     {
