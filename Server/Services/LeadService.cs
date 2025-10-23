@@ -152,7 +152,7 @@ public class LeadService(
             var customer = new Customer
             {
                 Oid = Guid.NewGuid(),
-                Code = await Context.GenerateNextCode(nameof(Customer),lead?.TenantId),
+                Code = await Context.GenerateNextCode(nameof(Customer), lead?.TenantId),
                 TenantId = lead?.TenantId,
                 Name = lead?.Organization ?? lead?.Name, // Use organization name if available, otherwise use lead name
                 Industry = lead?.Industry,
@@ -163,8 +163,10 @@ public class LeadService(
                 CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
                 UpdatedByUserId = lead?.UpdatedByUserId,
                 UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
-                IsNotDeleted = true
+                IsNotDeleted = true,
+                OpportunityId = opportunity.Oid
             };
+
 
             // Add customer to context
             Context.Customers.Add(customer);

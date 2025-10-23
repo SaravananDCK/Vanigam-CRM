@@ -17,6 +17,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
+                args.OrderBy = !string.IsNullOrWhiteSpace(args.OrderBy) ? args.OrderBy : $"{nameof(Customer.UpdatedAtUtc)} desc";
                 var result = await CustomerApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
@@ -43,12 +44,14 @@ namespace Vanigam.CRM.Client.Pages.ListView
         }
         protected override string GetExpandString(LoadDataArgs args)
         {
-            return string.Empty;
+            return new ODataExpand<Customer>()
+                .Expand(f => f.Opportunity, f => f.Opportunity.Title)
+                .Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditCustomer>(Localizer["AddCustomer"], null, 100, 100);
+            await DialogService.OpenDialogAsync<EditCustomer>(Localizer["Add Customer"], null, 100, 100);
             await GridReload();
         }
 
@@ -59,7 +62,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Customer customer)
         {
-            await DialogService.OpenDialogWithOutHeaderAsync<EditCustomer>(Localizer["EditCustomer"], new Dictionary<string, object> { { "Oid", customer.Oid } }, 100, 100);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditCustomer>(Localizer["Edit Customer"], new Dictionary<string, object> { { "Oid", customer.Oid } }, 100, 100);
             await GridReload();
         }
 
@@ -67,7 +70,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
-                if (await DialogService.Confirm(Localizer["DeleteRecord"]) == true)
+                if (await DialogService.Confirm(Localizer["Delete Record"]) == true)
                 {
                     var deleteResult = await CustomerApiService.Delete(oid:customer.Oid);
 
@@ -85,7 +88,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                         {
                             Severity = NotificationSeverity.Success,
                             Summary = Localizer[$"Success"],
-                            Detail = Localizer[$"SuccessfullyDeleted"]
+                            Detail = Localizer[$"Successfully Deleted"]
                         });
                     }
                 }
@@ -96,7 +99,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 {
                     Severity = NotificationSeverity.Error,
                     Summary = Localizer[$"Error"],
-                    Detail = Localizer[$"UnableDelete"]
+                    Detail = Localizer[$"Unable Delete"]
                 });
             }
         }

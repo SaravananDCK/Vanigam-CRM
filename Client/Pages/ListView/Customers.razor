@@ -49,6 +49,7 @@
                             }
                         </Template>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Customer" Property="@PropertyExtensions.GetPropertyFullPath((Customer i) => i.Opportunity.Title)" Title=@Localizer["Opportunity"] />
                     <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="customer">
                             <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(customer.Status)" Text="@customer.Status.ToString()" />

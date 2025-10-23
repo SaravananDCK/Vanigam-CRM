@@ -83,9 +83,9 @@
                             <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Priority)" Text="@activity.Priority.ToString()" />
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Activity" Property="Lead.Name" Title=@Localizer["Lead"] Visible="@(!IsEmbeddedMode && LeadId == null)">
+                    <RadzenDataGridColumn TItem="Activity" Property="@PropertyExtensions.GetPropertyFullPath((Activity i) => i.Lead.Name)" Title=@Localizer["Lead"] Visible="@(!IsEmbeddedMode && LeadId == null)">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Activity" Property="Opportunity.Title" Title=@Localizer["Opportunity"] Visible="@(!IsEmbeddedMode && OpportunityId == null)">
+                    <RadzenDataGridColumn TItem="Activity" Property="@PropertyExtensions.GetPropertyFullPath((Activity i) => i.Opportunity.Title)" Title=@Localizer["Opportunity"] Visible="@(!IsEmbeddedMode && OpportunityId == null)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Description) Title=@Localizer["Description"]>
                     </RadzenDataGridColumn>
