@@ -23,6 +23,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
+                args.OrderBy = !string.IsNullOrWhiteSpace(args.OrderBy) ? args.OrderBy : $"{nameof(Opportunity.UpdatedAtUtc)} desc";
                 var result = await OpportunityApiService.Get(filter: GetFilterString(args),expand:GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;

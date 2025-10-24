@@ -18,8 +18,7 @@ namespace Vanigam.CRM.Objects.Entities
         public string? VendorInvoiceNumber { get; set; }
 
         public DateTimeOffset? ReceivedDate { get; set; }
-
-        public ICollection<PurchaseInvoiceItem> Items { get; set; } = new List<PurchaseInvoiceItem>();
+        
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 

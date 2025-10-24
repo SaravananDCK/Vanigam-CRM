@@ -17,8 +17,6 @@ namespace Vanigam.CRM.Objects.Entities
 
         [StringLength(100)]
         public string? ContactPerson { get; set; }
-
-        public ICollection<PurchaseOrderItem> Items { get; set; } = new List<PurchaseOrderItem>();
     }
 
     public enum PurchaseOrderStatus

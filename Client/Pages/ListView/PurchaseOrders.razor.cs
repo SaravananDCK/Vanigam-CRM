@@ -13,6 +13,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             try
             {
+                args.OrderBy = !string.IsNullOrWhiteSpace(args.OrderBy) ? args.OrderBy : $"{nameof(PurchaseOrder.UpdatedAtUtc)} desc";
                 var result = await PurchaseOrderApiService.Get(filter: GetFilterString(args), expand: GetExpandString(args), orderBy: $"{args.OrderBy}", top: args.Top, skip: args.Skip, count: args.Top != null && args.Skip != null);
                 DataSource = result.Value.AsODataEnumerable();
                 Count = result.Count;
@@ -38,7 +39,9 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetExpandString(LoadDataArgs args)
         {
-            return "LedgerAccount";
+           return new ODataExpand<PurchaseOrder>()
+                .Expand(f => f.Party, f => f.Party.Name)
+                .Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)

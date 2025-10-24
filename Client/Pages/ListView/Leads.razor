@@ -76,7 +76,7 @@
                                          BadgeStyle="@(lead.LeadScore >= 80 ? BadgeStyle.Success : lead.LeadScore >= 60 ? BadgeStyle.Warning : BadgeStyle.Light)" />
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Lead" Property="AssignedTo.UserName" Title=@Localizer["AssignedTo"] Width="150px">
+                    <RadzenDataGridColumn TItem="Lead" Property="@PropertyExtensions.GetPropertyFullPath((Lead l) => l.AssignedTo.UserName)" Title=@Localizer["AssignedTo"] Width="150px">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.NextFollowUpDate) Title=@Localizer["NextFollowUp"] Width="130px">
                         <Template Context="lead">

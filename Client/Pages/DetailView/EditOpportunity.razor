@@ -9,7 +9,7 @@
 <DetailPageTitleComponent TitleText="@Localizer["EditOpportunity"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
     <CustomBadge>
         @* Floating Edit Button - Only visible in read-only mode *@
-        @if (IsEditButtonVisible)
+        @if (IsEditButtonVisible && CurrentObject.Stage != OpportunityStage.ClosedWon)
         {
             <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
         }

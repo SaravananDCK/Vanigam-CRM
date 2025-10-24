@@ -7,6 +7,11 @@ namespace Vanigam.CRM.Objects.Entities
 {
     public class Invoice : Voucher
     {
+        public Guid? QuoteId { get; set; }
+
+        [ForeignKey(nameof(QuoteId))]
+        public Quote? Quote { get; set; }
+
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public InvoiceStatus Status { get; set; } = InvoiceStatus.Draft;
 

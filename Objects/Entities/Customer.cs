@@ -30,6 +30,11 @@ namespace Vanigam.CRM.Objects.Entities
         [StringLength(10)]
         public string? Rating { get; set; }
 
+        public Guid? OpportunityId { get; set; }
+
+        [ForeignKey(nameof(OpportunityId))]
+        public Opportunity? Opportunity { get; set; }
+
         public ICollection<Quote> Quotes { get; set; } = new List<Quote>();
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
         public ICollection<Contact> Contacts { get; set; } = new List<Contact>();

@@ -40,6 +40,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             return new ODataExpand<Invoice>()
                 .Expand(f => f.VoucherLines)
                 .Expand(f => f.Party, f => f.Party.Name)
+                .Expand(f => f.Quote, f => f.Quote.Number)
                 .Build();
         }
         private async Task LoadInvoiceItems()

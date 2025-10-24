@@ -46,7 +46,7 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Opportunity" Property="Lead.Name" Title=@Localizer["Lead"] Visible="@(!IsEmbeddedMode)">
+                    <RadzenDataGridColumn TItem="Opportunity" Property="@PropertyExtensions.GetPropertyFullPath((Opportunity o) => o.Lead.Name)" Title=@Localizer["Lead"] Visible="@(!IsEmbeddedMode)">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Title) Title=@Localizer["Title"]>
                     </RadzenDataGridColumn>

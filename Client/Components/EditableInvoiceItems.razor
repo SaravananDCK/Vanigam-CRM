@@ -57,7 +57,7 @@
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="InvoiceItemDTO" Property=@nameof(InvoiceItemDTO.DiscountAmount) Width="120px" TextAlign="TextAlign.Right">
                     <HeaderTemplate>
-                        <div style="padding-right: 20px;">@Localizer["Discount Amount"]</div>
+                        <div style="padding-right: 20px;">@Localizer["Discount"]</div>
                     </HeaderTemplate>
                     <Template Context="item">
                         @item.DiscountAmount.ToString("C")
@@ -66,22 +66,34 @@
 
                 <RadzenDataGridColumn TItem="InvoiceItemDTO" Property=@nameof(InvoiceItemDTO.TaxAmount) Width="120px" TextAlign="TextAlign.Right">
                     <HeaderTemplate>
-                        <div style="padding-right: 20px;">@Localizer["TaxAmount"]</div>
+                        <div style="padding-right: 20px;">@Localizer["Tax"]</div>
                     </HeaderTemplate>
                     <Template Context="item">
                         @((item.TaxAmount ?? 0).ToString("C"))
                     </Template>
                 </RadzenDataGridColumn>
 
-
-
                 <RadzenDataGridColumn TItem="InvoiceItemDTO" Property="Total" Title="@Localizer["Total"]" Width="150px" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["Total"]</div>
+                    </HeaderTemplate>
                     <Template Context="item">
                         @item.Total.ToString("C")
                     </Template>
                 </RadzenDataGridColumn>
-
-                <RadzenDataGridColumn TItem="InvoiceItemDTO" Title="@Localizer["Actions"]" Width="150px" Filterable="false" Sortable="false" TextAlign="TextAlign.Right">
+                
+                <RadzenDataGridColumn TItem="InvoiceItemDTO" Property=@nameof(InvoiceItemDTO.TotalIncTax) Width="120px" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["Total Inc.Tax"]</div>
+                    </HeaderTemplate>
+                    <Template Context="item">
+                        @item.TotalIncTax.ToString("C")
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="InvoiceItemDTO" Width="150px" Filterable="false" Sortable="false" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["Actions"]</div>
+                    </HeaderTemplate>
                     <Template Context="item">
                         <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light"
                                       Variant="Variant.Flat" Size="ButtonSize.Small"
@@ -141,7 +153,7 @@
                     </RadzenColumn>
                     <RadzenColumn Size="6">
                         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
-                            <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right"><strong>@Localizer["Tax"]:</strong></RadzenText>
+                            <RadzenText TextStyle="TextStyle.H6"><strong>@Localizer["Tax"]:</strong></RadzenText>
                             <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right" Style="width: 150px">@TaxAmount.ToString("C")</RadzenText>
                         </RadzenStack>
                     </RadzenColumn>
