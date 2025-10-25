@@ -3,9 +3,11 @@
 @using Vanigam.CRM.Client.Validators
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<FileDocument, EditFileDocument>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@if (CurrentObject != null)
+{
 
-<DetailPageCommonComponent TitleText="@Localizer["EditFileDocument"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
-<RadzenColumn SizeMD=12>
+    <DetailPageTitleComponent TitleText="@Localizer["EditFileDocument"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
+  @*<RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
     <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="FileDocument" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
@@ -33,4 +35,6 @@
             <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
         </RadzenStack>
     </RadzenTemplateForm>
-</RadzenColumn>
+</RadzenColumn> *@
+<iframe style="width: 100%; height: 785px" src='@CurrentObject.Content' />
+}

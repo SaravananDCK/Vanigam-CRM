@@ -15,7 +15,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
         private int EditTabIndex { get; set; } = 0;
         private int ReadOnlyTabIndex { get; set; } = 0;
-
+        bool IsFullheightTab = false;
         // Property to determine if the lead can be converted to opportunity
         private bool CanConvertToOpportunity => CurrentObject != null &&
             (CurrentObject.Status == LeadStatus.Qualified || CurrentObject.Status == LeadStatus.Contacted) &&
@@ -87,7 +87,26 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 StateHasChanged();
             }
         }
+        void OnTabChanged(int index)
+        {
+            var tabNames = new[] { "Activities" };
+            var currentTab = GetTabName(index);
 
+            IsFullheightTab = tabNames.Contains(currentTab);
+        }
+
+        string GetTabName(int index)
+        {
+            return index switch
+            {
+                0 => "ContactInformation",
+                1 => "AddressInformation",
+                2 => "BusinessContext",
+                3 =>  "Comments",
+                4 => "Activities",
+                _ => ""
+            };
+        }
         private async Task ShowConvertToOpportunityDialog()
         {
             if (CurrentObject == null) return;

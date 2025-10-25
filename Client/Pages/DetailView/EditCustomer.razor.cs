@@ -9,10 +9,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditCustomer
     {
         [Inject] private CustomerApiService CustomerApiService { get; set; }
-
+        bool IsFullheightTab = false;
         private int EditTabIndex { get; set; } = 0;
         private int ReadOnlyTabIndex { get; set; } = 0;
-
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -68,8 +67,28 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             IsBusy = false;
         }
+        void OnTabChanged(int index)
+        {
+            var tabNames = new[] { "Contacts", "Jobs", "FileDocuments" };
+            var currentTab = GetTabName(index);
 
+            IsFullheightTab = tabNames.Contains(currentTab);
+        }
 
+        string GetTabName(int index)
+        {
+            return index switch
+            {
+                0 => "Basic Info",
+                1 => "Contact Info",
+                2 => "Address",
+                3 => "Business Information",
+                4 => "Contacts",
+                5 => "Jobs",
+                6 => "FileDocuments",
+                _ => ""
+            };
+        }
         protected override async Task SaveAndStayInEdit()
         {
             await FormSubmit();

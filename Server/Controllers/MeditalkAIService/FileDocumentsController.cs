@@ -18,4 +18,18 @@ public class FileDocumentsController(
     : BaseODataServiceController<FileDocument, FileDocumentService>(context, userManager, roleManager,
         service, null)
 {
+    [HttpGet("odata/VanigamAccountingService/FileDocuments/GetFileContent(oid={oid})")]
+    public async Task<IActionResult> GetFileContent(Guid oid)
+    {
+        try
+        {
+            var result = await Service.GetFileContent(oid);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, ex.Message);
+            return null;
+        }
+    }
 }

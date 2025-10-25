@@ -43,8 +43,8 @@
         </RadioButtons>
     </ListPageTitleComponent>
     <RadzenRow>
-        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
-            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Job" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard" Style="@(IsEmbeddedMode ? "height: calc(100vh - 220px);" : "height: auto;")">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Job" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings" Style="@(IsEmbeddedMode ? "height: 100%;" : "height: auto;")">
                 <EmptyTemplate>
                     <NoRecordComponent ShowAddButton="false" />
                 </EmptyTemplate>

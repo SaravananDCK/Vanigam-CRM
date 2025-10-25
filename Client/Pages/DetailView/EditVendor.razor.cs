@@ -16,9 +16,15 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
+            {
                 CurrentObject = new() { AccountType = Objects.Entities.AccountType.Vendor };
+                IsReadOnlyMode = false;
+            }
             else
+            {
                 CurrentObject = await VendorApiService.GetByOid(oid: Oid);
+                IsReadOnlyMode = true;
+            }
 
             await InitEditContext();
         }
@@ -61,6 +67,17 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 ErrorVisible = true;
             }
             IsBusy = false;
+        }
+
+        protected override async Task SaveAndStayInEdit()
+        {
+            await FormSubmit();
+            // After successful save, switch back to read-only mode
+            if (!ErrorVisible && !ShowNotUniqueAlert)
+            {
+                IsReadOnlyMode = true;
+                StateHasChanged();
+            }
         }
     }
 }

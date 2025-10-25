@@ -20,6 +20,7 @@ namespace Vanigam.CRM.Server.Extensions
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.Language>(nameof(VanigamAccountingDbContext.Languages));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.FileCategory>(nameof(VanigamAccountingDbContext.FileCategories));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.FileDocument>(nameof(VanigamAccountingDbContext.FileDocuments));
+            BuildFileDocumentMetaData(oDataBuilderVanigamAccounting);
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.DocumentTemplate>(nameof(VanigamAccountingDbContext.DocumentTemplates));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.ReportTemplate>(nameof(VanigamAccountingDbContext.ReportTemplates));
             oDataBuilderVanigamAccounting.EntitySet<Vanigam.CRM.Objects.Entities.PdfField>(nameof(VanigamAccountingDbContext.PdfFields));
@@ -106,6 +107,14 @@ namespace Vanigam.CRM.Server.Extensions
             functionRefreshSummary.Parameter<int>("tenantId");
 
             opt.AddRouteComponents("odata/VanigamAccountingService", oDataBuilderVanigamAccounting.GetEdmModel(), collection => collection.AddSingleton<ODataUriResolver>(sp => new StringAsEnumResolver() { EnableCaseInsensitive = true })).Count().Filter().OrderBy().Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
+        }
+
+        private static void BuildFileDocumentMetaData(ODataConventionModelBuilder oDataBuilderVanigamAccounting)
+        {
+            var entity = oDataBuilderVanigamAccounting.EntitySet<FileDocument>("FileDocuments");
+
+            var functionGetFileContent = entity.EntityType.Collection.Function("GetFileContent").Returns<FileDocument>();
+            functionGetFileContent.Parameter<Guid?>("oid");
         }
     }
 }

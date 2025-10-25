@@ -12,14 +12,6 @@
 
 @* Custom Header with Edit Button *@
 <DetailPageTitleComponent TitleText="@Localizer["Edit Contact"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
-    <CustomBadge>
-        @* Floating Edit Button - Only visible in read-only mode *@
-        @if (IsEditButtonVisible)
-        {
-
-            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
-        }
-    </CustomBadge>
 </DetailPageTitleComponent>
 <RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
@@ -29,7 +21,12 @@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
         <RadzenCard class="rz-my-4">
-            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client">
+            @* Floating Edit Button - Only visible in read-only mode *@
+            @if (IsEditButtonVisible)
+            {
+                <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+            }
+            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
                 <Tabs>
                     @* Basic Info Tab *@
                     <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-user")" class="fa-small">

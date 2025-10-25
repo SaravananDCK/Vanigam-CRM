@@ -5,14 +5,34 @@
 @inject FileDocumentApiService FileDocumentApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["FileDocuments"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+   
     <RadzenRow>
-        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
-            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="FileDocument" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+        <RadzenColumn SizeMD=7 class="datagrid-container-standard" Style="@(IsEmbeddedMode ? HeightVH : "height: auto;")">
+            <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Customer Files"] : Localizer["FileDocuments"]) AddButtonClick=@AddButtonClick SearchButtonClick=@Search MiddleSizeMD="1" LastSizeMD="8">
+                <DropDowns>
+                    <RadzenButton Icon="@(GridSelectionMode == Radzen.DataGridSelectionMode.Single ? FadIconSmall("fa-check-square") : FadIconSmall("fa-ballot-check"))" Text=@(GridSelectionMode == Radzen.DataGridSelectionMode.Single ? Localizer["Select Multiple"] : Localizer["Select Single"]) @bind-IsBusy="IsBusy" Click=@SelectButtonClick Variant="Variant.Flat" Style="width: 185px;" class="fa-small" />
+                </DropDowns>
+            </ListPageTitleComponent>
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="FileDocument" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" RowClick=@ShowPdfView @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings" @bind-Value=@selectedFileDocuments @bind-SelectionMode="GridSelectionMode" Style="@(IsEmbeddedMode ? "height: 90%;" : "height: auto;")">
                 <EmptyTemplate>
                     <NoRecordComponent ShowAddButton="false" />
                 </EmptyTemplate>
                 <Columns>
+                    <RadzenDataGridColumn TItem="FileDocument" Width="45px" Sortable="false" Filterable="false">
+                        <HeaderTemplate>
+                            @if (GridSelectionMode == Radzen.DataGridSelectionMode.Multiple)
+                            {
+                                <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object>() { { "aria-label", "Select all items" } })" Value="@(selectedFileDocuments == null || selectedFileDocuments?.Any() != true ? false : !DataSource.All(i => selectedFileDocuments.Contains(i)) ? null : DataSource.Any(i => selectedFileDocuments.Contains(i)))" Change="@(args => selectedFileDocuments = args == true ? DataSource.ToList() : null)" />
+                            }
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            @if (GridSelectionMode == Radzen.DataGridSelectionMode.Multiple)
+                            {
+                                <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(selectedFileDocuments != null && selectedFileDocuments.Contains(data))" InputAttributes="@(new Dictionary<string, object>() { { "aria-label", "Select item" } })"
+                                                TValue="bool" Change=@(args => { if (args == true) { if (selectedFileDocuments == null) selectedFileDocuments = new List<FileDocument>(); if (!selectedFileDocuments.Contains(data)) selectedFileDocuments.Add(data); } else { selectedFileDocuments?.Remove(data); } }) />
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="FileDocument" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
                         <Template Context="filedocument">
                             <OpenPageCommonComponent T="FileDocument" OpenObject="@filedocument" Open="@Open"></OpenPageCommonComponent>
@@ -24,12 +44,18 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="FileDocument" Property=@nameof(FileDocument.FileType) Title=@Localizer["FileType"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="FileDocument" Property=@nameof(FileDocument.FileSizeStr) Title=@Localizer["FileSize"]>
+                    <RadzenDataGridColumn TItem="FileDocument" Property=@nameof(FileDocument.FileSize) Title=@Localizer["FileSize"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="FileDocument" Property=@nameof(FileDocument.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>
                 </Columns>
             </VanigamAccountingDataGrid>
+        </RadzenColumn>
+        <RadzenColumn SizeMD=5>
+            @if (CurrentFileDocument != null)
+            {
+                <iframe style="width: 100%; height: 770px" src='@CurrentFileDocument.Content' />
+            }
         </RadzenColumn>
     </RadzenRow>
 </RadzenStack>
