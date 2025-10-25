@@ -180,5 +180,96 @@
     "GroupCode": "STK",
     "AccountType": "LedgerAccount",
     "IsActive": true
+  },
+  {
+    "Code": "SAL003",
+    "Name": "Sales Discount",
+    "GroupCode": "SAL",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "PUR003",
+    "Name": "Purchase Discount",
+    "GroupCode": "PUR",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "BANK001",
+    "Name": "Bank Account",
+    "GroupCode": "BANK",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "BANK002",
+    "Name": "Card Account",
+    "GroupCode": "BANK",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "BANK003",
+    "Name": "UPI Account",
+    "GroupCode": "BANK",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "AR001",
+    "Name": "Accounts Receivable",
+    "GroupCode": "AR",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "AP001",
+    "Name": "Accounts Payable",
+    "GroupCode": "AP",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "WIP001",
+    "Name": "Work in Progress",
+    "GroupCode": "CA",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "COGS001",
+    "Name": "Cost of Goods Sold",
+    "GroupCode": "COGS",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "OE011",
+    "Name": "Rounding Off",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "OI001",
+    "Name": "Exchange Gain/Loss",
+    "GroupCode": "OI",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "COGS002",
+    "Name": "Freight Charges",
+    "GroupCode": "COGS",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
+  },
+  {
+    "Code": "COGS003",
+    "Name": "Packing Charges",
+    "GroupCode": "COGS",
+    "AccountType": "LedgerAccount",
+    "IsActive": true
   }
 ]

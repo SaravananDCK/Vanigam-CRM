@@ -9,20 +9,23 @@ using Vanigam.CRM.Objects.Helpers;
 
 namespace Vanigam.CRM.Client.Components.ComboBoxes;
 
-public class InventoryItemDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<InventoryItem, EditInventoryItem>
+public class OpportunityDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<Opportunity, EditOpportunity>
 {
-    [Inject] InventoryItemApiService InventoryItemApiService { get; set; }
-    public InventoryItemDropDownDataGrid()
+    [Inject] OpportunityApiService OpportunityApiService { get; set; }
+    public OpportunityDropDownDataGrid()
     {
-        Name = "cbx_InventoryItemId";
+        Name = "cbx_OpportunityId";
     }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        ApiService = InventoryItemApiService;
+        ApiService = OpportunityApiService;
         Width = 35;
         Height = 50;
+
+        ValueProperty = nameof(Opportunity.Oid);
+        TextProperty = nameof(Opportunity.Title);
     }
 
     protected override void BuildRenderTree(RenderTreeBuilder builder)
@@ -31,13 +34,8 @@ public class InventoryItemDropDownDataGrid : VanigamAccountingDropDownAddDataGri
         this.Columns = (builder2) =>
         {
             builder2.OpenComponent<RadzenDropDownDataGridColumn>(0);
-            builder2.AddAttribute(1, "Property", nameof(InventoryItem.Name));
-            builder2.AddAttribute(2, "Title", "Name");
-            builder2.CloseComponent();
-
-            builder2.OpenComponent<RadzenDropDownDataGridColumn>(1);
-            builder2.AddAttribute(1, "Property", nameof(InventoryItem.QuantityOnHand));
-            builder2.AddAttribute(2, "Title", "QuantityOnHand");
+            builder2.AddAttribute(1, "Property", nameof(Opportunity.Title));
+            builder2.AddAttribute(2, "Title", nameof(Opportunity.Title));
             builder2.CloseComponent();
         };
     }

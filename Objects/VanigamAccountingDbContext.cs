@@ -291,6 +291,7 @@ namespace Vanigam.CRM.Objects
                 await this.SeedNumberSeriesData();
                 await this.SeedBankAccountData();
                 await this.SeedTaxCodeData();
+                await this.SeedTenantAccountingSettings();
                 await this.SeedLeadData();
                 await this.SeedCustomerData();
                 await this.SeedInvoiceData();
@@ -2066,6 +2067,140 @@ namespace Vanigam.CRM.Objects
             await SaveChangesAsync();
 
             return code;
+        }
+
+        /// <summary>
+        /// Seeds initial TenantAccountingSettings with default ledger account mappings
+        /// </summary>
+        public async Task SeedTenantAccountingSettings()
+        {
+            // Check if TenantAccountingSettings already exists
+            if (await TenantAccountingSettings.AnyAsync())
+                return;
+
+            try
+            {
+                // Get the demo tenant
+                var demoTenant = await Tenants.FirstOrDefaultAsync(t => t.Name == "TekSpear Solutions");
+                if (demoTenant == null)
+                    return;
+
+                // Get accounts by their actual codes from LedgerAccountSeedData.json
+                // Sales & Revenue Accounts
+                var salesAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "SALES" && a.TenantId == demoTenant.Id);
+                var salesReturnAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "SAL002" && a.TenantId == demoTenant.Id);
+                var salesDiscountAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "SAL003" && a.TenantId == demoTenant.Id);
+
+                // Purchase & Expense Accounts
+                var purchasesAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "PURCHASES" && a.TenantId == demoTenant.Id);
+                var purchaseReturnAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "PUR002" && a.TenantId == demoTenant.Id);
+                var purchaseDiscountAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "PUR003" && a.TenantId == demoTenant.Id);
+
+                // GST Tax Payable Accounts (Output Tax - Sales)
+                var sgstPayableAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "TAX001" && a.TenantId == demoTenant.Id);
+                var cgstPayableAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "TAX002" && a.TenantId == demoTenant.Id);
+                var igstPayableAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "TAX003" && a.TenantId == demoTenant.Id);
+
+                // GST Tax Input Accounts (Input Tax - Purchase)
+                var sgstInputAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "TAX004" && a.TenantId == demoTenant.Id);
+                var cgstInputAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "TAX005" && a.TenantId == demoTenant.Id);
+                var igstInputAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "TAX006" && a.TenantId == demoTenant.Id);
+
+                // Payment Method Accounts
+                var cashAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "CASH001" && a.TenantId == demoTenant.Id);
+                var bankAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "BANK001" && a.TenantId == demoTenant.Id);
+                var cardAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "BANK002" && a.TenantId == demoTenant.Id);
+                var upiAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "BANK003" && a.TenantId == demoTenant.Id);
+
+                // Receivables & Payables Accounts
+                var receivableAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "AR001" && a.TenantId == demoTenant.Id);
+                var payableAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "AP001" && a.TenantId == demoTenant.Id);
+
+                // Inventory & WIP Accounts
+                var inventoryAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "STK001" && a.TenantId == demoTenant.Id);
+                var wipAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "WIP001" && a.TenantId == demoTenant.Id);
+                var cogsAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "COGS001" && a.TenantId == demoTenant.Id);
+
+                // Additional Accounts
+                var roundingAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "OE011" && a.TenantId == demoTenant.Id);
+                var exchangeGainLossAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "OI001" && a.TenantId == demoTenant.Id);
+                var freightChargesAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "COGS002" && a.TenantId == demoTenant.Id);
+                var packingChargesAccount = await LedgerAccounts.FirstOrDefaultAsync(a => a.Code == "COGS003" && a.TenantId == demoTenant.Id);
+
+                // Create default settings
+                var settings = new TenantAccountingSettings
+                {
+                    Oid = Guid.NewGuid(),
+                    TenantId = demoTenant.Id,
+
+                    // Sales & Revenue Accounts
+                    DefaultSalesAccountId = salesAccount?.Oid,
+                    SalesReturnAccountId = salesReturnAccount?.Oid,
+                    SalesDiscountAccountId = salesDiscountAccount?.Oid,
+
+                    // Purchase & Expense Accounts
+                    DefaultPurchasesAccountId = purchasesAccount?.Oid,
+                    PurchaseReturnAccountId = purchaseReturnAccount?.Oid,
+                    PurchaseDiscountAccountId = purchaseDiscountAccount?.Oid,
+
+                    // GST Tax Payable Accounts (Output Tax - Sales)
+                    DefaultSGSTPayableAccountId = sgstPayableAccount?.Oid,
+                    DefaultCGSTPayableAccountId = cgstPayableAccount?.Oid,
+                    DefaultIGSTPayableAccountId = igstPayableAccount?.Oid,
+
+                    // GST Tax Input Accounts (Input Tax - Purchase)
+                    DefaultSGSTInputAccountId = sgstInputAccount?.Oid,
+                    DefaultCGSTInputAccountId = cgstInputAccount?.Oid,
+                    DefaultIGSTInputAccountId = igstInputAccount?.Oid,
+
+                    // Payment Method Accounts
+                    DefaultCashAccountId = cashAccount?.Oid,
+                    DefaultBankAccountId = bankAccount?.Oid,
+                    DefaultCardAccountId = cardAccount?.Oid,
+                    DefaultUpiAccountId = upiAccount?.Oid,
+
+                    // Receivables & Payables Accounts
+                    DefaultReceivableAccountId = receivableAccount?.Oid,
+                    DefaultPayableAccountId = payableAccount?.Oid,
+
+                    // Inventory & WIP Accounts
+                    DefaultInventoryAccountId = inventoryAccount?.Oid,
+                    WorkInProgressAccountId = wipAccount?.Oid,
+                    CostOfGoodsSoldAccountId = cogsAccount?.Oid,
+
+                    // Additional Accounts
+                    RoundingAccountId = roundingAccount?.Oid,
+                    ExchangeGainLossAccountId = exchangeGainLossAccount?.Oid,
+                    FreightChargesAccountId = freightChargesAccount?.Oid,
+                    PackingChargesAccountId = packingChargesAccount?.Oid,
+
+                    // Configuration
+                    IsActive = true,
+                    UseJobCosting = true,
+                    UseInventoryAccounting = true,
+                    RequireBalancedEntries = true,
+                    AutoPostInvoices = true,
+                    AutoPostPayments = true,
+                    AutoPostPurchaseInvoices = true,
+                    FiscalYearStartMonth = "04", // April (Indian fiscal year)
+                    DefaultCurrency = "INR",
+
+                    CreatedByUserId = ApplicationUser.SystemUserId,
+                    CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                    UpdatedByUserId = ApplicationUser.SystemUserId,
+                    UpdatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
+                    IsNotDeleted = true
+                };
+
+                await TenantAccountingSettings.AddAsync(settings);
+                await SaveChangesAsync();
+
+                Console.WriteLine($"Successfully seeded TenantAccountingSettings for tenant {demoTenant.Name}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error seeding TenantAccountingSettings: {ex.Message}");
+            }
         }
     }
 }

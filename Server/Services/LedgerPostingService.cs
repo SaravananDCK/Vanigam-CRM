@@ -406,17 +406,39 @@ public class LedgerPostingService(
     #region Account Lookup Methods
 
     /// <summary>
-    /// Gets the tenant accounting settings. Creates default settings if not found.
+    /// Gets the tenant accounting settings with all navigation properties loaded.
     /// </summary>
     private async Task<TenantAccountingSettings?> GetTenantAccountingSettings(int? tenantId)
     {
         var settings = await context.TenantAccountingSettings
             .Include(s => s.DefaultSalesAccount)
+            .Include(s => s.SalesReturnAccount)
+            .Include(s => s.SalesDiscountAccount)
             .Include(s => s.DefaultPurchasesAccount)
+            .Include(s => s.PurchaseReturnAccount)
+            .Include(s => s.PurchaseDiscountAccount)
             .Include(s => s.DefaultTaxPayableAccount)
+            .Include(s => s.DefaultSGSTPayableAccount)
+            .Include(s => s.DefaultCGSTPayableAccount)
+            .Include(s => s.DefaultIGSTPayableAccount)
             .Include(s => s.DefaultTaxInputAccount)
+            .Include(s => s.DefaultSGSTInputAccount)
+            .Include(s => s.DefaultCGSTInputAccount)
+            .Include(s => s.DefaultIGSTInputAccount)
+            .Include(s => s.DefaultCashAccount)
+            .Include(s => s.DefaultBankAccount)
+            .Include(s => s.DefaultCardAccount)
+            .Include(s => s.DefaultUpiAccount)
+            .Include(s => s.DefaultReceivableAccount)
+            .Include(s => s.DefaultPayableAccount)
+            .Include(s => s.DefaultInventoryAccount)
             .Include(s => s.WorkInProgressAccount)
-            .FirstOrDefaultAsync(s => s.TenantId == tenantId && s.IsNotDeleted);
+            .Include(s => s.CostOfGoodsSoldAccount)
+            .Include(s => s.RoundingAccount)
+            .Include(s => s.ExchangeGainLossAccount)
+            .Include(s => s.FreightChargesAccount)
+            .Include(s => s.PackingChargesAccount)
+            .FirstOrDefaultAsync(s => s.TenantId == tenantId && s.IsNotDeleted && s.IsActive);
 
         return settings;
     }
@@ -424,10 +446,10 @@ public class LedgerPostingService(
     private async Task<LedgerAccount?> GetDefaultSalesAccount(int? tenantId)
     {
         var settings = await GetTenantAccountingSettings(tenantId);
-        if (settings != null)
+        if (settings?.DefaultSalesAccount != null)
             return settings.DefaultSalesAccount;
 
-        // Fallback: Look for sales account by code
+        // Fallback: Look for sales account by code (from LedgerAccountSeedData.json)
         return await context.LedgerAccounts
             .FirstOrDefaultAsync(a => a.TenantId == tenantId
                 && a.Code == "SALES"
@@ -438,10 +460,10 @@ public class LedgerPostingService(
     private async Task<LedgerAccount?> GetDefaultPurchasesAccount(int? tenantId)
     {
         var settings = await GetTenantAccountingSettings(tenantId);
-        if (settings != null)
+        if (settings?.DefaultPurchasesAccount != null)
             return settings.DefaultPurchasesAccount;
 
-        // Fallback: Look for purchases account by code
+        // Fallback: Look for purchases account by code (from LedgerAccountSeedData.json)
         return await context.LedgerAccounts
             .FirstOrDefaultAsync(a => a.TenantId == tenantId
                 && a.Code == "PURCHASES"
@@ -452,13 +474,13 @@ public class LedgerPostingService(
     private async Task<LedgerAccount?> GetDefaultTaxPayableAccount(int? tenantId)
     {
         var settings = await GetTenantAccountingSettings(tenantId);
-        if (settings != null)
+        if (settings?.DefaultTaxPayableAccount != null)
             return settings.DefaultTaxPayableAccount;
 
-        // Fallback: Look for tax payable account by code
+        // Fallback: Try SGST as general tax payable (most common for intra-state)
         return await context.LedgerAccounts
             .FirstOrDefaultAsync(a => a.TenantId == tenantId
-                && a.Code == "TAX-PAYABLE"
+                && a.Code == "TAX001" // SGST Payable
                 && a.IsActive
                 && a.IsNotDeleted);
     }
@@ -466,13 +488,13 @@ public class LedgerPostingService(
     private async Task<LedgerAccount?> GetDefaultTaxInputAccount(int? tenantId)
     {
         var settings = await GetTenantAccountingSettings(tenantId);
-        if (settings != null)
+        if (settings?.DefaultTaxInputAccount != null)
             return settings.DefaultTaxInputAccount;
 
-        // Fallback: Look for tax input account by code
+        // Fallback: Try SGST Input as general tax input (most common for intra-state)
         return await context.LedgerAccounts
             .FirstOrDefaultAsync(a => a.TenantId == tenantId
-                && a.Code == "TAX-INPUT"
+                && a.Code == "TAX004" // SGST Input
                 && a.IsActive
                 && a.IsNotDeleted);
     }
@@ -483,10 +505,332 @@ public class LedgerPostingService(
         if (settings?.WorkInProgressAccount != null)
             return settings.WorkInProgressAccount;
 
-        // Fallback: Look for WIP account by code
+        // Fallback: Look for WIP account by code (not in default seed data)
         return await context.LedgerAccounts
             .FirstOrDefaultAsync(a => a.TenantId == tenantId
-                && a.Code == "WIP"
+                && (a.Code == "WIP" || a.Code == "WIP001")
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    // GST-specific Account Helpers
+
+    private async Task<LedgerAccount?> GetSGSTPayableAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultSGSTPayableAccount != null)
+            return settings.DefaultSGSTPayableAccount;
+
+        // Fallback: TAX001 from LedgerAccountSeedData.json
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code == "TAX001"
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetCGSTPayableAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultCGSTPayableAccount != null)
+            return settings.DefaultCGSTPayableAccount;
+
+        // Fallback: TAX002 from LedgerAccountSeedData.json
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code == "TAX002"
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetIGSTPayableAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultIGSTPayableAccount != null)
+            return settings.DefaultIGSTPayableAccount;
+
+        // Fallback: TAX003 from LedgerAccountSeedData.json
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code == "TAX003"
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetSGSTInputAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultSGSTInputAccount != null)
+            return settings.DefaultSGSTInputAccount;
+
+        // Fallback: TAX004 from LedgerAccountSeedData.json
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code == "TAX004"
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetCGSTInputAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultCGSTInputAccount != null)
+            return settings.DefaultCGSTInputAccount;
+
+        // Fallback: TAX005 from LedgerAccountSeedData.json
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code == "TAX005"
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetIGSTInputAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultIGSTInputAccount != null)
+            return settings.DefaultIGSTInputAccount;
+
+        // Fallback: TAX006 from LedgerAccountSeedData.json
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code == "TAX006"
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    // Payment Method Account Helpers
+
+    private async Task<LedgerAccount?> GetDefaultCashAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultCashAccount != null)
+            return settings.DefaultCashAccount;
+
+        // Fallback: CASH001 from LedgerAccountSeedData.json
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code == "CASH001"
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetDefaultBankAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultBankAccount != null)
+            return settings.DefaultBankAccount;
+
+        // Fallback: Not in default seed data, look for BANK prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code.StartsWith("BANK")
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetDefaultCardAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultCardAccount != null)
+            return settings.DefaultCardAccount;
+
+        // Fallback: Not in default seed data, look for CARD prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code.StartsWith("CARD")
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetDefaultUpiAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultUpiAccount != null)
+            return settings.DefaultUpiAccount;
+
+        // Fallback: Not in default seed data, look for UPI prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code.StartsWith("UPI")
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    // Receivables and Payables Account Helpers
+
+    private async Task<LedgerAccount?> GetDefaultReceivableAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultReceivableAccount != null)
+            return settings.DefaultReceivableAccount;
+
+        // Fallback: Not in default seed data, look for AR or RECV prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code.StartsWith("AR") || a.Code.StartsWith("RECV"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetDefaultPayableAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultPayableAccount != null)
+            return settings.DefaultPayableAccount;
+
+        // Fallback: Not in default seed data, look for AP or PAYABLE prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code.StartsWith("AP") || a.Code.StartsWith("PAYABLE"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    // Inventory and COGS Account Helpers
+
+    private async Task<LedgerAccount?> GetDefaultInventoryAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.DefaultInventoryAccount != null)
+            return settings.DefaultInventoryAccount;
+
+        // Fallback: STK001 from LedgerAccountSeedData.json (Stock in Hand)
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code == "STK001" || a.Code.StartsWith("STK"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetCostOfGoodsSoldAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.CostOfGoodsSoldAccount != null)
+            return settings.CostOfGoodsSoldAccount;
+
+        // Fallback: Not in default seed data, look for COGS prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && a.Code.StartsWith("COGS")
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    // Discount and Adjustment Account Helpers
+
+    private async Task<LedgerAccount?> GetSalesDiscountAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.SalesDiscountAccount != null)
+            return settings.SalesDiscountAccount;
+
+        // Fallback: Not in default seed data, look for DISC prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code.StartsWith("DISC") || a.Code.StartsWith("SAL") && a.Name.Contains("Discount"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetPurchaseDiscountAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.PurchaseDiscountAccount != null)
+            return settings.PurchaseDiscountAccount;
+
+        // Fallback: Not in default seed data, look for DISC prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code.StartsWith("PDISC") || a.Code.StartsWith("PUR") && a.Name.Contains("Discount"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetRoundingAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.RoundingAccount != null)
+            return settings.RoundingAccount;
+
+        // Fallback: Not in default seed data, look for ROUND prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code.StartsWith("ROUND") || a.Name.Contains("Rounding"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetExchangeGainLossAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.ExchangeGainLossAccount != null)
+            return settings.ExchangeGainLossAccount;
+
+        // Fallback: Not in default seed data, look for EXCH prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code.StartsWith("EXCH") || a.Name.Contains("Exchange"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    // Freight and Charges Account Helpers
+
+    private async Task<LedgerAccount?> GetFreightChargesAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.FreightChargesAccount != null)
+            return settings.FreightChargesAccount;
+
+        // Fallback: Not in default seed data, look for FREIGHT or EXP prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code.StartsWith("FREIGHT") || a.Code.StartsWith("EXP") && a.Name.Contains("Freight"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetPackingChargesAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.PackingChargesAccount != null)
+            return settings.PackingChargesAccount;
+
+        // Fallback: Not in default seed data, look for PACK or EXP prefix
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code.StartsWith("PACK") || a.Code.StartsWith("EXP") && a.Name.Contains("Packing"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    // Return Account Helpers
+
+    private async Task<LedgerAccount?> GetSalesReturnAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.SalesReturnAccount != null)
+            return settings.SalesReturnAccount;
+
+        // Fallback: SAL002 from LedgerAccountSeedData.json (Sales Return)
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code == "SAL002" || a.Code.StartsWith("SAL") && a.Name.Contains("Return"))
+                && a.IsActive
+                && a.IsNotDeleted);
+    }
+
+    private async Task<LedgerAccount?> GetPurchaseReturnAccount(int? tenantId)
+    {
+        var settings = await GetTenantAccountingSettings(tenantId);
+        if (settings?.PurchaseReturnAccount != null)
+            return settings.PurchaseReturnAccount;
+
+        // Fallback: PUR002 from LedgerAccountSeedData.json (Purchase Return)
+        return await context.LedgerAccounts
+            .FirstOrDefaultAsync(a => a.TenantId == tenantId
+                && (a.Code == "PUR002" || a.Code.StartsWith("PUR") && a.Name.Contains("Return"))
                 && a.IsActive
                 && a.IsNotDeleted);
     }

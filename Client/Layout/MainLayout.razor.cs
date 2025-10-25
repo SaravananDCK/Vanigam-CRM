@@ -194,6 +194,7 @@ namespace Vanigam.CRM.Client.Layout
                 Icon = "fa-calculator",
                 ChildItems =
                 [
+                    new MenuItemDto { Text = Localizer["Accounting Settings"], Path = "tenant-accounting-settings", Icon = ("fa-cog") },
                     new MenuItemDto { Text = Localizer["Account Groups"], Path = "accountgroups", Icon = ("fa-folder-tree") },
                     new MenuItemDto { Text = Localizer["Ledger Accounts"], Path = "ledgeraccounts", Icon = ("fa-book") },
                     new MenuItemDto { Text = Localizer["Bank Accounts"], Path = "bankaccounts", Icon = ("fa-building-columns") },

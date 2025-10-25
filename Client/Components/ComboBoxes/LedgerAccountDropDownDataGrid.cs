@@ -9,18 +9,18 @@ using Vanigam.CRM.Objects.Helpers;
 
 namespace Vanigam.CRM.Client.Components.ComboBoxes;
 
-public class InventoryItemDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<InventoryItem, EditInventoryItem>
+public class LedgerAccountDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<LedgerAccount, EditLedgerAccount>
 {
-    [Inject] InventoryItemApiService InventoryItemApiService { get; set; }
-    public InventoryItemDropDownDataGrid()
+    [Inject] LedgerAccountApiService ItemApiService { get; set; }
+    public LedgerAccountDropDownDataGrid()
     {
-        Name = "cbx_InventoryItemId";
+        Name = "cbx_LedgerAccountId";
     }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        ApiService = InventoryItemApiService;
+        ApiService = ItemApiService;
         Width = 35;
         Height = 50;
     }
@@ -31,19 +31,19 @@ public class InventoryItemDropDownDataGrid : VanigamAccountingDropDownAddDataGri
         this.Columns = (builder2) =>
         {
             builder2.OpenComponent<RadzenDropDownDataGridColumn>(0);
-            builder2.AddAttribute(1, "Property", nameof(InventoryItem.Name));
+            builder2.AddAttribute(1, "Property", nameof(LedgerAccount.Name));
             builder2.AddAttribute(2, "Title", "Name");
             builder2.CloseComponent();
 
-            builder2.OpenComponent<RadzenDropDownDataGridColumn>(1);
-            builder2.AddAttribute(1, "Property", nameof(InventoryItem.QuantityOnHand));
-            builder2.AddAttribute(2, "Title", "QuantityOnHand");
-            builder2.CloseComponent();
+            //builder2.OpenComponent<RadzenDropDownDataGridColumn>(1);
+            //builder2.AddAttribute(1, "Property", nameof(LedgerAccount.Balance));
+            //builder2.AddAttribute(2, "Title", "Type");
+            //builder2.CloseComponent();
         };
     }
 
     protected override string GetCustomFilter(LoadDataArgs args)
     {
-        return $"{nameof(Item.SKU).GetContainsFilter(args.Filter)} or {nameof(Item.Name).GetContainsFilter(args.Filter)}";
+        return $"{nameof(LedgerAccount.Name).GetContainsFilter(args.Filter)}";
     }
 }
