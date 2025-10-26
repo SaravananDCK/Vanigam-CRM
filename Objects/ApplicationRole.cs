@@ -9,6 +9,7 @@ public class ApplicationRole : IdentityRole<Guid>
 {
     public const string SuperUserRole = nameof(SuperUserRole);
     public const string AdminRole = nameof(AdminRole);
+    public const string TechnicianRole = nameof(TechnicianRole);
 
     public static string[] AdministratorRoles =>
         new[]
@@ -16,8 +17,12 @@ public class ApplicationRole : IdentityRole<Guid>
             AdminRole,
             SuperUserRole
         };
-   
 
+    public static string[] TechnicianRoles =>
+    new[]
+    {
+            TechnicianRole,
+    };
     [JsonIgnore] 
     public ICollection<ApplicationUser>? Users { get; set; }
     

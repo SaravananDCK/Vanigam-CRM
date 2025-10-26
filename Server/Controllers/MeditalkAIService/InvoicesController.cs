@@ -20,6 +20,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
     : BaseODataServiceController<Invoice, InvoiceService>(context, userManager, roleManager,
         service, null)
     {
+
         [HttpPost("bulk-save")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Invoice>> BulkSaveInvoiceWithPayments([FromBody] InvoiceBulkSaveDTO invoiceData)

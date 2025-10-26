@@ -13,7 +13,8 @@ namespace Vanigam.CRM.Objects.Enums
             FieldOfficer,
             Admin,
             SuperUser,
-            ApiUser
+            ApiUser,
+            Technician
         }    
 }
 

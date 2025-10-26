@@ -9,7 +9,8 @@ namespace Vanigam.Objects.DTOs
         public static readonly PolicyDefinition[] PolicyDefinitions = new[]
         {
         new PolicyDefinition(ApplicationPolicy.IsAdministrator, context => ApplicationRole.AdministratorRoles.Any(role => context.User.HasClaim(ClaimTypes.Role, role))),
-        new PolicyDefinition(ApplicationPolicy.IsSuperUser, context => context.User.HasClaim(ClaimTypes.Role, ApplicationRole.SuperUserRole)),      
+        new PolicyDefinition(ApplicationPolicy.IsSuperUser, context => context.User.HasClaim(ClaimTypes.Role, ApplicationRole.SuperUserRole)),
+        new PolicyDefinition(ApplicationPolicy.IsTechnician, context => ApplicationRole.TechnicianRoles.Any(role => context.User.HasClaim(ClaimTypes.Role, role))),
     }; 
         public string PolicyName { get; }
         public Func<AuthorizationHandlerContext, bool> Requirement { get; }

@@ -436,9 +436,11 @@ namespace Vanigam.CRM.Objects
             var roleStore = new RoleStore<ApplicationRole, VanigamAccountingDbContext,Guid>(this);
             var superUserRole = new ApplicationRole { Name = ApplicationRole.SuperUserRole, NormalizedName = ApplicationRole.SuperUserRole.ToUpper() };
             var adminRole = new ApplicationRole { Name = ApplicationRole.AdminRole, NormalizedName = ApplicationRole.AdminRole.ToUpper() };
+            var technicianRole = new ApplicationRole { Name = ApplicationRole.TechnicianRole, NormalizedName = ApplicationRole.TechnicianRole.ToUpper() };
 
             await roleStore.CreateAsync(superUserRole);
             await roleStore.CreateAsync(adminRole);
+            await roleStore.CreateAsync(technicianRole);
 
             await this.SaveChangesAsync();
 
@@ -515,6 +517,34 @@ namespace Vanigam.CRM.Objects
                 // Add role claim to systemAdmin
                 await userStore.AddToRoleAsync(systemAdmin, ApplicationRole.SuperUserRole.ToUpper());
             }
+
+            var defaultTechnician = new Technician()
+            {
+                Id = Guid.NewGuid(), // Generate unique ID for technician
+                Name = "Technician",
+                FullName = "Technician",
+                TenantId = demoTenant.Id,
+                Email = "Technician@tekspear.com",
+                UserType = LoginUserType.Technician,
+                UserName = "Technician@tekspear.com",
+                NormalizedUserName = "Technician@tekspear.com".ToUpper(),
+                NormalizedEmail = "Technician@tekspear.com".ToUpper(),
+                EmailConfirmed = true,
+                LockoutEnabled = false,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+            if (!this.Users.Any(u => u.UserName == defaultTechnician.UserName))
+            {
+                var password = new Microsoft.AspNetCore.Identity.PasswordHasher<ApplicationUser>();
+                var hashed = password.HashPassword(defaultTechnician, nameof(Technician) + "@123");
+                defaultTechnician.PasswordHash = hashed;
+                var userStore = new UserStore<Technician, ApplicationRole, VanigamAccountingDbContext, Guid>(this);
+                await userStore.CreateAsync(defaultTechnician);
+
+                // Add role claim to systemAdmin
+                await userStore.AddToRoleAsync(defaultTechnician, ApplicationRole.TechnicianRole.ToUpper());
+            }
+
             await this.SaveChangesAsync();
         }
 
@@ -601,7 +631,25 @@ namespace Vanigam.CRM.Objects
                     });
                 }
             }
+            // Add limited permissions for Technician role on entities (read-only)
+            var allEntities = entities;
+            foreach (var entity in allEntities)
+            {
+                var claimType = $"Permission.{entity}";
+                var claimValue = $"{{\"Role\": \"{ApplicationRole.TechnicianRole}\", \"Read\": true, \"Create\": true, \"Update\": true, \"Delete\": false, \"Priority\": 1}}";
 
+                // Check if claim already exists
+                var existingClaim = RoleClaims.FirstOrDefault(rc => rc.RoleId == adminRole.Id && rc.ClaimType == claimType);
+                if (existingClaim == null)
+                {
+                    RoleClaims.Add(new IdentityRoleClaim<Guid>
+                    {
+                        RoleId = adminRole.Id,
+                        ClaimType = claimType,
+                        ClaimValue = claimValue
+                    });
+                }
+            }
             await this.SaveChangesAsync();
         }
 

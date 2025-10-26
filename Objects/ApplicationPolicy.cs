@@ -4,4 +4,5 @@ public class ApplicationPolicy
 {
     public const string IsAdministrator = nameof(IsAdministrator);
     public const string IsSuperUser = nameof(IsSuperUser);
+    public const string IsTechnician = nameof(IsTechnician);
 }
