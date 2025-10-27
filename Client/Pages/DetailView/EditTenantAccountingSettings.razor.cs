@@ -65,7 +65,7 @@ public partial class EditTenantAccountingSettings
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error initializing TenantAccountingSettings");
+            Logger.LogError(ex, "Error initializing Tenant Accounting Settings");
             NotificationService.Notify(new NotificationMessage
             {
                 Severity = NotificationSeverity.Error,
@@ -121,12 +121,12 @@ public partial class EditTenantAccountingSettings
         }
         catch (HttpRequestException ex)
         {
-            Logger.LogError(ex, "HTTP error saving TenantAccountingSettings");
+            Logger.LogError(ex, "HTTP error saving Tenant Accounting Settings");
             ErrorVisible = true;
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error saving TenantAccountingSettings");
+            Logger.LogError(ex, "Error saving Tenant Accounting Settings");
             ErrorVisible = true;
         }
         finally
