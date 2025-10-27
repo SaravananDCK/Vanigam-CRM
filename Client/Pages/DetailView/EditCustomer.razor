@@ -164,7 +164,15 @@
                     <RadzenStack Gap="1rem" class="rz-p-4">
                         <VanigamAccountingFormField Text=@Localizer["Code"]>
                             <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Code" Name="txt_Code" />
+                                @if (string.IsNullOrEmpty(CurrentObject.Code))
+                                {
+                                    <RadzenText TextStyle="TextStyle.Button" Text="New Customer" class="rz-m-2" Style="color: var(--rz-success);" />
+                                }
+                                else
+                                {
+                                    <RadzenText Text="@CurrentObject.Code" class="rz-m-2" />
+                                }
+
                             </ChildContent>
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["Name"]>
@@ -236,7 +244,7 @@
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["State"]>
                             <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.State" Name="txt_State" />
+                                <StatesDropDown @bind-Value="@CurrentObject.State" />
                             </ChildContent>
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["PostalCode"]>
