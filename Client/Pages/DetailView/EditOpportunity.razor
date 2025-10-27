@@ -8,22 +8,7 @@
 @* Custom Header with Edit Button *@
 <DetailPageTitleComponent TitleText="@Localizer["EditOpportunity"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
     <CustomBadge>
-        @* Floating Edit Button - Only visible in read-only mode *@
-        @if (IsEditButtonVisible && CurrentObject.Stage != OpportunityStage.ClosedWon)
-        {
-            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
-        }
 
-        @* Convert to Customer Button - Only visible in read-only mode for qualified opportunities *@
-        @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvertToCustomer)
-        {
-            <RadzenButton Text="@Localizer["ConvertToCustomer"]"
-                         Icon="person_add"
-                         ButtonStyle="ButtonStyle.Success"
-                         Size="ButtonSize.Small"
-                         Click="@ShowConvertToCustomerDialog"
-                         class="rz-ml-2" />
-        }
     </CustomBadge>
 </DetailPageTitleComponent>
 <RadzenColumn SizeMD=12>
@@ -34,7 +19,23 @@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
         <RadzenCard class="rz-my-4">
-            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client">
+            @* Floating Edit Button - Only visible in read-only mode *@
+            @if (IsEditButtonVisible && CurrentObject.Stage != OpportunityStage.ClosedWon && (!IsFullheightTab))
+            {
+                <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+            }
+
+            @* Convert to Customer Button - Only visible in read-only mode for qualified opportunities *@
+            @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvertToCustomer && (!IsFullheightTab))
+            {
+                <RadzenButton Text="@Localizer["ConvertToCustomer"]"
+                              Icon="person_add"
+                              ButtonStyle="ButtonStyle.Success"
+                              Size="ButtonSize.Small"
+                              Click="@ShowConvertToCustomerDialog"
+                              class="rz-ml-2" Style="bottom: 12px; left: 10px;" />
+            }
+            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" Change="OnTabChanged" TabPosition="TabPosition.Left">
                 <Tabs>
                     <RadzenTabsItem Text="@Localizer["OpportunityInformation"]" Icon="@FadIcon("fa-handshake")" class="fa-small">
                         <RadzenStack>
@@ -165,6 +166,16 @@
                             </RadzenStack>
                         </RadzenTabsItem>
                     }
+
+                    @* Related Data Tabs - Available in both read-only and edit modes *@
+                    @if (IsTabsVisible)
+                    {
+                        <RadzenTabsItem Text="@Localizer["Activities"]">
+                            <Activities OpportunityId="@Oid"
+                                        IsEmbeddedMode="true"
+                                        EmbeddedTitle="@Localizer["OpportunityActivities"]" />
+                        </RadzenTabsItem>
+                    }
                 </Tabs>
             </RadzenTabs>
         </RadzenCard>
@@ -244,20 +255,6 @@
         </RadzenStack>
     </RadzenTemplateForm>
 
-    @* Related Data Tabs - Available in both read-only and edit modes *@
-    @if (IsTabsVisible)
-    {
-        <RadzenCard class="mt-4">
-            <RadzenTabs @bind-SelectedIndex="SelectedTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Top">
-                <Tabs>
-                    <RadzenTabsItem Text="@Localizer["Activities"]">
-                        <Activities OpportunityId="@Oid"
-                                   IsEmbeddedMode="true"
-                                   EmbeddedTitle="@Localizer["OpportunityActivities"]" />
-                    </RadzenTabsItem>
-                </Tabs>
-            </RadzenTabs>
-        </RadzenCard>
-    }
+
 
 </RadzenColumn>

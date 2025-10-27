@@ -1,0 +1,24 @@
+﻿@page "/add-filedocument"
+@using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Validators
+@inherits Vanigam.CRM.Client.Components.BaseDetailView<FileDocument, EditFileDocument>
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject FileDocumentApiService FileDocumentApiService
+<PageTitle>@Localizer["EditFileDocument"]</PageTitle>
+<DetailPageCommonComponent TitleText="@Localizer["EditFileDocument"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" ReloadButtonClick="@ReloadButtonClick" CurrentOid="@Oid" />
+<RadzenColumn SizeMD=12>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="FileDocument" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+        <RadzenStack>
+            <VanigamAccountingFormField Text=@Localizer["FileName"] Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenFileInput id="file_upload" @bind-Value=@CurrentObject.Content @bind-FileName="@CurrentObject.FileName" @bind-FileSize="@CurrentObject.FileSize" TValue="string" ImageStyle="height: 180px; width: 150px" Style="height: 250px; width:250px" Change=@(args => OnChange(args, nameof(CurrentObject.FileName))) />
+                </ChildContent>
+            </VanigamAccountingFormField>
+        </RadzenStack>
+        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenColumn>

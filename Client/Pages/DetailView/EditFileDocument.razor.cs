@@ -14,7 +14,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (Oid == Guid.Empty)
                 CurrentObject = new();
             else
-                CurrentObject = await FileDocumentApiService.GetByOid(oid: Oid);
+                CurrentObject = await FileDocumentApiService.GetFileContent(oid: Oid);
 
             await InitEditContext();
         }

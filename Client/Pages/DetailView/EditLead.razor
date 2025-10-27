@@ -8,23 +8,7 @@
 @* Custom Header with Edit Button *@
 <DetailPageTitleComponent TitleText="@Localizer["EditLead"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
     <CustomBadge>
-        @* Floating Edit Button - Only visible in read-only mode *@
-        @if (IsEditButtonVisible && CurrentObject.Status != LeadStatus.Converted)
-        {
-
-            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]" />
-        }
-
-        @* Convert to Opportunity Button - Only visible in read-only mode for qualified leads *@
-        @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvertToOpportunity)
-        {
-            <RadzenButton Text="@Localizer["ConvertToOpportunity"]"
-                         Icon="transform"
-                         ButtonStyle="ButtonStyle.Success"
-                         Size="ButtonSize.Small"
-                         Click="@ShowConvertToOpportunityDialog"
-                         class="rz-ml-2" />
-        }
+        
     </CustomBadge>
 </DetailPageTitleComponent>
 <RadzenColumn SizeMD=12>
@@ -35,7 +19,23 @@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
         <RadzenCard class="rz-my-4">
-            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client">
+            @* Floating Edit Button - Only visible in read-only mode *@
+            @if (IsEditButtonVisible && CurrentObject.Status != LeadStatus.Converted && (!IsFullheightTab))
+            {
+                <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+            }
+
+            @* Convert to Opportunity Button - Only visible in read-only mode for qualified leads *@
+            @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvertToOpportunity && (!IsFullheightTab))
+            {
+                <RadzenButton Text="@Localizer["ConvertToOpportunity"]"
+                              Icon="transform"
+                              ButtonStyle="ButtonStyle.Success"
+                              Size="ButtonSize.Small"
+                              Click="@ShowConvertToOpportunityDialog"
+                              class="rz-ml-2" Style="bottom: 12px; left: 10px;" />
+            }
+            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" Change="OnTabChanged" TabPosition="TabPosition.Left">
                 <Tabs>
                     @* Contact Information Tab *@
                     <RadzenTabsItem Text="@Localizer["ContactInformation"]" Icon="@FadIcon("fa-user")" class="fa-small">
@@ -143,6 +143,17 @@
                             <div class="rz-p-4">
                                 <RadzenText TextStyle="TextStyle.Body1" class="wrap-text">@CurrentObject.Comments</RadzenText>
                             </div>
+                        </RadzenTabsItem>
+                    }
+
+                    @if (IsTabsVisible)
+                    {
+                        <RadzenTabsItem Text="@Localizer["Activities"]" Icon="@FadIcon("fa-tasks")" class="fa-small">
+                        <RadzenCard class="mt-4">
+                            <Activities LeadId="@Oid"
+                                        IsEmbeddedMode="true"
+                                        EmbeddedTitle="@Localizer["Activities"]" />
+                        </RadzenCard>
                         </RadzenTabsItem>
                     }
                 </Tabs>
@@ -338,12 +349,6 @@
             }
         </RadzenStack>
     </RadzenTemplateForm>
-    @if (IsTabsVisible)
-    {
-        <RadzenCard class="mt-4">
-            <Activities LeadId="@Oid"
-                        IsEmbeddedMode="true"
-                        EmbeddedTitle="@Localizer["Activities"]" />
-        </RadzenCard>
-    }
+    
 </RadzenColumn>
+

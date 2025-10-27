@@ -13,7 +13,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     {
         [Inject] private OpportunityApiService OpportunityApiService { get; set; }
         [Inject] private LeadApiService ConversionApiService { get; set; }
-
+        bool IsFullheightTab = false;
         // Property to track selected information tab in read-only mode
         private int SelectedInfoTabIndex = 0;
 
@@ -94,7 +94,24 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 StateHasChanged();
             }
         }
+        void OnTabChanged(int index)
+        {
+            var tabNames = new[] { "Activities"};
+            var currentTab = GetTabName(index);
 
+            IsFullheightTab = tabNames.Contains(currentTab);
+        }
+
+        string GetTabName(int index)
+        {
+            return index switch
+            {
+                0 => "OpportunityInformation",
+                1 => "LeadInformation",
+                2 => "Activities",
+                _ => ""
+            };
+        }
         private async Task ShowConvertToCustomerDialog()
         {
             if (CurrentObject == null) return;

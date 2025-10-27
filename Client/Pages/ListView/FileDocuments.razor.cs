@@ -4,11 +4,19 @@ using Vanigam.CRM.Objects.OData;
 using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Helpers;
 using Vanigam.CRM.Client.Pages.DetailView;
+using Microsoft.AspNetCore.Components;
 
 namespace Vanigam.CRM.Client.Pages.ListView
 {
     public partial class FileDocuments
     {
+        [Parameter] public Guid? LedgerAccountId { get; set; }
+        [Parameter] public bool IsEmbeddedMode { get; set; } = false;
+        [Parameter] public string? EmbeddedTitle { get; set; }
+        [Parameter] public string? HeightVH { get; set; } 
+        FileDocument CurrentFileDocument;
+        IList<FileDocument> selectedFileDocuments;
+        private DataGridSelectionMode GridSelectionMode { get; set; } = DataGridSelectionMode.Single;
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try
@@ -26,17 +34,27 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<FileDocument>()
-                .FilterByAnd(args.Filter)
-                .BeginGroup()
-                .ContainsOr(u => u.FileName, SearchString)
-                .EndGroup()
-                .Build();
+            var filter = new ODataFilter<FileDocument>()
+               .FilterByAnd(args.Filter);
+
+            // Add customer filter if in embedded mode
+            if (IsEmbeddedMode && LedgerAccountId.HasValue)
+            {
+                filter = filter.FilterByAnd(c => c.LedgerAccountId == LedgerAccountId.Value);
+            }
+            // Add search filter only if there's a search string
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.BeginGroup()
+                    .ContainsOr(u => u.FileName, SearchString)
+                    .EndGroup();
+            }
+            return filter.Build();
         }
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditFileDocument>(Localizer["AddFileDocument"], null, 100, 100);
+            await DialogService.OpenDialogAsync<AddFileDocument>(Localizer["AddFileDocument"], new Dictionary<string, object> { { "LedgerAccountId", LedgerAccountId } }, 60, 50);
             await GridReload();
         }
 
@@ -47,10 +65,26 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(FileDocument filedocument)
         {
-            await DialogService.OpenDialogAsync<EditFileDocument>(Localizer["EditFileDocument"], new Dictionary<string, object> { { "Oid", filedocument.Oid } }, 100, 100);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditFileDocument>(Localizer["EditFileDocument"], new Dictionary<string, object> { { "Oid", filedocument.Oid } }, 75, 100);
             await GridReload();
         }
-
+        protected async Task ShowPdfView(DataGridRowMouseEventArgs<FileDocument> args)
+        {
+            CurrentFileDocument = await FileDocumentApiService.GetFileContent(oid: args.Data.Oid);
+        }
+        private async Task SelectButtonClick(MouseEventArgs arg)
+        {
+            if (GridSelectionMode == DataGridSelectionMode.Single)
+            {
+                GridSelectionMode = DataGridSelectionMode.Multiple;
+            }
+            else if (GridSelectionMode == DataGridSelectionMode.Multiple)
+            {
+                GridSelectionMode = DataGridSelectionMode.Single;
+                selectedFileDocuments = null;
+                await GridReload();
+            }
+        }
         protected async Task GridDeleteButtonClick(FileDocument filedocument)
         {
             try
