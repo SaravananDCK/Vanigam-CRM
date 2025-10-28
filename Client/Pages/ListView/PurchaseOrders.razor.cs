@@ -46,7 +46,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditPurchaseOrder>(Localizer["AddPurchaseOrder"], null, 80, 100);
+            await DialogService.OpenDialogAsync<EditPurchaseOrder>(Localizer["AddPurchaseOrder"], null, 100, 100);
             await GridReload();
         }
 
@@ -57,7 +57,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(PurchaseOrder purchaseorder)
         {
-            await DialogService.OpenDialogWithOutHeaderAsync<EditPurchaseOrder>(Localizer["EditPurchaseOrder"], new Dictionary<string, object> { { "Oid", purchaseorder.Oid } }, 80, 100);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditPurchaseOrder>(Localizer["EditPurchaseOrder"], new Dictionary<string, object> { { "Oid", purchaseorder.Oid } }, 100, 100);
             await GridReload();
         }
 

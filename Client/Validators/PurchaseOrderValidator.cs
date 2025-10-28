@@ -8,7 +8,6 @@ namespace Vanigam.CRM.Client.Validators
     {
         public PurchaseOrderValidator(IStringLocalizer localizer)
         {
-            RuleFor(c => c.Number).NotEmpty().WithMessage(localizer["NumberRequired"]);
             RuleFor(c => c.PartyId).NotEmpty().WithMessage(localizer["VendorRequired"]);
             RuleFor(c => c.TotalAmount).GreaterThanOrEqualTo(0).WithMessage(localizer["TotalAmountMustBeNonNegative"]);
         }

@@ -147,10 +147,10 @@
                     @* Related Data Tabs - Available in both read-only and edit modes *@
                     @if (IsTabsVisible)
                     {
-                        <RadzenTabsItem Text="@Localizer["File Documents"]" Icon="@FadIcon("fa-file")" class="fa-small">
+                        <RadzenTabsItem Text="@Localizer["FileDocuments"]" Icon="@FadIcon("fa-file")" class="fa-small">
                             <FileDocuments LedgerAccountId="@Oid"
                                            IsEmbeddedMode="true" HeightVH="height: calc(100vh - 220px);"
-                            EmbeddedTitle="@Localizer["Customer Files"]">
+                            EmbeddedTitle="@Localizer["CustomerFiles"]">
                             </FileDocuments>
                         </RadzenTabsItem>
                     }
@@ -169,14 +169,21 @@
                 @* Basic Info Tab *@
                 <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
                     <RadzenStack Gap="1rem" class="rz-p-4">
+                        <VanigamAccountingFormField Text=@Localizer["Code"]>
+                            <ChildContent>
+                                @if (string.IsNullOrEmpty(CurrentObject.Code))
+                                {
+                                    <RadzenText TextStyle="TextStyle.Button" Text=@Localizer["New Vendor"] class="rz-m-2" Style="color: var(--rz-success);" />
+                                }
+                                else
+                                {
+                                    <RadzenText Text="@CurrentObject.Code" class="rz-m-2" />
+                                }
+                            </ChildContent>
+                        </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["Name"]>
                             <ChildContent>
                                 <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Code"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Code" Name="txt_Code" />
                             </ChildContent>
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["Type"]>
@@ -191,7 +198,7 @@
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["Status"]>
                             <ChildContent>
-                                <RadzenDropDown @bind-Value="@CurrentObject.Status" Data="@(Enum.GetValues(typeof(CustomerStatus)))" Name="dd_Status" class="w-100" />
+                                <CustomerStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                             </ChildContent>
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["Rating"]>
@@ -199,11 +206,10 @@
                                 <RadzenNumeric @bind-Value="@CurrentObject.Rating" Name="num_Rating" Min="0" Max="5" />
                             </ChildContent>
                         </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["IsActive"]>
-                            <ChildContent>
-                                <RadzenCheckBox @bind-Value="@CurrentObject.IsActive" Name="chk_IsActive" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
+                        <div class="rz-p-1 rz-text-align-left">
+                            <RadzenCheckBox @bind-Value=@CurrentObject.IsActive Name="chk_IsActive" />
+                            <RadzenLabel Text=@Localizer["IsActive"] Component="chk_IsActive" class="rz-ms-2" />
+                        </div>
                     </RadzenStack>
                 </RadzenTabsItem>
 
@@ -248,7 +254,7 @@
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["State"]>
                             <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.State" Name="txt_State" />
+                                <StatesDropDown @bind-Value="@CurrentObject.State" />
                             </ChildContent>
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["PostalCode"]>
@@ -269,17 +275,17 @@
                     <RadzenStack Gap="1rem" class="rz-p-4">
                         <VanigamAccountingFormField Text=@Localizer["Balance"]>
                             <ChildContent>
-                                <RadzenNumeric @bind-Value="@CurrentObject.Balance" Name="num_Balance" />
+                                <RadzenNumeric @bind-Value="@CurrentObject.Balance" Name="num_Balance" Min="0" ShowUpDown="false" />
                             </ChildContent>
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["CreditLimit"]>
                             <ChildContent>
-                                <RadzenNumeric @bind-Value="@CurrentObject.CreditLimit" Name="num_CreditLimit" />
+                                <RadzenNumeric @bind-Value="@CurrentObject.CreditLimit" Name="num_CreditLimit" Min="0" ShowUpDown="false" />
                             </ChildContent>
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["PaymentTerms"]>
                             <ChildContent>
-                                <RadzenNumeric @bind-Value="@CurrentObject.PaymentTermsDays" Name="num_PaymentTermsDays" />
+                                <RadzenNumeric @bind-Value="@CurrentObject.PaymentTermsDays" Name="num_PaymentTermsDays" Min="0" ShowUpDown="false" />
                             </ChildContent>
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["TaxId"]>

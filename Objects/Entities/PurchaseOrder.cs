@@ -17,6 +17,14 @@ namespace Vanigam.CRM.Objects.Entities
 
         [StringLength(100)]
         public string? ContactPerson { get; set; }
+
+        public override void CalculateTotal()
+        {
+            SubTotal = VoucherLines.OfType<PurchaseOrderItem>().Sum(i => (i.UnitPrice * (decimal)i.Quantity));
+            TaxAmount = VoucherLines.OfType<PurchaseOrderItem>().Sum(i => i.TaxAmount);
+            DiscountAmount = VoucherLines.OfType<PurchaseOrderItem>().Sum(i => i.DiscountAmount);
+            TotalAmount = VoucherLines.OfType<PurchaseOrderItem>().Sum(i => i.LineTotal);
+        }
     }
 
     public enum PurchaseOrderStatus

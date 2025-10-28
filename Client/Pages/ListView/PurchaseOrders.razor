@@ -27,7 +27,7 @@
                             @(purchaseorder.VoucherDate.ToString("yyyy-MM-dd"))
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="PurchaseOrder" Property="Vendor.Name" Title=@Localizer["Vendor"] Width="200px">
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property="@PropertyExtensions.GetPropertyFullPath((PurchaseOrder p) => p.Party.Name)" Title=@Localizer["Vendor"] Width="200px">
                         <Template Context="purchaseorder">
                             @(purchaseorder.Party?.Name ?? "-")
                         </Template>
