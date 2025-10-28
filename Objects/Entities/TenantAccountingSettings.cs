@@ -178,6 +178,45 @@ public class TenantAccountingSettings : BaseClass
 
     #endregion
 
+    #region Company Information
+
+    [StringLength(200)]
+    public string? CompanyName { get; set; }
+
+    [StringLength(500)]
+    public string? CompanyAddress { get; set; }
+
+    [StringLength(100)]
+    public string? CompanyCity { get; set; }
+
+    [StringLength(100)]
+    public string? CompanyState { get; set; }
+
+    [StringLength(20)]
+    public string? CompanyPostalCode { get; set; }
+
+    [StringLength(100)]
+    public string? CompanyCountry { get; set; }
+
+    [StringLength(50)]
+    public string? CompanyPhone { get; set; }
+
+    [StringLength(100)]
+    public string? CompanyEmail { get; set; }
+
+    [StringLength(200)]
+    public string? CompanyWebsite { get; set; }
+
+    [StringLength(50)]
+    public string? CompanyTaxId { get; set; }
+
+    [StringLength(50)]
+    public string? CompanyRegistrationNumber { get; set; }
+
+    public byte[]? CompanyLogo { get; set; }
+
+    #endregion
+
     #region Configuration Settings
 
     public bool IsActive { get; set; } = true;

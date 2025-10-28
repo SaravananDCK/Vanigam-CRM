@@ -5,15 +5,18 @@ using QuestPDF.Infrastructure;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.Contracts;
+using Vanigam.CRM.Objects.Services;
 
 namespace Vanigam.CRM.Server.Services;
 
 public abstract class BasePdfService<T>(
     VanigamAccountingDbContext context,
-    ILogger<BasePdfService<T>> logger) where T : BaseClass
+    ILogger<BasePdfService<T>> logger,
+    ICurrentUserService currentUserService) where T : BaseClass
 {
     protected VanigamAccountingDbContext Context = context;
     protected ILogger<BasePdfService<T>> Logger = logger;
+    protected ICurrentUserService CurrentUserService = currentUserService;
 
     public abstract Task<T?> GetEntityWithIncludesAsync(Guid entityId);
     public abstract string GetDocumentTitle();
@@ -78,12 +81,70 @@ public abstract class BasePdfService<T>(
 
     protected void BuildCompanyInfo(ColumnDescriptor column)
     {
+        var tenantId = CurrentUserService.TenantId;
+        var settings = Context.TenantAccountingSettings
+            .FirstOrDefault(s => s.TenantId == tenantId);
+
         column.Item().Text("From:").SemiBold();
-        column.Item().Text("Your Company Name");
-        column.Item().Text("Your Address");
-        column.Item().Text("City, State ZIP");
-        column.Item().Text("Phone: Your Phone");
-        column.Item().Text("Email: Your Email");
+
+        if (settings != null)
+        {
+            if (!string.IsNullOrEmpty(settings.CompanyName))
+                column.Item().Text(settings.CompanyName);
+
+            if (!string.IsNullOrEmpty(settings.CompanyAddress))
+                column.Item().Text(settings.CompanyAddress);
+
+            var cityLine = BuildCityStateZip(settings.CompanyCity, settings.CompanyState, settings.CompanyPostalCode);
+            if (!string.IsNullOrEmpty(cityLine))
+                column.Item().Text(cityLine);
+
+            if (!string.IsNullOrEmpty(settings.CompanyCountry))
+                column.Item().Text(settings.CompanyCountry);
+
+            if (!string.IsNullOrEmpty(settings.CompanyPhone))
+                column.Item().Text($"Phone: {settings.CompanyPhone}");
+
+            if (!string.IsNullOrEmpty(settings.CompanyEmail))
+                column.Item().Text($"Email: {settings.CompanyEmail}");
+
+            if (!string.IsNullOrEmpty(settings.CompanyWebsite))
+                column.Item().Text($"Web: {settings.CompanyWebsite}");
+
+            if (!string.IsNullOrEmpty(settings.CompanyTaxId))
+                column.Item().Text($"Tax ID: {settings.CompanyTaxId}");
+        }
+        else
+        {
+            column.Item().Text("Company Name");
+            column.Item().Text("Company Address");
+            column.Item().Text("City, State ZIP");
+            column.Item().Text("Phone: Company Phone");
+            column.Item().Text("Email: Company Email");
+        }
+    }
+
+    private string BuildCityStateZip(string? city, string? state, string? postalCode)
+    {
+        var parts = new List<string>();
+
+        if (!string.IsNullOrEmpty(city))
+            parts.Add(city);
+
+        if (!string.IsNullOrEmpty(state))
+            parts.Add(state);
+
+        var result = string.Join(", ", parts);
+
+        if (!string.IsNullOrEmpty(postalCode))
+        {
+            if (!string.IsNullOrEmpty(result))
+                result += " " + postalCode;
+            else
+                result = postalCode;
+        }
+
+        return result;
     }
 
     protected void BuildCustomerInfo(LedgerAccount? customer, ColumnDescriptor column)

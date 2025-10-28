@@ -2179,6 +2179,12 @@ namespace Vanigam.CRM.Objects
                 var settings = new TenantAccountingSettings
                 {
                     Oid = Guid.NewGuid(),
+                    CompanyName="Vanigam Technologies",
+                    CompanyAddress="111/1k/1A, Dwarakamayi, State Bank Colony",
+                    CompanyCity="Tuticorin",
+                    CompanyState = "TamilNadu",
+                    CompanyCountry="India",
+                    CompanyPostalCode="628001",
                     TenantId = demoTenant.Id,
 
                     // Sales & Revenue Accounts

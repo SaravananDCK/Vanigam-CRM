@@ -4,12 +4,14 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.Services;
 
 namespace Vanigam.CRM.Server.Services;
 
 public class QuotePdfService(
     VanigamAccountingDbContext context,
-    ILogger<QuotePdfService> logger) : BasePdfService<Quote>(context, logger)
+    ICurrentUserService currentUserService,
+    ILogger<QuotePdfService> logger) : BasePdfService<Quote>(context, logger, currentUserService)
 {
     public override async Task<Quote?> GetEntityWithIncludesAsync(Guid entityId)
     {

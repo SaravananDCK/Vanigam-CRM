@@ -34,5 +34,52 @@ public class TenantAccountingSettingsValidator : AbstractValidator<TenantAccount
         RuleFor(s => s.Notes)
             .MaximumLength(500)
             .WithMessage(localizer["NotesMaxLength500"]);
+
+        // Company information validation
+        RuleFor(s => s.CompanyName)
+            .MaximumLength(200)
+            .WithMessage(localizer["CompanyNameMaxLength200"]);
+
+        RuleFor(s => s.CompanyAddress)
+            .MaximumLength(500)
+            .WithMessage(localizer["CompanyAddressMaxLength500"]);
+
+        RuleFor(s => s.CompanyCity)
+            .MaximumLength(100)
+            .WithMessage(localizer["CompanyCityMaxLength100"]);
+
+        RuleFor(s => s.CompanyState)
+            .MaximumLength(100)
+            .WithMessage(localizer["CompanyStateMaxLength100"]);
+
+        RuleFor(s => s.CompanyPostalCode)
+            .MaximumLength(20)
+            .WithMessage(localizer["CompanyPostalCodeMaxLength20"]);
+
+        RuleFor(s => s.CompanyCountry)
+            .MaximumLength(100)
+            .WithMessage(localizer["CompanyCountryMaxLength100"]);
+
+        RuleFor(s => s.CompanyPhone)
+            .MaximumLength(50)
+            .WithMessage(localizer["CompanyPhoneMaxLength50"]);
+
+        RuleFor(s => s.CompanyEmail)
+            .MaximumLength(100)
+            .EmailAddress()
+            .When(s => !string.IsNullOrEmpty(s.CompanyEmail))
+            .WithMessage(localizer["ValidEmailRequired"]);
+
+        RuleFor(s => s.CompanyWebsite)
+            .MaximumLength(200)
+            .WithMessage(localizer["CompanyWebsiteMaxLength200"]);
+
+        RuleFor(s => s.CompanyTaxId)
+            .MaximumLength(50)
+            .WithMessage(localizer["CompanyTaxIdMaxLength50"]);
+
+        RuleFor(s => s.CompanyRegistrationNumber)
+            .MaximumLength(50)
+            .WithMessage(localizer["CompanyRegistrationNumberMaxLength50"]);
     }
 }

@@ -4,12 +4,14 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.Services;
 
 namespace Vanigam.CRM.Server.Services;
 
 public class InvoicePdfService(
     VanigamAccountingDbContext context,
-    ILogger<InvoicePdfService> logger) : BasePdfService<Invoice>(context, logger)
+    ICurrentUserService currentUserService,
+    ILogger<InvoicePdfService> logger) : BasePdfService<Invoice>(context, logger, currentUserService)
 {
     public override async Task<Invoice?> GetEntityWithIncludesAsync(Guid entityId)
     {
