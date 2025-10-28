@@ -14,7 +14,6 @@ namespace Vanigam.CRM.Objects.Entities
         [StringLength(200)]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
         [StringLength(50)]
         public string Code { get; set; } = string.Empty;
 

@@ -416,51 +416,38 @@
                 @* Configuration Tab *@
                 <RadzenTabsItem Text="@Localizer["Configuration"]" Icon="@FadIcon("fa-cog")" class="fa-small">
                     <RadzenStack Gap="1rem" class="rz-p-4">
-                        <VanigamAccountingFormField Text=@Localizer["IsActive"]>
-                            <ChildContent>
-                                <RadzenCheckBox @bind-Value="@CurrentObject.IsActive" Name="chk_IsActive" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
+                        <div class="rz-p-1 rz-text-align-left">
+                            <RadzenCheckBox @bind-Value=@CurrentObject.IsActive Name="chk_IsActive" />
+                            <RadzenLabel Text=@Localizer["IsActive"] Component="chk_IsActive" class="rz-ms-2" />
+                        </div>
 
                         <RadzenText TextStyle="TextStyle.H6" class="rz-mb-2 rz-mt-4">@Localizer["AutoPostingOptions"]</RadzenText>
-
-                        <VanigamAccountingFormField Text=@Localizer["AutoPostInvoices"]>
-                            <ChildContent>
-                                <RadzenCheckBox @bind-Value="@CurrentObject.AutoPostInvoices" Name="chk_AutoPostInvoices" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-
-                        <VanigamAccountingFormField Text=@Localizer["AutoPostPayments"]>
-                            <ChildContent>
-                                <RadzenCheckBox @bind-Value="@CurrentObject.AutoPostPayments" Name="chk_AutoPostPayments" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-
-                        <VanigamAccountingFormField Text=@Localizer["AutoPostPurchaseInvoices"]>
-                            <ChildContent>
-                                <RadzenCheckBox @bind-Value="@CurrentObject.AutoPostPurchaseInvoices" Name="chk_AutoPostPurchaseInvoices" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
+                        <div class="rz-p-1 rz-text-align-left">
+                            <RadzenCheckBox @bind-Value=@CurrentObject.AutoPostInvoices Name="chk_AutoPostInvoices" />
+                            <RadzenLabel Text=@Localizer["AutoPostInvoices"] Component="chk_AutoPostInvoices" class="rz-ms-2" />
+                        </div>
+                        <div class="rz-p-1 rz-text-align-left">
+                            <RadzenCheckBox @bind-Value=@CurrentObject.AutoPostPayments Name="chk_AutoPostPayments" />
+                            <RadzenLabel Text=@Localizer["AutoPostPayments"] Component="chk_AutoPostPayments" class="rz-ms-2" />
+                        </div>
+                        <div class="rz-p-1 rz-text-align-left">
+                            <RadzenCheckBox @bind-Value=@CurrentObject.AutoPostPurchaseInvoices Name="chk_AutoPostPurchaseInvoices" />
+                            <RadzenLabel Text=@Localizer["AutoPostPurchaseInvoices"] Component="chk_AutoPostPurchaseInvoices" class="rz-ms-2" />
+                        </div>
 
                         <RadzenText TextStyle="TextStyle.H6" class="rz-mb-2 rz-mt-4">@Localizer["AccountingOptions"]</RadzenText>
-
-                        <VanigamAccountingFormField Text=@Localizer["UseJobCosting"]>
-                            <ChildContent>
-                                <RadzenCheckBox @bind-Value="@CurrentObject.UseJobCosting" Name="chk_UseJobCosting" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-
-                        <VanigamAccountingFormField Text=@Localizer["UseInventoryAccounting"]>
-                            <ChildContent>
-                                <RadzenCheckBox @bind-Value="@CurrentObject.UseInventoryAccounting" Name="chk_UseInventoryAccounting" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-
-                        <VanigamAccountingFormField Text=@Localizer["EnableMultiCurrency"]>
-                            <ChildContent>
-                                <RadzenCheckBox @bind-Value="@CurrentObject.EnableMultiCurrency" Name="chk_EnableMultiCurrency" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
+                        <div class="rz-p-1 rz-text-align-left">
+                            <RadzenCheckBox @bind-Value=@CurrentObject.UseJobCosting Name="chk_UseJobCosting" />
+                            <RadzenLabel Text=@Localizer["UseJobCosting"] Component="chk_UseJobCosting" class="rz-ms-2" />
+                        </div>
+                        <div class="rz-p-1 rz-text-align-left">
+                            <RadzenCheckBox @bind-Value=@CurrentObject.UseInventoryAccounting Name="chk_UseInventoryAccounting" />
+                            <RadzenLabel Text=@Localizer["UseInventoryAccounting"] Component="chk_UseInventoryAccounting" class="rz-ms-2" />
+                        </div>
+                        <div class="rz-p-1 rz-text-align-left">
+                            <RadzenCheckBox @bind-Value=@CurrentObject.EnableMultiCurrency Name="chk_EnableMultiCurrency" />
+                            <RadzenLabel Text=@Localizer["EnableMultiCurrency"] Component="chk_EnableMultiCurrency" class="rz-ms-2" />
+                        </div>
 
                         <RadzenText TextStyle="TextStyle.H6" class="rz-mb-2 rz-mt-4">@Localizer["GeneralSettings"]</RadzenText>
 
