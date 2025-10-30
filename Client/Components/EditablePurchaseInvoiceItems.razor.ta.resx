@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,28 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddPurchaseInvoice" xml:space="preserve">
-    <value>Add Purchase Invoice</value>
+  <data name="AddItem" xml:space="preserve">
+    <value>Add Item</value>
   </data>
-  <data name="EditPurchaseInvoice" xml:space="preserve">
-    <value>Edit Purchase Invoice</value>
+  <data name="InvoiceItems" xml:space="preserve">
+    <value>Invoice Items</value>
   </data>
-  <data name="PurchaseInvoices" xml:space="preserve">
-    <value>Purchase Invoices</value>
+  <data name="NoItems" xml:space="preserve">
+    <value>No Items Found</value>
   </data>
-  <data name="ReceivedDate" xml:space="preserve">
-    <value>Received Date</value>
-  </data>
-  <data name="SuccessfullyDeleted" xml:space="preserve">
-    <value>Successfully Deleted</value>
+  <data name="PurchaseInvoiceItems" xml:space="preserve">
+    <value>Purchase Invoice Items</value>
   </data>
   <data name="TotalAmount" xml:space="preserve">
     <value>Total Amount</value>
   </data>
-  <data name="UnableDelete" xml:space="preserve">
-    <value>Unable to Delete</value>
-  </data>
-  <data name="VendorInvoiceNumber" xml:space="preserve">
-    <value>Vendor Invoice Number</value>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Unit Price</value>
   </data>
 </root>

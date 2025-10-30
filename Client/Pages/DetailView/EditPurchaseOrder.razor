@@ -20,7 +20,7 @@
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["NumberMust"]</RadzenAlert>
 
     @* Read-Only Mode Display *@
-    @if (IsReadOnlyModeVisible)
+    @if (CurrentObject != null && IsReadOnlyModeVisible && !IsCreateMode)
     {
         <RadzenCard class="rz-my-4">
             <RadzenStack>
@@ -223,7 +223,7 @@
                         </VanigamAccountingFormField>
                         <VanigamAccountingFormField Text=@Localizer["Vendor"]>
                             <ChildContent>
-                                <RadzenDropDown @bind-Value="@CurrentObject.PartyId" Data="@Vendors" TextProperty="Name" ValueProperty="Oid" Name="dd_Vendor" class="w-100" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" />
+                                <VendorDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
                             </ChildContent>
                         </VanigamAccountingFormField>
 
@@ -232,10 +232,6 @@
                                 <PurchaseOrderStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                             </ChildContent>
                         </VanigamAccountingFormField>
-                        @*<RadzenRow>
-                                <RadzenColumn Size="12" SizeMD="6"></RadzenColumn>
-                                <RadzenColumn Size="12" SizeMD="6"></RadzenColumn>
-                            </RadzenRow>*@
                         <RadzenRow>
                             <RadzenColumn Size="12" SizeMD="6">
                                 <VanigamAccountingFormField Text=@Localizer["DueDate"]>
