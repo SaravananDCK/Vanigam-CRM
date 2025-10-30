@@ -43,6 +43,19 @@ namespace Vanigam.CRM.Objects.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal TaxAmount { get; set; } = 0;
 
+        // GST Breakdown (India-specific tax components)
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal CGSTAmount { get; set; } = 0;
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal SGSTAmount { get; set; } = 0;
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal IGSTAmount { get; set; } = 0;
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal CessAmount { get; set; } = 0;
+
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public DiscountType DiscountType { get; set; }
         

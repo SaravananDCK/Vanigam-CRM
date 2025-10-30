@@ -3,7 +3,7 @@ using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Objects.DTOs;
 
-public class PurchaseInvoiceBulkSaveDTO
+public class JobBulkSaveDTO
 {
     public Guid? Oid { get; set; }
 
@@ -11,14 +11,18 @@ public class PurchaseInvoiceBulkSaveDTO
     [StringLength(50)]
     public string Number { get; set; } = string.Empty;
 
-    public PurchaseInvoiceStatus Status { get; set; } = PurchaseInvoiceStatus.Draft;
+    [Required]
+    [StringLength(200)]
+    public string Title { get; set; } = string.Empty;
+
+    [StringLength(2000)]
+    public string? Description { get; set; }
+
+    public JobStatus Status { get; set; } = JobStatus.Pending;
+    public Priority Priority { get; set; } = Priority.Normal;
 
     public Guid? PartyId { get; set; }
-
-    [StringLength(100)]
-    public string? VendorInvoiceNumber { get; set; }
-
-    public DateTimeOffset? ReceivedDate { get; set; }
+    public Guid? ContactId { get; set; }
 
     public decimal TotalAmount { get; set; }
     public decimal DiscountAmount { get; set; }
@@ -32,12 +36,10 @@ public class PurchaseInvoiceBulkSaveDTO
 
     public DateTimeOffset VoucherDate { get; set; } = DateTimeOffset.UtcNow;
 
-    public Guid? PurchaseOrderId { get; set; }
-
-    public List<PurchaseInvoiceItemDTO> Items { get; set; } = new List<PurchaseInvoiceItemDTO>();
+    public List<MaterialUsageDTO> Materials { get; set; } = new List<MaterialUsageDTO>();
 }
 
-public class PurchaseInvoiceItemDTO
+public class MaterialUsageDTO
 {
     public Guid? Oid { get; set; }
 

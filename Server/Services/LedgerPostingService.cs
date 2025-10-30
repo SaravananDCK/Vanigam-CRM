@@ -19,9 +19,12 @@ public class LedgerPostingService(
 
     /// <summary>
     /// Posts an invoice to the ledger. Creates entries for:
-    /// - Debit: Customer Account (Accounts Receivable)
-    /// - Credit: Sales Account
-    /// - Credit: Tax Payable Account (if tax exists)
+    /// - Debit: Customer Account (Accounts Receivable) - Full invoice amount
+    /// - Credit: Sales Account - Gross sales before discount
+    /// - Debit: Sales Discount Account (if discount exists) - Reduces revenue
+    /// - Credit: SGST Payable Account (if SGST exists)
+    /// - Credit: CGST Payable Account (if CGST exists)
+    /// - Credit: IGST Payable Account (if IGST exists)
     /// </summary>
     public async Task PostInvoiceToLedger(Invoice invoice)
     {
@@ -43,7 +46,10 @@ public class LedgerPostingService(
 
             var entries = new List<LedgerEntry>();
 
-            // Debit Customer Account (Asset increases)
+            // Calculate gross sales (before discount)
+            var grossSales = invoice.SubTotal + invoice.DiscountAmount;
+
+            // 1. Debit Customer Account (Asset increases) - Full invoice amount including tax
             entries.Add(new LedgerEntry
             {
                 TenantId = invoice.TenantId,
@@ -58,14 +64,14 @@ public class LedgerPostingService(
                 IsReconciled = false
             });
 
-            // Credit Sales Account (Revenue increases)
+            // 2. Credit Sales Account (Revenue increases) - Gross sales before discount
             entries.Add(new LedgerEntry
             {
                 TenantId = invoice.TenantId,
                 VoucherId = invoice.Oid,
                 AccountId = salesAccount.Oid,
                 EntryType = EntryType.Credit,
-                Amount = invoice.SubTotal,
+                Amount = grossSales,
                 EntryDate = invoice.VoucherDate,
                 EntryNumber = invoice.Number,
                 Description = $"Sales Revenue - {invoice.Number}",
@@ -73,33 +79,142 @@ public class LedgerPostingService(
                 IsReconciled = false
             });
 
-            // Credit Tax Payable Account (if tax exists)
-            if (invoice.TaxAmount > 0)
+            // 3. Debit Sales Discount Account (if discount exists) - Contra revenue account
+            if (invoice.DiscountAmount > 0)
             {
-                var taxAccount = await GetDefaultTaxPayableAccount(invoice.TenantId);
-                if (taxAccount == null)
+                var discountAccount = await GetSalesDiscountAccount(invoice.TenantId);
+                if (discountAccount != null)
                 {
-                    throw new InvalidOperationException($"Tax payable account not configured for tenant {invoice.TenantId}");
+                    entries.Add(new LedgerEntry
+                    {
+                        TenantId = invoice.TenantId,
+                        VoucherId = invoice.Oid,
+                        AccountId = discountAccount.Oid,
+                        EntryType = EntryType.Debit,
+                        Amount = invoice.DiscountAmount,
+                        EntryDate = invoice.VoucherDate,
+                        EntryNumber = invoice.Number,
+                        Description = $"Sales Discount - {invoice.Number}",
+                        Reference = invoice.Number,
+                        IsReconciled = false
+                    });
+                }
+                else
+                {
+                    logger.LogWarning("Sales discount account not configured for tenant {TenantId}. Discount amount {DiscountAmount} not posted separately.",
+                        invoice.TenantId, invoice.DiscountAmount);
+                }
+            }
+
+            // 4. Credit SGST Payable Account (if SGST exists)
+            if (invoice.SGSTAmount > 0)
+            {
+                var sgstAccount = await GetSGSTPayableAccount(invoice.TenantId);
+                if (sgstAccount == null)
+                {
+                    throw new InvalidOperationException($"SGST payable account not configured for tenant {invoice.TenantId}");
                 }
 
                 entries.Add(new LedgerEntry
                 {
                     TenantId = invoice.TenantId,
                     VoucherId = invoice.Oid,
-                    AccountId = taxAccount.Oid,
+                    AccountId = sgstAccount.Oid,
                     EntryType = EntryType.Credit,
-                    Amount = invoice.TaxAmount,
+                    Amount = invoice.SGSTAmount,
                     EntryDate = invoice.VoucherDate,
                     EntryNumber = invoice.Number,
-                    Description = $"Tax Collected - {invoice.Number}",
+                    Description = $"SGST Collected - {invoice.Number}",
                     Reference = invoice.Number,
                     IsReconciled = false
                 });
             }
 
+            // 5. Credit CGST Payable Account (if CGST exists)
+            if (invoice.CGSTAmount > 0)
+            {
+                var cgstAccount = await GetCGSTPayableAccount(invoice.TenantId);
+                if (cgstAccount == null)
+                {
+                    throw new InvalidOperationException($"CGST payable account not configured for tenant {invoice.TenantId}");
+                }
+
+                entries.Add(new LedgerEntry
+                {
+                    TenantId = invoice.TenantId,
+                    VoucherId = invoice.Oid,
+                    AccountId = cgstAccount.Oid,
+                    EntryType = EntryType.Credit,
+                    Amount = invoice.CGSTAmount,
+                    EntryDate = invoice.VoucherDate,
+                    EntryNumber = invoice.Number,
+                    Description = $"CGST Collected - {invoice.Number}",
+                    Reference = invoice.Number,
+                    IsReconciled = false
+                });
+            }
+
+            // 6. Credit IGST Payable Account (if IGST exists)
+            if (invoice.IGSTAmount > 0)
+            {
+                var igstAccount = await GetIGSTPayableAccount(invoice.TenantId);
+                if (igstAccount == null)
+                {
+                    throw new InvalidOperationException($"IGST payable account not configured for tenant {invoice.TenantId}");
+                }
+
+                entries.Add(new LedgerEntry
+                {
+                    TenantId = invoice.TenantId,
+                    VoucherId = invoice.Oid,
+                    AccountId = igstAccount.Oid,
+                    EntryType = EntryType.Credit,
+                    Amount = invoice.IGSTAmount,
+                    EntryDate = invoice.VoucherDate,
+                    EntryNumber = invoice.Number,
+                    Description = $"IGST Collected - {invoice.Number}",
+                    Reference = invoice.Number,
+                    IsReconciled = false
+                });
+            }
+
+            // Fallback: If no GST components but TaxAmount exists (legacy support)
+            if (invoice.TaxAmount > 0 && invoice.SGSTAmount == 0 && invoice.CGSTAmount == 0 && invoice.IGSTAmount == 0)
+            {
+                var taxAccount = await GetDefaultTaxPayableAccount(invoice.TenantId);
+                if (taxAccount != null)
+                {
+                    entries.Add(new LedgerEntry
+                    {
+                        TenantId = invoice.TenantId,
+                        VoucherId = invoice.Oid,
+                        AccountId = taxAccount.Oid,
+                        EntryType = EntryType.Credit,
+                        Amount = invoice.TaxAmount,
+                        EntryDate = invoice.VoucherDate,
+                        EntryNumber = invoice.Number,
+                        Description = $"Tax Collected - {invoice.Number}",
+                        Reference = invoice.Number,
+                        IsReconciled = false
+                    });
+                }
+            }
+
             await context.LedgerEntries.AddRangeAsync(entries);
-            logger.LogInformation("Successfully posted {EntryCount} ledger entries for Invoice {InvoiceNumber}",
-                entries.Count, invoice.Number);
+
+            // Validate entries balance
+            var totalDebits = entries.Where(e => e.EntryType == EntryType.Debit).Sum(e => e.Amount);
+            var totalCredits = entries.Where(e => e.EntryType == EntryType.Credit).Sum(e => e.Amount);
+
+            if (totalDebits != totalCredits)
+            {
+                logger.LogError("Invoice {InvoiceNumber} ledger entries do not balance. Debits: {Debits}, Credits: {Credits}",
+                    invoice.Number, totalDebits, totalCredits);
+                throw new InvalidOperationException($"Ledger entries for invoice {invoice.Number} do not balance. Debits: {totalDebits}, Credits: {totalCredits}");
+            }
+
+            logger.LogInformation("Successfully posted {EntryCount} ledger entries for Invoice {InvoiceNumber}. Debits: {Debits}, Credits: {Credits}",
+                entries.Count, invoice.Number, totalDebits, totalCredits);
         }
         catch (Exception ex)
         {
@@ -182,9 +297,12 @@ public class LedgerPostingService(
 
     /// <summary>
     /// Posts a purchase invoice to the ledger. Creates entries for:
-    /// - Debit: Purchases/Expense Account
-    /// - Debit: Tax Input Account (if tax exists)
-    /// - Credit: Vendor Account (Accounts Payable)
+    /// - Debit: Purchases/Expense Account - Gross purchases before discount
+    /// - Credit: Purchase Discount Account (if discount exists) - Reduces expense
+    /// - Debit: SGST Input Account (if SGST exists) - Recoverable input tax
+    /// - Debit: CGST Input Account (if CGST exists) - Recoverable input tax
+    /// - Debit: IGST Input Account (if IGST exists) - Recoverable input tax
+    /// - Credit: Vendor Account (Accounts Payable) - Full invoice amount
     /// </summary>
     public async Task PostPurchaseInvoiceToLedger(PurchaseInvoice purchaseInvoice)
     {
@@ -206,14 +324,17 @@ public class LedgerPostingService(
 
             var entries = new List<LedgerEntry>();
 
-            // Debit Purchases Account (Expense increases)
+            // Calculate gross purchases (before discount)
+            var grossPurchases = purchaseInvoice.SubTotal + purchaseInvoice.DiscountAmount;
+
+            // 1. Debit Purchases Account (Expense increases) - Gross purchases before discount
             entries.Add(new LedgerEntry
             {
                 TenantId = purchaseInvoice.TenantId,
                 VoucherId = purchaseInvoice.Oid,
                 AccountId = purchasesAccount.Oid,
                 EntryType = EntryType.Debit,
-                Amount = purchaseInvoice.SubTotal,
+                Amount = grossPurchases,
                 EntryDate = purchaseInvoice.VoucherDate,
                 EntryNumber = purchaseInvoice.Number,
                 Description = $"Purchase Invoice - {purchaseInvoice.Number}",
@@ -221,31 +342,128 @@ public class LedgerPostingService(
                 IsReconciled = false
             });
 
-            // Debit Tax Input Account (if tax exists)
-            if (purchaseInvoice.TaxAmount > 0)
+            // 2. Credit Purchase Discount Account (if discount exists) - Contra expense account
+            if (purchaseInvoice.DiscountAmount > 0)
             {
-                var taxInputAccount = await GetDefaultTaxInputAccount(purchaseInvoice.TenantId);
-                if (taxInputAccount == null)
+                var discountAccount = await GetPurchaseDiscountAccount(purchaseInvoice.TenantId);
+                if (discountAccount != null)
                 {
-                    throw new InvalidOperationException($"Tax input account not configured for tenant {purchaseInvoice.TenantId}");
+                    entries.Add(new LedgerEntry
+                    {
+                        TenantId = purchaseInvoice.TenantId,
+                        VoucherId = purchaseInvoice.Oid,
+                        AccountId = discountAccount.Oid,
+                        EntryType = EntryType.Credit,
+                        Amount = purchaseInvoice.DiscountAmount,
+                        EntryDate = purchaseInvoice.VoucherDate,
+                        EntryNumber = purchaseInvoice.Number,
+                        Description = $"Purchase Discount - {purchaseInvoice.Number}",
+                        Reference = purchaseInvoice.Number,
+                        IsReconciled = false
+                    });
+                }
+                else
+                {
+                    logger.LogWarning("Purchase discount account not configured for tenant {TenantId}. Discount amount {DiscountAmount} not posted separately.",
+                        purchaseInvoice.TenantId, purchaseInvoice.DiscountAmount);
+                }
+            }
+
+            // 3. Debit SGST Input Account (if SGST exists) - Input tax credit
+            if (purchaseInvoice.SGSTAmount > 0)
+            {
+                var sgstInputAccount = await GetSGSTInputAccount(purchaseInvoice.TenantId);
+                if (sgstInputAccount == null)
+                {
+                    throw new InvalidOperationException($"SGST input account not configured for tenant {purchaseInvoice.TenantId}");
                 }
 
                 entries.Add(new LedgerEntry
                 {
                     TenantId = purchaseInvoice.TenantId,
                     VoucherId = purchaseInvoice.Oid,
-                    AccountId = taxInputAccount.Oid,
+                    AccountId = sgstInputAccount.Oid,
                     EntryType = EntryType.Debit,
-                    Amount = purchaseInvoice.TaxAmount,
+                    Amount = purchaseInvoice.SGSTAmount,
                     EntryDate = purchaseInvoice.VoucherDate,
                     EntryNumber = purchaseInvoice.Number,
-                    Description = $"Input Tax - {purchaseInvoice.Number}",
+                    Description = $"SGST Input - {purchaseInvoice.Number}",
                     Reference = purchaseInvoice.Number,
                     IsReconciled = false
                 });
             }
 
-            // Credit Vendor Account (Liability increases)
+            // 4. Debit CGST Input Account (if CGST exists) - Input tax credit
+            if (purchaseInvoice.CGSTAmount > 0)
+            {
+                var cgstInputAccount = await GetCGSTInputAccount(purchaseInvoice.TenantId);
+                if (cgstInputAccount == null)
+                {
+                    throw new InvalidOperationException($"CGST input account not configured for tenant {purchaseInvoice.TenantId}");
+                }
+
+                entries.Add(new LedgerEntry
+                {
+                    TenantId = purchaseInvoice.TenantId,
+                    VoucherId = purchaseInvoice.Oid,
+                    AccountId = cgstInputAccount.Oid,
+                    EntryType = EntryType.Debit,
+                    Amount = purchaseInvoice.CGSTAmount,
+                    EntryDate = purchaseInvoice.VoucherDate,
+                    EntryNumber = purchaseInvoice.Number,
+                    Description = $"CGST Input - {purchaseInvoice.Number}",
+                    Reference = purchaseInvoice.Number,
+                    IsReconciled = false
+                });
+            }
+
+            // 5. Debit IGST Input Account (if IGST exists) - Input tax credit
+            if (purchaseInvoice.IGSTAmount > 0)
+            {
+                var igstInputAccount = await GetIGSTInputAccount(purchaseInvoice.TenantId);
+                if (igstInputAccount == null)
+                {
+                    throw new InvalidOperationException($"IGST input account not configured for tenant {purchaseInvoice.TenantId}");
+                }
+
+                entries.Add(new LedgerEntry
+                {
+                    TenantId = purchaseInvoice.TenantId,
+                    VoucherId = purchaseInvoice.Oid,
+                    AccountId = igstInputAccount.Oid,
+                    EntryType = EntryType.Debit,
+                    Amount = purchaseInvoice.IGSTAmount,
+                    EntryDate = purchaseInvoice.VoucherDate,
+                    EntryNumber = purchaseInvoice.Number,
+                    Description = $"IGST Input - {purchaseInvoice.Number}",
+                    Reference = purchaseInvoice.Number,
+                    IsReconciled = false
+                });
+            }
+
+            // Fallback: If no GST components but TaxAmount exists (legacy support)
+            if (purchaseInvoice.TaxAmount > 0 && purchaseInvoice.SGSTAmount == 0 && purchaseInvoice.CGSTAmount == 0 && purchaseInvoice.IGSTAmount == 0)
+            {
+                var taxInputAccount = await GetDefaultTaxInputAccount(purchaseInvoice.TenantId);
+                if (taxInputAccount != null)
+                {
+                    entries.Add(new LedgerEntry
+                    {
+                        TenantId = purchaseInvoice.TenantId,
+                        VoucherId = purchaseInvoice.Oid,
+                        AccountId = taxInputAccount.Oid,
+                        EntryType = EntryType.Debit,
+                        Amount = purchaseInvoice.TaxAmount,
+                        EntryDate = purchaseInvoice.VoucherDate,
+                        EntryNumber = purchaseInvoice.Number,
+                        Description = $"Input Tax - {purchaseInvoice.Number}",
+                        Reference = purchaseInvoice.Number,
+                        IsReconciled = false
+                    });
+                }
+            }
+
+            // 6. Credit Vendor Account (Liability increases) - Full invoice amount
             entries.Add(new LedgerEntry
             {
                 TenantId = purchaseInvoice.TenantId,
@@ -261,8 +479,20 @@ public class LedgerPostingService(
             });
 
             await context.LedgerEntries.AddRangeAsync(entries);
-            logger.LogInformation("Successfully posted {EntryCount} ledger entries for Purchase Invoice {InvoiceNumber}",
-                entries.Count, purchaseInvoice.Number);
+
+            // Validate entries balance
+            var totalDebits = entries.Where(e => e.EntryType == EntryType.Debit).Sum(e => e.Amount);
+            var totalCredits = entries.Where(e => e.EntryType == EntryType.Credit).Sum(e => e.Amount);
+
+            if (totalDebits != totalCredits)
+            {
+                logger.LogError("Purchase Invoice {InvoiceNumber} ledger entries do not balance. Debits: {Debits}, Credits: {Credits}",
+                    purchaseInvoice.Number, totalDebits, totalCredits);
+                throw new InvalidOperationException($"Ledger entries for purchase invoice {purchaseInvoice.Number} do not balance. Debits: {totalDebits}, Credits: {totalCredits}");
+            }
+
+            logger.LogInformation("Successfully posted {EntryCount} ledger entries for Purchase Invoice {InvoiceNumber}. Debits: {Debits}, Credits: {Credits}",
+                entries.Count, purchaseInvoice.Number, totalDebits, totalCredits);
         }
         catch (Exception ex)
         {

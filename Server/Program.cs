@@ -118,6 +118,10 @@ builder.Services.AddScoped<ContractCoverageService>();
 builder.Services.AddScoped<QuotePdfService>();
 builder.Services.AddScoped<InvoicePdfService>();
 
+// Register GST Report services
+builder.Services.AddScoped<GSTR1ReportService>();
+builder.Services.AddScoped<GSTR3BReportService>();
+
 builder.Services.AddAuthentication();
 builder.Services.ConfigureApplicationCookie(options =>
 {

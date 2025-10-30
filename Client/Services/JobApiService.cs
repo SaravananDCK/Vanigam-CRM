@@ -39,4 +39,66 @@ public class JobApiService(
             };
         }
     }
+
+    public async Task<Job?> BulkSaveJobWithMaterialsAsync(JobBulkSaveDTO jobData)
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated == true)
+        {
+            navigationManager.NavigateTo("/authentication/login");
+            return null;
+        }
+
+        try
+        {
+            var json = JsonSerializer.Serialize(jobData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync($"odata/VanigamAccountingService/jobs/bulk-save", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<Job>(responseContent, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"Failed to save job: {errorMessage}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException($"Network error: {ex.Message}");
+        }
+    }
+
+    public async Task<List<MaterialUsageDTO>> GetMaterialsForEditingAsync(Guid jobId)
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated == true)
+        {
+            navigationManager.NavigateTo("/authentication/login");
+            return new List<MaterialUsageDTO>();
+        }
+
+        try
+        {
+            var response = await httpClient.GetAsync($"api/job/{jobId}/materials-for-editing");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<MaterialUsageDTO>>(responseContent, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) ?? new List<MaterialUsageDTO>();
+            }
+            else
+            {
+                throw new InvalidOperationException($"Failed to load materials: {response.StatusCode}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException($"Network error: {ex.Message}");
+        }
+    }
 }

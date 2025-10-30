@@ -14,7 +14,7 @@ public class PurchaseInvoiceApiService(
     IConfiguration configuration)
     : BaseApiService<PurchaseInvoice>(navigationManager, httpClient, authenticationStateProvider, configuration, nameof(VanigamAccountingDbContext.PurchaseInvoices))
 {
-    public async Task<PurchaseInvoice?> BulkSaveInvoiceWithItemsAsync(PurchaseInvoiceBulkSaveDTO invoiceData)
+    public async Task<PurchaseInvoice?> BulkSavePurchaseInvoiceWithItemsAsync(PurchaseInvoiceBulkSaveDTO purchaseInvoiceData)
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         if (!authState.User.Identity?.IsAuthenticated == true)
@@ -25,10 +25,10 @@ public class PurchaseInvoiceApiService(
 
         try
         {
-            var json = JsonSerializer.Serialize(invoiceData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var json = JsonSerializer.Serialize(purchaseInvoiceData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync($"odata/VanigamAccountingService/{nameof(VanigamAccountingDbContext.PurchaseInvoices)}/bulk-save", content);
+            var response = await httpClient.PostAsync($"odata/VanigamAccountingService/purchaseinvoices/bulk-save", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -47,7 +47,7 @@ public class PurchaseInvoiceApiService(
         }
     }
 
-    public async Task<List<PurchaseInvoiceItemDTO>> GetInvoiceItemsForEditingAsync(Guid invoiceId)
+    public async Task<List<PurchaseInvoiceItemDTO>> GetPurchaseInvoiceItemsForEditingAsync(Guid purchaseInvoiceId)
     {
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         if (!authState.User.Identity?.IsAuthenticated == true)
@@ -58,7 +58,7 @@ public class PurchaseInvoiceApiService(
 
         try
         {
-            var response = await httpClient.GetAsync($"api/purchaseInvoice/{invoiceId}/items-for-editing");
+            var response = await httpClient.GetAsync($"api/purchaseinvoice/{purchaseInvoiceId}/items-for-editing");
 
             if (response.IsSuccessStatusCode)
             {

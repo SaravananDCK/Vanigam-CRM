@@ -18,6 +18,13 @@ public class InvoiceBulkSaveDTO
     public decimal TotalAmount { get; set; }
     public decimal DiscountAmount { get; set; }
     public double DiscountPercentage { get; set; }
+    public decimal CGSTAmount { get; set; } = 0;
+
+    public decimal SGSTAmount { get; set; } = 0;
+
+    public decimal IGSTAmount { get; set; } = 0;
+
+    public decimal CessAmount { get; set; } = 0;
 
     public decimal SubTotal { get; set; }
 
@@ -42,6 +49,13 @@ public class InvoiceItemDTO
     public decimal DiscountAmount { get; set; } = 0;
     public decimal? TaxAmount { get; set; }
     public Guid? TaxCodeId { get; set; }
+
+    // GST component rates from TaxCode (for calculation purposes)
+    public double CGSTRate { get; set; } = 0;
+    public double SGSTRate { get; set; } = 0;
+    public double IGSTRate { get; set; } = 0;
+    public double CessRate { get; set; } = 0;
+
     public decimal Total => (decimal)Quantity * UnitPrice;
     public decimal TotalIncTax => Total + (TaxAmount ?? 0) - DiscountAmount;
     // For UI display purposes

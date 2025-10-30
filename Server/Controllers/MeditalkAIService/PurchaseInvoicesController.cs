@@ -21,13 +21,12 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
     {
         [HttpPost("bulk-save")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<PurchaseInvoice>> BulkSaveInvoiceWithPayments([FromBody] PurchaseInvoiceBulkSaveDTO invoiceData)
+        public async Task<ActionResult<PurchaseInvoice>> BulkSavePurchaseInvoiceWithItems([FromBody] PurchaseInvoiceBulkSaveDTO purchaseInvoiceData)
         {
             try
             {
-                // Use service method which ensures proper ledger posting
-                var savedInvoice = await service.BulkSaveInvoiceWithItems(invoiceData);
-                return Ok(savedInvoice);
+                var savedPurchaseInvoice = await service.BulkSavePurchaseInvoiceWithItems(purchaseInvoiceData);
+                return Ok(savedPurchaseInvoice);
             }
             catch (InvalidOperationException ex)
             {
@@ -39,15 +38,16 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
             }
         }
 
-        [HttpGet("/api/purchaseInvoice/{invoiceId}/items-for-editing")]
+        [HttpGet("/api/purchaseinvoice/{purchaseInvoiceId}/items-for-editing")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<List<PurchaseInvoiceItemDTO>>> GetInvoiceItemsForEditing(Guid invoiceId)
+        public async Task<ActionResult<List<PurchaseInvoiceItemDTO>>> GetPurchaseInvoiceItemsForEditing(Guid purchaseInvoiceId)
         {
             try
             {
                 var items = await context.PurchaseInvoiceItems
-                    .Where(i => i.VoucherId == invoiceId)
+                    .Where(i => i.VoucherId == purchaseInvoiceId)
                     .Include(i => i.Item)
+                    .Include(i => i.TaxCode)
                     .Select(i => new PurchaseInvoiceItemDTO
                     {
                         Oid = i.Oid,
@@ -56,6 +56,11 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         UnitPrice = i.UnitPrice,
                         DiscountAmount = i.DiscountAmount,
                         TaxAmount = i.TaxAmount,
+                        TaxCodeId = i.TaxCodeId,
+                        CGSTRate = i.TaxCode != null ? i.TaxCode.CGSTRate : 0,
+                        SGSTRate = i.TaxCode != null ? i.TaxCode.SGSTRate : 0,
+                        IGSTRate = i.TaxCode != null ? i.TaxCode.IGSTRate : 0,
+                        CessRate = i.TaxCode != null ? i.TaxCode.CessRate : 0,
                         InventoryItemName = i.Item != null ? i.Item.Name : null
                     })
                     .ToListAsync();

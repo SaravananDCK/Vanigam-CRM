@@ -6,132 +6,132 @@ using Vanigam.CRM.Objects.OData;
 
 namespace Vanigam.CRM.Client.Components;
 
-public partial class EditablePurchaseInvoiceItems
+public partial class EditableJobMaterials
 {
     private Item Item { get; set; }
-    [Parameter] public PurchaseInvoice PurchaseInvoice { get; set; }
-    [Parameter] public List<PurchaseInvoiceItemDTO> Items { get; set; } = new();
-    [Parameter] public EventCallback<List<PurchaseInvoiceItemDTO>> ItemsChanged { get; set; }
+    [Parameter] public Job Job { get; set; }
+    [Parameter] public List<MaterialUsageDTO> Materials { get; set; } = new();
+    [Parameter] public EventCallback<List<MaterialUsageDTO>> MaterialsChanged { get; set; }
     [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
     [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
     [Parameter] public EventCallback<double> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
     [Parameter] public EventCallback<decimal> SubTotalChanged { get; set; }
-    private RadzenDataGrid<PurchaseInvoiceItemDTO> itemsGrid = null!;
-    private PurchaseInvoiceItemDTO itemBeingEdited;
-    public decimal SubTotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
-    public decimal TaxAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount) ?? 0;
-    public decimal TotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
+    private RadzenDataGrid<MaterialUsageDTO> materialsGrid = null!;
+    private MaterialUsageDTO materialBeingEdited;
+    public decimal SubTotalAmount => Materials?.Where(m => !m.IsDeleted).Sum(m => m.Total) ?? 0;
+    public decimal TaxAmount => Materials?.Where(m => !m.IsDeleted).Sum(m => m.TaxAmount) ?? 0;
+    public decimal TotalAmount => Materials?.Where(m => !m.IsDeleted).Sum(m => m.Total) ?? 0;
     public double DiscountPercentage { get; set; } = 0;
     public decimal DiscountAmt { get; set; } = 0;
     public decimal GrandTotalAmount { get; set; } = 0;
 
     protected override void OnInitialized()
     {
-        if (PurchaseInvoice != null)
+        if (Job != null)
         {
-            DiscountPercentage = (double)PurchaseInvoice.DiscountPercent;
-            DiscountAmt = PurchaseInvoice.DiscountAmount;
-            GrandTotalAmount = PurchaseInvoice.TotalAmount;
+            DiscountPercentage = (double)Job.DiscountPercent;
+            DiscountAmt = Job.DiscountAmount;
+            GrandTotalAmount = Job.TotalAmount;
         }
     }
 
-    private async Task AddNewItem()
+    private async Task AddNewMaterial()
     {
-        var newItem = new PurchaseInvoiceItemDTO
+        var newMaterial = new MaterialUsageDTO
         {
             Quantity = 1,
             UnitPrice = 0
         };
 
-        Items.Add(newItem);
+        Materials.Add(newMaterial);
         await NotifyChanges();
 
-        // Start editing the new item immediately
+        // Start editing the new material immediately
         await Task.Delay(100); // Small delay to ensure the grid is updated
-        await EditRow(newItem);
+        await EditRow(newMaterial);
     }
 
-    private async Task EditRow(PurchaseInvoiceItemDTO item)
+    private async Task EditRow(MaterialUsageDTO material)
     {
-        itemBeingEdited = item;
-        await itemsGrid.EditRow(item);
+        materialBeingEdited = material;
+        await materialsGrid.EditRow(material);
     }
 
-    private async Task SaveRow(PurchaseInvoiceItemDTO item)
+    private async Task SaveRow(MaterialUsageDTO material)
     {
-        await itemsGrid.UpdateRow(item);
+        await materialsGrid.UpdateRow(material);
     }
 
-    private async Task CancelEdit(PurchaseInvoiceItemDTO item)
+    private async Task CancelEdit(MaterialUsageDTO material)
     {
-        itemsGrid.CancelEditRow(item);
+        materialsGrid.CancelEditRow(material);
 
-        // If it's a new item and user cancels, remove it
-        if (item.IsNew)
+        // If it's a new material and user cancels, remove it
+        if (material.IsNew)
         {
-            Items.Remove(item);
+            Materials.Remove(material);
             await NotifyChanges();
         }
     }
 
-    private async Task OnRowUpdate(PurchaseInvoiceItemDTO item)
+    private async Task OnRowUpdate(MaterialUsageDTO material)
     {
-        CalculateTotal(item);
+        CalculateTotal(material);
         await NotifyChanges();
     }
 
-    private async Task DeleteItem(PurchaseInvoiceItemDTO item)
+    private async Task DeleteMaterial(MaterialUsageDTO material)
     {
-        if (item.IsNew)
+        if (material.IsNew)
         {
-            Items.Remove(item);
+            Materials.Remove(material);
         }
         else
         {
-            item.IsDeleted = true;
+            material.IsDeleted = true;
         }
 
         await NotifyChanges();
     }
 
-    private async Task OnInventoryItemChanged(PurchaseInvoiceItemDTO item, object value)
+    private async Task OnInventoryItemChanged(MaterialUsageDTO material, object value)
     {
         if (value is Guid inventoryItemId)
         {
-            item.InventoryItemId = inventoryItemId;
+            material.InventoryItemId = inventoryItemId;
 
             if (value is Guid id)
             {
                 Item = await ItemApiService.GetByOid(oid: id, expand: GetExpandString());
                 if (Item != null)
                 {
-                    item.InventoryItemName = Item.Name;
-                    item.UnitPrice = Item.UnitPrice;
-                    item.TaxCodeId = Item.TaxCodeId;
+                    material.InventoryItemName = Item.Name;
+                    material.UnitPrice = Item.UnitPrice;
+                    material.TaxCodeId = Item.TaxCodeId;
 
                     // Calculate GST breakdown based on TaxCode rates
                     if (Item.TaxCode != null)
                     {
-                        item.CGSTRate = Item.TaxCode.CGSTRate;
-                        item.SGSTRate = Item.TaxCode.SGSTRate;
-                        item.IGSTRate = Item.TaxCode.IGSTRate;
-                        item.CessRate = Item.TaxCode.CessRate;
+                        material.CGSTRate = Item.TaxCode.CGSTRate;
+                        material.SGSTRate = Item.TaxCode.SGSTRate;
+                        material.IGSTRate = Item.TaxCode.IGSTRate;
+                        material.CessRate = Item.TaxCode.CessRate;
 
                         // Total tax is the sum of all GST components
                         var totalTaxRate = Item.TaxCode.CGSTRate + Item.TaxCode.SGSTRate +
                                          Item.TaxCode.IGSTRate + Item.TaxCode.CessRate;
-                        item.TaxAmount = ((decimal)totalTaxRate / 100) * Item.UnitPrice;
+                        material.TaxAmount = ((decimal)totalTaxRate / 100) * Item.UnitPrice;
                     }
 
-                    if (PurchaseInvoice.DiscountType == DiscountType.Percentage)
+                    if (Job.DiscountType == DiscountType.Percentage)
                     {
                         await CalculateDiscount((decimal)DiscountPercentage);
                     }
                     else
                     {
-                        CalculateTotal(item);
+                        CalculateTotal(material);
                     }
                 }
             }
@@ -147,24 +147,24 @@ public partial class EditablePurchaseInvoiceItems
             .Build();
     }
 
-    private void CalculateTotal(PurchaseInvoiceItemDTO item)
+    private void CalculateTotal(MaterialUsageDTO material)
     {
         // Total is calculated automatically in the DTO property
         if (Item?.TaxCode != null)
         {
             // Calculate tax on taxable amount (after discount)
-            var taxableAmount = item.Total - item.DiscountAmount;
+            var taxableAmount = material.Total - material.DiscountAmount;
             var totalTaxRate = Item.TaxCode.CGSTRate + Item.TaxCode.SGSTRate +
                              Item.TaxCode.IGSTRate + Item.TaxCode.CessRate;
-            item.TaxAmount = ((decimal)totalTaxRate / 100) * taxableAmount;
+            material.TaxAmount = ((decimal)totalTaxRate / 100) * taxableAmount;
         }
         GrandTotalAmount = Math.Round(SubTotalAmount + TaxAmount - DiscountAmt);
     }
 
     private async Task CalculateDiscount(decimal discount)
     {
-        var items = Items.Where(i => !i.IsDeleted);
-        if (PurchaseInvoice.DiscountType == DiscountType.Amount)
+        var materials = Materials.Where(m => !m.IsDeleted);
+        if (Job.DiscountType == DiscountType.Amount)
         {
             DiscountPercentage = 0;
         }
@@ -172,20 +172,20 @@ public partial class EditablePurchaseInvoiceItems
         {
             DiscountAmt = SubTotalAmount * (discount / 100);
         }
-        if (items.Any())
+        if (materials.Any())
         {
-            var itemCounts = items.Count();
-            foreach (var item in items)
+            var materialCounts = materials.Count();
+            foreach (var material in materials)
             {
-                if (PurchaseInvoice.DiscountType == DiscountType.Amount)
+                if (Job.DiscountType == DiscountType.Amount)
                 {
-                    item.DiscountAmount = DiscountAmt / itemCounts;
+                    material.DiscountAmount = DiscountAmt / materialCounts;
                 }
                 else
                 {
-                    item.DiscountAmount = item.Total * ((decimal)DiscountPercentage / 100);
+                    material.DiscountAmount = material.Total * ((decimal)DiscountPercentage / 100);
                 }
-                CalculateTotal(item);
+                CalculateTotal(material);
             }
         }
         await NotifyChanges();
@@ -194,12 +194,12 @@ public partial class EditablePurchaseInvoiceItems
     private async Task NotifyChanges()
     {
         await SubTotalChanged.InvokeAsync(SubTotalAmount);
-        await ItemsChanged.InvokeAsync(Items);
+        await MaterialsChanged.InvokeAsync(Materials);
         await TotalTaxChanged.InvokeAsync(TaxAmount);
         await DiscountChanged.InvokeAsync(DiscountAmt);
         await DiscountPercentageChanged.InvokeAsync(DiscountPercentage);
         await TotalAmountChanged.InvokeAsync(GrandTotalAmount);
-        await DiscountTypeChanged.InvokeAsync(PurchaseInvoice.DiscountType);
+        await DiscountTypeChanged.InvokeAsync(Job.DiscountType);
         StateHasChanged();
     }
 }

@@ -1,0 +1,273 @@
+@page "/gst-reports"
+@using Vanigam.CRM.Objects.Entities
+@attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
+@inject IStringLocalizer<GSTReports> Localizer
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+
+<PageTitle>@Localizer["GSTReports"]</PageTitle>
+
+<RadzenStack Gap="1rem">
+    <RadzenText TextStyle="TextStyle.H4">@Localizer["GSTReports"]</RadzenText>
+
+    @* Period Selection *@
+    <RadzenCard>
+        <RadzenStack Gap="1rem">
+            <RadzenText TextStyle="TextStyle.H6">@Localizer["SelectPeriod"]</RadzenText>
+
+            <RadzenRow>
+                <RadzenColumn SizeMD="4">
+                    <RadzenLabel Text=@Localizer["Month"] />
+                    <RadzenDropDown @bind-Value="@SelectedMonth"
+                                    Data="@Months"
+                                    TextProperty="Text"
+                                    ValueProperty="Value"
+                                    class="w-100" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="4">
+                    <RadzenLabel Text=@Localizer["Year"] />
+                    <RadzenDropDown @bind-Value="@SelectedYear"
+                                    Data="@Years"
+                                    class="w-100" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="4">
+                    <RadzenLabel Text=@Localizer["QuarterOptional"] />
+                    <RadzenDropDown @bind-Value="@SelectedQuarter"
+                                    Data="@Quarters"
+                                    TextProperty="Text"
+                                    ValueProperty="Value"
+                                    AllowClear="true"
+                                    Placeholder=@Localizer["SelectQuarter"]
+                                    class="w-100" />
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+    </RadzenCard>
+
+    @* Report Cards *@
+    <RadzenRow>
+        @* GSTR-1 Report *@
+        <RadzenColumn SizeMD="4">
+            <RadzenCard class="report-card">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        <RadzenIcon Icon="description" />
+                        @Localizer["GSTR1Report"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        @Localizer["GSTR1Description"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Caption" class="rz-mt-2">
+                        <strong>@Localizer["DueDate"]:</strong> @Localizer["11thOfNextMonth"]
+                    </RadzenText>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="rz-mt-3">
+                        <RadzenButton Text=@Localizer["ViewReport"]
+                                      Icon="visibility"
+                                      ButtonStyle="ButtonStyle.Primary"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ViewGSTR1Report())"
+                                      IsBusy="@IsGSTR1Loading" />
+                        <RadzenButton Text=@Localizer["ExportJSON"]
+                                      Icon="download"
+                                      ButtonStyle="ButtonStyle.Secondary"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ExportGSTR1Json())"
+                                      IsBusy="@IsGSTR1Loading" />
+                        <RadzenButton Text=@Localizer["ExportExcel"]
+                                      Icon="grid_on"
+                                      ButtonStyle="ButtonStyle.Light"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ExportGSTR1Excel())"
+                                      IsBusy="@IsGSTR1Loading" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+
+        @* GSTR-3B Report *@
+        <RadzenColumn SizeMD="4">
+            <RadzenCard class="report-card">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        <RadzenIcon Icon="summarize" />
+                        @Localizer["GSTR3BReport"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        @Localizer["GSTR3BDescription"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Caption" class="rz-mt-2">
+                        <strong>@Localizer["DueDate"]:</strong> @Localizer["20thOfNextMonth"]
+                    </RadzenText>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="rz-mt-3">
+                        <RadzenButton Text=@Localizer["ViewReport"]
+                                      Icon="visibility"
+                                      ButtonStyle="ButtonStyle.Primary"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ViewGSTR3BReport())"
+                                      IsBusy="@IsGSTR3BLoading" />
+                        <RadzenButton Text=@Localizer["ExportJSON"]
+                                      Icon="download"
+                                      ButtonStyle="ButtonStyle.Secondary"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ExportGSTR3BJson())"
+                                      IsBusy="@IsGSTR3BLoading" />
+                        <RadzenButton Text=@Localizer["ExportPDF"]
+                                      Icon="picture_as_pdf"
+                                      ButtonStyle="ButtonStyle.Light"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ExportGSTR3BPdf())"
+                                      IsBusy="@IsGSTR3BLoading" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+
+        @* HSN Summary Report *@
+        <RadzenColumn SizeMD="4">
+            <RadzenCard class="report-card">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        <RadzenIcon Icon="category" />
+                        @Localizer["HSNSummaryReport"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        @Localizer["HSNSummaryDescription"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Caption" class="rz-mt-2">
+                        <strong>@Localizer["RequiredFor"]:</strong> @Localizer["GSTR1AndGSTR9"]
+                    </RadzenText>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="rz-mt-3">
+                        <RadzenButton Text=@Localizer["ViewReport"]
+                                      Icon="visibility"
+                                      ButtonStyle="ButtonStyle.Primary"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ViewHSNSummary())"
+                                      IsBusy="@IsHSNLoading" />
+                        <RadzenButton Text=@Localizer["ExportExcel"]
+                                      Icon="grid_on"
+                                      ButtonStyle="ButtonStyle.Secondary"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ExportHSNExcel())"
+                                      IsBusy="@IsHSNLoading" />
+                        <RadzenButton Text=@Localizer["ExportPDF"]
+                                      Icon="picture_as_pdf"
+                                      ButtonStyle="ButtonStyle.Light"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ExportHSNPdf())"
+                                      IsBusy="@IsHSNLoading" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+
+    @* Additional Reports Row *@
+    <RadzenRow>
+        @* Tax Liability Report *@
+        <RadzenColumn SizeMD="4">
+            <RadzenCard class="report-card">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        <RadzenIcon Icon="account_balance" />
+                        @Localizer["TaxLiabilityReport"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        @Localizer["TaxLiabilityDescription"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Caption" class="rz-mt-2">
+                        <strong>@Localizer["Shows"]:</strong> @Localizer["CGSTSGSTIGSTBreakdown"]
+                    </RadzenText>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="rz-mt-3">
+                        <RadzenButton Text=@Localizer["ViewReport"]
+                                      Icon="visibility"
+                                      ButtonStyle="ButtonStyle.Primary"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ViewTaxLiabilityReport())"
+                                      IsBusy="@IsTaxLiabilityLoading" />
+                        <RadzenButton Text=@Localizer["ExportExcel"]
+                                      Icon="grid_on"
+                                      ButtonStyle="ButtonStyle.Light"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ExportTaxLiabilityExcel())"
+                                      IsBusy="@IsTaxLiabilityLoading" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+
+        @* Input Tax Credit Report *@
+        <RadzenColumn SizeMD="4">
+            <RadzenCard class="report-card">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        <RadzenIcon Icon="attach_money" />
+                        @Localizer["ITCReport"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        @Localizer["ITCDescription"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Caption" class="rz-mt-2">
+                        <strong>@Localizer["Shows"]:</strong> @Localizer["InputTaxCreditAvailable"]
+                    </RadzenText>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="rz-mt-3">
+                        <RadzenButton Text=@Localizer["ViewReport"]
+                                      Icon="visibility"
+                                      ButtonStyle="ButtonStyle.Primary"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ViewITCReport())"
+                                      IsBusy="@IsITCLoading" />
+                        <RadzenButton Text=@Localizer["ExportExcel"]
+                                      Icon="grid_on"
+                                      ButtonStyle="ButtonStyle.Light"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ExportITCExcel())"
+                                      IsBusy="@IsITCLoading" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+
+        @* GSTR-9 Annual Return *@
+        <RadzenColumn SizeMD="4">
+            <RadzenCard class="report-card">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenText TextStyle="TextStyle.H6">
+                        <RadzenIcon Icon="event_note" />
+                        @Localizer["GSTR9Report"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2">
+                        @Localizer["GSTR9Description"]
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Caption" class="rz-mt-2">
+                        <strong>@Localizer["DueDate"]:</strong> @Localizer["31stDecember"]
+                    </RadzenText>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="rz-mt-3">
+                        <RadzenButton Text=@Localizer["ViewReport"]
+                                      Icon="visibility"
+                                      ButtonStyle="ButtonStyle.Primary"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ViewGSTR9Report())"
+                                      IsBusy="@IsGSTR9Loading" />
+                        <RadzenButton Text=@Localizer["ExportExcel"]
+                                      Icon="grid_on"
+                                      ButtonStyle="ButtonStyle.Light"
+                                      Size="ButtonSize.Small"
+                                      Click="@(() => ExportGSTR9Excel())"
+                                      IsBusy="@IsGSTR9Loading" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>
+
+<style>
+    .report-card {
+        height: 100%;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .report-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>
