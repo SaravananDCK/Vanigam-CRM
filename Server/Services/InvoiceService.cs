@@ -166,6 +166,10 @@ public class InvoiceService(
                 invoice.TotalAmount = invoiceData.TotalAmount;
                 invoice.SubTotal = invoiceData.SubTotal;
                 invoice.TaxAmount = invoiceData.TaxAmount;
+                invoice.CGSTAmount = invoiceData.CGSTAmount;
+                invoice.IGSTAmount = invoiceData.IGSTAmount;
+                invoice.SGSTAmount = invoiceData.SGSTAmount;
+                invoice.CessAmount = invoiceData.CessAmount;
                 invoice.VoucherDate = invoiceData.VoucherDate;
                 invoice.DiscountAmount = invoiceData.DiscountAmount;
                 invoice.DiscountPercent = invoiceData.DiscountPercentage;
@@ -207,6 +211,10 @@ public class InvoiceService(
                     TotalAmount = invoiceData.TotalAmount,
                     SubTotal = invoiceData.SubTotal,
                     TaxAmount = invoiceData.TaxAmount,
+                    CGSTAmount = invoiceData.CGSTAmount,
+                    SGSTAmount = invoiceData.SGSTAmount,
+                    IGSTAmount = invoiceData.IGSTAmount,
+                    CessAmount = invoiceData.CessAmount,
                     VoucherDate = invoiceData.VoucherDate,
                     DiscountAmount = invoiceData.DiscountAmount,
                     DiscountPercent = invoiceData.DiscountPercentage,

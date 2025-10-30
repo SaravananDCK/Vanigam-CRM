@@ -1,0 +1,193 @@
+@using Vanigam.CRM.Objects.DTOs
+@using Vanigam.CRM.Client.Services
+@inject IStringLocalizer<GSTR1ReportDialog> Localizer
+@inject GSTReportsApiService GSTReportsApiService
+@inject NotificationService NotificationService
+@inject IJSRuntime JSRuntime
+
+<RadzenStack Gap="1rem">
+    <RadzenText TextStyle="TextStyle.H5">
+        @Localizer["GSTR1Report"] - @GetPeriodDisplay()
+    </RadzenText>
+
+    <RadzenTabs>
+        <Tabs>
+            @* B2B Invoices Tab *@
+            <RadzenTabsItem Text="@Localizer["B2BInvoices"]">
+                <RadzenStack Gap="0.5rem" class="rz-p-4">
+                    <RadzenText TextStyle="TextStyle.Body1">
+                        @Localizer["B2BInvoicesDescription"]
+                    </RadzenText>
+                    <RadzenDataGrid Data="@B2BInvoices" TItem="B2BInvoice" AllowPaging="true" PageSize="20">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="InvoiceNumber" Title=@Localizer["InvoiceNumber"] />
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="InvoiceDate" Title=@Localizer["InvoiceDate"] FormatString="{0:dd/MM/yyyy}" />
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="GSTIN" Title=@Localizer["CustomerGSTIN"] />
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="LegalName" Title=@Localizer["CustomerName"] />
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="PlaceOfSupply" Title=@Localizer["PlaceOfSupply"] />
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="TaxableValue" Title=@Localizer["TaxableValue"] FormatString="{0:N2}" />
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="CGSTAmount" Title=@Localizer["CGST"] FormatString="{0:N2}" />
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="SGSTAmount" Title=@Localizer["SGST"] FormatString="{0:N2}" />
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="IGSTAmount" Title=@Localizer["IGST"] FormatString="{0:N2}" />
+                            <RadzenDataGridColumn TItem="B2BInvoice" Property="InvoiceValue" Title=@Localizer["TotalValue"] FormatString="{0:N2}" />
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenStack>
+            </RadzenTabsItem>
+
+            @* HSN Summary Tab *@
+            <RadzenTabsItem Text="@Localizer["HSNSummary"]">
+                <RadzenStack Gap="0.5rem" class="rz-p-4">
+                    <RadzenText TextStyle="TextStyle.Body1">
+                        @Localizer["HSNSummaryDescription"]
+                    </RadzenText>
+                    <RadzenDataGrid Data="@HSNSummaryData" TItem="HSNSummary" AllowPaging="true" PageSize="20">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="HSNSummary" Property="HSNCode" Title=@Localizer["HSNCode"] />
+                            <RadzenDataGridColumn TItem="HSNSummary" Property="Description" Title=@Localizer["Description"] />
+                            <RadzenDataGridColumn TItem="HSNSummary" Property="UQC" Title=@Localizer["UQC"] />
+                            <RadzenDataGridColumn TItem="HSNSummary" Property="TotalQuantity" Title=@Localizer["Quantity"] FormatString="{0:N2}" />
+                            <RadzenDataGridColumn TItem="HSNSummary" Property="TaxableValue" Title=@Localizer["TaxableValue"] FormatString="{0:N2}" />
+                            <RadzenDataGridColumn TItem="HSNSummary" Property="CGSTAmount" Title=@Localizer["CGST"] FormatString="{0:N2}" />
+                            <RadzenDataGridColumn TItem="HSNSummary" Property="SGSTAmount" Title=@Localizer["SGST"] FormatString="{0:N2}" />
+                            <RadzenDataGridColumn TItem="HSNSummary" Property="IGSTAmount" Title=@Localizer["IGST"] FormatString="{0:N2}" />
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenStack>
+            </RadzenTabsItem>
+
+            @* Summary Tab *@
+            <RadzenTabsItem Text="@Localizer["Summary"]">
+                <RadzenStack Gap="1rem" class="rz-p-4">
+                    <RadzenCard>
+                        <RadzenRow>
+                            <RadzenColumn SizeMD="6">
+                                <RadzenText TextStyle="TextStyle.Subtitle1">@Localizer["TotalInvoices"]:</RadzenText>
+                                <RadzenText TextStyle="TextStyle.H6">@TotalInvoices</RadzenText>
+                            </RadzenColumn>
+                            <RadzenColumn SizeMD="6">
+                                <RadzenText TextStyle="TextStyle.Subtitle1">@Localizer["TotalTaxableValue"]:</RadzenText>
+                                <RadzenText TextStyle="TextStyle.H6">₹@TotalTaxableValue.ToString("N2")</RadzenText>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow class="rz-mt-3">
+                            <RadzenColumn SizeMD="4">
+                                <RadzenText TextStyle="TextStyle.Subtitle1">@Localizer["TotalCGST"]:</RadzenText>
+                                <RadzenText TextStyle="TextStyle.H6">₹@TotalCGST.ToString("N2")</RadzenText>
+                            </RadzenColumn>
+                            <RadzenColumn SizeMD="4">
+                                <RadzenText TextStyle="TextStyle.Subtitle1">@Localizer["TotalSGST"]:</RadzenText>
+                                <RadzenText TextStyle="TextStyle.H6">₹@TotalSGST.ToString("N2")</RadzenText>
+                            </RadzenColumn>
+                            <RadzenColumn SizeMD="4">
+                                <RadzenText TextStyle="TextStyle.Subtitle1">@Localizer["TotalIGST"]:</RadzenText>
+                                <RadzenText TextStyle="TextStyle.H6">₹@TotalIGST.ToString("N2")</RadzenText>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenCard>
+                </RadzenStack>
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
+
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" class="rz-mt-4">
+        <RadzenButton Text=@Localizer["ExportJSON"] Icon="download" ButtonStyle="ButtonStyle.Primary" Click="@ExportJson" />
+        <RadzenButton Text=@Localizer["ExportExcel"] Icon="grid_on" ButtonStyle="ButtonStyle.Secondary" Click="@ExportExcel" />
+        <RadzenButton Text=@Localizer["Close"] ButtonStyle="ButtonStyle.Light" Click="@Close" />
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    [Parameter] public int Month { get; set; }
+    [Parameter] public int Year { get; set; }
+
+    [CascadingParameter] public DialogService? DialogService { get; set; }
+
+    private GSTR1Report? Report { get; set; }
+    private List<B2BInvoice> B2BInvoices { get; set; } = new();
+    private List<HSNSummary> HSNSummaryData { get; set; } = new();
+    private bool IsLoading { get; set; } = false;
+
+    private int TotalInvoices => B2BInvoices.Count;
+    private decimal TotalTaxableValue => B2BInvoices.Sum(x => x.TaxableValue);
+    private decimal TotalCGST => B2BInvoices.Sum(x => x.CGSTAmount);
+    private decimal TotalSGST => B2BInvoices.Sum(x => x.SGSTAmount);
+    private decimal TotalIGST => B2BInvoices.Sum(x => x.IGSTAmount);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReportData();
+    }
+
+    private async Task LoadReportData()
+    {
+        IsLoading = true;
+        try
+        {
+            Report = await GSTReportsApiService.GetGSTR1ReportAsync(Month, Year);
+            if (Report != null)
+            {
+                B2BInvoices = Report.B2BInvoices;
+                HSNSummaryData = Report.HSNSummary;
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = $"Failed to load report: {ex.Message}"
+            });
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private string GetPeriodDisplay()
+    {
+        return $"{Month:D2}/{Year}";
+    }
+
+    private async Task ExportJson()
+    {
+        try
+        {
+            var url = GSTReportsApiService.GetGSTR1JsonDownloadUrl(Month, Year);
+            await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Success,
+                Summary = Localizer["Success"],
+                Detail = Localizer["JSONExportStarted"]
+            });
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Error"],
+                Detail = ex.Message
+            });
+        }
+    }
+
+    private async Task ExportExcel()
+    {
+        NotificationService.Notify(new NotificationMessage
+        {
+            Severity = NotificationSeverity.Info,
+            Summary = Localizer["ComingSoon"],
+            Detail = Localizer["ExcelExportNotYetImplemented"]
+        });
+    }
+
+    private void Close()
+    {
+        DialogService?.Close();
+    }
+}

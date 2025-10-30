@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
@@ -13,7 +16,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
         JobService service,
-        SummaryService<Job, JobStatus> summaryService, 
+        SummaryService<Job, JobStatus> summaryService,
         ILogger<JobsController> logger)
         : BaseODataServiceController<Job, JobService>(context, userManager, roleManager,
             service, null)
@@ -43,6 +46,62 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
             {
                 logger.LogError(ex, "Error getting Job status summary");
                 return BadRequest(new { Error = "Failed to retrieve status summary" });
+            }
+        }
+
+        [HttpPost("bulk-save")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<Job>> BulkSaveJobWithMaterials([FromBody] JobBulkSaveDTO jobData)
+        {
+            try
+            {
+                var savedJob = await service.BulkSaveJobWithMaterials(jobData);
+                return Ok(savedJob);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = $"Error saving job: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("/api/job/{jobId}/materials-for-editing")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<MaterialUsageDTO>>> GetMaterialsForEditing(Guid jobId)
+        {
+            try
+            {
+                var materials = await context.MaterialUsages
+                    .Where(m => m.VoucherId == jobId)
+                    .Include(m => m.Item)
+                    .Include(m => m.TaxCode)
+                    .Select(m => new MaterialUsageDTO
+                    {
+                        Oid = m.Oid,
+                        InventoryItemId = m.ItemId,
+                        Quantity = m.Quantity,
+                        UnitPrice = m.UnitPrice,
+                        DiscountAmount = m.DiscountAmount,
+                        TaxAmount = m.TaxAmount,
+                        TaxCodeId = m.TaxCodeId,
+                        CGSTRate = m.TaxCode != null ? m.TaxCode.CGSTRate : 0,
+                        SGSTRate = m.TaxCode != null ? m.TaxCode.SGSTRate : 0,
+                        IGSTRate = m.TaxCode != null ? m.TaxCode.IGSTRate : 0,
+                        CessRate = m.TaxCode != null ? m.TaxCode.CessRate : 0,
+                        InventoryItemName = m.Item != null ? m.Item.Name : null,
+                        ChargedAmount = m.ChargedAmount,
+                        WaivedAmount = m.WaivedAmount
+                    })
+                    .ToListAsync();
+
+                return Ok(materials);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error loading materials: {ex.Message}");
             }
         }
     }

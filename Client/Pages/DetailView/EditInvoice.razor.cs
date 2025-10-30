@@ -114,9 +114,31 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             var totalDiscount = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.DiscountAmount);
             var totalTax = invoiceItems.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount ?? 0);
 
+            // Calculate GST breakdown from invoice items
+            decimal cgstAmount = 0;
+            decimal sgstAmount = 0;
+            decimal igstAmount = 0;
+            decimal cessAmount = 0;
+
+            foreach (var item in invoiceItems.Where(i => !i.IsDeleted))
+            {
+                // Calculate taxable amount for this line (after discount)
+                var taxableAmount = item.Total - item.DiscountAmount;
+
+                // Calculate GST components based on rates from TaxCode
+                cgstAmount += taxableAmount * (decimal)(item.CGSTRate / 100);
+                sgstAmount += taxableAmount * (decimal)(item.SGSTRate / 100);
+                igstAmount += taxableAmount * (decimal)(item.IGSTRate / 100);
+                cessAmount += taxableAmount * (decimal)(item.CessRate / 100);
+            }
+
             CurrentObject.SubTotal = subTotal;
             CurrentObject.DiscountAmount = totalDiscount;
             CurrentObject.TaxAmount = totalTax;
+            CurrentObject.CGSTAmount = cgstAmount;
+            CurrentObject.SGSTAmount = sgstAmount;
+            CurrentObject.IGSTAmount = igstAmount;
+            CurrentObject.CessAmount = cessAmount;
             CurrentObject.TotalAmount = subTotal - totalDiscount + totalTax;
         }
 
@@ -201,6 +223,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     TotalAmount = CurrentObject.TotalAmount,
                     SubTotal = CurrentObject.SubTotal,
                     TaxAmount = CurrentObject.TaxAmount,
+                    CGSTAmount = CurrentObject.CGSTAmount,
+                    SGSTAmount = CurrentObject.SGSTAmount,
+                    IGSTAmount = CurrentObject.IGSTAmount,
+                    CessAmount = CurrentObject.CessAmount,
                     DiscountAmount = CurrentObject.DiscountAmount,
                     DiscountPercentage = CurrentObject.DiscountPercent,
                     Items = invoiceItems.Select(i => new InvoiceItemDTO
@@ -211,6 +237,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                         UnitPrice = i.UnitPrice,
                         DiscountAmount = i.DiscountAmount,
                         TaxAmount = i.TaxAmount,
+                        TaxCodeId = i.TaxCodeId,
+                        CGSTRate = i.CGSTRate,
+                        SGSTRate = i.SGSTRate,
+                        IGSTRate = i.IGSTRate,
+                        CessRate = i.CessRate,
                         IsDeleted = i.IsDeleted
                     }).ToList()
                 };

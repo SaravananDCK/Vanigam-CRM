@@ -35,6 +35,7 @@ builder.Services.AddInheritedClasses(typeof(BaseApiService<>));
 builder.Services.AddScoped<PermissionApiService>();
 builder.Services.AddScoped<UserSessionApiService>();
 builder.Services.AddScoped<PdfApiService>();
+builder.Services.AddScoped<GSTReportsApiService>();
 
 builder.Services.AddAuthorizationCore(options =>
 {

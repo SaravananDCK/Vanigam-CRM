@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Vanigam.CRM.Objects;
+using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Server.Services;
 
 public class PurchaseInvoiceService(
     VanigamAccountingDbContext context,
+    NumberSeriesService numberSeriesService,
     ILogger<BaseService<PurchaseInvoice>> logger,
     LedgerPostingService ledgerPostingService)
     : BaseService<PurchaseInvoice>(context, logger)
@@ -121,6 +123,202 @@ public class PurchaseInvoiceService(
         {
             await transaction.RollbackAsync();
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Bulk save purchase invoice with items. Handles create/update of purchase invoice and its items,
+    /// and automatically posts to ledger if status is Posted.
+    /// </summary>
+    public async Task<PurchaseInvoice> BulkSavePurchaseInvoiceWithItems(PurchaseInvoiceBulkSaveDTO purchaseInvoiceData)
+    {
+        await using var transaction = await Context.Database.BeginTransactionAsync();
+        try
+        {
+            PurchaseInvoice purchaseInvoice;
+            bool isUpdate = purchaseInvoiceData.Oid.HasValue;
+
+            if (isUpdate)
+            {
+                // Load existing purchase invoice
+                purchaseInvoice = await Context.PurchaseInvoices
+                    .Include(pi => pi.VoucherLines)
+                    .FirstOrDefaultAsync(pi => pi.Oid == purchaseInvoiceData.Oid.Value);
+
+                if (purchaseInvoice == null)
+                    throw new InvalidOperationException("Purchase Invoice not found");
+
+                // Update purchase invoice properties
+                purchaseInvoice.Number = purchaseInvoiceData.Number;
+                purchaseInvoice.Status = purchaseInvoiceData.Status;
+                purchaseInvoice.PartyId = purchaseInvoiceData.PartyId;
+                purchaseInvoice.VendorInvoiceNumber = purchaseInvoiceData.VendorInvoiceNumber;
+                purchaseInvoice.ReceivedDate = purchaseInvoiceData.ReceivedDate;
+                purchaseInvoice.TotalAmount = purchaseInvoiceData.TotalAmount;
+                purchaseInvoice.SubTotal = purchaseInvoiceData.SubTotal;
+                purchaseInvoice.TaxAmount = purchaseInvoiceData.TaxAmount;
+                purchaseInvoice.CGSTAmount = purchaseInvoiceData.CGSTAmount;
+                purchaseInvoice.SGSTAmount = purchaseInvoiceData.SGSTAmount;
+                purchaseInvoice.IGSTAmount = purchaseInvoiceData.IGSTAmount;
+                purchaseInvoice.CessAmount = purchaseInvoiceData.CessAmount;
+                purchaseInvoice.VoucherDate = purchaseInvoiceData.VoucherDate;
+                purchaseInvoice.DiscountAmount = purchaseInvoiceData.DiscountAmount;
+                purchaseInvoice.DiscountPercent = purchaseInvoiceData.DiscountPercentage;
+                purchaseInvoice.DiscountType = purchaseInvoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
+                purchaseInvoice.PurchaseOrderId = purchaseInvoiceData.PurchaseOrderId;
+
+                // Handle purchase invoice items
+                await HandlePurchaseInvoiceItems(purchaseInvoice, purchaseInvoiceData.Items);
+
+                Context.PurchaseInvoices.Update(purchaseInvoice);
+                await Context.SaveChangesAsync();
+
+                // Manually trigger ledger posting if status is Posted
+                if (purchaseInvoice.Status == PurchaseInvoiceStatus.Posted)
+                {
+                    await ledgerPostingService.PostPurchaseInvoiceToLedger(purchaseInvoice);
+                    await Context.SaveChangesAsync();
+
+                    var isBalanced = await ledgerPostingService.ValidateVoucherEntriesBalance(purchaseInvoice.Oid);
+                    if (!isBalanced)
+                    {
+                        throw new InvalidOperationException($"Ledger entries for Purchase Invoice {purchaseInvoice.Number} are not balanced");
+                    }
+                }
+            }
+            else
+            {
+                var invoiceNumber = await numberSeriesService.GenerateNextNumber(nameof(PurchaseInvoice), TenantId);
+                // Create new purchase invoice
+                purchaseInvoice = new PurchaseInvoice
+                {
+                    Oid = Guid.NewGuid(),
+                    Number = invoiceNumber,
+                    Status = purchaseInvoiceData.Status,
+                    PartyId = purchaseInvoiceData.PartyId,
+                    VendorInvoiceNumber = purchaseInvoiceData.VendorInvoiceNumber,
+                    ReceivedDate = purchaseInvoiceData.ReceivedDate,
+                    TotalAmount = purchaseInvoiceData.TotalAmount,
+                    SubTotal = purchaseInvoiceData.SubTotal,
+                    TaxAmount = purchaseInvoiceData.TaxAmount,
+                    CGSTAmount = purchaseInvoiceData.CGSTAmount,
+                    SGSTAmount = purchaseInvoiceData.SGSTAmount,
+                    IGSTAmount = purchaseInvoiceData.IGSTAmount,
+                    CessAmount = purchaseInvoiceData.CessAmount,
+                    VoucherDate = purchaseInvoiceData.VoucherDate,
+                    DiscountAmount = purchaseInvoiceData.DiscountAmount,
+                    DiscountPercent = purchaseInvoiceData.DiscountPercentage,
+                    DiscountType = purchaseInvoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
+                    PurchaseOrderId = purchaseInvoiceData.PurchaseOrderId,
+                    TenantId = TenantId
+                };
+
+                // Add purchase invoice items
+                foreach (var itemDto in purchaseInvoiceData.Items.Where(i => !i.IsDeleted))
+                {
+                    var newItem = new PurchaseInvoiceItem
+                    {
+                        Oid = Guid.NewGuid(),
+                        VoucherId = purchaseInvoice.Oid,
+                        ItemId = itemDto.InventoryItemId,
+                        Quantity = itemDto.Quantity,
+                        UnitPrice = itemDto.UnitPrice,
+                        DiscountAmount = itemDto.DiscountAmount,
+                        TaxAmount = itemDto.TaxAmount ?? 0,
+                        TaxCodeId = itemDto.TaxCodeId,
+                        TenantId = TenantId
+                    };
+
+                    Context.PurchaseInvoiceItems.Add(newItem);
+                }
+
+                Context.PurchaseInvoices.Add(purchaseInvoice);
+                await Context.SaveChangesAsync();
+
+                // Manually trigger ledger posting if status is Posted
+                if (purchaseInvoice.Status == PurchaseInvoiceStatus.Posted)
+                {
+                    await ledgerPostingService.PostPurchaseInvoiceToLedger(purchaseInvoice);
+                    await Context.SaveChangesAsync();
+
+                    var isBalanced = await ledgerPostingService.ValidateVoucherEntriesBalance(purchaseInvoice.Oid);
+                    if (!isBalanced)
+                    {
+                        throw new InvalidOperationException($"Ledger entries for Purchase Invoice {purchaseInvoice.Number} are not balanced");
+                    }
+                }
+            }
+
+            await transaction.CommitAsync();
+
+            // Reload purchase invoice with items
+            var savedPurchaseInvoice = await Context.PurchaseInvoices
+                .Include(pi => pi.VoucherLines)
+                .FirstOrDefaultAsync(pi => pi.Oid == purchaseInvoice.Oid);
+
+            return savedPurchaseInvoice!;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Handles adding, updating, and deleting purchase invoice items
+    /// </summary>
+    private async Task HandlePurchaseInvoiceItems(PurchaseInvoice purchaseInvoice, List<PurchaseInvoiceItemDTO> items)
+    {
+        // Remove deleted items
+        var deletedItemIds = items
+            .Where(i => i.IsDeleted && i.Oid.HasValue)
+            .Select(i => i.Oid.Value)
+            .ToList();
+
+        if (deletedItemIds.Any())
+        {
+            var itemsToDelete = purchaseInvoice.VoucherLines.OfType<PurchaseInvoiceItem>().Where(i => deletedItemIds.Contains(i.Oid)).ToList();
+            Context.PurchaseInvoiceItems.RemoveRange(itemsToDelete);
+        }
+
+        // Add or update items
+        foreach (var itemDto in items.Where(i => !i.IsDeleted))
+        {
+            if (itemDto.IsNew)
+            {
+                // Add new item
+                var newItem = new PurchaseInvoiceItem
+                {
+                    Oid = Guid.NewGuid(),
+                    VoucherId = purchaseInvoice.Oid,
+                    ItemId = itemDto.InventoryItemId,
+                    Quantity = itemDto.Quantity,
+                    UnitPrice = itemDto.UnitPrice,
+                    DiscountAmount = itemDto.DiscountAmount,
+                    TaxAmount = itemDto.TaxAmount ?? 0,
+                    TaxCodeId = itemDto.TaxCodeId,
+                    TenantId = TenantId
+                };
+
+                Context.PurchaseInvoiceItems.Add(newItem);
+            }
+            else if (itemDto.Oid.HasValue)
+            {
+                // Update existing item
+                var existingItem = await Context.PurchaseInvoiceItems
+                    .FirstOrDefaultAsync(i => i.Oid == itemDto.Oid.Value);
+
+                if (existingItem != null)
+                {
+                    existingItem.ItemId = itemDto.InventoryItemId;
+                    existingItem.Quantity = itemDto.Quantity;
+                    existingItem.UnitPrice = itemDto.UnitPrice;
+                    existingItem.DiscountAmount = itemDto.DiscountAmount;
+                    existingItem.TaxAmount = itemDto.TaxAmount ?? 0;
+                    existingItem.TaxCodeId = itemDto.TaxCodeId;
+                }
+            }
         }
     }
 }

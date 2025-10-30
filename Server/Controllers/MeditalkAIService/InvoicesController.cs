@@ -50,6 +50,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                 var items = await context.InvoiceItems
                     .Where(i => i.VoucherId == invoiceId)
                     .Include(i => i.Item)
+                    .Include(i => i.TaxCode)
                     .Select(i => new InvoiceItemDTO
                     {
                         Oid = i.Oid,
@@ -58,6 +59,11 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         UnitPrice = i.UnitPrice,
                         DiscountAmount = i.DiscountAmount,
                         TaxAmount = i.TaxAmount,
+                        TaxCodeId = i.TaxCodeId,
+                        CGSTRate = i.TaxCode != null ? i.TaxCode.CGSTRate : 0,
+                        SGSTRate = i.TaxCode != null ? i.TaxCode.SGSTRate : 0,
+                        IGSTRate = i.TaxCode != null ? i.TaxCode.IGSTRate : 0,
+                        CessRate = i.TaxCode != null ? i.TaxCode.CessRate : 0,
                         InventoryItemName = i.Item != null ? i.Item.Name : null
                     })
                     .ToListAsync();

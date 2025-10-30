@@ -1,6 +1,8 @@
 @page "/edit-purchaseinvoice"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Objects.DTOs
 @using Vanigam.CRM.Client.Validators
+@using Vanigam.CRM.Client.Components
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<PurchaseInvoice, EditPurchaseInvoice>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
@@ -52,29 +54,33 @@
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
                             </div>
-                            <div class="read-only-field rz-mb-3">
-                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["ReceivedDate"]:</strong></RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.ReceivedDate?.ToString("yyyy-MM-dd") ?? "-")</RadzenText>
-                            </div>
                         </div>
                     </RadzenColumn>
                     <RadzenColumn Size="6">
                         <div class="rz-p-4">
                             <div class="read-only-field rz-mb-3">
-                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Reference"]:</strong></RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Reference ?? "-")</RadzenText>
-                            </div>
-                            <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["SubTotal"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.SubTotal.ToString("C2"))</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["DiscountAmount"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.DiscountAmount.ToString("C2"))</RadzenText>
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["TaxAmount"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.TaxAmount.ToString("C2"))</RadzenText>
                             </div>
                             <div class="read-only-field rz-mb-3">
-                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["DiscountAmount"]:</strong></RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.DiscountAmount.ToString("C2"))</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["CGST"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.CGSTAmount.ToString("C2"))</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["SGST"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.SGSTAmount.ToString("C2"))</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["IGST"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.IGSTAmount.ToString("C2"))</RadzenText>
                             </div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["TotalAmount"]:</strong></RadzenText>
@@ -101,6 +107,28 @@
                         </div>
                     </div>
                 }
+
+                @* Purchase Invoice Items Read-Only Display *@
+                @if (purchaseInvoiceItems != null && purchaseInvoiceItems.Any(i => !i.IsDeleted))
+                {
+                    <div class="rz-p-4">
+                        <div class="read-only-section-header rz-mb-3">@Localizer["Items"]</div>
+                        <RadzenDataGrid Data="@purchaseInvoiceItems.Where(i => !i.IsDeleted)" TItem="PurchaseInvoiceItemDTO" AllowPaging="true" PageSize="10">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Property="InventoryItemName" Title=@Localizer["Item"] />
+                                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Property="Quantity" Title=@Localizer["Quantity"] FormatString="{0:N2}" />
+                                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Property="UnitPrice" Title=@Localizer["UnitPrice"] FormatString="{0:C2}" />
+                                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Property="DiscountAmount" Title=@Localizer["Discount"] FormatString="{0:C2}" />
+                                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Property="TaxAmount" Title=@Localizer["Tax"] FormatString="{0:C2}" />
+                                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Title=@Localizer["Total"]>
+                                    <Template Context="item">
+                                        @((item.Total - item.DiscountAmount + (item.TaxAmount ?? 0)).ToString("C2"))
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </div>
+                }
             </RadzenStack>
         </RadzenCard>
     }
@@ -110,11 +138,13 @@
         <RadzenStack>
             <FluentValidationValidator Validator="new PurchaseInvoiceValidator(Localizer)" />
             <ValidationSummary />
+
+            @* Header Information *@
             <RadzenRow>
                 <RadzenColumn Size="6">
                     <VanigamAccountingFormField Text=@Localizer["Number"]>
                         <ChildContent>
-                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" />
+                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" ReadOnly="true" />
                         </ChildContent>
                     </VanigamAccountingFormField>
                     <VanigamAccountingFormField Text=@Localizer["VendorInvoiceNumber"]>
@@ -132,6 +162,8 @@
                             <RadzenDatePicker @bind-Value="@CurrentObject.DueDate" Name="dt_DueDate" class="w-100" />
                         </ChildContent>
                     </VanigamAccountingFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="6">
                     <VanigamAccountingFormField Text=@Localizer["Vendor"]>
                         <ChildContent>
                             <RadzenDropDown @bind-Value="@CurrentObject.PartyId" Data="@Vendors" TextProperty="Name" ValueProperty="Oid" Name="dd_Vendor" class="w-100" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" />
@@ -142,8 +174,6 @@
                             <RadzenDropDown @bind-Value="@CurrentObject.PurchaseOrderId" Data="@PurchaseOrders" TextProperty="Number" ValueProperty="Oid" Name="dd_PurchaseOrder" class="w-100" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowClear="true" />
                         </ChildContent>
                     </VanigamAccountingFormField>
-                </RadzenColumn>
-                <RadzenColumn Size="6">
                     <VanigamAccountingFormField Text=@Localizer["Status"]>
                         <ChildContent>
                             <RadzenDropDown @bind-Value="@CurrentObject.Status" Data="@(Enum.GetValues(typeof(PurchaseInvoiceStatus)))" Name="dd_Status" class="w-100" />
@@ -154,33 +184,65 @@
                             <RadzenDatePicker @bind-Value="@CurrentObject.ReceivedDate" Name="dt_ReceivedDate" class="w-100" />
                         </ChildContent>
                     </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["Reference"]>
-                        <ChildContent>
-                            <VanigamAccountingTextBox @bind-Value="@CurrentObject.Reference" Name="txt_Reference" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["SubTotal"]>
-                        <ChildContent>
-                            <RadzenNumeric @bind-Value="@CurrentObject.SubTotal" Name="num_SubTotal" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["TaxAmount"]>
-                        <ChildContent>
-                            <RadzenNumeric @bind-Value="@CurrentObject.TaxAmount" Name="num_TaxAmount" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["DiscountAmount"]>
-                        <ChildContent>
-                            <RadzenNumeric @bind-Value="@CurrentObject.DiscountAmount" Name="num_DiscountAmount" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
-                    <VanigamAccountingFormField Text=@Localizer["TotalAmount"]>
-                        <ChildContent>
-                            <RadzenNumeric @bind-Value="@CurrentObject.TotalAmount" Name="num_TotalAmount" />
-                        </ChildContent>
-                    </VanigamAccountingFormField>
                 </RadzenColumn>
             </RadzenRow>
+
+            @* Purchase Invoice Items Section *@
+            <EditablePurchaseInvoiceItems Items="@purchaseInvoiceItems"
+                                          ItemsChanged="@OnPurchaseInvoiceItemsChanged"
+                                          TotalAmountChanged="@OnTotalAmountChanged"
+                                          TotalTaxChanged="@OnTotalTaxAmountChanged"
+                                          DiscountChanged="@OnDiscountAmountChanged"
+                                          DiscountPercentageChanged="@OnDiscountPercentageChanged"
+                                          SubTotalChanged="@OnSubTotalChanged"
+                                          DiscountTypeChanged="@OnDiscountTypeChanged"
+                                          PurchaseInvoice="@CurrentObject" />
+
+            @* Totals Section (Read-Only, Calculated) *@
+            <RadzenCard class="rz-my-4">
+                <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["Totals"]</RadzenText>
+                <RadzenRow>
+                    <RadzenColumn Size="6">
+                        <div class="read-only-field rz-mb-3">
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["SubTotal"]:</strong></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.SubTotal.ToString("C2"))</RadzenText>
+                        </div>
+                        <div class="read-only-field rz-mb-3">
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["DiscountAmount"]:</strong></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.DiscountAmount.ToString("C2"))</RadzenText>
+                        </div>
+                        <div class="read-only-field rz-mb-3">
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["TaxAmount"]:</strong></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.TaxAmount.ToString("C2"))</RadzenText>
+                        </div>
+                    </RadzenColumn>
+                    <RadzenColumn Size="6">
+                        <div class="read-only-field rz-mb-3">
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["CGST"]:</strong></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.CGSTAmount.ToString("C2"))</RadzenText>
+                        </div>
+                        <div class="read-only-field rz-mb-3">
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["SGST"]:</strong></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.SGSTAmount.ToString("C2"))</RadzenText>
+                        </div>
+                        <div class="read-only-field rz-mb-3">
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["IGST"]:</strong></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.IGSTAmount.ToString("C2"))</RadzenText>
+                        </div>
+                        <div class="read-only-field rz-mb-3">
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["TotalAmount"]:</strong></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value"><strong>@(CurrentObject.TotalAmount.ToString("C2"))</strong></RadzenText>
+                        </div>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenCard>
+
+            @* Additional Fields *@
+            <VanigamAccountingFormField Text=@Localizer["Reference"]>
+                <ChildContent>
+                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Reference" Name="txt_Reference" />
+                </ChildContent>
+            </VanigamAccountingFormField>
             <VanigamAccountingFormField Text=@Localizer["Notes"]>
                 <ChildContent>
                     <RadzenTextArea @bind-Value="@CurrentObject.Notes" Name="txt_Notes" Rows="3" class="w-100" />
