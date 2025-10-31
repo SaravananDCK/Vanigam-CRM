@@ -61,7 +61,7 @@
                     @* Show Customer column only in standalone mode *@
                     @if (!IsEmbeddedMode)
                     {
-                        <RadzenDataGridColumn TItem="Job" Property="Party.Name" Title=@Localizer["Customer"] Sortable="true">
+                        <RadzenDataGridColumn TItem="Job" Property="@PropertyExtensions.GetPropertyFullPath((Job i) => i.Party.Name)" Title=@Localizer["Customer"] Sortable="true">
                             <Template Context="job">
                                 @job.Party?.Name
                             </Template>

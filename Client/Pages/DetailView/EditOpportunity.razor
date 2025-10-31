@@ -18,7 +18,7 @@
         <RadzenCard class="rz-my-4">
             <RadzenStack Orientation="Orientation.Horizontal"
                          AlignItems="AlignItems.Center"
-                         JustifyContent="JustifyContent.SpaceBetween"
+                         JustifyContent="@(CanConvertToCustomer ? JustifyContent.SpaceBetween : JustifyContent.End)"
                          Gap="10px">
                 @* Convert to Customer Button - Only visible in read-only mode for qualified opportunities *@
                 @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvertToCustomer)
