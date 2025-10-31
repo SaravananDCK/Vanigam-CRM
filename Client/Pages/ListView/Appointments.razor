@@ -28,12 +28,17 @@
                     @* Show Job column only in standalone mode *@
                     @if (!IsEmbeddedMode)
                     {
-                        <RadzenDataGridColumn TItem="Appointment" Property="Job.Title" Title=@Localizer["Job"]>
+                        <RadzenDataGridColumn TItem="Appointment" Property="@PropertyExtensions.GetPropertyFullPath((Appointment i) => i.Job.Title)" Title=@Localizer["Job"]>
                             <Template Context="appointment">
                                 @appointment.Job?.Title
                             </Template>
                         </RadzenDataGridColumn>
                     }
+                    <RadzenDataGridColumn TItem="Appointment" Property="@PropertyExtensions.GetPropertyFullPath((Appointment i) => i.Technician.FullName)" Title=@Localizer["Technician"]>
+                        <Template Context="appointment">
+                            @appointment.Technician?.FullName
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.Status) Title=@Localizer["Status"]>
                         <Template Context="appointment">
                             <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(appointment.Status)" Text="@appointment.Status.ToString()" />
