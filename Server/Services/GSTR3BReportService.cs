@@ -48,9 +48,9 @@ public class GSTR3BReportService(
         report.TaxPayable = CalculateTaxPayable(report.OutwardSupplies, report.ITCAvailable);
 
         logger.LogInformation("GSTR-3B report generated successfully. Total Tax Payable: CGST={CGST}, SGST={SGST}, IGST={IGST}",
-            report.TaxPayable.TaxPayable.CGSTAmount,
-            report.TaxPayable.TaxPayable.SGSTAmount,
-            report.TaxPayable.TaxPayable.IGSTAmount);
+            report.TaxPayable.TaxPayableVal.CGSTAmount,
+            report.TaxPayable.TaxPayableVal.SGSTAmount,
+            report.TaxPayable.TaxPayableVal.IGSTAmount);
 
         return report;
     }
@@ -188,7 +188,7 @@ public class GSTR3BReportService(
 
         return new TaxPayable
         {
-            TaxPayable = new TaxAmounts
+            TaxPayableVal = new TaxAmounts
             {
                 CGSTAmount = outward.CGSTAmount,
                 SGSTAmount = outward.SGSTAmount,
@@ -206,14 +206,14 @@ public class GSTR3BReportService(
 
     private async Task<string> GetTenantGSTIN(int? tenantId)
     {
-        var tenant = await context.ApplicationTenants
-            .FirstOrDefaultAsync(t => t.Id == tenantId);
+        var tenant = await context.TenantAccountingSettings
+            .FirstOrDefaultAsync(t => t.TenantId == tenantId);
         return tenant?.GSTIN ?? string.Empty;
     }
 
     private async Task<string> GetTenantLegalName(int? tenantId)
     {
-        var tenant = await context.ApplicationTenants
+        var tenant = await context.Tenants
             .FirstOrDefaultAsync(t => t.Id == tenantId);
         return tenant?.Name ?? string.Empty;
     }

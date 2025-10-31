@@ -255,23 +255,23 @@ public class GSTR1ReportService(
 
     private async Task<string> GetTenantGSTIN(int? tenantId)
     {
-        var tenant = await context.ApplicationTenants
-            .FirstOrDefaultAsync(t => t.Id == tenantId);
+        var tenant = await context.TenantAccountingSettings
+            .FirstOrDefaultAsync(t => t.TenantId == tenantId);
         return tenant?.GSTIN ?? string.Empty;
     }
 
     private async Task<string> GetTenantLegalName(int? tenantId)
     {
-        var tenant = await context.ApplicationTenants
+        var tenant = await context.Tenants
             .FirstOrDefaultAsync(t => t.Id == tenantId);
         return tenant?.Name ?? string.Empty;
     }
 
     private async Task<string> GetTenantTradeName(int? tenantId)
     {
-        var tenant = await context.ApplicationTenants
-            .FirstOrDefaultAsync(t => t.Id == tenantId);
-        return tenant?.TradeName ?? tenant?.Name ?? string.Empty;
+        var tenant = await context.TenantAccountingSettings
+            .FirstOrDefaultAsync(t => t.TenantId == tenantId);
+        return tenant?.CompanyName ?? string.Empty;
     }
 
     private string GetPlaceOfSupply(LedgerAccount? party)

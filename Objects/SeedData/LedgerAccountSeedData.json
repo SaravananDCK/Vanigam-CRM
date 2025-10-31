@@ -271,5 +271,133 @@
     "GroupCode": "COGS",
     "AccountType": "LedgerAccount",
     "IsActive": true
+  },
+  {
+    "Code": "TAX009",
+    "Name": "GST Cess Payable (Output)",
+    "GroupCode": "TAXP",
+    "AccountType": "LedgerAccount",
+    "Description": "GST Cess collected on sales",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX010",
+    "Name": "GST Cess Input",
+    "GroupCode": "TAXI",
+    "AccountType": "LedgerAccount",
+    "Description": "GST Cess paid on purchases",
+    "IsActive": true
+  },
+  {
+    "Code": "TAX011",
+    "Name": "TCS Payable",
+    "GroupCode": "TAXP",
+    "AccountType": "LedgerAccount",
+    "Description": "Tax Collected at Source payable to government",
+    "IsActive": true
+  },
+  {
+    "Code": "CL001",
+    "Name": "Advance Received from Customers",
+    "GroupCode": "CL",
+    "AccountType": "LedgerAccount",
+    "Description": "Customer advances received",
+    "IsActive": true
+  },
+  {
+    "Code": "CA001",
+    "Name": "Advance Paid to Suppliers",
+    "GroupCode": "CA",
+    "AccountType": "LedgerAccount",
+    "Description": "Supplier advances paid",
+    "IsActive": true
+  },
+  {
+    "Code": "CA002",
+    "Name": "Security Deposit Receivable",
+    "GroupCode": "CA",
+    "AccountType": "LedgerAccount",
+    "Description": "Security deposits given",
+    "IsActive": true
+  },
+  {
+    "Code": "CL002",
+    "Name": "Security Deposit Payable",
+    "GroupCode": "CL",
+    "AccountType": "LedgerAccount",
+    "Description": "Security deposits received",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP011",
+    "Name": "Bad Debt Expense",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "Description": "Bad debt write-off expense",
+    "IsActive": true
+  },
+  {
+    "Code": "CL003",
+    "Name": "Provision for Bad Debts",
+    "GroupCode": "CL",
+    "AccountType": "LedgerAccount",
+    "Description": "Allowance for doubtful debts",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP012",
+    "Name": "Write-off Account",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "Description": "General write-off account",
+    "IsActive": true
+  },
+  {
+    "Code": "OI002",
+    "Name": "Interest Income",
+    "GroupCode": "OI",
+    "AccountType": "LedgerAccount",
+    "Description": "Interest earned on deposits/loans",
+    "IsActive": true
+  },
+  {
+    "Code": "OI003",
+    "Name": "Late Fee Income",
+    "GroupCode": "OI",
+    "AccountType": "LedgerAccount",
+    "Description": "Late payment fees charged to customers",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP013",
+    "Name": "Interest Expense",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "Description": "Interest paid on loans/credit",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP014",
+    "Name": "Late Fee Expense",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "Description": "Late payment fees paid to suppliers",
+    "IsActive": true
+  },
+  {
+    "Code": "EXP015",
+    "Name": "Payment Gateway Charges",
+    "GroupCode": "OE",
+    "AccountType": "LedgerAccount",
+    "Description": "Payment gateway transaction fees",
+    "IsActive": true
+  },
+  {
+    "Code": "CA003",
+    "Name": "Undeposited Funds",
+    "GroupCode": "CA",
+    "AccountType": "LedgerAccount",
+    "Description": "Cash/cheques not yet deposited to bank",
+    "IsActive": true
   }
 ]

@@ -235,7 +235,7 @@ public class ExemptSupplies
 
 public class TaxPayable
 {
-    public TaxAmounts TaxPayable { get; set; } = new();
+    public TaxAmounts TaxPayableVal { get; set; } = new();
     public TaxAmounts TaxPaidThroughITC { get; set; } = new();
     public TaxAmounts TaxPaidInCash { get; set; } = new();
     public decimal Interest { get; set; }

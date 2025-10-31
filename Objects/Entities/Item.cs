@@ -30,6 +30,9 @@ namespace Vanigam.CRM.Objects.Entities
 
         [StringLength(50)]
         public string? SKU { get; set; }
+        
+        [StringLength(10)]
+        public string? HSNCode { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ItemType Type { get; set; }

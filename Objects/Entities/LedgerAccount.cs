@@ -20,6 +20,8 @@ namespace Vanigam.CRM.Objects.Entities
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public AccountType AccountType { get; set; }
 
+        [StringLength(20)]
+        public string? GSTIN { get; set; }
         [StringLength(500)]
         public string? Address { get; set; }
 

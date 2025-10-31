@@ -59,7 +59,8 @@ public class MaterialUsageDTO
     public double SGSTRate { get; set; } = 0;
     public double IGSTRate { get; set; } = 0;
     public double CessRate { get; set; } = 0;
-
+    public decimal ChargedAmount { get; set; }
+    public decimal WaivedAmount { get; set; }
     public decimal Total => (decimal)Quantity * UnitPrice;
     public decimal TotalIncTax => Total + (TaxAmount ?? 0) - DiscountAmount;
 

@@ -294,7 +294,7 @@ namespace Vanigam.CRM.Objects
                 await this.SeedTenantAccountingSettings();
                 await this.SeedLeadData();
                 await this.SeedCustomerData();
-                await this.SeedInvoiceData();
+                //await this.SeedInvoiceData();
                 await this.SeedOpportunityData();
                 await this.SeedJobData();
                 await this.SeedActivityData();
