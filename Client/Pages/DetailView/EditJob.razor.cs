@@ -14,7 +14,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     {
         [Inject] private JobApiService JobApiService { get; set; }
         [Parameter] public Guid? CustomerId { get; set; }
-
+        private int ReadOnlyTabIndex { get; set; } = 0;
+        private int EditTabIndex { get; set; } = 0;
+        [Parameter] public bool IsEmbeddedModeActive { get; set; } = false;
         private List<MaterialUsageDTO> materials = new();
 
         private bool HasAnyChanges => HasChanges || (materials?.Any(m => m.IsNew || m.IsDeleted) ?? false);

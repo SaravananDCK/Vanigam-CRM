@@ -3,22 +3,32 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.OData;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditRecurringJob
     {
+        private int ReadOnlyTabIndex { get; set; } = 0;
+        private int EditTabIndex { get; set; } = 0;
         [Inject] private RecurringJobApiService RecurringJobApiService { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
                 CurrentObject = new();
             else
-                CurrentObject = await RecurringJobApiService.GetByOid(oid: Oid);
+                CurrentObject = await RecurringJobApiService.GetByOid(oid: Oid, expand: GetExpandString());
 
             await InitEditContext();
         }
-        
+        protected string GetExpandString()
+        {
+            return new ODataExpand<RecurringJob>()
+                .Expand(f => f.Contract, f => f.Contract.Title)
+                .Build();
+        }
+
         protected async Task FormSubmit()
         {
             IsBusy = true;

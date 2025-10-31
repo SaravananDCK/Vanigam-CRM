@@ -6,14 +6,6 @@
 
 @* Custom Header with Edit Button *@
 <DetailPageTitleComponent TitleText="@Localizer["EditAppointment"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
-    <CustomBadge>
-        @* Floating Edit Button - Only visible in read-only mode *@
-        @if (IsEditButtonVisible)
-        {
-
-            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
-        }
-    </CustomBadge>
 </DetailPageTitleComponent>
 <RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
@@ -23,37 +15,41 @@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
         <RadzenCard class="rz-my-4">
-            <RadzenStack>
-                @* Appointment Information Display *@
-                <div class="read-only-section-header">@Localizer["AppointmentInformation"]</div>
-                <RadzenRow>
-                    <RadzenColumn Size="6">
-                        <RadzenStack>
-                            <div class="rz-p-4">
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["StartAt"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.StartAt?.ToString("yyyy-MM-dd HH:mm"))</RadzenText>
-                                </div>
-
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
-                                </div>
+            @* Floating Edit Button - Only visible in read-only mode *@
+            @if (IsEditButtonVisible)
+            {
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
+                             JustifyContent="JustifyContent.End" Gap="10px">
+                    <RadzenFab Style="bottom: 12px; left: 12px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+                </RadzenStack>
+            }
+            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+                <Tabs>
+                    @* Appointment Information Display *@
+                    <RadzenTabsItem Text="@Localizer["Appointment Information"]">
+                        <div class="rz-p-4">
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Job"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Job.Title.ToString())</RadzenText>
                             </div>
-                        </RadzenStack>
-                    </RadzenColumn>
-                    <RadzenColumn Size="6">
-                        <RadzenStack>
-                            <div class="rz-p-4">
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["EndAt"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.EndAt?.ToString("yyyy-MM-dd HH:mm"))</RadzenText>
-                                </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
+                                    <strong>@Localizer["Status"]:</strong>
+                                    <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.ToString()" />
+                                </RadzenText>
                             </div>
-                        </RadzenStack>
-                    </RadzenColumn>
-                </RadzenRow>
-            </RadzenStack>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["StartAt"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.StartAt?.ToString("yyyy-MM-dd HH:mm"))</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["EndAt"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.EndAt?.ToString("yyyy-MM-dd HH:mm"))</RadzenText>
+                            </div>
+                        </div>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
         </RadzenCard>
     }
 
@@ -62,21 +58,33 @@
         <RadzenStack>
             <FluentValidationValidator Validator="new AppointmentValidator(Localizer)" />
             <ValidationSummary />
-            <VanigamAccountingFormField Text=@Localizer["StartAt"]>
-                <ChildContent>
-                    <RadzenDatePicker @bind-Value="@CurrentObject.StartAt" Name="date_StartAt" ShowTime="true" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["EndAt"]>
-                <ChildContent>
-                    <RadzenDatePicker @bind-Value="@CurrentObject.EndAt" Name="date_EndAt" ShowTime="true" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Status"]>
-                <ChildContent>
-                    <AppointmentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+            <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left">
+                <Tabs>
+                    @* Appointment Tab *@
+                    <RadzenTabsItem Text="@Localizer["Appointment"]" class="fa-small">
+                        <VanigamAccountingFormField Text=@Localizer["Job"]>
+                            <ChildContent>
+                                <JobDropDownDataGrid @bind-Value="@CurrentObject.JobId" Disabled="IsEmbeddedModeActive"></JobDropDownDataGrid>
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Status"]>
+                            <ChildContent>
+                                <AppointmentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["StartAt"]>
+                            <ChildContent>
+                                <RadzenDatePicker @bind-Value="@CurrentObject.StartAt" Name="date_StartAt" ShowTime="true" Max="DateTime.Now" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["EndAt"]>
+                            <ChildContent>
+                                <RadzenDatePicker @bind-Value="@CurrentObject.EndAt" Name="date_EndAt" ShowTime="true" Max="DateTime.Now" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
         </RadzenStack>
 
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">

@@ -24,7 +24,10 @@
             @* Floating Edit Button - Only visible in read-only mode *@
             @if (IsEditButtonVisible)
             {
-                <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
+                             JustifyContent="JustifyContent.End" Gap="10px">
+                    <RadzenFab Style="bottom: 12px; left: 12px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+                </RadzenStack>
             }
             <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
                 <Tabs>
@@ -156,7 +159,7 @@
         <FluentValidationValidator Validator="new ContactValidator(Localizer)" />
         <ValidationSummary />
 
-        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4">
+        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left" class="rz-mt-4">
             <Tabs>
                 @* Basic Info Tab *@
                 <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-user")" class="fa-small">
@@ -208,12 +211,10 @@
                                 <ContactStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                             </ChildContent>
                         </VanigamAccountingFormField>
-
-                        <VanigamAccountingFormField Text=@Localizer["IsPrimary"]>
-                            <Start>
-                                <RadzenSwitch @bind-Value="@CurrentObject.IsPrimary" Name="switch_IsPrimary" />
-                            </Start>
-                        </VanigamAccountingFormField>
+                        <RadzenStack Orientation="Orientation.Horizontal" Style="margin-top: 1rem">
+                            <RadzenLabel Text="@Localizer["IsPrimary"]" Component="swt_IsPrimary" Style="width: 5%" />
+                            <RadzenSwitch @bind-Value="@CurrentObject.IsPrimary" Name="switch_IsPrimary" />
+                        </RadzenStack>
                     </RadzenStack>
                 </RadzenTabsItem>
 

@@ -7,9 +7,6 @@
 
 @* Custom Header with Edit Button *@
 <DetailPageTitleComponent TitleText="@Localizer["EditOpportunity"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
-    <CustomBadge>
-
-    </CustomBadge>
 </DetailPageTitleComponent>
 <RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
@@ -19,22 +16,32 @@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
         <RadzenCard class="rz-my-4">
-            @* Floating Edit Button - Only visible in read-only mode *@
-            @if (IsEditButtonVisible && CurrentObject.Stage != OpportunityStage.ClosedWon && (!IsFullheightTab))
-            {
-                <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
-            }
+            <RadzenStack Orientation="Orientation.Horizontal"
+                         AlignItems="AlignItems.Center"
+                         JustifyContent="JustifyContent.SpaceBetween"
+                         Gap="10px">
+                @* Convert to Customer Button - Only visible in read-only mode for qualified opportunities *@
+                @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvertToCustomer)
+                {
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="10px">
+                        <RadzenButton Text="@Localizer["ConvertToCustomer"]"
+                                      Icon="person_add"
+                                      ButtonStyle="ButtonStyle.Success"
+                                      Size="ButtonSize.Small"
+                                      Click="@ShowConvertToCustomerDialog"
+                                      class="rz-ml-2" Style="bottom: 12px; left: 10px;" />
+                    </RadzenStack>
+                }
+                @* Floating Edit Button - Only visible in read-only mode *@
+                @if (IsEditButtonVisible && CurrentObject.Stage != OpportunityStage.ClosedWon)
+                {
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="10px">
+                        <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+                    </RadzenStack>
+                }
 
-            @* Convert to Customer Button - Only visible in read-only mode for qualified opportunities *@
-            @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode && CanConvertToCustomer && (!IsFullheightTab))
-            {
-                <RadzenButton Text="@Localizer["ConvertToCustomer"]"
-                              Icon="person_add"
-                              ButtonStyle="ButtonStyle.Success"
-                              Size="ButtonSize.Small"
-                              Click="@ShowConvertToCustomerDialog"
-                              class="rz-ml-2" Style="bottom: 12px; left: 10px;" />
-            }
+
+            </RadzenStack>
             <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" Change="OnTabChanged" TabPosition="TabPosition.Left">
                 <Tabs>
                     <RadzenTabsItem Text="@Localizer["OpportunityInformation"]" Icon="@FadIcon("fa-handshake")" class="fa-small">
@@ -186,7 +193,7 @@
         <FluentValidationValidator Validator="new OpportunityValidator(Localizer)" />
         <ValidationSummary />
 
-        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4">
+        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left" class="rz-mt-4">
             <Tabs>
                 @* Basic Info Tab *@
                 <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-handshake")" class="fa-small">

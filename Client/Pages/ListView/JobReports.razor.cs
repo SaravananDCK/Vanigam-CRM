@@ -36,7 +36,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             // Add job filter if in embedded mode
             if (IsEmbeddedMode && JobId.HasValue)
             {
-                filter = filter.FilterByAnd(jr => jr.JobId == JobId.Value);
+                filter = filter.FilterByAnd(jr => jr.JobId == JobId);
             }
 
             // Add search filter only if there's a search string
@@ -58,9 +58,10 @@ namespace Vanigam.CRM.Client.Pages.ListView
             if (IsEmbeddedMode && JobId.HasValue)
             {
                 parameters.Add("JobId", JobId.Value);
+                parameters.Add("IsEmbeddedModeActive", IsEmbeddedMode);
             }
 
-            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["AddJobReport"], parameters.Any() ? parameters : null, 100, 100);
+            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["Add Job Report"], parameters.Any() ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -71,7 +72,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(JobReport jobreport)
         {
-            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["EditJobReport"], new Dictionary<string, object> { { "Oid", jobreport.Oid } }, 100, 100);
+            await DialogService.OpenDialogAsync<EditJobReport>(Localizer["Edit Job Report"], new Dictionary<string, object> { { "Oid", jobreport.Oid }, { "IsEmbeddedModeActive", IsEmbeddedMode } }, 100, 100);
             await GridReload();
         }
 
