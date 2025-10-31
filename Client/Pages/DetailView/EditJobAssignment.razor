@@ -26,7 +26,7 @@
             <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
                 <Tabs>
                     @* Job Assignment Information Display *@
-                    <RadzenTabsItem Text="@Localizer[" Job Assignment Information"]">
+                    <RadzenTabsItem Text="@Localizer[" Job Assignment Info"]" Icon="@FadIcon("fa-user-tie")">
                         <div class="rz-p-4">
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Job"]:</strong></RadzenText>
@@ -62,7 +62,7 @@
             <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left">
                 <Tabs>
                     @* JobAssignmentInformation Tab *@
-                    <RadzenTabsItem Text="@Localizer["Job Assignment Information"]" class="fa-small">
+                    <RadzenTabsItem Text="@Localizer["Job Assignment Info"]" class="fa-small">
                         <VanigamAccountingFormField Text=@Localizer["Job"]>
                             <ChildContent>
                                 <JobDropDownDataGrid @bind-Value="@CurrentObject.JobId" Disabled="IsEmbeddedModeActive"></JobDropDownDataGrid>

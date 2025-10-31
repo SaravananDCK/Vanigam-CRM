@@ -46,12 +46,12 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.StartAt) Title=@Localizer["StartTime"]>
                         <Template Context="appointment">
-                            @appointment.StartAt.Value.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt")
+                            @(appointment.StartAt?.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt"))
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.EndAt) Title=@Localizer["EndTime"]>
                         <Template Context="appointment">
-                            @appointment.EndAt.Value.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt")
+                            @(appointment.EndAt?.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt"))
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.Oid) Title=@Localizer["Oid"] Visible="false">

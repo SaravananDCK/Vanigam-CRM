@@ -29,7 +29,7 @@
                 <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
                     <Tabs>
                         @* Basic Info Tab *@
-                        <RadzenTabsItem Text="@Localizer["Job"]" Icon="@FadIcon("fa-info")" class="fa-small">
+                        <RadzenTabsItem Text="@Localizer["Job"]" Icon="@FadIcon("fa-briefcase")" class="fa-small">
 
                             @* Job Information Display *@
                             <RadzenRow>
@@ -179,7 +179,7 @@
                                               IsEmbeddedMode="true"
                                               EmbeddedTitle="@Localizer["Job Appointments"]" />
                             </RadzenTabsItem>
-                            <RadzenTabsItem Text="@Localizer["Job Reports"]" Icon="@FadIcon("fa-wrench")">
+                            <RadzenTabsItem Text="@Localizer["Job Reports"]" Icon="@FadIcon("fa-file-alt")">
                                 <JobReports JobId="@Oid"
                                             IsEmbeddedMode="true"
                                             EmbeddedTitle="@Localizer["Job Reports"]" />

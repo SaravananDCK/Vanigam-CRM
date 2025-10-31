@@ -46,12 +46,12 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.AssignedAt) Title=@Localizer["AssignedAt"]>
                         <Template Context="jobAssignment">
-                            @jobAssignment.AssignedAt.Value.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt")
+                            @(jobAssignment.AssignedAt?.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt") ?? " ")
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.AcceptedAt) Title=@Localizer["AcceptedAt"]>
                         <Template Context="jobAssignment">
-                            @jobAssignment.AcceptedAt.Value.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt")
+                            @(jobAssignment.AcceptedAt?.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt") ?? " ")
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.Oid) Title=@Localizer["Oid"] Visible="false">
