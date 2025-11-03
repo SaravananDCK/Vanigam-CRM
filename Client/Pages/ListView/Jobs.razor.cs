@@ -83,9 +83,10 @@ namespace Vanigam.CRM.Client.Pages.ListView
             if (IsEmbeddedMode && CustomerId.HasValue)
             {
                 parameters.Add("CustomerId", CustomerId.Value);
+                parameters.Add("IsEmbeddedModeActive", IsEmbeddedMode);
             }
 
-            await DialogService.OpenDialogWithOutHeaderAsync<EditJob>(Localizer["AddJob"], parameters.Any() ? parameters : null, 100, 100);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditJob>(Localizer["Add Job"], parameters.Any() ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -96,7 +97,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Job job)
         {
-            await DialogService.OpenDialogWithOutHeaderAsync<EditJob>(Localizer["EditJob"], new Dictionary<string, object> { { "Oid", job.Oid } }, 100, 100);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditJob>(Localizer["Edit Job"], new Dictionary<string, object> { { "Oid", job.Oid }, { "IsEmbeddedModeActive", IsEmbeddedMode } }, 100, 100);
             await GridReload();
         }
 

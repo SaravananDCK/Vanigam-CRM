@@ -6,14 +6,6 @@
 
 @* Custom Header with Edit Button *@
 <DetailPageTitleComponent TitleText="@Localizer["EditJobAssignment"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
-    <CustomBadge>
-        @* Floating Edit Button - Only visible in read-only mode *@
-        @if (IsEditButtonVisible)
-        {
-
-            <VanigamEditButton Click="@EnableEditMode" Title="@Localizer["Edit"]"/>
-        }
-    </CustomBadge>
 </DetailPageTitleComponent>
 <RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
@@ -23,37 +15,42 @@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
         <RadzenCard class="rz-my-4">
-            <RadzenStack>
-                @* Job Assignment Information Display *@
-                <div class="read-only-section-header">@Localizer["JobAssignmentInformation"]</div>
-                <RadzenRow>
-                    <RadzenColumn Size="6">
-                        <RadzenStack>
-                            <div class="rz-p-4">
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
-                                </div>
+            @* Floating Edit Button - Only visible in read-only mode *@
+            @if (IsEditButtonVisible)
+            {
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
+                             JustifyContent="JustifyContent.End" Gap="10px">
+                    <RadzenFab Style="bottom: 12px; left: 12px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+                </RadzenStack>
+            }
+            <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+                <Tabs>
+                    @* Job Assignment Information Display *@
+                    <RadzenTabsItem Text="@Localizer[" Job Assignment Info"]" Icon="@FadIcon("fa-user-tie")">
+                        <div class="rz-p-4">
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Job"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Job.Title.ToString())</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
+                                    <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.ToString()" />
+                                </RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["AcceptedAt"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.AcceptedAt.HasValue ? CurrentObject.AcceptedAt.Value.ToString("yyyy-MM-dd HH:mm") : "-")</RadzenText>
+                            </div>
+                            <div class="read-only-field rz-mb-3">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["AssignedAt"]:</strong></RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.AssignedAt.HasValue ? CurrentObject.AssignedAt.Value.ToString("yyyy-MM-dd HH:mm") : "-")</RadzenText>
+                            </div>
+                        </div>
 
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["AssignedAt"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.AssignedAt.HasValue ? CurrentObject.AssignedAt.Value.ToString("yyyy-MM-dd HH:mm") : "-")</RadzenText>
-                                </div>
-                            </div>
-                        </RadzenStack>
-                    </RadzenColumn>
-                    <RadzenColumn Size="6">
-                        <RadzenStack>
-                            <div class="rz-p-4">
-                                <div class="read-only-field rz-mb-3">
-                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["AcceptedAt"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.AcceptedAt.HasValue ? CurrentObject.AcceptedAt.Value.ToString("yyyy-MM-dd HH:mm") : "-")</RadzenText>
-                                </div>
-                            </div>
-                        </RadzenStack>
-                    </RadzenColumn>
-                </RadzenRow>
-            </RadzenStack>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
         </RadzenCard>
     }
 
@@ -62,21 +59,33 @@
         <RadzenStack>
             <FluentValidationValidator Validator="new JobAssignmentValidator(Localizer)" />
             <ValidationSummary />
-            <VanigamAccountingFormField Text=@Localizer["Status"]>
-                <ChildContent>
-                    <AssignmentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                                                                                                                                         </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["AssignedAt"]>
-                <ChildContent>
-                    <RadzenDatePicker @bind-Value="@CurrentObject.AssignedAt" Name="date_AssignedAt" ShowTime="true" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["AcceptedAt"]>
-                <ChildContent>
-                    <RadzenDatePicker @bind-Value="@CurrentObject.AcceptedAt" Name="date_AcceptedAt" ShowTime="true" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+            <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left">
+                <Tabs>
+                    @* JobAssignmentInformation Tab *@
+                    <RadzenTabsItem Text="@Localizer["Job Assignment Info"]" class="fa-small">
+                        <VanigamAccountingFormField Text=@Localizer["Job"]>
+                            <ChildContent>
+                                <JobDropDownDataGrid @bind-Value="@CurrentObject.JobId" Disabled="IsEmbeddedModeActive"></JobDropDownDataGrid>
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Status"]>
+                            <ChildContent>
+                                <AssignmentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["AssignedAt"]>
+                            <ChildContent>
+                                <RadzenDatePicker @bind-Value="@CurrentObject.AssignedAt" Name="date_AssignedAt" ShowTime="true"  Max="DateTime.Now"/>
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["AcceptedAt"]>
+                            <ChildContent>
+                                <RadzenDatePicker @bind-Value="@CurrentObject.AcceptedAt" Name="date_AcceptedAt" ShowTime="true" Max="DateTime.Now" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
         </RadzenStack>
 
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">

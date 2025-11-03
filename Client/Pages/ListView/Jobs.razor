@@ -43,7 +43,7 @@
         </RadioButtons>
     </ListPageTitleComponent>
     <RadzenRow>
-        <RadzenColumn SizeMD=12 class="datagrid-container-standard" Style="@(IsEmbeddedMode ? "height: calc(100vh - 220px);" : "height: auto;")">
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard" Style="@(IsEmbeddedMode ? "height: calc(100vh - 270px);" : "height: auto;")">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Job" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings" Style="@(IsEmbeddedMode ? "height: 100%;" : "height: auto;")">
                 <EmptyTemplate>
                     <NoRecordComponent ShowAddButton="false" />
@@ -56,18 +56,18 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Number) Title=@Localizer["Number"]>
+                    </RadzenDataGridColumn>
                     @* Show Customer column only in standalone mode *@
                     @if (!IsEmbeddedMode)
                     {
-                        <RadzenDataGridColumn TItem="Job" Property="Party.Name" Title=@Localizer["Customer"] Sortable="true">
+                        <RadzenDataGridColumn TItem="Job" Property="@PropertyExtensions.GetPropertyFullPath((Job i) => i.Party.Name)" Title=@Localizer["Customer"] Sortable="true">
                             <Template Context="job">
                                 @job.Party?.Name
                             </Template>
                         </RadzenDataGridColumn>
                     }
                     <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Title) Title=@Localizer["Title"]>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Description) Title=@Localizer["Description"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="job">
@@ -78,6 +78,8 @@
                         <Template Context="job">
                             <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(job.Priority)" Text="@job.Priority.ToString()" />
                         </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Description) Title=@Localizer["Description"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

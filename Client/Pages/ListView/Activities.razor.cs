@@ -91,7 +91,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 parameters.Add("OpportunityId", OpportunityId.Value);
             }
 
-            await DialogService.OpenDialogAsync<EditActivity>(Localizer["AddActivity"], parameters.Count > 0 ? parameters : null, 90, 100);
+            await DialogService.OpenDialogAsync<EditActivity>(Localizer["AddActivity"], parameters.Count > 0 ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -102,7 +102,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Activity activity)
         {
-            await DialogService.OpenDialogAsync<EditActivity>(Localizer["EditActivity"], new Dictionary<string, object> { { "Oid", activity.Oid } }, 90, 100);
+            await DialogService.OpenDialogAsync<EditActivity>(Localizer["EditActivity"], new Dictionary<string, object> { { "Oid", activity.Oid } }, 100, 100);
             await GridReload();
         }
 

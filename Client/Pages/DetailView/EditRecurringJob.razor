@@ -4,28 +4,92 @@
 @inherits Vanigam.CRM.Client.Components.BaseDetailView<RecurringJob, EditRecurringJob>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 
-<DetailPageCommonComponent TitleText="@Localizer["EditRecurringJob"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
+<DetailPageTitleComponent TitleText="@Localizer["EditRecurringJob"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
 <RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="RecurringJob" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+
+    @* Read-Only Mode Display *@
+    @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
+    {
+        <RadzenCard class="rz-my-4">
+            @if (IsEditButtonVisible)
+            {
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
+                             JustifyContent="JustifyContent.End" Gap="10px">
+                    <RadzenFab Style="bottom: 12px; left: 12px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+                </RadzenStack>
+            }
+            <RadzenStack>
+                <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+                    <Tabs>
+                        @* Recurring Job Tab *@
+                        <RadzenTabsItem Text="@Localizer["Recurring Job"]" Icon="@FadIcon("fa-info")" class="fa-small">
+                            <RadzenRow>
+                                <RadzenColumn Size="6">
+                                    <RadzenStack>
+                                        <div class="rz-p-4">
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Number"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Name ?? "-")</RadzenText>
+                                            </div>
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Title"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Contract.Title ?? "-")</RadzenText>
+                                            </div>
+                                            <div class="read-only-field rz-mb-3">
+                                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Customer"]:</strong></RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.CronExpression ?? "-")</RadzenText>
+                                            </div>
+                                        </div>
+                                    </RadzenStack>
+                                </RadzenColumn>
+                            </RadzenRow>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+            </RadzenStack>
+        </RadzenCard>
+    }
+
+    @* Editable Form Mode *@
+    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="RecurringJob" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@FormSubmit">
         <RadzenStack>
             <FluentValidationValidator Validator="new RecurringJobValidator(Localizer)" />
             <ValidationSummary />
-            <VanigamAccountingFormField Text=@Localizer["Name"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["CronExpression"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.CronExpression" Name="txt_CronExpression" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+            <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left">
+                <Tabs>
+                    @* RecurringJob Tab *@
+                    <RadzenTabsItem Text="@Localizer["Recurring Job"]" class="fa-small">
+                        <VanigamAccountingFormField Text=@Localizer["Name"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["Contract"]>
+                            <ChildContent>
+                                <ContractDropDownDataGrid @bind-Value="@CurrentObject.ContractId"></ContractDropDownDataGrid>
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["CronExpression"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.CronExpression" Name="txt_CronExpression" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
         </RadzenStack>
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+            @if (IsCreateMode)
+            {
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+            }
+            else
+            {
+                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+            }
         </RadzenStack>
     </RadzenTemplateForm>
 </RadzenColumn>

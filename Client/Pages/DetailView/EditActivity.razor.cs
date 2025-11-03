@@ -16,6 +16,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private int ActivityFor { get; set; }
         [Parameter] public Guid? LeadId { get; set; }
         [Parameter] public Guid? OpportunityId { get; set; }
+        private int EditTabIndex { get; set; } = 0;
 
         // Dropdown data for form fields
         private List<string> ActivityTypes = new()
