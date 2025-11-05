@@ -16,7 +16,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         [Inject] private InvoiceItemApiService InvoiceItemApiService { get; set; }
 
         private List<InvoiceItemDTO> invoiceItems = new();
-
+        private int EditTabIndex { get; set; } = 0;
+        private int ReadOnlyTabIndex { get; set; } = 0;
         private bool HasAnyChanges => HasChanges || (invoiceItems?.Any(i => i.IsNew || i.IsDeleted) ?? false);
 
         protected override async Task OnInitializedAsync()
