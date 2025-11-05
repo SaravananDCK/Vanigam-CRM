@@ -217,7 +217,8 @@ namespace Vanigam.CRM.Client.Layout
                     new MenuItemDto { Text = Localizer["GST Reports"], Path = "gst-reports", Icon = ("fa-file-invoice") },
                     new MenuItemDto { Text = Localizer["Financial Reports"], Path = "financial-reports", Icon = ("fa-chart-bar") },
                     new MenuItemDto { Text = Localizer["Sales Reports"], Path = "sales-reports", Icon = ("fa-dollar-sign") },
-                    new MenuItemDto { Text = Localizer["Purchase Reports"], Path = "purchase-reports", Icon = ("fa-shopping-cart") }
+                    new MenuItemDto { Text = Localizer["Purchase Reports"], Path = "purchase-reports", Icon = ("fa-shopping-cart") },
+                    new MenuItemDto { Text = Localizer["Ledger Entries"], Path = "ledgerentries", Icon = ("fa-shopping-cart") }
                 ]
             });
 

@@ -47,7 +47,7 @@ public class LedgerPostingService(
             var entries = new List<LedgerEntry>();
 
             // Calculate gross sales (before discount)
-            var grossSales = invoice.SubTotal + invoice.DiscountAmount;
+            var grossSales = invoice.SubTotal;
 
             // 1. Debit Customer Account (Asset increases) - Full invoice amount including tax
             entries.Add(new LedgerEntry
@@ -203,8 +203,8 @@ public class LedgerPostingService(
             await context.LedgerEntries.AddRangeAsync(entries);
 
             // Validate entries balance
-            var totalDebits = entries.Where(e => e.EntryType == EntryType.Debit).Sum(e => e.Amount);
-            var totalCredits = entries.Where(e => e.EntryType == EntryType.Credit).Sum(e => e.Amount);
+            var totalDebits = Math.Round(entries.Where(e => e.EntryType == EntryType.Debit).Sum(e => e.Amount));
+            var totalCredits = Math.Round(entries.Where(e => e.EntryType == EntryType.Credit).Sum(e => e.Amount));
 
             if (totalDebits != totalCredits)
             {
