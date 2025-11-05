@@ -14,6 +14,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     {
         [Inject] private QuoteApiService QuoteApiService { get; set; }
         private int QuotationFor { get; set; }
+        private int EditTabIndex { get; set; } = 0;
+        private int ReadOnlyTabIndex { get; set; } = 0;
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
