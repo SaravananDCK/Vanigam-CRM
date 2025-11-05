@@ -1,4 +1,5 @@
 @page "/appointments"
+@using Vanigam.CRM.Client.Helpers
 @using Vanigam.CRM.Objects.Entities
 @inherits Vanigam.CRM.Client.Components.BaseListView<Appointment, Appointments>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
@@ -7,12 +8,12 @@
 
 <RadzenStack>
     <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Job Appointments"] : Localizer["Appointments"])
-                                AddButtonClick=@AddButtonClick
-                                SearchButtonClick=@Search
-                                ShowAdd=@(!IsEmbeddedMode || JobId.HasValue) />
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || JobId.HasValue) />
     <RadzenRow>
-        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
-            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Appointment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard" Style="@(IsEmbeddedMode ? "height: calc(100vh - 270px);" : "height: auto;")">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Appointment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings" Style="@(IsEmbeddedMode ? "height: 100%;" : "height: auto;")">
                 <EmptyTemplate>
                     <NoRecordComponent ShowAddButton="false" />
                 </EmptyTemplate>
@@ -27,17 +28,31 @@
                     @* Show Job column only in standalone mode *@
                     @if (!IsEmbeddedMode)
                     {
-                        <RadzenDataGridColumn TItem="Appointment" Property="Job.Title" Title=@Localizer["Job"]>
+                        <RadzenDataGridColumn TItem="Appointment" Property="@PropertyExtensions.GetPropertyFullPath((Appointment i) => i.Job.Title)" Title=@Localizer["Job"]>
                             <Template Context="appointment">
                                 @appointment.Job?.Title
                             </Template>
                         </RadzenDataGridColumn>
                     }
-                    <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.StartAt) Title=@Localizer["StartTime"]>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.EndAt) Title=@Localizer["EndTime"]>
+                    <RadzenDataGridColumn TItem="Appointment" Property="@PropertyExtensions.GetPropertyFullPath((Appointment i) => i.Technician.FullName)" Title=@Localizer["Technician"]>
+                        <Template Context="appointment">
+                            @appointment.Technician?.FullName
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.Status) Title=@Localizer["Status"]>
+                        <Template Context="appointment">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(appointment.Status)" Text="@appointment.Status.ToString()" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.StartAt) Title=@Localizer["StartTime"]>
+                        <Template Context="appointment">
+                            @(appointment.StartAt?.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt"))
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.EndAt) Title=@Localizer["EndTime"]>
+                        <Template Context="appointment">
+                            @(appointment.EndAt?.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt"))
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

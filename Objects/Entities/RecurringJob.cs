@@ -11,7 +11,7 @@ namespace Vanigam.CRM.Objects.Entities
         public string Name { get; set; } = string.Empty;
 
         [Required]
-        public Guid ContractId { get; set; }
+        public Guid? ContractId { get; set; }
 
         [ForeignKey(nameof(ContractId))]
         public Contract Contract { get; set; } = null!;

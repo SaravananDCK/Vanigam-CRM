@@ -1,4 +1,5 @@
 @page "/jobassignments"
+@using Vanigam.CRM.Client.Helpers
 @using Vanigam.CRM.Objects.Entities
 @inherits Vanigam.CRM.Client.Components.BaseListView<JobAssignment, JobAssignments>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
@@ -6,13 +7,13 @@
 
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Job Assignments"] : Localizer["JobAssignments"])
-                                AddButtonClick=@AddButtonClick
-                                SearchButtonClick=@Search
-                                ShowAdd=@(!IsEmbeddedMode || JobId.HasValue) />
+    <ListPageTitleComponent TitleText=@(IsEmbeddedMode ? EmbeddedTitle ?? Localizer["Job Assignments"] : Localizer["Job Assignments"])
+                            AddButtonClick=@AddButtonClick
+                            SearchButtonClick=@Search
+                            ShowAdd=@(!IsEmbeddedMode || JobId.HasValue) />
     <RadzenRow>
-        <RadzenColumn SizeMD=12 class="datagrid-container-standard">
-            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="JobAssignment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
+        <RadzenColumn SizeMD=12 class="datagrid-container-standard" Style="@(IsEmbeddedMode ? "height: calc(100vh - 270px);" : "height: auto;")">
+            <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="JobAssignment" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings" Style="@(IsEmbeddedMode ? "height: 100%;" : "height: auto;")">
                 <EmptyTemplate>
                     <NoRecordComponent ShowAddButton="false" />
                 </EmptyTemplate>
@@ -27,17 +28,31 @@
                     @* Show Job column only in standalone mode *@
                     @if (!IsEmbeddedMode)
                     {
-                        <RadzenDataGridColumn TItem="JobAssignment" Property="Job.Title" Title=@Localizer["Job"]>
+                        <RadzenDataGridColumn TItem="JobAssignment" Property="@PropertyExtensions.GetPropertyFullPath((JobAssignment i) => i.Job.Title)" Title=@Localizer["Job"]>
                             <Template Context="assignment">
                                 @assignment.Job?.Title
                             </Template>
                         </RadzenDataGridColumn>
                     }
+                    <RadzenDataGridColumn TItem="JobAssignment" Property="@PropertyExtensions.GetPropertyFullPath((JobAssignment i) => i.Technician.FullName)" Title=@Localizer["Technician"]>
+                        <Template Context="assignment">
+                            @assignment.Technician?.FullName
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.Status) Title=@Localizer["Status"]>
+                        <Template Context="jobAssignment">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(jobAssignment.Status)" Text="@jobAssignment.Status.ToString()" />
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.AssignedAt) Title=@Localizer["AssignedAt"]>
+                        <Template Context="jobAssignment">
+                            @(jobAssignment.AssignedAt?.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt") ?? " ")
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.AcceptedAt) Title=@Localizer["AcceptedAt"]>
+                        <Template Context="jobAssignment">
+                            @(jobAssignment.AcceptedAt?.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt") ?? " ")
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

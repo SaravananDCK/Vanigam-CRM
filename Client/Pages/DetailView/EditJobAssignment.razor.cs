@@ -9,7 +9,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditJobAssignment
     {
         [Parameter] public Guid? JobId { get; set; }
-
+        private int ReadOnlyTabIndex { get; set; } = 0;
+        private int EditTabIndex { get; set; } = 0;
+        [Parameter] public bool IsEmbeddedModeActive { get; set; } = false;
         [Inject] private JobAssignmentApiService JobAssignmentApiService { get; set; }
 
         protected override async Task OnInitializedAsync()
@@ -26,7 +28,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             else
             {
-                CurrentObject = await JobAssignmentApiService.GetByOid(oid: Oid);
+                CurrentObject = await JobAssignmentApiService.GetByOid(oid: Oid, expand: "Job");
                 IsReadOnlyMode = true; // Edit mode - start in read-only
             }
 

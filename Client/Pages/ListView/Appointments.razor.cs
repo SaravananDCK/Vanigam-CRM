@@ -36,7 +36,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             // Add job filter if in embedded mode
             if (IsEmbeddedMode && JobId.HasValue)
             {
-                filter = filter.FilterByAnd(a => a.JobId == JobId.Value);
+                filter = filter.FilterByAnd(a => a.JobId == JobId);
             }
 
             // No additional searchable string properties for Appointment
@@ -53,7 +53,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             return new ODataExpand<Appointment>()
                 .Expand(f => f.Job, f => f.Job.Title)
-                .Expand(f => f.Technician, f => f.Technician.Name)
+                .Expand(f => f.Technician, f => f.Technician.FullName)
                 .Build();
         }
 
@@ -65,9 +65,10 @@ namespace Vanigam.CRM.Client.Pages.ListView
             if (IsEmbeddedMode && JobId.HasValue)
             {
                 parameters.Add("JobId", JobId.Value);
+                parameters.Add("IsEmbeddedModeActive", IsEmbeddedMode);
             }
 
-            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["AddAppointment"], parameters.Any() ? parameters : null, 100, 100);
+            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["Add Appointment"], parameters.Any() ? parameters : null, 100, 100);
             await GridReload();
         }
 
@@ -78,7 +79,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Appointment appointment)
         {
-            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["EditAppointment"], new Dictionary<string, object> { { "Oid", appointment.Oid } }, 100, 100);
+            await DialogService.OpenDialogAsync<EditAppointment>(Localizer["Edit Appointment"], new Dictionary<string, object> { { "Oid", appointment.Oid },{ "IsEmbeddedModeActive", IsEmbeddedMode } }, 100, 100);
             await GridReload();
         }
 

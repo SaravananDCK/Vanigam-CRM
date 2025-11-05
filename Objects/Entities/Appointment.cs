@@ -8,7 +8,7 @@ namespace Vanigam.CRM.Objects.Entities
     public class Appointment : BaseClass
     {
         [Required]
-        public Guid JobId { get; set; }
+        public Guid? JobId { get; set; }
 
         [ForeignKey(nameof(JobId))]
         public Job Job { get; set; } = null!;
