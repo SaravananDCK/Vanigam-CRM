@@ -228,6 +228,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     DiscountType = CurrentObject.DiscountType,
                     DiscountAmount = CurrentObject.DiscountAmount,
                     DiscountPercentage = CurrentObject.DiscountPercent,
+                    DueDate = CurrentObject.DueDate,
                     VoucherDate = CurrentObject.VoucherDate,
                     PurchaseOrderId = CurrentObject.PurchaseOrderId,
                     Items = purchaseInvoiceItems.Select(i => new PurchaseInvoiceItemDTO

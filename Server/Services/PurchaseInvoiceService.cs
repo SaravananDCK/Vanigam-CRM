@@ -162,6 +162,7 @@ public class PurchaseInvoiceService(
                 purchaseInvoice.IGSTAmount = purchaseInvoiceData.IGSTAmount;
                 purchaseInvoice.CessAmount = purchaseInvoiceData.CessAmount;
                 purchaseInvoice.VoucherDate = purchaseInvoiceData.VoucherDate;
+                purchaseInvoice.DueDate = purchaseInvoiceData.DueDate;
                 purchaseInvoice.DiscountAmount = purchaseInvoiceData.DiscountAmount;
                 purchaseInvoice.DiscountPercent = purchaseInvoiceData.DiscountPercentage;
                 purchaseInvoice.DiscountType = purchaseInvoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
@@ -206,6 +207,7 @@ public class PurchaseInvoiceService(
                     IGSTAmount = purchaseInvoiceData.IGSTAmount,
                     CessAmount = purchaseInvoiceData.CessAmount,
                     VoucherDate = purchaseInvoiceData.VoucherDate,
+                    DueDate = purchaseInvoiceData.DueDate,
                     DiscountAmount = purchaseInvoiceData.DiscountAmount,
                     DiscountPercent = purchaseInvoiceData.DiscountPercentage,
                     DiscountType = purchaseInvoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,

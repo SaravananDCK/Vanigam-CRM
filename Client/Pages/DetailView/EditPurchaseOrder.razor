@@ -221,22 +221,28 @@
                                 }
                             </ChildContent>
                         </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Vendor"]>
-                            <ChildContent>
-                                <VendorDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-
-                        <VanigamAccountingFormField Text=@Localizer["Status"]>
-                            <ChildContent>
-                                <PurchaseOrderStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
                         <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="6">
+                                <VanigamAccountingFormField Text=@Localizer["Vendor"]>
+                                    <ChildContent>
+                                        <VendorDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                            </RadzenColumn>
                             <RadzenColumn Size="12" SizeMD="6">
                                 <VanigamAccountingFormField Text=@Localizer["DueDate"]>
                                     <ChildContent>
                                         <RadzenDatePicker @bind-Value="@CurrentObject.DueDate" Name="dt_DueDate" class="w-100" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        
+                        <RadzenRow>
+                            <RadzenColumn Size="12" SizeMD="6">
+                                <VanigamAccountingFormField Text=@Localizer["Status"]>
+                                    <ChildContent>
+                                        <PurchaseOrderStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                             </RadzenColumn>
@@ -248,6 +254,7 @@
                                 </VanigamAccountingFormField>
                             </RadzenColumn>
                         </RadzenRow>
+
                         <RadzenRow>
                             <RadzenColumn Size="12" SizeMD="6">
                                 <VanigamAccountingFormField Text=@Localizer["ContactPerson"]>

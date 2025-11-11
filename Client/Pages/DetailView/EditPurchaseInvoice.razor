@@ -238,7 +238,7 @@
                                 <RadzenColumn Size="6">
                                     <VanigamAccountingFormField Text=@Localizer["Date"]>
                                         <ChildContent>
-                                            <RadzenDatePicker @bind-Value="@CurrentObject.VoucherDate" Name="dt_VoucherDate" class="w-100" ReadOnly="true" />
+                                            <VanigamAccountingDatePicker @bind-Value="@CurrentObject.VoucherDate" Name="dt_VoucherDate" class="w-100" ReadOnly="true" />
                                         </ChildContent>
                                     </VanigamAccountingFormField>
                                     <VanigamAccountingFormField Text=@Localizer["VendorInvoiceNumber"]>

@@ -39,7 +39,7 @@
                     <EditTemplate Context="item">
                         <RadzenNumeric TValue="double" @bind-Value="item.Quantity"
                                        Min="1"
-                                       Change="@(async (double value) => { item.Quantity = value; CalculateTotal(item); await NotifyChanges(); })"
+                                       Change="@(async (double value) => { item.Quantity = value; await CalculateDiscount(); await NotifyChanges(); })"
                                        class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
@@ -51,7 +51,7 @@
                         <RadzenNumeric TValue="decimal" @bind-Value="item.UnitPrice"
                                        Format="C"
                                        Min="0"
-                                       Change="@(async (decimal value) => { item.UnitPrice = value; CalculateTotal(item); await NotifyChanges(); })"
+                                       Change="@(async (decimal value) => { item.UnitPrice = value; await CalculateDiscount(); await NotifyChanges(); })"
                                        class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>

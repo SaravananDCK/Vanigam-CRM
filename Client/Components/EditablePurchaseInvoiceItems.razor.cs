@@ -157,7 +157,6 @@ public partial class EditablePurchaseInvoiceItems
                     }
                 }
             }
-
             await NotifyChanges();
         }
     }
@@ -217,7 +216,7 @@ public partial class EditablePurchaseInvoiceItems
             item.DiscountAmount = item.Total * ((decimal)PurchaseInvoice.DiscountPercent / 100);
             CalculateTotal(item);
         }
-        await NotifyChanges();
+        //await NotifyChanges();
     }
 
     private async Task NotifyChanges()

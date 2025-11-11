@@ -32,6 +32,7 @@ public class PurchaseInvoiceBulkSaveDTO
     public decimal TaxAmount { get; set; }
 
     public DateTimeOffset VoucherDate { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? DueDate { get; set; }
 
     public Guid? PurchaseOrderId { get; set; }
 
