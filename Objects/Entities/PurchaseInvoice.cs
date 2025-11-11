@@ -29,6 +29,7 @@ namespace Vanigam.CRM.Objects.Entities
         Received,
         Verified,
         Paid,
+        [Display(Description = "Partially-Paid")]
         PartiallyPaid,
         Overdue,
         Cancelled

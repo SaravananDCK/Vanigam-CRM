@@ -5,7 +5,7 @@
 @inject NotificationService NotificationService
 @inject ItemApiService ItemApiService
 
-<RadzenStack>
+<RadzenStack Style="margin-top: 0.5rem">
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
         <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["PurchaseInvoiceItems"]</RadzenText>
 
@@ -117,58 +117,123 @@
         </RadzenDataGrid>
 
         @* Totals Display *@
-        <RadzenCard class="rz-mt-3">
+        <RadzenCard class="rz-my-4">
             <RadzenRow>
-                <RadzenColumn Size="12" SizeMD="6" />
-                <RadzenColumn Size="12" SizeMD="6">
+                <RadzenColumn Size="12">
                     <RadzenCard Variant="Variant.Outlined">
                         <RadzenRow Gap="1rem" RowGap="1rem">
-                            <RadzenColumn Size="6">
-                                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
-                                    <RadzenRadioButtonList TValue=DiscountType @bind-Value="PurchaseInvoice.DiscountType">
-                                        <Items>
-                                            <RadzenRadioButtonListItem Text=@Localizer[$"{DiscountType.Percentage}"] Value="DiscountType.Percentage" />
-                                            <RadzenRadioButtonListItem Text=@Localizer[$"{DiscountType.Amount}"] Value="DiscountType.Amount" />
-                                        </Items>
-                                    </RadzenRadioButtonList>
-                                </RadzenStack>
+                            <RadzenColumn Size="2">
+                                <div style="margin-top: 4rem; margin-right: 1rem">
+                                    <div class="read-only-field rz-mb-3">
+                                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Tot.Items"]:</strong></RadzenText>
+                                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width:60px" TextAlign="TextAlign.Right">@(Items.Count())</RadzenText>
+                                        </RadzenStack>
+                                    </div>
+                                    <div class="read-only-field rz-mb-3">
+                                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Tot.Qty"]:</strong></RadzenText>
+                                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width:60px" TextAlign="TextAlign.Right">@(Items.Sum(i => i.Quantity))</RadzenText>
+                                        </RadzenStack>
+                                    </div>
+                                </div>
                             </RadzenColumn>
-                            <RadzenColumn Size="6">
-                                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
-                                    <RadzenText TextStyle="TextStyle.H6"><strong>@Localizer["Sub Total"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right" Style="width: 150px">@SubTotalAmount.ToString("C")</RadzenText>
-                                </RadzenStack>
-                            </RadzenColumn>
-                            <RadzenColumn Size="6">
-                                @if (PurchaseInvoice.DiscountType == DiscountType.Percentage)
-                                {
+
+                            <RadzenColumn Size="4">
+                                <div class="read-only-field rz-mb-3">
                                     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
-                                        <RadzenText TextStyle="TextStyle.H6"><strong>@Localizer["Discount %"]:</strong></RadzenText>
-                                        <RadzenNumeric TValue="double" @bind-Value="DiscountPercentage" Style="width: 150px"
-                                                       Format="n0" TextAlign="TextAlign.Right"
-                                                       Change="@(async (double value) => { DiscountPercentage = value; await CalculateDiscount((decimal)value); await NotifyChanges(); })"
-                                                       class="w-100" />
+                                        <RadzenRadioButtonList TValue="DiscountType"
+                                                               Value="PurchaseInvoice.DiscountType"
+                                                               ValueChanged="OnDiscountTypeChange">
+                                            <Items>
+                                                <RadzenRadioButtonListItem Text=@Localizer[$"{DiscountType.Percentage}"] Value="DiscountType.Percentage" />
+                                                <RadzenRadioButtonListItem Text=@Localizer[$"{DiscountType.Amount}"] Value="DiscountType.Amount" />
+                                            </Items>
+                                        </RadzenRadioButtonList>
+                                        <RadzenButton Icon="refresh" ButtonStyle="ButtonStyle.Success"
+                                                      Variant="Variant.Flat" Size="ButtonSize.Small"
+                                                      Click="@(() => CalculateDiscount())" />
                                     </RadzenStack>
-                                }
+                                </div>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Discount %"]:</strong></RadzenText>
+
+                                        <RadzenNumeric @ref="discountPercentRef"
+                                                       TValue="decimal"
+                                                       @bind-Value="PurchaseInvoice.DiscountPercent"
+                                                       Style="@(PurchaseInvoice.DiscountType == DiscountType.Amount ? "width: 150px; background-color: var(--rz-base-100)" : "width: 150px;")"
+                                                       ReadOnly="PurchaseInvoice.DiscountType == DiscountType.Amount"
+                                                       Format="N2" TextAlign="TextAlign.Right" Min="0" MaxLength="5"
+                                                       Change="@(async (decimal value) => { PurchaseInvoice.DiscountPercent = value; await CalculateDiscount(); await NotifyChanges(); })"
+                                                       class="w-100 field-value" />
+                                    </RadzenStack>
+                                </div>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Discount Amt"]:</strong></RadzenText>
+                                        <RadzenNumeric @ref="discountAmountRef"
+                                                       TValue="decimal"
+                                                       @bind-Value="PurchaseInvoice.DiscountAmount"
+                                                       Style="@(PurchaseInvoice.DiscountType == DiscountType.Percentage ? "width: 150px;background-color: var(--rz-base-100)":"width: 150px;")"
+                                                       ReadOnly="PurchaseInvoice.DiscountType == DiscountType.Percentage"
+                                                       Format="C" TextAlign="TextAlign.Right" ShowUpDown="false" Min="0"
+                                                       Change="@(async (decimal value) => { PurchaseInvoice.DiscountAmount = value; await CalculateDiscount(); await NotifyChanges(); })"
+                                                       class="w-100 field-value" />
+                                    </RadzenStack>
+                                </div>
                             </RadzenColumn>
-                            <RadzenColumn Size="6">
-                                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
-                                    <RadzenText TextStyle="TextStyle.H6"><strong>@Localizer["Tax"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right" Style="width: 150px">@TaxAmount.ToString("C")</RadzenText>
-                                </RadzenStack>
+                            <RadzenColumn Size="3">
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["CGST"]:</strong></RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width: 120px" TextAlign="TextAlign.Right">@(PurchaseInvoice.CGSTAmount.ToString("C2"))</RadzenText>
+                                    </RadzenStack>
+                                </div>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["SGST"]:</strong></RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width: 120px" TextAlign="TextAlign.Right">@(PurchaseInvoice.SGSTAmount.ToString("C2"))</RadzenText>
+                                    </RadzenStack>
+                                </div>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["IGST"]:</strong></RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width: 120px" TextAlign="TextAlign.Right">@(PurchaseInvoice.IGSTAmount.ToString("C2"))</RadzenText>
+                                    </RadzenStack>
+                                </div>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Cess"]:</strong></RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width: 120px" TextAlign="TextAlign.Right">@(PurchaseInvoice.CessAmount.ToString("C2"))</RadzenText>
+                                    </RadzenStack>
+                                </div>
                             </RadzenColumn>
-                            <RadzenColumn Size="6">
-                                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
-                                    <RadzenText TextStyle="TextStyle.H6"><strong>@Localizer["Discount"]:</strong></RadzenText>
-                                    <RadzenNumeric TValue="decimal" @bind-Value="DiscountAmt" Style="width: 150px" Format="C" TextAlign="TextAlign.Right" class="w-100" ShowUpDown="false"
-                                                   Change="@(async (decimal value) => { DiscountAmt = value; await CalculateDiscount(value); await NotifyChanges(); })" ReadOnly="PurchaseInvoice.DiscountType == DiscountType.Percentage" />
-                                </RadzenStack>
-                            </RadzenColumn>
-                            <RadzenColumn Size="6">
-                                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
-                                    <RadzenText TextStyle="TextStyle.H6"> <strong>@Localizer["Grand Total"]:</strong></RadzenText>
-                                    <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Right" Style="width: 150px">@GrandTotalAmount.ToString("C")</RadzenText>
-                                </RadzenStack>
+                            <RadzenColumn Size="3">
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Sub Total"]:</strong></RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width: 150px" TextAlign="TextAlign.Right">@(PurchaseInvoice.SubTotal.ToString("C"))</RadzenText>
+                                    </RadzenStack>
+                                </div>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Tax"]:</strong></RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width: 150px" TextAlign="TextAlign.Right">@(PurchaseInvoice.TaxAmount.ToString("C2"))</RadzenText>
+                                    </RadzenStack>
+                                </div>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label" Style="color: var(--rz-danger);"><strong>@Localizer["Discount"]:</strong></RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="color: var(--rz-danger); width: 150px" TextAlign="TextAlign.Right">@(PurchaseInvoice.DiscountAmount.ToString("C2"))</RadzenText>
+                                    </RadzenStack>
+                                </div>
+                                <div class="read-only-field rz-mb-3">
+                                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
+                                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Grand Total"]:</strong></RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width: 150px" TextAlign="TextAlign.Right"><strong>@(PurchaseInvoice.TotalAmount.ToString("C2"))</strong></RadzenText>
+                                    </RadzenStack>
+                                </div>
                             </RadzenColumn>
                         </RadzenRow>
                     </RadzenCard>

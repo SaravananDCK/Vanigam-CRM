@@ -22,7 +22,8 @@ public class PurchaseInvoiceBulkSaveDTO
 
     public decimal TotalAmount { get; set; }
     public decimal DiscountAmount { get; set; }
-    public double DiscountPercentage { get; set; }
+    public decimal DiscountPercentage { get; set; }
+    public DiscountType DiscountType { get; set; } = DiscountType.Percentage;
     public decimal CGSTAmount { get; set; } = 0;
     public decimal SGSTAmount { get; set; } = 0;
     public decimal IGSTAmount { get; set; } = 0;

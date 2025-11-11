@@ -298,7 +298,7 @@
 
                         <VanigamAccountingFormField Text=@Localizer["State"]>
                             <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.CompanyState" Name="txt_CompanyState" />
+                                <StatesDropDown @bind-Value="@CurrentObject.CompanyState" />
                             </ChildContent>
                         </VanigamAccountingFormField>
 

@@ -258,5 +258,23 @@ namespace Vanigam.CRM.Client.Helpers
             return isActive ? BadgeStyle.Success : BadgeStyle.Danger;
         }
         #endregion
+
+        #region PurchaseInvoiceStatus
+        public static BadgeStyle GetBadgeStyle(PurchaseInvoiceStatus status)
+        {
+            return status switch
+            {
+                PurchaseInvoiceStatus.Draft => BadgeStyle.Secondary,
+                PurchaseInvoiceStatus.Posted => BadgeStyle.Info,
+                PurchaseInvoiceStatus.Received => BadgeStyle.Primary,
+                PurchaseInvoiceStatus.Verified => BadgeStyle.Success,
+                PurchaseInvoiceStatus.Paid => BadgeStyle.Success,
+                PurchaseInvoiceStatus.PartiallyPaid => BadgeStyle.Warning,
+                PurchaseInvoiceStatus.Overdue => BadgeStyle.Danger,
+                PurchaseInvoiceStatus.Cancelled => BadgeStyle.Secondary,
+                _ => BadgeStyle.Light
+            };
+        }
+        #endregion
     }
 }

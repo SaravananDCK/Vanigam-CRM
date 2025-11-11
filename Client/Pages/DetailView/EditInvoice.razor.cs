@@ -177,7 +177,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
         }
 
-        private async Task OnDiscountPercentageChanged(double discountPercent)
+        private async Task OnDiscountPercentageChanged(decimal discountPercent)
         {
             if (CurrentObject != null)
             {

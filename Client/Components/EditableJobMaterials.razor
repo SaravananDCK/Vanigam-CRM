@@ -144,9 +144,9 @@
                                 {
                                     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center">
                                         <RadzenText TextStyle="TextStyle.H6"><strong>@Localizer["Discount %"]:</strong></RadzenText>
-                                        <RadzenNumeric TValue="double" @bind-Value="DiscountPercentage" Style="width: 150px"
+                                        <RadzenNumeric TValue="decimal" @bind-Value="DiscountPercentage" Style="width: 150px"
                                                        Format="n0" TextAlign="TextAlign.Right"
-                                                       Change="@(async (double value) => { DiscountPercentage = value; await CalculateDiscount((decimal)value); await NotifyChanges(); })"
+                                                       Change="@(async (decimal value) => { DiscountPercentage = value; await CalculateDiscount(value); await NotifyChanges(); })"
                                                        class="w-100" />
                                     </RadzenStack>
                                 }

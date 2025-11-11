@@ -216,20 +216,22 @@ public class PurchaseInvoiceService(
                 // Add purchase invoice items
                 foreach (var itemDto in purchaseInvoiceData.Items.Where(i => !i.IsDeleted))
                 {
-                    var newItem = new PurchaseInvoiceItem
+                    if (itemDto.InventoryItemId != null)
                     {
-                        Oid = Guid.NewGuid(),
-                        VoucherId = purchaseInvoice.Oid,
-                        ItemId = itemDto.InventoryItemId,
-                        Quantity = itemDto.Quantity,
-                        UnitPrice = itemDto.UnitPrice,
-                        DiscountAmount = itemDto.DiscountAmount,
-                        TaxAmount = itemDto.TaxAmount ?? 0,
-                        TaxCodeId = itemDto.TaxCodeId,
-                        TenantId = TenantId
-                    };
-
-                    Context.PurchaseInvoiceItems.Add(newItem);
+                        var newItem = new PurchaseInvoiceItem
+                        {
+                            Oid = Guid.NewGuid(),
+                            VoucherId = purchaseInvoice.Oid,
+                            ItemId = itemDto.InventoryItemId,
+                            Quantity = itemDto.Quantity,
+                            UnitPrice = itemDto.UnitPrice,
+                            DiscountAmount = itemDto.DiscountAmount,
+                            TaxAmount = itemDto.TaxAmount ?? 0,
+                            TaxCodeId = itemDto.TaxCodeId,
+                            TenantId = TenantId
+                        };
+                        Context.PurchaseInvoiceItems.Add(newItem);
+                    }
                 }
 
                 Context.PurchaseInvoices.Add(purchaseInvoice);
@@ -285,7 +287,7 @@ public class PurchaseInvoiceService(
         // Add or update items
         foreach (var itemDto in items.Where(i => !i.IsDeleted))
         {
-            if (itemDto.IsNew)
+            if (itemDto.IsNew && itemDto.InventoryItemId != null)
             {
                 // Add new item
                 var newItem = new PurchaseInvoiceItem

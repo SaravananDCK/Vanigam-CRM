@@ -1,5 +1,6 @@
 @page "/purchaseinvoices"
 @using Vanigam.CRM.Objects.Entities
+@using Vanigam.CRM.Client.Helpers
 @inherits Vanigam.CRM.Client.Components.BaseListView<PurchaseInvoice, PurchaseInvoices>
 @attribute [Authorize(Policy = Vanigam.CRM.Objects.ApplicationPolicy.IsAdministrator)]
 @inject PurchaseInvoiceApiService PurchaseInvoiceApiService
@@ -22,29 +23,29 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.Number) Title=@Localizer["Number"] Width="120px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.VendorInvoiceNumber) Title=@Localizer["VendorInvoiceNumber"] Width="150px">
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.VoucherDate) Title=@Localizer["Date"] Width="120px">
-                        <Template Context="purchaseinvoice">
-                            @(purchaseinvoice.VoucherDate.ToString("yyyy-MM-dd"))
-                        </Template>
-                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="PurchaseInvoice" Property="Vendor.Name" Title=@Localizer["Vendor"] Width="200px">
                         <Template Context="purchaseinvoice">
                             @(purchaseinvoice.Party?.Name ?? "-")
                         </Template>
                     </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.VendorInvoiceNumber) Title=@Localizer["VendorInvoiceNumber"] Width="150px">
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.VoucherDate) Title=@Localizer["Date"] Width="120px">
+                        <Template Context="purchaseinvoice">
+                            @(purchaseinvoice.VoucherDate.ToHumanDateTime())
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="purchaseinvoice">
-                            @(purchaseinvoice.Status.ToString())
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(purchaseinvoice.Status)" Text="@purchaseinvoice.Status.ToString()" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.ReceivedDate) Title=@Localizer["ReceivedDate"] Width="150px">
                         <Template Context="purchaseinvoice">
-                            @(purchaseinvoice.ReceivedDate?.ToString("yyyy-MM-dd") ?? "-")
+                            @(purchaseinvoice.ReceivedDate?.ToHumanDateTime() ?? "-")
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.TotalAmount) Title=@Localizer["TotalAmount"] Width="150px">
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.TotalAmount) Title=@Localizer["TotalAmount"] Width="150px" TextAlign="TextAlign.Right">
                         <Template Context="purchaseinvoice">
                             @(purchaseinvoice.TotalAmount.ToString("C2"))
                         </Template>
