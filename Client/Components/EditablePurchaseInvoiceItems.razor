@@ -35,22 +35,27 @@
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Property="Quantity" Title="@Localizer["Quantity"]" Width="120px" TextAlign="TextAlign.Right">
+                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Property="Quantity" Width="120px" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["Quantity"]</div>
+                    </HeaderTemplate>
                     <EditTemplate Context="item">
                         <RadzenNumeric TValue="double" @bind-Value="item.Quantity"
-                                       Min="1"
+                                       Min="1" TextAlign="TextAlign.Right"
                                        Change="@(async (double value) => { item.Quantity = value; await CalculateDiscount(); await NotifyChanges(); })"
                                        class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Property="UnitPrice" Title="@Localizer["UnitPrice"]" Width="150px" TextAlign="TextAlign.Right">
+                <RadzenDataGridColumn TItem="PurchaseInvoiceItemDTO" Property="UnitPrice" Width="150px" TextAlign="TextAlign.Right">
+                    <HeaderTemplate>
+                        <div style="padding-right: 20px;">@Localizer["UnitPrice"]</div>
+                    </HeaderTemplate>
                     <Template Context="item">
                         @item.UnitPrice.ToString("C")
                     </Template>
                     <EditTemplate Context="item">
                         <RadzenNumeric TValue="decimal" @bind-Value="item.UnitPrice"
-                                       Format="C"
-                                       Min="0"
+                                       Format="C" TextAlign="TextAlign.Right" Min="0"
                                        Change="@(async (decimal value) => { item.UnitPrice = value; await CalculateDiscount(); await NotifyChanges(); })"
                                        class="w-100" />
                     </EditTemplate>

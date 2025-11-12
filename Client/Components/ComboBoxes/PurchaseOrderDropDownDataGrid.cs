@@ -37,7 +37,7 @@ public class PurchaseOrderDropDownDataGrid : VanigamAccountingDropDownAddDataGri
 
             builder2.OpenComponent<RadzenDropDownDataGridColumn>(1);
             builder2.AddAttribute(1, "Property", nameof(PurchaseOrder.TotalAmount));
-            builder2.AddAttribute(2, "Title", "Name");
+            builder2.AddAttribute(2, "Title", "Total Amount");
             builder2.CloseComponent();
         };
     }

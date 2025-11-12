@@ -18,12 +18,9 @@ public partial class EditablePurchaseInvoiceItems
     [Parameter] public string TenantAccountingState { get; set; }
     [Parameter] public List<PurchaseInvoiceItemDTO> Items { get; set; } = new();
     [Parameter] public EventCallback<List<PurchaseInvoiceItemDTO>> ItemsChanged { get; set; }
-    [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
-    [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
-    [Parameter] public EventCallback<decimal> SubTotalChanged { get; set; }
     private RadzenDataGrid<PurchaseInvoiceItemDTO> itemsGrid = null!;
     private PurchaseInvoiceItemDTO itemBeingEdited;
 
@@ -71,15 +68,6 @@ public partial class EditablePurchaseInvoiceItems
         var result = Items.FirstOrDefault(i => i.InventoryItemId == null);
         if (result == null) await AddNewItem();
     }
-
-    private async Task OnDiscountTypeChange(DiscountType args)
-    {
-        PurchaseInvoice.DiscountType = args;
-        await NotifyChanges();
-        await Task.Delay(50);
-        await CalculateDiscount();
-    }
-
     private async Task CancelEdit(PurchaseInvoiceItemDTO item)
     {
         itemsGrid.CancelEditRow(item);
@@ -91,13 +79,11 @@ public partial class EditablePurchaseInvoiceItems
             await NotifyChanges();
         }
     }
-
     private async Task OnRowUpdate(PurchaseInvoiceItemDTO item)
     {
         CalculateTotal(item);
         await NotifyChanges();
     }
-
     private async Task DeleteItem(PurchaseInvoiceItemDTO item)
     {
         if (item.IsNew)
@@ -110,6 +96,13 @@ public partial class EditablePurchaseInvoiceItems
         }
 
         await NotifyChanges();
+    }
+    private async Task OnDiscountTypeChange(DiscountType args)
+    {
+        PurchaseInvoice.DiscountType = args;
+        await NotifyChanges();
+        await Task.Delay(50);
+        await CalculateDiscount();
     }
     private async Task OnInventoryItemChanged(PurchaseInvoiceItemDTO item, object value)
     {
@@ -190,7 +183,6 @@ public partial class EditablePurchaseInvoiceItems
 
     private async Task CalculateDiscount()
     {
-        if (PurchaseInvoice.DiscountPercent == 0 && PurchaseInvoice.DiscountAmount == 0) return;
         if(PurchaseInvoice.DiscountPercent > 100)
         {
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = Localizer["Error"], Detail = Localizer[$"Given Percentage: {PurchaseInvoice.DiscountPercent} is not more than 100%... "] });
@@ -202,11 +194,11 @@ public partial class EditablePurchaseInvoiceItems
         
         if (!items.Any()) return;
 
-        if (PurchaseInvoice.DiscountType == DiscountType.Percentage)
+        if (PurchaseInvoice.DiscountType == DiscountType.Percentage && PurchaseInvoice.DiscountPercent > 0)
         {
             PurchaseInvoice.DiscountAmount = PurchaseInvoice.SubTotal * (PurchaseInvoice.DiscountPercent / 100);
         }
-        else if (PurchaseInvoice.DiscountType == DiscountType.Amount)
+        else if (PurchaseInvoice.DiscountType == DiscountType.Amount && PurchaseInvoice.DiscountAmount > 0)
         {
             PurchaseInvoice.DiscountPercent = (PurchaseInvoice.DiscountAmount / PurchaseInvoice.SubTotal) * 100;
         }
@@ -216,17 +208,13 @@ public partial class EditablePurchaseInvoiceItems
             item.DiscountAmount = item.Total * ((decimal)PurchaseInvoice.DiscountPercent / 100);
             CalculateTotal(item);
         }
-        //await NotifyChanges();
     }
 
     private async Task NotifyChanges()
     {
-        await SubTotalChanged.InvokeAsync(PurchaseInvoice.SubTotal);
         await ItemsChanged.InvokeAsync(Items);
-        await TotalTaxChanged.InvokeAsync(PurchaseInvoice.TaxAmount);
         await DiscountChanged.InvokeAsync(PurchaseInvoice.DiscountAmount);
         await DiscountPercentageChanged.InvokeAsync(PurchaseInvoice.DiscountPercent);
-        await TotalAmountChanged.InvokeAsync(PurchaseInvoice.TotalAmount);
         await DiscountTypeChanged.InvokeAsync(PurchaseInvoice.DiscountType);
         StateHasChanged();
     }

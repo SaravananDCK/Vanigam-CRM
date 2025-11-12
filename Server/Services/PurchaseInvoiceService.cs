@@ -165,7 +165,7 @@ public class PurchaseInvoiceService(
                 purchaseInvoice.DueDate = purchaseInvoiceData.DueDate;
                 purchaseInvoice.DiscountAmount = purchaseInvoiceData.DiscountAmount;
                 purchaseInvoice.DiscountPercent = purchaseInvoiceData.DiscountPercentage;
-                purchaseInvoice.DiscountType = purchaseInvoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
+                purchaseInvoice.DiscountType = purchaseInvoiceData.DiscountType;
                 purchaseInvoice.PurchaseOrderId = purchaseInvoiceData.PurchaseOrderId;
 
                 // Handle purchase invoice items
@@ -210,7 +210,7 @@ public class PurchaseInvoiceService(
                     DueDate = purchaseInvoiceData.DueDate,
                     DiscountAmount = purchaseInvoiceData.DiscountAmount,
                     DiscountPercent = purchaseInvoiceData.DiscountPercentage,
-                    DiscountType = purchaseInvoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
+                    DiscountType = purchaseInvoiceData.DiscountType,
                     PurchaseOrderId = purchaseInvoiceData.PurchaseOrderId,
                     TenantId = TenantId
                 };
