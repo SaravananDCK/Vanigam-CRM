@@ -276,5 +276,20 @@ namespace Vanigam.CRM.Client.Helpers
             };
         }
         #endregion
+        #region PurchaseInvoiceStatus
+        public static BadgeStyle GetBadgeStyle(PurchaseOrderStatus status)
+        {
+            return status switch
+            {
+                PurchaseOrderStatus.Draft => BadgeStyle.Secondary,
+                PurchaseOrderStatus.Sent => BadgeStyle.Info,
+                PurchaseOrderStatus.Confirmed => BadgeStyle.Success,
+                PurchaseOrderStatus.PartiallyReceived => BadgeStyle.Warning,
+                PurchaseOrderStatus.Received => BadgeStyle.Danger,
+                PurchaseOrderStatus.Cancelled => BadgeStyle.Secondary,
+                _ => BadgeStyle.Light
+            };
+        }
+        #endregion
     }
 }

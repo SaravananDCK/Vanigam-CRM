@@ -11,19 +11,19 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditPurchaseOrder
     {
+        private int ReadOnlyTabIndex { get; set; } = 0;
+        private int EditTabIndex { get; set; } = 0;
         [Inject] private PurchaseOrderApiService PurchaseOrderApiService { get; set; }
-        [Inject] private VendorApiService VendorApiService { get; set; }
+        [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }
+        private IEnumerable<Vendor> Vendors { get; set; } = [];
         private List<PurchaseOrderItemDTO> purchaseItems = new();
         private bool hasQuoteItemChanges = false;
-        public bool HasAnyChanges => Form?.EditContext?.IsModified() == true || hasQuoteItemChanges;
-        private IEnumerable<Vendor> Vendors { get; set; } = [];
+        public string TenantAccountingState { get; set; }
+        private string VendorState { get; set; }
+        public bool HasAnyChanges => Form?.EditContext?.IsModified() == true || hasQuoteItemChanges || (purchaseItems?.Any(i => i.IsNew || i.IsDeleted) ?? false);
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync();
-
-            // Load dropdown data
-            await LoadDropdownData();
-
             if (CurrentObject != null && !IsCreateMode)
             {
                 await LoadPurchaseItems();
@@ -45,8 +45,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 CurrentObject = await PurchaseOrderApiService.GetByOid(oid: Oid, expand: GetExpandString());
                 IsReadOnlyMode = true;
             }
+            var result = await TenantAccountingSettingsApiService.Get(top: 1);
+            var accSetings = result?.Value?.FirstOrDefault(f => !string.IsNullOrEmpty(f.CompanyState));
+            TenantAccountingState = accSetings?.CompanyState;
 
-            //await LoadVendors();
             await InitEditContext();
         }
         protected string GetExpandString()
@@ -55,23 +57,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 .Expand(f => f.VoucherLines)
                 .Expand(f => f.Party, f => f.Party.Name)
                 .Build();
-        }
-        private async Task LoadDropdownData()
-        {
-            try
-            {
-                var vendorsTask = VendorApiService.Get();
-                Vendors = (await vendorsTask).Value;
-            }
-            catch (Exception ex)
-            {
-                NotificationService.Notify(new NotificationMessage
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = Localizer["Error"],
-                    Detail = Localizer["Failed to load Dropdown Data"]
-                });
-            }
         }
         private async Task LoadPurchaseItems()
         {
@@ -97,22 +82,57 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         {
             purchaseItems = items;
             hasQuoteItemChanges = true;
+            VendorState = Vendors.Where(v => v.Oid == CurrentObject.PartyId).Select(v => v.State).FirstOrDefault();
+            CalculateTotalAmount();
+        }
+        private void CalculateTotalAmount()
+        {
+            var subTotal = purchaseItems.Where(i => !i.IsDeleted).Sum(i => i.Total);
+            var totalDiscount = purchaseItems.Where(i => !i.IsDeleted).Sum(i => i.DiscountAmount);
+            var totalTax = purchaseItems.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount ?? 0);
+
+            // Calculate GST breakdown from purchase invoice items
+            decimal cgstAmount = 0;
+            decimal sgstAmount = 0;
+            decimal igstAmount = 0;
+            decimal cessAmount = 0;
+
+            foreach (var item in purchaseItems.Where(i => !i.IsDeleted))
+            {
+                // Calculate taxable amount for this line (after discount)
+                var taxableAmount = item.Total - item.DiscountAmount;
+
+                // Calculate GST components based on rates from TaxCode
+                if (TenantAccountingState == VendorState)
+                {
+                    cgstAmount += taxableAmount * (decimal)(item.CGSTRate / 100);
+                    sgstAmount += taxableAmount * (decimal)(item.SGSTRate / 100);
+                }
+                else
+                {
+                    igstAmount += taxableAmount * (decimal)(item.IGSTRate / 100);
+                }
+                cessAmount += taxableAmount * (decimal)(item.CessRate / 100);
+            }
+
+            CurrentObject.SubTotal = Math.Round(subTotal);
+            CurrentObject.DiscountAmount = totalDiscount;
+            CurrentObject.TaxAmount = Math.Round(totalTax);
+            CurrentObject.CGSTAmount = cgstAmount;
+            CurrentObject.SGSTAmount = sgstAmount;
+            CurrentObject.IGSTAmount = igstAmount;
+            CurrentObject.CessAmount = cessAmount;
+            CurrentObject.TotalAmount = Math.Round(subTotal - totalDiscount + totalTax);
+
             StateHasChanged();
         }
 
-        private async Task OnTotalAmountChanged(decimal totalAmount)
+        private async Task OnDiscountTypeChanged(DiscountType type)
         {
             if (CurrentObject != null)
             {
-                CurrentObject.TotalAmount = totalAmount;
-                StateHasChanged();
-            }
-        }
-        private async Task OnTotalTaxAmountChanged(decimal taxAmount)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.TaxAmount = taxAmount;
+                CurrentObject.DiscountType = type;
+                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountType)));
                 StateHasChanged();
             }
         }
@@ -121,6 +141,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (CurrentObject != null)
             {
                 CurrentObject.DiscountAmount = discountAmount;
+                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountAmount)));
                 StateHasChanged();
             }
         }
@@ -130,6 +151,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (CurrentObject != null)
             {
                 CurrentObject.DiscountPercent = discountPercent;
+                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountPercent)));
                 if (CurrentObject.DiscountPercent > 0)
                 {
                     await OnDiscountAmountChanged(CurrentObject.DiscountAmount);
@@ -137,23 +159,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 StateHasChanged();
             }
         }
-        private async Task OnSubTotalChanged(decimal subTotal)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.SubTotal = subTotal;
-                StateHasChanged();
-            }
-        }
-
-        private async Task OnDiscountTypeChanged(DiscountType type)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.DiscountType = type;
-                StateHasChanged();
-            }
-        }
+       
         protected override async Task EnableReadOnlyModeAsync()
         {
             await base.EnableReadOnlyModeAsync();
@@ -180,14 +186,19 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     TotalAmount = CurrentObject.TotalAmount,
                     SubTotal = CurrentObject.SubTotal,
                     TaxAmount = CurrentObject.TaxAmount,
+                    CGSTAmount = CurrentObject.CGSTAmount,
+                    SGSTAmount = CurrentObject.SGSTAmount,
+                    IGSTAmount = CurrentObject.IGSTAmount,
+                    CessAmount = CurrentObject.CessAmount,
+                    DiscountType = CurrentObject.DiscountType,
                     DiscountAmount = CurrentObject.DiscountAmount,
                     DiscountPercentage = CurrentObject.DiscountPercent,
-                    Items = purchaseItems,
                     DueDate = CurrentObject.DueDate,
                     ExpectedDeliveryDate = CurrentObject.ExpectedDeliveryDate,
                     ShippingAddress = CurrentObject.ShippingAddress,
                     ContactPerson = CurrentObject.ContactPerson,
-                    Reference = CurrentObject.Reference
+                    Reference = CurrentObject.Reference,
+                    Items = purchaseItems
                 };
 
                 var savedQuote = await PurchaseOrderApiService.BulkSavePurchaseOrderWithItemsAsync(bulkData);

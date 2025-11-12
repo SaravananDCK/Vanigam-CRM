@@ -16,11 +16,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private int EditTabIndex { get; set; } = 0;
         [Inject] private PurchaseInvoiceApiService PurchaseInvoiceApiService { get; set; }
         [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }
-        [Inject] private VendorApiService VendorApiService { get; set; }
-        [Inject] private PurchaseOrderApiService PurchaseOrderApiService { get; set; }
         private IEnumerable<Vendor> Vendors { get; set; } = [];
-        private IEnumerable<PurchaseOrder> PurchaseOrders { get; set; } = [];
-
         private List<PurchaseInvoiceItemDTO> purchaseInvoiceItems = new();
         public string TenantAccountingState { get; set; }
         private string VendorState { get; set; }
@@ -42,8 +38,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             var result = await TenantAccountingSettingsApiService.Get(top: 1);
             var accSetings = result?.Value?.FirstOrDefault(f => !string.IsNullOrEmpty(f.CompanyState));
             TenantAccountingState = accSetings?.CompanyState;
-            await LoadVendors();
-            await LoadPurchaseOrders();
             await InitEditContext();
         }
 
@@ -73,30 +67,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     Summary = Localizer["Error"],
                     Detail = Localizer["FailedToLoadPurchaseInvoiceItems"]
                 });
-            }
-        }
-        private async Task LoadVendors()
-        {
-            try
-            {
-                var result = await VendorApiService.Get(filter: null, expand: null, orderBy: "Name", top: null, skip: null, count: false);
-                Vendors = result.Value.AsODataEnumerable();
-            }
-            catch (Exception ex)
-            {
-                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["Error"], Detail = Localizer["LoadVendorsFailed"] });
-            }
-        }
-        private async Task LoadPurchaseOrders()
-        {
-            try
-            {
-                var result = await PurchaseOrderApiService.Get(filter: null, expand: null, orderBy: "Number desc", top: null, skip: null, count: false);
-                PurchaseOrders = result.Value.AsODataEnumerable();
-            }
-            catch (Exception ex)
-            {
-                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["Error"], Detail = Localizer["LoadPurchaseOrdersFailed"] });
             }
         }
 

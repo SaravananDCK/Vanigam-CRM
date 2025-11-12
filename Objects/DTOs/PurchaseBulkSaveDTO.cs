@@ -16,6 +16,11 @@ public class PurchaseOrderBulkSaveDTO
     public decimal TotalAmount { get; set; }
     public decimal SubTotal { get; set; }
     public decimal TaxAmount { get; set; }
+    public DiscountType DiscountType { get; set; }
+    public decimal CGSTAmount { get; set; } = 0;
+    public decimal SGSTAmount { get; set; } = 0;
+    public decimal IGSTAmount { get; set; } = 0;
+    public decimal CessAmount { get; set; } = 0;
     public DateTimeOffset? ExpectedDeliveryDate { get; set; }
     public DateTimeOffset? DueDate { get; set; }
     public string ShippingAddress { get; set; }
@@ -38,7 +43,10 @@ public class PurchaseOrderItemDTO
     public decimal DiscountAmount { get; set; } = 0;
     public Guid? TaxCodeId { get; set; }
     public decimal? TaxAmount { get; set; }
-
+    public double CGSTRate { get; set; } = 0;
+    public double SGSTRate { get; set; } = 0;
+    public double IGSTRate { get; set; } = 0;
+    public double CessRate { get; set; } = 0;
     public decimal Total => (decimal)(Quantity * (double)UnitPrice);
     public decimal TotalIncTax => Total + (TaxAmount ?? 0) - DiscountAmount;
 
