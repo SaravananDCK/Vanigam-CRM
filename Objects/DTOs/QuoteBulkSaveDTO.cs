@@ -19,7 +19,7 @@ public class QuoteBulkSaveDTO
 
     public Guid? JobId { get; set; }
     public decimal DiscountAmount { get; set; }
-    public double DiscountPercentage { get; set; }
+    public decimal DiscountPercentage { get; set; }
     public decimal TotalAmount { get; set; }
 
     public decimal SubTotal { get; set; }

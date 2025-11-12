@@ -9,20 +9,20 @@ using Vanigam.CRM.Objects.Helpers;
 
 namespace Vanigam.CRM.Client.Components.ComboBoxes;
 
-public class VendorDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<Vendor, EditVendor>
+public class PurchaseOrderDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<PurchaseOrder, EditPurchaseOrder>
 {
-    [Inject] VendorApiService VendorApiService { get; set; }
-    public VendorDropDownDataGrid()
+    [Inject] PurchaseOrderApiService PurchaseOrderApiService { get; set; }
+    public PurchaseOrderDropDownDataGrid()
     {
-        Name = "cbx_VendorId";
+        Name = "cbx_PurchaseOrderId";
     }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        ApiService = VendorApiService;
-        Width = 100;
-        Height = 100;
+        ApiService = PurchaseOrderApiService;
+        Width = 35;
+        Height = 50;
     }
 
     protected override void BuildRenderTree(RenderTreeBuilder builder)
@@ -31,13 +31,13 @@ public class VendorDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<Vendo
         this.Columns = (builder2) =>
         {
             builder2.OpenComponent<RadzenDropDownDataGridColumn>(0);
-            builder2.AddAttribute(1, "Property", nameof(Vendor.Code));
+            builder2.AddAttribute(1, "Property", nameof(PurchaseOrder.Number));
             builder2.AddAttribute(2, "Title", "Code");
             builder2.CloseComponent();
 
             builder2.OpenComponent<RadzenDropDownDataGridColumn>(1);
-            builder2.AddAttribute(1, "Property", nameof(Vendor.Name));
-            builder2.AddAttribute(2, "Title", "Name");
+            builder2.AddAttribute(1, "Property", nameof(PurchaseOrder.TotalAmount));
+            builder2.AddAttribute(2, "Title", "Total Amount");
             builder2.CloseComponent();
         };
     }

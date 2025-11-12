@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
+using Radzen;
 using Radzen.Blazor;
+using System.Security.Cryptography;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.OData;
@@ -8,37 +10,28 @@ namespace Vanigam.CRM.Client.Components;
 
 public partial class EditablePurchaseInvoiceItems
 {
+    private RadzenNumeric<decimal> discountPercentRef;
+    private RadzenNumeric<decimal> discountAmountRef;
     private Item Item { get; set; }
     [Parameter] public PurchaseInvoice PurchaseInvoice { get; set; }
+    [Parameter] public string VendorState { get; set; }
+    [Parameter] public string TenantAccountingState { get; set; }
     [Parameter] public List<PurchaseInvoiceItemDTO> Items { get; set; } = new();
     [Parameter] public EventCallback<List<PurchaseInvoiceItemDTO>> ItemsChanged { get; set; }
-    [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
-    [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
-    [Parameter] public EventCallback<double> DiscountPercentageChanged { get; set; }
+    [Parameter] public EventCallback<decimal> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
-    [Parameter] public EventCallback<decimal> SubTotalChanged { get; set; }
     private RadzenDataGrid<PurchaseInvoiceItemDTO> itemsGrid = null!;
     private PurchaseInvoiceItemDTO itemBeingEdited;
-    public decimal SubTotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
-    public decimal TaxAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount) ?? 0;
-    public decimal TotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
-    public double DiscountPercentage { get; set; } = 0;
-    public decimal DiscountAmt { get; set; } = 0;
-    public decimal GrandTotalAmount { get; set; } = 0;
-
-    protected override void OnInitialized()
-    {
-        if (PurchaseInvoice != null)
-        {
-            DiscountPercentage = (double)PurchaseInvoice.DiscountPercent;
-            DiscountAmt = PurchaseInvoice.DiscountAmount;
-            GrandTotalAmount = PurchaseInvoice.TotalAmount;
-        }
-    }
 
     private async Task AddNewItem()
     {
+        if (PurchaseInvoice.PartyId == null)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = Localizer["Error"], Detail = Localizer["Vendor is Required"] });
+            return;
+        }
+      
         var newItem = new PurchaseInvoiceItemDTO
         {
             Quantity = 1,
@@ -61,9 +54,20 @@ public partial class EditablePurchaseInvoiceItems
 
     private async Task SaveRow(PurchaseInvoiceItemDTO item)
     {
+        if (item.InventoryItemId == null)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Failed"],
+                Detail = Localizer["Purchase Invoice Item is required.."]
+            });
+            return;
+        }
         await itemsGrid.UpdateRow(item);
+        var result = Items.FirstOrDefault(i => i.InventoryItemId == null);
+        if (result == null) await AddNewItem();
     }
-
     private async Task CancelEdit(PurchaseInvoiceItemDTO item)
     {
         itemsGrid.CancelEditRow(item);
@@ -75,13 +79,11 @@ public partial class EditablePurchaseInvoiceItems
             await NotifyChanges();
         }
     }
-
     private async Task OnRowUpdate(PurchaseInvoiceItemDTO item)
     {
         CalculateTotal(item);
         await NotifyChanges();
     }
-
     private async Task DeleteItem(PurchaseInvoiceItemDTO item)
     {
         if (item.IsNew)
@@ -95,7 +97,13 @@ public partial class EditablePurchaseInvoiceItems
 
         await NotifyChanges();
     }
-
+    private async Task OnDiscountTypeChange(DiscountType args)
+    {
+        PurchaseInvoice.DiscountType = args;
+        await NotifyChanges();
+        await Task.Delay(50);
+        await CalculateDiscount();
+    }
     private async Task OnInventoryItemChanged(PurchaseInvoiceItemDTO item, object value)
     {
         if (value is Guid inventoryItemId)
@@ -110,24 +118,31 @@ public partial class EditablePurchaseInvoiceItems
                     item.InventoryItemName = Item.Name;
                     item.UnitPrice = Item.UnitPrice;
                     item.TaxCodeId = Item.TaxCodeId;
-
                     // Calculate GST breakdown based on TaxCode rates
                     if (Item.TaxCode != null)
                     {
-                        item.CGSTRate = Item.TaxCode.CGSTRate;
-                        item.SGSTRate = Item.TaxCode.SGSTRate;
-                        item.IGSTRate = Item.TaxCode.IGSTRate;
+                        if (TenantAccountingState == VendorState)
+                        {
+                            item.CGSTRate = Item.TaxCode.CGSTRate;
+                            item.SGSTRate = Item.TaxCode.SGSTRate;
+                            item.IGSTRate = 0;
+                        }
+                        else
+                        {
+                            item.CGSTRate = 0;
+                            item.SGSTRate = 0;
+                            item.IGSTRate = Item.TaxCode.IGSTRate;
+                        }
                         item.CessRate = Item.TaxCode.CessRate;
 
                         // Total tax is the sum of all GST components
-                        var totalTaxRate = Item.TaxCode.CGSTRate + Item.TaxCode.SGSTRate +
-                                         Item.TaxCode.IGSTRate + Item.TaxCode.CessRate;
+                        var totalTaxRate = item.CGSTRate + item.SGSTRate + item.IGSTRate + item.CessRate;
                         item.TaxAmount = ((decimal)totalTaxRate / 100) * Item.UnitPrice;
                     }
 
                     if (PurchaseInvoice.DiscountType == DiscountType.Percentage)
                     {
-                        await CalculateDiscount((decimal)DiscountPercentage);
+                        await CalculateDiscount();
                     }
                     else
                     {
@@ -135,7 +150,6 @@ public partial class EditablePurchaseInvoiceItems
                     }
                 }
             }
-
             await NotifyChanges();
         }
     }
@@ -143,62 +157,64 @@ public partial class EditablePurchaseInvoiceItems
     protected string GetExpandString()
     {
         return new ODataExpand<Item>()
-            .Expand(f => f.TaxCode, f => f.TaxCode.TaxRate)
+            .Expand(f => f.TaxCode, f => f.TaxCode.TaxRate, f => f.TaxCode.CessRate, f => f.TaxCode.CGSTRate, f => f.TaxCode.SGSTRate, f => f.TaxCode.IGSTRate)
             .Build();
     }
 
     private void CalculateTotal(PurchaseInvoiceItemDTO item)
     {
-        // Total is calculated automatically in the DTO property
-        if (Item?.TaxCode != null)
+        if (item.TaxCodeId != null)
         {
             // Calculate tax on taxable amount (after discount)
             var taxableAmount = item.Total - item.DiscountAmount;
-            var totalTaxRate = Item.TaxCode.CGSTRate + Item.TaxCode.SGSTRate +
-                             Item.TaxCode.IGSTRate + Item.TaxCode.CessRate;
+            double totalTaxRate;
+            if (TenantAccountingState == VendorState)
+            {
+                totalTaxRate = item.CGSTRate + item.SGSTRate + item.CessRate;
+            }
+            else
+            {
+                totalTaxRate = item.IGSTRate + item.CessRate;
+            }
             item.TaxAmount = ((decimal)totalTaxRate / 100) * taxableAmount;
         }
-        GrandTotalAmount = Math.Round(SubTotalAmount + TaxAmount - DiscountAmt);
+        PurchaseInvoice.TotalAmount = Math.Round(PurchaseInvoice.SubTotal + PurchaseInvoice.TaxAmount - PurchaseInvoice.DiscountAmount);
     }
 
-    private async Task CalculateDiscount(decimal discount)
+    private async Task CalculateDiscount()
     {
-        var items = Items.Where(i => !i.IsDeleted);
-        if (PurchaseInvoice.DiscountType == DiscountType.Amount)
+        if(PurchaseInvoice.DiscountPercent > 100)
         {
-            DiscountPercentage = 0;
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = Localizer["Error"], Detail = Localizer[$"Given Percentage: {PurchaseInvoice.DiscountPercent} is not more than 100%... "] });
+            PurchaseInvoice.DiscountPercent = (PurchaseInvoice.DiscountAmount / PurchaseInvoice.SubTotal) * 100;
+            return;
         }
-        if (DiscountPercentage != 0)
+
+        var items = Items.Where(i => !i.IsDeleted).ToList();
+        
+        if (!items.Any()) return;
+
+        if (PurchaseInvoice.DiscountType == DiscountType.Percentage && PurchaseInvoice.DiscountPercent > 0)
         {
-            DiscountAmt = SubTotalAmount * (discount / 100);
+            PurchaseInvoice.DiscountAmount = PurchaseInvoice.SubTotal * (PurchaseInvoice.DiscountPercent / 100);
         }
-        if (items.Any())
+        else if (PurchaseInvoice.DiscountType == DiscountType.Amount && PurchaseInvoice.DiscountAmount > 0)
         {
-            var itemCounts = items.Count();
-            foreach (var item in items)
-            {
-                if (PurchaseInvoice.DiscountType == DiscountType.Amount)
-                {
-                    item.DiscountAmount = DiscountAmt / itemCounts;
-                }
-                else
-                {
-                    item.DiscountAmount = item.Total * ((decimal)DiscountPercentage / 100);
-                }
-                CalculateTotal(item);
-            }
+            PurchaseInvoice.DiscountPercent = (PurchaseInvoice.DiscountAmount / PurchaseInvoice.SubTotal) * 100;
         }
-        await NotifyChanges();
+
+        foreach (var item in items)
+        {
+            item.DiscountAmount = item.Total * ((decimal)PurchaseInvoice.DiscountPercent / 100);
+            CalculateTotal(item);
+        }
     }
 
     private async Task NotifyChanges()
     {
-        await SubTotalChanged.InvokeAsync(SubTotalAmount);
         await ItemsChanged.InvokeAsync(Items);
-        await TotalTaxChanged.InvokeAsync(TaxAmount);
-        await DiscountChanged.InvokeAsync(DiscountAmt);
-        await DiscountPercentageChanged.InvokeAsync(DiscountPercentage);
-        await TotalAmountChanged.InvokeAsync(GrandTotalAmount);
+        await DiscountChanged.InvokeAsync(PurchaseInvoice.DiscountAmount);
+        await DiscountPercentageChanged.InvokeAsync(PurchaseInvoice.DiscountPercent);
         await DiscountTypeChanged.InvokeAsync(PurchaseInvoice.DiscountType);
         StateHasChanged();
     }

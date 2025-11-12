@@ -15,7 +15,7 @@ public partial class EditableQuoteItems
     [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
     [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
-    [Parameter] public EventCallback<double> DiscountPercentageChanged { get; set; }
+    [Parameter] public EventCallback<decimal> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
     [Parameter] public EventCallback<decimal> SubTotalChanged { get; set; }
     private RadzenDataGrid<QuoteItemDTO> itemsGrid = null!;
@@ -23,7 +23,7 @@ public partial class EditableQuoteItems
     public decimal SubTotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
     public decimal TaxAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount) ?? 0;
     //public decimal DiscountAmt => Items?.Where(i => !i.IsDeleted).Sum(i => i.DiscountAmount) ?? 0;
-    public double DiscountPercentage { get; set; } = 0;
+    public decimal DiscountPercentage { get; set; } = 0;
     public decimal DiscountAmt { get; set; } = 0;
     public decimal GrandTotalAmount { get; set; } = 0;
 
@@ -31,7 +31,7 @@ public partial class EditableQuoteItems
     {
         if (Quote != null)
         {
-            DiscountPercentage = (double)Quote.DiscountPercent;
+            DiscountPercentage = Quote.DiscountPercent;
             DiscountAmt = Quote.DiscountAmount;
             GrandTotalAmount = Quote.TotalAmount;
         }

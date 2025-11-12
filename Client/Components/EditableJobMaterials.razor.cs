@@ -15,7 +15,7 @@ public partial class EditableJobMaterials
     [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
     [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
-    [Parameter] public EventCallback<double> DiscountPercentageChanged { get; set; }
+    [Parameter] public EventCallback<decimal> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
     [Parameter] public EventCallback<decimal> SubTotalChanged { get; set; }
     private RadzenDataGrid<MaterialUsageDTO> materialsGrid = null!;
@@ -23,7 +23,7 @@ public partial class EditableJobMaterials
     public decimal SubTotalAmount => Materials?.Where(m => !m.IsDeleted).Sum(m => m.Total) ?? 0;
     public decimal TaxAmount => Materials?.Where(m => !m.IsDeleted).Sum(m => m.TaxAmount) ?? 0;
     public decimal TotalAmount => Materials?.Where(m => !m.IsDeleted).Sum(m => m.Total) ?? 0;
-    public double DiscountPercentage { get; set; } = 0;
+    public decimal DiscountPercentage { get; set; } = 0;
     public decimal DiscountAmt { get; set; } = 0;
     public decimal GrandTotalAmount { get; set; } = 0;
 
@@ -31,7 +31,7 @@ public partial class EditableJobMaterials
     {
         if (Job != null)
         {
-            DiscountPercentage = (double)Job.DiscountPercent;
+            DiscountPercentage = Job.DiscountPercent;
             DiscountAmt = Job.DiscountAmount;
             GrandTotalAmount = Job.TotalAmount;
         }

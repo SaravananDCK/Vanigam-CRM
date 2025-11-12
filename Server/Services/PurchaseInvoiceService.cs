@@ -162,9 +162,10 @@ public class PurchaseInvoiceService(
                 purchaseInvoice.IGSTAmount = purchaseInvoiceData.IGSTAmount;
                 purchaseInvoice.CessAmount = purchaseInvoiceData.CessAmount;
                 purchaseInvoice.VoucherDate = purchaseInvoiceData.VoucherDate;
+                purchaseInvoice.DueDate = purchaseInvoiceData.DueDate;
                 purchaseInvoice.DiscountAmount = purchaseInvoiceData.DiscountAmount;
                 purchaseInvoice.DiscountPercent = purchaseInvoiceData.DiscountPercentage;
-                purchaseInvoice.DiscountType = purchaseInvoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
+                purchaseInvoice.DiscountType = purchaseInvoiceData.DiscountType;
                 purchaseInvoice.PurchaseOrderId = purchaseInvoiceData.PurchaseOrderId;
 
                 // Handle purchase invoice items
@@ -206,9 +207,10 @@ public class PurchaseInvoiceService(
                     IGSTAmount = purchaseInvoiceData.IGSTAmount,
                     CessAmount = purchaseInvoiceData.CessAmount,
                     VoucherDate = purchaseInvoiceData.VoucherDate,
+                    DueDate = purchaseInvoiceData.DueDate,
                     DiscountAmount = purchaseInvoiceData.DiscountAmount,
                     DiscountPercent = purchaseInvoiceData.DiscountPercentage,
-                    DiscountType = purchaseInvoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
+                    DiscountType = purchaseInvoiceData.DiscountType,
                     PurchaseOrderId = purchaseInvoiceData.PurchaseOrderId,
                     TenantId = TenantId
                 };
@@ -216,20 +218,22 @@ public class PurchaseInvoiceService(
                 // Add purchase invoice items
                 foreach (var itemDto in purchaseInvoiceData.Items.Where(i => !i.IsDeleted))
                 {
-                    var newItem = new PurchaseInvoiceItem
+                    if (itemDto.InventoryItemId != null)
                     {
-                        Oid = Guid.NewGuid(),
-                        VoucherId = purchaseInvoice.Oid,
-                        ItemId = itemDto.InventoryItemId,
-                        Quantity = itemDto.Quantity,
-                        UnitPrice = itemDto.UnitPrice,
-                        DiscountAmount = itemDto.DiscountAmount,
-                        TaxAmount = itemDto.TaxAmount ?? 0,
-                        TaxCodeId = itemDto.TaxCodeId,
-                        TenantId = TenantId
-                    };
-
-                    Context.PurchaseInvoiceItems.Add(newItem);
+                        var newItem = new PurchaseInvoiceItem
+                        {
+                            Oid = Guid.NewGuid(),
+                            VoucherId = purchaseInvoice.Oid,
+                            ItemId = itemDto.InventoryItemId,
+                            Quantity = itemDto.Quantity,
+                            UnitPrice = itemDto.UnitPrice,
+                            DiscountAmount = itemDto.DiscountAmount,
+                            TaxAmount = itemDto.TaxAmount ?? 0,
+                            TaxCodeId = itemDto.TaxCodeId,
+                            TenantId = TenantId
+                        };
+                        Context.PurchaseInvoiceItems.Add(newItem);
+                    }
                 }
 
                 Context.PurchaseInvoices.Add(purchaseInvoice);
@@ -285,7 +289,7 @@ public class PurchaseInvoiceService(
         // Add or update items
         foreach (var itemDto in items.Where(i => !i.IsDeleted))
         {
-            if (itemDto.IsNew)
+            if (itemDto.IsNew && itemDto.InventoryItemId != null)
             {
                 // Add new item
                 var newItem = new PurchaseInvoiceItem

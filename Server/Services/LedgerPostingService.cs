@@ -325,7 +325,7 @@ public class LedgerPostingService(
             var entries = new List<LedgerEntry>();
 
             // Calculate gross purchases (before discount)
-            var grossPurchases = purchaseInvoice.SubTotal + purchaseInvoice.DiscountAmount;
+            var grossPurchases = purchaseInvoice.SubTotal - purchaseInvoice.DiscountAmount;
 
             // 1. Debit Purchases Account (Expense increases) - Gross purchases before discount
             entries.Add(new LedgerEntry
@@ -343,31 +343,31 @@ public class LedgerPostingService(
             });
 
             // 2. Credit Purchase Discount Account (if discount exists) - Contra expense account
-            if (purchaseInvoice.DiscountAmount > 0)
-            {
-                var discountAccount = await GetPurchaseDiscountAccount(purchaseInvoice.TenantId);
-                if (discountAccount != null)
-                {
-                    entries.Add(new LedgerEntry
-                    {
-                        TenantId = purchaseInvoice.TenantId,
-                        VoucherId = purchaseInvoice.Oid,
-                        AccountId = discountAccount.Oid,
-                        EntryType = EntryType.Credit,
-                        Amount = purchaseInvoice.DiscountAmount,
-                        EntryDate = purchaseInvoice.VoucherDate,
-                        EntryNumber = purchaseInvoice.Number,
-                        Description = $"Purchase Discount - {purchaseInvoice.Number}",
-                        Reference = purchaseInvoice.Number,
-                        IsReconciled = false
-                    });
-                }
-                else
-                {
-                    logger.LogWarning("Purchase discount account not configured for tenant {TenantId}. Discount amount {DiscountAmount} not posted separately.",
-                        purchaseInvoice.TenantId, purchaseInvoice.DiscountAmount);
-                }
-            }
+            //if (purchaseInvoice.DiscountAmount > 0)
+            //{
+            //    var discountAccount = await GetPurchaseDiscountAccount(purchaseInvoice.TenantId);
+            //    if (discountAccount != null)
+            //    {
+            //        entries.Add(new LedgerEntry
+            //        {
+            //            TenantId = purchaseInvoice.TenantId,
+            //            VoucherId = purchaseInvoice.Oid,
+            //            AccountId = discountAccount.Oid,
+            //            EntryType = EntryType.Credit,
+            //            Amount = purchaseInvoice.DiscountAmount,
+            //            EntryDate = purchaseInvoice.VoucherDate,
+            //            EntryNumber = purchaseInvoice.Number,
+            //            Description = $"Purchase Discount - {purchaseInvoice.Number}",
+            //            Reference = purchaseInvoice.Number,
+            //            IsReconciled = false
+            //        });
+            //    }
+            //    else
+            //    {
+            //        logger.LogWarning("Purchase discount account not configured for tenant {TenantId}. Discount amount {DiscountAmount} not posted separately.",
+            //            purchaseInvoice.TenantId, purchaseInvoice.DiscountAmount);
+            //    }
+            //}
 
             // 3. Debit SGST Input Account (if SGST exists) - Input tax credit
             if (purchaseInvoice.SGSTAmount > 0)
@@ -482,21 +482,23 @@ public class LedgerPostingService(
 
             // Validate entries balance
             var totalDebits = entries.Where(e => e.EntryType == EntryType.Debit).Sum(e => e.Amount);
+            totalDebits = Math.Round(totalDebits);
             var totalCredits = entries.Where(e => e.EntryType == EntryType.Credit).Sum(e => e.Amount);
+            totalCredits = Math.Round(totalCredits);
 
             if (totalDebits != totalCredits)
             {
-                logger.LogError("Purchase Invoice {InvoiceNumber} ledger entries do not balance. Debits: {Debits}, Credits: {Credits}",
+                logger.LogError($"Purchase Invoice {purchaseInvoice.Number} ledger entries do not balance. Debits: {totalDebits}, Credits: {totalCredits}",
                     purchaseInvoice.Number, totalDebits, totalCredits);
                 throw new InvalidOperationException($"Ledger entries for purchase invoice {purchaseInvoice.Number} do not balance. Debits: {totalDebits}, Credits: {totalCredits}");
             }
 
-            logger.LogInformation("Successfully posted {EntryCount} ledger entries for Purchase Invoice {InvoiceNumber}. Debits: {Debits}, Credits: {Credits}",
+            logger.LogInformation($"Successfully posted {entries.Count} ledger entries for Purchase Invoice {purchaseInvoice.Number}. Debits: {totalDebits}, Credits: {totalCredits}",
                 entries.Count, purchaseInvoice.Number, totalDebits, totalCredits);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error posting Purchase Invoice {InvoiceNumber} to ledger", purchaseInvoice.Number);
+            logger.LogError(ex, $"Error posting Purchase Invoice {purchaseInvoice.Number} to ledger", purchaseInvoice.Number);
             throw;
         }
     }
@@ -1079,13 +1081,15 @@ public class LedgerPostingService(
             .ToListAsync();
 
         var totalDebits = entries.Where(e => e.EntryType == EntryType.Debit).Sum(e => e.Amount);
+        totalDebits = Math.Round(totalDebits);
         var totalCredits = entries.Where(e => e.EntryType == EntryType.Credit).Sum(e => e.Amount);
+        totalCredits = Math.Round(totalCredits);
 
         var isBalanced = totalDebits == totalCredits;
 
         if (!isBalanced)
         {
-            logger.LogWarning("Voucher {VoucherId} entries are not balanced. Debits: {Debits}, Credits: {Credits}",
+            logger.LogWarning($"Voucher {voucherId} entries are not balanced. Debits: {totalDebits}, Credits: {totalCredits}",
                 voucherId, totalDebits, totalCredits);
         }
 
@@ -1102,7 +1106,9 @@ public class LedgerPostingService(
             .ToListAsync();
 
         var totalDebits = entries.Where(e => e.EntryType == EntryType.Debit).Sum(e => e.Amount);
+        totalDebits = Math.Round(totalDebits);
         var totalCredits = entries.Where(e => e.EntryType == EntryType.Credit).Sum(e => e.Amount);
+        totalCredits = Math.Round(totalCredits);
 
         return (totalDebits, totalCredits, totalDebits == totalCredits);
     }

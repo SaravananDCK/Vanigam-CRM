@@ -2182,7 +2182,7 @@ namespace Vanigam.CRM.Objects
                     CompanyName="Vanigam Technologies",
                     CompanyAddress="111/1k/1A, Dwarakamayi, State Bank Colony",
                     CompanyCity="Tuticorin",
-                    CompanyState = "TamilNadu",
+                    CompanyState = "Tamil Nadu",
                     CompanyCountry="India",
                     CompanyPostalCode="628001",
                     TenantId = demoTenant.Id,

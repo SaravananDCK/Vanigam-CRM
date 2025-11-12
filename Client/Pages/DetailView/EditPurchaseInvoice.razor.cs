@@ -12,23 +12,24 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditPurchaseInvoice
     {
+        private int ReadOnlyTabIndex { get; set; } = 0;
+        private int EditTabIndex { get; set; } = 0;
         [Inject] private PurchaseInvoiceApiService PurchaseInvoiceApiService { get; set; }
-        [Inject] private PurchaseInvoiceItemApiService PurchaseInvoiceItemApiService { get; set; }
+        [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }
         [Inject] private VendorApiService VendorApiService { get; set; }
         [Inject] private PurchaseOrderApiService PurchaseOrderApiService { get; set; }
-
         private IEnumerable<Vendor> Vendors { get; set; } = [];
         private IEnumerable<PurchaseOrder> PurchaseOrders { get; set; } = [];
-
         private List<PurchaseInvoiceItemDTO> purchaseInvoiceItems = new();
-
-        private bool HasAnyChanges => HasChanges || (purchaseInvoiceItems?.Any(i => i.IsNew || i.IsDeleted) ?? false);
+        public string TenantAccountingState { get; set; }
+        private string VendorState { get; set; }
+        private bool HasAnyChanges => HasChanges || (purchaseInvoiceItems?.Any(i => i.IsNew || i.IsDeleted) ?? false) || Form?.EditContext?.IsModified() == true;
 
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
             {
-                CurrentObject = new() { VoucherType = Objects.Entities.VoucherType.PurchaseInvoice, VoucherDate = DateTimeOffset.UtcNow };
+                CurrentObject = new() { VoucherType = VoucherType.PurchaseInvoice, VoucherDate = DateTimeOffset.UtcNow };
                 IsReadOnlyMode = false; // Create mode - always editable
             }
             else
@@ -37,7 +38,9 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 IsReadOnlyMode = true; // Edit mode - start in read-only
                 await LoadPurchaseInvoiceItems();
             }
-
+            var result = await TenantAccountingSettingsApiService.Get(top: 1);
+            var accSetings = result?.Value?.FirstOrDefault(f => !string.IsNullOrEmpty(f.CompanyState));
+            TenantAccountingState = accSetings?.CompanyState;
             await LoadVendors();
             await LoadPurchaseOrders();
             await InitEditContext();
@@ -51,7 +54,30 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 .Expand(f => f.PurchaseOrder, f => f.PurchaseOrder.Number)
                 .Build();
         }
-
+        private async Task LoadVendors()
+        {
+            try
+            {
+                var result = await VendorApiService.Get(filter: null, expand: null, orderBy: "Name", top: null, skip: null, count: false);
+                Vendors = result.Value.AsODataEnumerable();
+            }
+            catch (Exception ex)
+            {
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["Error"], Detail = Localizer["LoadVendorsFailed"] });
+            }
+        }
+        private async Task LoadPurchaseOrders()
+        {
+            try
+            {
+                var result = await PurchaseOrderApiService.Get(filter: null, expand: null, orderBy: "Number desc", top: null, skip: null, count: false);
+                PurchaseOrders = result.Value.AsODataEnumerable();
+            }
+            catch (Exception ex)
+            {
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["Error"], Detail = Localizer["LoadPurchaseOrdersFailed"] });
+            }
+        }
         private async Task LoadPurchaseInvoiceItems()
         {
             try
@@ -72,42 +98,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
         }
 
-        private async Task LoadVendors()
-        {
-            try
-            {
-                var result = await VendorApiService.Get(filter: null, expand: null, orderBy: "Name", top: null, skip: null, count: false);
-                Vendors = result.Value.AsODataEnumerable();
-            }
-            catch (Exception ex)
-            {
-                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["Error"], Detail = Localizer["LoadVendorsFailed"] });
-            }
-        }
-
-        private async Task LoadPurchaseOrders()
-        {
-            try
-            {
-                var result = await PurchaseOrderApiService.Get(filter: null, expand: null, orderBy: "Number desc", top: null, skip: null, count: false);
-                PurchaseOrders = result.Value.AsODataEnumerable();
-            }
-            catch (Exception ex)
-            {
-                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["Error"], Detail = Localizer["LoadPurchaseOrdersFailed"] });
-            }
-        }
-
         private void OnPurchaseInvoiceItemsChanged(List<PurchaseInvoiceItemDTO> updatedItems)
         {
             purchaseInvoiceItems = updatedItems;
+            VendorState = Vendors.Where(v => v.Oid == CurrentObject.PartyId).Select(v => v.State).FirstOrDefault();
             CalculateTotalAmount();
-        }
-
-        private void OnTotalAmountChanged(decimal totalAmount)
-        {
-            CurrentObject.TotalAmount = totalAmount;
-            StateHasChanged();
         }
 
         private void CalculateTotalAmount()
@@ -128,29 +123,28 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 var taxableAmount = item.Total - item.DiscountAmount;
 
                 // Calculate GST components based on rates from TaxCode
-                cgstAmount += taxableAmount * (decimal)(item.CGSTRate / 100);
-                sgstAmount += taxableAmount * (decimal)(item.SGSTRate / 100);
-                igstAmount += taxableAmount * (decimal)(item.IGSTRate / 100);
+                if (TenantAccountingState == VendorState)
+                {
+                    cgstAmount += taxableAmount * (decimal)(item.CGSTRate / 100);
+                    sgstAmount += taxableAmount * (decimal)(item.SGSTRate / 100);
+                }
+                else
+                {
+                    igstAmount += taxableAmount * (decimal)(item.IGSTRate / 100);
+                }
                 cessAmount += taxableAmount * (decimal)(item.CessRate / 100);
             }
 
-            CurrentObject.SubTotal = subTotal;
+            CurrentObject.SubTotal = Math.Round(subTotal);
             CurrentObject.DiscountAmount = totalDiscount;
-            CurrentObject.TaxAmount = totalTax;
+            CurrentObject.TaxAmount = Math.Round(totalTax);
             CurrentObject.CGSTAmount = cgstAmount;
             CurrentObject.SGSTAmount = sgstAmount;
             CurrentObject.IGSTAmount = igstAmount;
             CurrentObject.CessAmount = cessAmount;
-            CurrentObject.TotalAmount = subTotal - totalDiscount + totalTax;
-        }
+            CurrentObject.TotalAmount = Math.Round(subTotal - totalDiscount + totalTax);
 
-        private async Task OnSubTotalChanged(decimal subTotal)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.SubTotal = subTotal;
-                StateHasChanged();
-            }
+            StateHasChanged();
         }
 
         private async Task OnDiscountTypeChanged(DiscountType type)
@@ -158,15 +152,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (CurrentObject != null)
             {
                 CurrentObject.DiscountType = type;
-                StateHasChanged();
-            }
-        }
-
-        private async Task OnTotalTaxAmountChanged(decimal taxAmount)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.TaxAmount = taxAmount;
+                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountType)));
                 StateHasChanged();
             }
         }
@@ -176,15 +162,17 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (CurrentObject != null)
             {
                 CurrentObject.DiscountAmount = discountAmount;
+                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountAmount)));
                 StateHasChanged();
             }
         }
 
-        private async Task OnDiscountPercentageChanged(double discountPercent)
+        private async Task OnDiscountPercentageChanged(decimal discountPercent)
         {
             if (CurrentObject != null)
             {
                 CurrentObject.DiscountPercent = discountPercent;
+                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountPercent)));
                 if (CurrentObject.DiscountPercent > 0)
                 {
                     await OnDiscountAmountChanged(CurrentObject.DiscountAmount);
@@ -235,8 +223,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     SGSTAmount = CurrentObject.SGSTAmount,
                     IGSTAmount = CurrentObject.IGSTAmount,
                     CessAmount = CurrentObject.CessAmount,
+                    DiscountType = CurrentObject.DiscountType,
                     DiscountAmount = CurrentObject.DiscountAmount,
                     DiscountPercentage = CurrentObject.DiscountPercent,
+                    DueDate = CurrentObject.DueDate,
                     VoucherDate = CurrentObject.VoucherDate,
                     PurchaseOrderId = CurrentObject.PurchaseOrderId,
                     Items = purchaseInvoiceItems.Select(i => new PurchaseInvoiceItemDTO
@@ -317,7 +307,19 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
         protected async Task FormSubmit()
         {
-            await SaveBulkPurchaseInvoice();
+            if (purchaseInvoiceItems.Any() && purchaseInvoiceItems.FirstOrDefault().InventoryItemId != null)
+            {
+                await SaveBulkPurchaseInvoice();
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Failed"],
+                    Detail = Localizer["At least one Purchase Invoice Item is required.."]
+                });
+            }
         }
     }
 }

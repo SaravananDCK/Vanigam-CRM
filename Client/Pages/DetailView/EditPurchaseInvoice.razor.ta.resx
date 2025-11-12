@@ -156,6 +156,9 @@
   <data name="PurchaseInvoiceSavedSuccessfully" xml:space="preserve">
     <value>Purchase Invoice Saved Successfully</value>
   </data>
+  <data name="PurchaseOrder" xml:space="preserve">
+    <value>Purchase Order</value>
+  </data>
   <data name="ReceivedDate" xml:space="preserve">
     <value>Received Date</value>
   </data>

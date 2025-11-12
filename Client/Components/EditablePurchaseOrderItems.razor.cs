@@ -15,7 +15,7 @@ public partial class EditablePurchaseOrderItems
     [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
     [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
-    [Parameter] public EventCallback<double> DiscountPercentageChanged { get; set; }
+    [Parameter] public EventCallback<decimal> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
     [Parameter] public EventCallback<decimal> SubTotalChanged { get; set; }
     private RadzenDataGrid<PurchaseOrderItemDTO> itemsGrid = null!;
@@ -24,7 +24,7 @@ public partial class EditablePurchaseOrderItems
     public decimal SubTotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
     public decimal TaxAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount) ?? 0;
     //public decimal DiscountAmt => Items?.Where(i => !i.IsDeleted).Sum(i => i.DiscountAmount) ?? 0;
-    public double DiscountPercentage { get; set; } = 0;
+    public decimal DiscountPercentage { get; set; } = 0;
     public decimal DiscountAmt { get; set; } = 0;
     public decimal GrandTotalAmount { get; set; } = 0;
 
@@ -32,7 +32,7 @@ public partial class EditablePurchaseOrderItems
     {
         if (PurchaseOrder != null)
         {
-            DiscountPercentage = (double)PurchaseOrder.DiscountPercent;
+            DiscountPercentage = PurchaseOrder.DiscountPercent;
             DiscountAmt = PurchaseOrder.DiscountAmount;
             GrandTotalAmount = PurchaseOrder.TotalAmount;
         }
