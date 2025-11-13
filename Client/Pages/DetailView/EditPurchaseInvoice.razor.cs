@@ -1,3 +1,4 @@
+using DevExpress.Pdf.Native.BouncyCastle.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
@@ -100,8 +101,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
         private void OnPurchaseInvoiceItemsChanged(List<PurchaseInvoiceItemDTO> updatedItems)
         {
-            purchaseInvoiceItems = updatedItems;
             VendorState = Vendors.Where(v => v.Oid == CurrentObject.PartyId).Select(v => v.State).FirstOrDefault();
+            
+            if (updatedItems.Any(i => i.InventoryItemId == null)) return;
+            purchaseInvoiceItems = updatedItems;
             CalculateTotalAmount();
         }
 
@@ -152,31 +155,16 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (CurrentObject != null)
             {
                 CurrentObject.DiscountType = type;
-                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountType)));
-                StateHasChanged();
-            }
-        }
-
-        private async Task OnDiscountAmountChanged(decimal discountAmount)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.DiscountAmount = discountAmount;
-                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountAmount)));
                 StateHasChanged();
             }
         }
 
         private async Task OnDiscountPercentageChanged(decimal discountPercent)
         {
-            if (CurrentObject != null)
+            if (CurrentObject != null && discountPercent != 0)
             {
                 CurrentObject.DiscountPercent = discountPercent;
                 EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountPercent)));
-                if (CurrentObject.DiscountPercent > 0)
-                {
-                    await OnDiscountAmountChanged(CurrentObject.DiscountAmount);
-                }
                 StateHasChanged();
             }
         }

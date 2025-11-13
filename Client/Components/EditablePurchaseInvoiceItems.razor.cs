@@ -100,9 +100,8 @@ public partial class EditablePurchaseInvoiceItems
     private async Task OnDiscountTypeChange(DiscountType args)
     {
         PurchaseInvoice.DiscountType = args;
-        await NotifyChanges();
-        await Task.Delay(50);
-        await CalculateDiscount();
+        await DiscountTypeChanged.InvokeAsync(PurchaseInvoice.DiscountType);
+        StateHasChanged();
     }
     private async Task OnInventoryItemChanged(PurchaseInvoiceItemDTO item, object value)
     {
@@ -139,21 +138,20 @@ public partial class EditablePurchaseInvoiceItems
                         var totalTaxRate = item.CGSTRate + item.SGSTRate + item.IGSTRate + item.CessRate;
                         item.TaxAmount = ((decimal)totalTaxRate / 100) * Item.UnitPrice;
                     }
-
-                    if (PurchaseInvoice.DiscountType == DiscountType.Percentage)
-                    {
-                        await CalculateDiscount();
-                    }
-                    else
-                    {
-                        CalculateTotal(item);
-                    }
+                    await CalculateItemAmount(item);
                 }
             }
-            await NotifyChanges();
         }
     }
-
+    private async Task CalculateItemAmount(PurchaseInvoiceItemDTO item)
+    {
+        if (PurchaseInvoice.DiscountAmount > 0 || PurchaseInvoice.DiscountPercent > 0)
+        {
+            await CalculateDiscount();
+        }
+        CalculateTotal(item);
+        await NotifyChanges();
+    }
     protected string GetExpandString()
     {
         return new ODataExpand<Item>()
@@ -165,6 +163,7 @@ public partial class EditablePurchaseInvoiceItems
     {
         if (item.TaxCodeId != null)
         {
+            item.DiscountAmount = item.Total * ((decimal)PurchaseInvoice.DiscountPercent / 100);
             // Calculate tax on taxable amount (after discount)
             var taxableAmount = item.Total - item.DiscountAmount;
             double totalTaxRate;
@@ -181,7 +180,7 @@ public partial class EditablePurchaseInvoiceItems
         PurchaseInvoice.TotalAmount = Math.Round(PurchaseInvoice.SubTotal + PurchaseInvoice.TaxAmount - PurchaseInvoice.DiscountAmount);
     }
 
-    private async Task CalculateDiscount()
+    private async Task CalculateDiscount(bool isCalulateItems = false)
     {
         if(PurchaseInvoice.DiscountPercent > 100)
         {
@@ -202,20 +201,20 @@ public partial class EditablePurchaseInvoiceItems
         {
             PurchaseInvoice.DiscountPercent = (PurchaseInvoice.DiscountAmount / PurchaseInvoice.SubTotal) * 100;
         }
-
-        foreach (var item in items)
+        if (isCalulateItems)
         {
-            item.DiscountAmount = item.Total * ((decimal)PurchaseInvoice.DiscountPercent / 100);
-            CalculateTotal(item);
+            foreach (var item in items)
+            {
+                item.DiscountAmount = item.Total * ((decimal)PurchaseInvoice.DiscountPercent / 100);
+                CalculateTotal(item);
+            }
         }
+        if (PurchaseInvoice.DiscountPercent > 0) await DiscountPercentageChanged.InvokeAsync(PurchaseInvoice.DiscountPercent);
     }
 
     private async Task NotifyChanges()
     {
         await ItemsChanged.InvokeAsync(Items);
-        await DiscountChanged.InvokeAsync(PurchaseInvoice.DiscountAmount);
-        await DiscountPercentageChanged.InvokeAsync(PurchaseInvoice.DiscountPercent);
-        await DiscountTypeChanged.InvokeAsync(PurchaseInvoice.DiscountType);
         StateHasChanged();
     }
 }

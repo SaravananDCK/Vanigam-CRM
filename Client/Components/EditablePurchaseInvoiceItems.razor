@@ -42,7 +42,7 @@
                     <EditTemplate Context="item">
                         <RadzenNumeric TValue="double" @bind-Value="item.Quantity"
                                        Min="1" TextAlign="TextAlign.Right"
-                                       Change="@(async (double value) => { item.Quantity = value; await CalculateDiscount(); await NotifyChanges(); })"
+                                       Change="@(async (double value) => { item.Quantity = value; await CalculateItemAmount(item); })"
                                        class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
@@ -56,7 +56,7 @@
                     <EditTemplate Context="item">
                         <RadzenNumeric TValue="decimal" @bind-Value="item.UnitPrice"
                                        Format="C" TextAlign="TextAlign.Right" Min="0"
-                                       Change="@(async (decimal value) => { item.UnitPrice = value; await CalculateDiscount(); await NotifyChanges(); })"
+                                       Change="@(async (decimal value) => { item.UnitPrice = value; await CalculateItemAmount(item); })"
                                        class="w-100" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
@@ -157,7 +157,7 @@
                                         </RadzenRadioButtonList>
                                         <RadzenButton Icon="refresh" ButtonStyle="ButtonStyle.Success"
                                                       Variant="Variant.Flat" Size="ButtonSize.Small"
-                                                      Click="@(() => CalculateDiscount())" />
+                                                      Click="@(() => CalculateDiscount(true))" />
                                     </RadzenStack>
                                 </div>
                                 <div class="read-only-field rz-mb-3">
@@ -170,7 +170,7 @@
                                                        Style="@(PurchaseInvoice.DiscountType == DiscountType.Amount ? "width: 150px; background-color: var(--rz-base-100)" : "width: 150px;")"
                                                        ReadOnly="PurchaseInvoice.DiscountType == DiscountType.Amount"
                                                        Format="N2" TextAlign="TextAlign.Right" Min="0" MaxLength="5"
-                                                       Change="@(async (decimal value) => { PurchaseInvoice.DiscountPercent = value; await CalculateDiscount(); await NotifyChanges(); })"
+                                                       Change="@(async (decimal value) => { PurchaseInvoice.DiscountPercent = value; await CalculateDiscount(true); await NotifyChanges(); })"
                                                        class="w-100 field-value" />
                                     </RadzenStack>
                                 </div>
@@ -180,10 +180,10 @@
                                         <RadzenNumeric @ref="discountAmountRef"
                                                        TValue="decimal"
                                                        @bind-Value="PurchaseInvoice.DiscountAmount"
-                                                       Style="@(PurchaseInvoice.DiscountType == DiscountType.Percentage ? "width: 150px;background-color: var(--rz-base-100)":"width: 150px;")"
+                                                       Style="@(PurchaseInvoice.DiscountType == DiscountType.Percentage ? "width: 150px; background-color: var(--rz-base-100)":"width: 150px;")"
                                                        ReadOnly="PurchaseInvoice.DiscountType == DiscountType.Percentage"
                                                        Format="C" TextAlign="TextAlign.Right" ShowUpDown="false" Min="0"
-                                                       Change="@(async (decimal value) => { PurchaseInvoice.DiscountAmount = value; await CalculateDiscount(); await NotifyChanges(); })"
+                                                       Change="@(async (decimal value) => { PurchaseInvoice.DiscountAmount = value; await CalculateDiscount(true); await NotifyChanges(); })"
                                                        class="w-100 field-value" />
                                     </RadzenStack>
                                 </div>

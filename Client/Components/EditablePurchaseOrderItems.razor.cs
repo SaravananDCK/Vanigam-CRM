@@ -14,7 +14,6 @@ public partial class EditablePurchaseOrderItems
     private RadzenNumeric<decimal> discountPercentRef;
     private RadzenNumeric<decimal> discountAmountRef;
     private Item Item { get; set; }
-    private IEnumerable<Item> ProductItems { get; set; }
     [Parameter] public PurchaseOrder PurchaseOrder { get; set; }
     [Parameter] public string VendorState { get; set; }
     [Parameter] public string TenantAccountingState { get; set; }
@@ -25,13 +24,7 @@ public partial class EditablePurchaseOrderItems
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
     private RadzenDataGrid<PurchaseOrderItemDTO> itemsGrid = null!;
     private PurchaseOrderItemDTO itemBeingEdited;
-    protected override async Task OnInitializedAsync()
-    {
-        if(PurchaseOrder != null)
-        { 
-            await LoadItems();
-        }
-    }
+    
     private async Task AddNewItem()
     {
         if (PurchaseOrder.PartyId == null)
@@ -67,7 +60,7 @@ public partial class EditablePurchaseOrderItems
             {
                 Severity = NotificationSeverity.Error,
                 Summary = Localizer["Failed"],
-                Detail = Localizer["Purchase Invoice Item is required.."]
+                Detail = Localizer["Purchase Order Item is required.."]
             });
             return;
         }
@@ -112,18 +105,7 @@ public partial class EditablePurchaseOrderItems
         await DiscountTypeChanged.InvokeAsync(PurchaseOrder.DiscountType);
         StateHasChanged();
     }
-    private async Task LoadItems()
-    {
-        try
-        {
-            var result = await ItemApiService.Get(filter: null, expand: null, orderBy: "Name", top: null, skip: null, count: false);
-            ProductItems = result.Value.AsODataEnumerable();
-        }
-        catch (Exception ex)
-        {
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["Error"], Detail = Localizer["Load Items Failed"] });
-        }
-    }
+    
     private async Task OnInventoryItemChanged(object value, PurchaseOrderItemDTO item)
     {
         if (value is Guid inventoryItemId)
