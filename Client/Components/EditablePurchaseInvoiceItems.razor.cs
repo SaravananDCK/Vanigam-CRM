@@ -18,7 +18,6 @@ public partial class EditablePurchaseInvoiceItems
     [Parameter] public string TenantAccountingState { get; set; }
     [Parameter] public List<PurchaseInvoiceItemDTO> Items { get; set; } = new();
     [Parameter] public EventCallback<List<PurchaseInvoiceItemDTO>> ItemsChanged { get; set; }
-    [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
     private RadzenDataGrid<PurchaseInvoiceItemDTO> itemsGrid = null!;
