@@ -103,19 +103,22 @@ public class PurchaseOrderService(
                 // Add quote items
                 foreach (var itemDto in purchaseData.Items.Where(i => !i.IsDeleted))
                 {
-                    var newItem = new PurchaseOrderItem
+                    if (itemDto.InventoryItemId != null)
                     {
-                        Oid = Guid.NewGuid(),
-                        VoucherId = purchaseOrder.Oid,
-                        ItemId = itemDto.InventoryItemId,
-                        Quantity = itemDto.Quantity,
-                        UnitPrice = itemDto.UnitPrice,
-                        TaxCodeId = itemDto.TaxCodeId,
-                        TaxAmount = itemDto.TaxAmount ?? 0,
-                        DiscountAmount = itemDto.DiscountAmount,
-                        TenantId = TenantId
-                    };
-                    Context.PurchaseOrderItems.Add(newItem);
+                        var newItem = new PurchaseOrderItem
+                        {
+                            Oid = Guid.NewGuid(),
+                            VoucherId = purchaseOrder.Oid,
+                            ItemId = itemDto.InventoryItemId,
+                            Quantity = itemDto.Quantity,
+                            UnitPrice = itemDto.UnitPrice,
+                            TaxCodeId = itemDto.TaxCodeId,
+                            TaxAmount = itemDto.TaxAmount ?? 0,
+                            DiscountAmount = itemDto.DiscountAmount,
+                            TenantId = TenantId
+                        };
+                        Context.PurchaseOrderItems.Add(newItem);
+                    }
                 }
 
                 // Call base create without lifecycle hooks to avoid nested transactions
@@ -157,7 +160,7 @@ public class PurchaseOrderService(
         // Add or update items
         foreach (var itemDto in items.Where(i => !i.IsDeleted))
         {
-            if (itemDto.IsNew)
+            if (itemDto.IsNew && itemDto.InventoryItemId != null)
             {
                 // Add new item
                 var newItem = new PurchaseOrderItem

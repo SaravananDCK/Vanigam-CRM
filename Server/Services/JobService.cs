@@ -94,26 +94,26 @@ public class JobService(
                 // Add material usage
                 foreach (var materialDto in jobData.Materials.Where(m => !m.IsDeleted))
                 {
-                    var newMaterial = new MaterialUsage
+                    if (materialDto.InventoryItemId != null)
                     {
-                        Oid = Guid.NewGuid(),
-                        VoucherId = job.Oid,
-                        ItemId = materialDto.InventoryItemId,
-                        Quantity = materialDto.Quantity,
-                        UnitPrice = materialDto.UnitPrice,
-                        DiscountAmount = materialDto.DiscountAmount,
-                        TaxAmount = materialDto.TaxAmount ?? 0,
-                        TaxCodeId = materialDto.TaxCodeId,
-                        TenantId = TenantId
-                    };
-
-                    Context.MaterialUsages.Add(newMaterial);
+                        var newMaterial = new MaterialUsage
+                        {
+                            Oid = Guid.NewGuid(),
+                            VoucherId = job.Oid,
+                            ItemId = materialDto.InventoryItemId,
+                            Quantity = materialDto.Quantity,
+                            UnitPrice = materialDto.UnitPrice,
+                            DiscountAmount = materialDto.DiscountAmount,
+                            TaxAmount = materialDto.TaxAmount ?? 0,
+                            TaxCodeId = materialDto.TaxCodeId,
+                            TenantId = TenantId
+                        };
+                        Context.MaterialUsages.Add(newMaterial);
+                    }
                 }
-
                 Context.Jobs.Add(job);
                 await Context.SaveChangesAsync();
             }
-
             await transaction.CommitAsync();
 
             // Reload job with materials
@@ -150,7 +150,7 @@ public class JobService(
         // Add or update materials
         foreach (var materialDto in materials.Where(m => !m.IsDeleted))
         {
-            if (materialDto.IsNew)
+            if (materialDto.IsNew  && materialDto.InventoryItemId != null)
             {
                 // Add new material
                 var newMaterial = new MaterialUsage

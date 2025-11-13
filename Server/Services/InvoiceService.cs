@@ -225,19 +225,22 @@ public class InvoiceService(
                 // Add invoice items
                 foreach (var itemDto in invoiceData.Items.Where(i => !i.IsDeleted))
                 {
-                    var newItem = new InvoiceItem
+                    if (itemDto.InventoryItemId != null)
                     {
-                        Oid = Guid.NewGuid(),
-                        VoucherId = invoice.Oid,
-                        ItemId = itemDto.InventoryItemId,
-                        Quantity = itemDto.Quantity,
-                        UnitPrice = itemDto.UnitPrice,
-                        DiscountAmount = itemDto.DiscountAmount,
-                        TaxAmount = itemDto.TaxAmount ?? 0,
-                        TenantId = TenantId
-                    };
+                        var newItem = new InvoiceItem
+                        {
+                            Oid = Guid.NewGuid(),
+                            VoucherId = invoice.Oid,
+                            ItemId = itemDto.InventoryItemId,
+                            Quantity = itemDto.Quantity,
+                            UnitPrice = itemDto.UnitPrice,
+                            DiscountAmount = itemDto.DiscountAmount,
+                            TaxAmount = itemDto.TaxAmount ?? 0,
+                            TenantId = TenantId
+                        };
 
-                    Context.InvoiceItems.Add(newItem);
+                        Context.InvoiceItems.Add(newItem);
+                    }
                 }
 
                 // Call base create without lifecycle hooks to avoid nested transactions
@@ -298,7 +301,7 @@ public class InvoiceService(
         // Add or update items
         foreach (var itemDto in items.Where(i => !i.IsDeleted))
         {
-            if (itemDto.IsNew)
+            if (itemDto.IsNew && itemDto.InventoryItemId != null)
             {
                 // Add new item
                 var newItem = new InvoiceItem
