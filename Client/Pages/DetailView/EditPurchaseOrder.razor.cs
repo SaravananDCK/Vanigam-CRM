@@ -15,24 +15,25 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private int EditTabIndex { get; set; } = 0;
         [Inject] private PurchaseOrderApiService PurchaseOrderApiService { get; set; }
         [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }
+        [Inject] private VendorApiService VendorApiService { get; set; }
         private IEnumerable<Vendor> Vendors { get; set; } = [];
         private List<PurchaseOrderItemDTO> purchaseItems = new();
         private bool hasQuoteItemChanges = false;
         public string TenantAccountingState { get; set; }
         private string VendorState { get; set; }
         public bool HasAnyChanges => Form?.EditContext?.IsModified() == true || hasQuoteItemChanges || (purchaseItems?.Any(i => i.IsNew || i.IsDeleted) ?? false);
-        protected override async Task OnParametersSetAsync()
-        {
-            await base.OnParametersSetAsync();
-            if (CurrentObject != null && !IsCreateMode)
-            {
-                await LoadPurchaseItems();
-            }
-            else if (IsCreateMode)
-            {
-                purchaseItems = new List<PurchaseOrderItemDTO>();
-            }
-        }
+        //protected override async Task OnParametersSetAsync()
+        //{
+        //    await base.OnParametersSetAsync();
+        //    if (CurrentObject != null && !IsCreateMode)
+        //    {
+        //        await LoadPurchaseItems();
+        //    }
+        //    else if (IsCreateMode)
+        //    {
+        //        purchaseItems = new List<PurchaseOrderItemDTO>();
+        //    }
+        //}
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -44,11 +45,12 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             {
                 CurrentObject = await PurchaseOrderApiService.GetByOid(oid: Oid, expand: GetExpandString());
                 IsReadOnlyMode = true;
+                await LoadPurchaseItems();
             }
             var result = await TenantAccountingSettingsApiService.Get(top: 1);
             var accSetings = result?.Value?.FirstOrDefault(f => !string.IsNullOrEmpty(f.CompanyState));
             TenantAccountingState = accSetings?.CompanyState;
-
+            await LoadVendors();
             await InitEditContext();
         }
         protected string GetExpandString()
@@ -57,6 +59,18 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 .Expand(f => f.VoucherLines)
                 .Expand(f => f.Party, f => f.Party.Name)
                 .Build();
+        }
+        private async Task LoadVendors()
+        {
+            try
+            {
+                var result = await VendorApiService.Get(filter: null, expand: null, orderBy: "Name", top: null, skip: null, count: false);
+                Vendors = result.Value.AsODataEnumerable();
+            }
+            catch (Exception ex)
+            {
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["Error"], Detail = Localizer["LoadVendorsFailed"] });
+            }
         }
         private async Task LoadPurchaseItems()
         {
@@ -80,9 +94,12 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
         private async Task OnPurchaseOrderItemsChanged(List<PurchaseOrderItemDTO> items)
         {
+            VendorState = Vendors.Where(v => v.Oid == CurrentObject.PartyId).Select(v => v.State).FirstOrDefault();
+            
+            if (items.Any(i => i.InventoryItemId == null)) return;
+
             purchaseItems = items;
             hasQuoteItemChanges = true;
-            VendorState = Vendors.Where(v => v.Oid == CurrentObject.PartyId).Select(v => v.State).FirstOrDefault();
             CalculateTotalAmount();
         }
         private void CalculateTotalAmount()
@@ -129,33 +146,25 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
         private async Task OnDiscountTypeChanged(DiscountType type)
         {
-            if (CurrentObject != null)
-            {
-                CurrentObject.DiscountType = type;
-                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountType)));
-                StateHasChanged();
-            }
+            CurrentObject.DiscountType = type;
+            StateHasChanged();
         }
-        private async Task OnDiscountAmountChanged(decimal discountAmount)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.DiscountAmount = discountAmount;
-                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountAmount)));
-                StateHasChanged();
-            }
-        }
+        //private async Task OnDiscountAmountChanged(decimal discountAmount, decimal discountPercent)
+        //{
+        //    if (CurrentObject != null && discountAmount != 0)
+        //    {
+        //        CurrentObject.DiscountAmount = discountAmount;
+        //        EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountAmount)));
+        //        StateHasChanged();
+        //    }
+        //}
 
         private async Task OnDiscountPercentageChanged(decimal discountPercent)
         {
-            if (CurrentObject != null)
+            if (CurrentObject != null && discountPercent != 0)
             {
                 CurrentObject.DiscountPercent = discountPercent;
                 EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountPercent)));
-                if (CurrentObject.DiscountPercent > 0)
-                {
-                    await OnDiscountAmountChanged(CurrentObject.DiscountAmount);
-                }
                 StateHasChanged();
             }
         }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Vanigam.CRM.Client.Pages.ListView;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
@@ -51,12 +52,16 @@ public class PurchaseOrderService(
                 purchaseOrder.TaxAmount = purchaseData.TaxAmount;
                 purchaseOrder.DiscountAmount = purchaseData.DiscountAmount;
                 purchaseOrder.DiscountPercent = purchaseData.DiscountPercentage;
-                purchaseOrder.DiscountType = purchaseData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
+                purchaseOrder.DiscountType = purchaseData.DiscountType;
                 purchaseOrder.DueDate = purchaseData.DueDate;
                 purchaseOrder.ExpectedDeliveryDate = purchaseData.ExpectedDeliveryDate;
                 purchaseOrder.ShippingAddress = purchaseData.ShippingAddress;
                 purchaseOrder.ContactPerson = purchaseData.ContactPerson;
                 purchaseOrder.Reference = purchaseData.Reference;
+                purchaseOrder.CGSTAmount = purchaseData.CGSTAmount;
+                purchaseOrder.SGSTAmount = purchaseData.SGSTAmount;
+                purchaseOrder.IGSTAmount = purchaseData.IGSTAmount;
+                purchaseOrder.CessAmount = purchaseData.CessAmount;
 
                 // Handle quote items
                 await HandlePurchaseOrderItems(purchaseOrder, purchaseData.Items);
@@ -82,13 +87,17 @@ public class PurchaseOrderService(
                     TaxAmount = purchaseData.TaxAmount,
                     DiscountAmount = purchaseData.DiscountAmount,
                     DiscountPercent = purchaseData.DiscountPercentage,
-                    DiscountType = purchaseData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
+                    DiscountType = purchaseData.DiscountType,
                     DueDate = purchaseData.DueDate,
                     ExpectedDeliveryDate = purchaseData.ExpectedDeliveryDate,
                     ShippingAddress = purchaseData.ShippingAddress,
                     ContactPerson = purchaseData.ContactPerson,
                     Reference = purchaseData.Reference,
-                    TenantId = TenantId
+                    TenantId = TenantId,
+                    CGSTAmount = purchaseData.CGSTAmount,
+                    SGSTAmount = purchaseData.SGSTAmount,
+                    IGSTAmount = purchaseData.IGSTAmount,
+                    CessAmount = purchaseData.CessAmount,
                 };
 
                 // Add quote items
