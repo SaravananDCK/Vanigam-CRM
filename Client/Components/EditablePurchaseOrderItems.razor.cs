@@ -19,7 +19,6 @@ public partial class EditablePurchaseOrderItems
     [Parameter] public string TenantAccountingState { get; set; }
     [Parameter] public List<PurchaseOrderItemDTO> Items { get; set; } = new();
     [Parameter] public EventCallback<List<PurchaseOrderItemDTO>> ItemsChanged { get; set; }
-    [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
     private RadzenDataGrid<PurchaseOrderItemDTO> itemsGrid = null!;
@@ -167,7 +166,7 @@ public partial class EditablePurchaseOrderItems
     {
         if (item.TaxCodeId != null)
         {
-            item.DiscountAmount = item.Total * ((decimal)PurchaseOrder.DiscountPercent / 100);
+            item.DiscountAmount = item.Total * (PurchaseOrder.DiscountPercent / 100);
             
             var taxableAmount = item.Total - item.DiscountAmount;
             double totalTaxRate;  
@@ -213,7 +212,6 @@ public partial class EditablePurchaseOrderItems
                 CalculateTotal(item);
             }
         }
-        //if (PurchaseOrder.DiscountAmount > 0) await DiscountChanged.InvokeAsync(PurchaseOrder.DiscountAmount);
         if (PurchaseOrder.DiscountPercent > 0) await DiscountPercentageChanged.InvokeAsync(PurchaseOrder.DiscountPercent);
     }
     
