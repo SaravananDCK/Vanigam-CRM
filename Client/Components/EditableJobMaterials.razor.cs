@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
+using Radzen;
 using Radzen.Blazor;
+using Vanigam.CRM.Client.Pages.ListView;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.OData;
@@ -10,35 +12,21 @@ public partial class EditableJobMaterials
 {
     private Item Item { get; set; }
     [Parameter] public Job Job { get; set; }
+    [Parameter] public string CustomerState { get; set; }
+    [Parameter] public string TenantAccountingState { get; set; }
     [Parameter] public List<MaterialUsageDTO> Materials { get; set; } = new();
     [Parameter] public EventCallback<List<MaterialUsageDTO>> MaterialsChanged { get; set; }
-    [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
-    [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
-    [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
-    [Parameter] public EventCallback<decimal> SubTotalChanged { get; set; }
     private RadzenDataGrid<MaterialUsageDTO> materialsGrid = null!;
     private MaterialUsageDTO materialBeingEdited;
-    public decimal SubTotalAmount => Materials?.Where(m => !m.IsDeleted).Sum(m => m.Total) ?? 0;
-    public decimal TaxAmount => Materials?.Where(m => !m.IsDeleted).Sum(m => m.TaxAmount) ?? 0;
-    public decimal TotalAmount => Materials?.Where(m => !m.IsDeleted).Sum(m => m.Total) ?? 0;
-    public decimal DiscountPercentage { get; set; } = 0;
-    public decimal DiscountAmt { get; set; } = 0;
-    public decimal GrandTotalAmount { get; set; } = 0;
-
-    protected override void OnInitialized()
-    {
-        if (Job != null)
-        {
-            DiscountPercentage = Job.DiscountPercent;
-            DiscountAmt = Job.DiscountAmount;
-            GrandTotalAmount = Job.TotalAmount;
-        }
-    }
-
     private async Task AddNewMaterial()
     {
+        if (Job.PartyId == null)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = Localizer["Error"], Detail = Localizer["Customer is Required"] });
+            return;
+        }
         var newMaterial = new MaterialUsageDTO
         {
             Quantity = 1,
@@ -61,7 +49,20 @@ public partial class EditableJobMaterials
 
     private async Task SaveRow(MaterialUsageDTO material)
     {
+        if (material.InventoryItemId == null)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Failed"],
+                Detail = Localizer["Material Item is required.."]
+            });
+            return;
+        }
+
         await materialsGrid.UpdateRow(material);
+        var result = Materials.FirstOrDefault(i => i.InventoryItemId == null);
+        if (result == null) await AddNewMaterial();
     }
 
     private async Task CancelEdit(MaterialUsageDTO material)
@@ -95,7 +96,12 @@ public partial class EditableJobMaterials
 
         await NotifyChanges();
     }
-
+    private async Task OnDiscountTypeChange(DiscountType args)
+    {
+        Job.DiscountType = args;
+        await DiscountTypeChanged.InvokeAsync(Job.DiscountType);
+        StateHasChanged();
+    }
     private async Task OnInventoryItemChanged(MaterialUsageDTO material, object value)
     {
         if (value is Guid inventoryItemId)
@@ -114,9 +120,18 @@ public partial class EditableJobMaterials
                     // Calculate GST breakdown based on TaxCode rates
                     if (Item.TaxCode != null)
                     {
-                        material.CGSTRate = Item.TaxCode.CGSTRate;
-                        material.SGSTRate = Item.TaxCode.SGSTRate;
-                        material.IGSTRate = Item.TaxCode.IGSTRate;
+                        if (TenantAccountingState == CustomerState)
+                        {
+                            material.CGSTRate = Item.TaxCode.CGSTRate;
+                            material.SGSTRate = Item.TaxCode.SGSTRate;
+                            material.IGSTRate = 0;
+                        }
+                        else
+                        {
+                            material.CGSTRate = 0;
+                            material.SGSTRate = 0;
+                            material.IGSTRate = Item.TaxCode.IGSTRate;
+                        }
                         material.CessRate = Item.TaxCode.CessRate;
 
                         // Total tax is the sum of all GST components
@@ -124,82 +139,84 @@ public partial class EditableJobMaterials
                                          Item.TaxCode.IGSTRate + Item.TaxCode.CessRate;
                         material.TaxAmount = ((decimal)totalTaxRate / 100) * Item.UnitPrice;
                     }
-
-                    if (Job.DiscountType == DiscountType.Percentage)
-                    {
-                        await CalculateDiscount((decimal)DiscountPercentage);
-                    }
-                    else
-                    {
-                        CalculateTotal(material);
-                    }
+                    await CalculateMaterialAmount(material);
                 }
             }
-
-            await NotifyChanges();
         }
     }
 
     protected string GetExpandString()
     {
         return new ODataExpand<Item>()
-            .Expand(f => f.TaxCode, f => f.TaxCode.TaxRate)
+            .Expand(f => f.TaxCode, f => f.TaxCode.TaxRate, f => f.TaxCode.CessRate, f => f.TaxCode.CGSTRate, f => f.TaxCode.SGSTRate, f => f.TaxCode.IGSTRate)
             .Build();
     }
-
+    private async Task CalculateMaterialAmount(MaterialUsageDTO material)
+    {
+        if (Job.DiscountAmount > 0 || Job.DiscountPercent > 0)
+        {
+            await CalculateDiscount();
+        }
+        CalculateTotal(material);
+        await NotifyChanges();
+    }
     private void CalculateTotal(MaterialUsageDTO material)
     {
-        // Total is calculated automatically in the DTO property
-        if (Item?.TaxCode != null)
+        if (material.TaxCodeId != null)
         {
-            // Calculate tax on taxable amount (after discount)
+            material.DiscountAmount = material.Total * (Job.DiscountPercent / 100);
+
             var taxableAmount = material.Total - material.DiscountAmount;
-            var totalTaxRate = Item.TaxCode.CGSTRate + Item.TaxCode.SGSTRate +
-                             Item.TaxCode.IGSTRate + Item.TaxCode.CessRate;
+            double totalTaxRate;
+            if (TenantAccountingState == CustomerState)
+            {
+                totalTaxRate = material.CGSTRate + material.SGSTRate + material.CessRate;
+            }
+            else
+            {
+                totalTaxRate = material.IGSTRate + material.CessRate;
+            }
             material.TaxAmount = ((decimal)totalTaxRate / 100) * taxableAmount;
         }
-        GrandTotalAmount = Math.Round(SubTotalAmount + TaxAmount - DiscountAmt);
+        Job.TotalAmount = Math.Round(Job.SubTotal + Job.TaxAmount - Job.DiscountAmount);
     }
 
-    private async Task CalculateDiscount(decimal discount)
+    private async Task CalculateDiscount(bool isCalulateMaterials = false)
     {
+        if (Job.DiscountPercent == 0 && Job.DiscountAmount == 0) return;
+        if (Job.DiscountPercent > 100)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = Localizer["Error"], Detail = Localizer[$"Given Percentage: {Job.DiscountPercent} is not more than 100%... "] });
+            Job.DiscountPercent = (Job.DiscountAmount / Job.SubTotal) * 100;
+            return;
+        }
+
         var materials = Materials.Where(m => !m.IsDeleted);
-        if (Job.DiscountType == DiscountType.Amount)
+
+        if (!materials.Any()) return;
+
+        if (Job.DiscountType == DiscountType.Percentage)
         {
-            DiscountPercentage = 0;
+            Job.DiscountAmount = Job.SubTotal * (Job.DiscountPercent / 100);
         }
-        if (DiscountPercentage != 0)
+        else if (Job.DiscountType == DiscountType.Amount)
         {
-            DiscountAmt = SubTotalAmount * (discount / 100);
+            Job.DiscountPercent = (Job.DiscountAmount / Job.SubTotal) * 100;
         }
-        if (materials.Any())
+
+        if (isCalulateMaterials)
         {
-            var materialCounts = materials.Count();
             foreach (var material in materials)
             {
-                if (Job.DiscountType == DiscountType.Amount)
-                {
-                    material.DiscountAmount = DiscountAmt / materialCounts;
-                }
-                else
-                {
-                    material.DiscountAmount = material.Total * ((decimal)DiscountPercentage / 100);
-                }
                 CalculateTotal(material);
             }
         }
-        await NotifyChanges();
+        if (Job.DiscountPercent > 0) await DiscountPercentageChanged.InvokeAsync(Job.DiscountPercent);
     }
 
     private async Task NotifyChanges()
     {
-        await SubTotalChanged.InvokeAsync(SubTotalAmount);
         await MaterialsChanged.InvokeAsync(Materials);
-        await TotalTaxChanged.InvokeAsync(TaxAmount);
-        await DiscountChanged.InvokeAsync(DiscountAmt);
-        await DiscountPercentageChanged.InvokeAsync(DiscountPercentage);
-        await TotalAmountChanged.InvokeAsync(GrandTotalAmount);
-        await DiscountTypeChanged.InvokeAsync(Job.DiscountType);
         StateHasChanged();
     }
 }

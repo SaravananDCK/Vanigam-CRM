@@ -102,7 +102,7 @@
                             @if (purchaseItems != null && purchaseItems.Any(i => !i.IsDeleted))
                             {
                                 <div class="rz-p-4">
-                                    <div class="read-only-section-header rz-mt-4">@Localizer["Items"]</div>
+                                    <div class="read-only-section-header rz-mt-3">@Localizer["Items"]</div>
                                     <RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                                                     Data="@purchaseItems.Where(i => !i.IsDeleted)" TItem="PurchaseOrderItemDTO" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" class="rz-mt-3">
                                         <Columns>
