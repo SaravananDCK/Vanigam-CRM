@@ -165,7 +165,22 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             hasItemChanges = false;
             await LoadPurchaseItems(); // Reload original data
         }
-
+        protected async Task FormSubmit()
+        {
+            if (purchaseItems.Any() && purchaseItems.FirstOrDefault().InventoryItemId != null)
+            {
+                await SaveBulkQuote();
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Failed"],
+                    Detail = Localizer["At least one Purchase Order Item is required.."]
+                });
+            }
+        }
         private async Task SaveBulkQuote()
         {
             if (CurrentObject == null) return;

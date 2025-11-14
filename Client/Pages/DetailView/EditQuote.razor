@@ -194,42 +194,6 @@
                                                         </div>
                                                     </RadzenColumn>
                                                 </RadzenRow>
-
-                                                @*<RadzenStack Gap="0.5rem" JustifyContent="JustifyContent.Right" AlignItems="AlignItems.End">
-                                                        <div class="read-only-field">
-                                                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
-                                                                <strong>@Localizer["SubTotal"]:</strong>
-                                                            </RadzenText>
-                                                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
-                                                                @CurrentObject.SubTotal.ToString("C")
-                                                            </RadzenText>
-                                                        </div>
-                                                        <div class="read-only-field">
-                                                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
-                                                                <strong>@Localizer["Tax"]:</strong>
-                                                            </RadzenText>
-                                                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value" Style="width: 150px">
-                                                                @CurrentObject.TaxAmount.ToString("C")
-                                                            </RadzenText>
-                                                        </div>
-                                                        <div class="read-only-field">
-                                                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label">
-                                                                <strong>@Localizer["Discount"]:</strong>
-                                                            </RadzenText>
-                                                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
-                                                                @CurrentObject.DiscountAmount.ToString("C")
-                                                            </RadzenText>
-                                                        </div>
-
-                                                        <div class="read-only-field">
-                                                            <RadzenText TextStyle="TextStyle.H6" TagName="TagName.Span" class="field-label">
-                                                                <strong>@Localizer["Grand Total"]:</strong>
-                                                            </RadzenText>
-                                                            <RadzenText TextStyle="TextStyle.H6" TagName="TagName.Span" class="field-value">
-                                                                <strong>@CurrentObject.TotalAmount.ToString("C")</strong>
-                                                            </RadzenText>
-                                                        </div>
-                                                    </RadzenStack>*@
                                             </RadzenCard>
                                         </RadzenColumn>
                                     </RadzenRow>
@@ -250,7 +214,7 @@
             <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))">
                 <Tabs>
                     <RadzenTabsItem Text="@Localizer["Quote Info"]" class="fa-small">
-                        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Quote" Data="@CurrentObject" Submit="@SaveBulkQuote">
+                        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Quote" Data="@CurrentObject">
                             <FluentValidationValidator Validator="new QuoteValidator(Localizer)" />
                             <ValidationSummary />
                             @* Quote Information Section *@
@@ -323,11 +287,11 @@
             <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
                 @if (IsCreateMode)
                 {
-                    <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@SaveBulkQuote" />
+                    <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
                 }
                 else
                 {
-                    <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@SaveBulkQuote" />
+                    <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
                     <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
                 }
             </RadzenStack>

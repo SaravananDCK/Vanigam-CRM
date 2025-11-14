@@ -305,11 +305,11 @@
                         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
                             @if (IsCreateMode)
                             {
-                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@SaveBulkJob" />
+                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
                             }
                             else
                             {
-                                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@SaveBulkJob" />
+                                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
                                 <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
                             }
                         </RadzenStack>

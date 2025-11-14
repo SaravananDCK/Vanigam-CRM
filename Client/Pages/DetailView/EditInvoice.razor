@@ -204,7 +204,7 @@
         <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))">
             <Tabs>
                 <RadzenTabsItem Text="@Localizer["Invoice Info"]" class="fa-small">
-                    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Invoice" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@SaveBulkInvoice">
+                    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Invoice" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))">
                         <RadzenStack>
                             <FluentValidationValidator Validator="new InvoiceValidator(Localizer)" />
                             <ValidationSummary />
@@ -254,11 +254,11 @@
         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
             @if (IsCreateMode)
             {
-                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@SaveBulkInvoice" />
+                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
             }
             else
             {
-                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@SaveBulkInvoice" />
+                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
                 <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
             }
         </RadzenStack>

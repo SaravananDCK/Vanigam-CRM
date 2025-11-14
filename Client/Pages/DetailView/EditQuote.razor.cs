@@ -205,6 +205,22 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 DialogService.CloseDialog(CurrentObject);
             }
         }
+        protected async Task FormSubmit()
+        {
+            if (quoteItems.Any() && quoteItems.FirstOrDefault().InventoryItemId != null)
+            {
+                await SaveBulkQuote();
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Failed"],
+                    Detail = Localizer["At least one Quote Item is required.."]
+                });
+            }
+        }
         private async Task SaveBulkQuote()
         {
             if (CurrentObject == null) return;
@@ -269,45 +285,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 IsBusy = false;
             }
         }
-        protected async Task FormSubmit()
-        {
-            IsBusy = true;
-            try
-            {
-                if (Oid == Guid.Empty)
-                {
-                    CurrentObject = await QuoteApiService.Create(CurrentObject);
-                }
-                else
-                {
-                    var result = await QuoteApiService.Update(oid: Oid, CurrentObject);
-                    if (result.IsPreconditionFailed())
-                    {
-                        HasChanges = true;
-                        CanEdit = false;
-                        return;
-                    }
-                }
-                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["SavedSuccessfully!"] });
-                DialogService.CloseDialog(CurrentObject);
-            }
-            catch (HttpRequestException ex)
-            {
-                if (ex.StatusCode == HttpStatusCode.Conflict)
-                {
-                    ShowNotUniqueAlert = true;
-                }
-                else
-                {
-                    ErrorVisible = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorVisible = true;
-            }
-            IsBusy = false;
-        }
+        
         protected override async Task SaveAndStayInEdit()
         {
             await FormSubmit();

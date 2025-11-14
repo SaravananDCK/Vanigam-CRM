@@ -159,7 +159,22 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 StateHasChanged();
             }
         }
-
+        protected async Task FormSubmit()
+        {
+            if (materials.Any() && materials.FirstOrDefault().InventoryItemId != null)
+            {
+                await SaveBulkJob();
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Failed"],
+                    Detail = Localizer["At least one Job Item is required.."]
+                });
+            }
+        }
         private async Task SaveBulkJob()
         {
             if (CurrentObject == null) return;

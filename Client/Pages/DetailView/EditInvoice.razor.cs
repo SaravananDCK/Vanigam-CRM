@@ -149,6 +149,24 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 StateHasChanged();
             }
         }
+
+        protected async Task FormSubmit()
+        {
+            if (invoiceItems.Any() && invoiceItems.FirstOrDefault().InventoryItemId != null)
+            {
+                await SaveBulkInvoice();
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Failed"],
+                    Detail = Localizer["At least one Invoice Item is required.."]
+                });
+            }
+        }
+
         private async Task SaveBulkInvoice()
         {
             if (CurrentObject == null) return;
