@@ -173,7 +173,7 @@ public class InvoiceService(
                 invoice.VoucherDate = invoiceData.VoucherDate;
                 invoice.DiscountAmount = invoiceData.DiscountAmount;
                 invoice.DiscountPercent = invoiceData.DiscountPercentage;
-                invoice.DiscountType = invoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
+                invoice.DiscountType = invoiceData.DiscountType;
                 // Handle invoice items
                 await HandleInvoiceItems(invoice, invoiceData.Items);
 
@@ -218,7 +218,7 @@ public class InvoiceService(
                     VoucherDate = invoiceData.VoucherDate,
                     DiscountAmount = invoiceData.DiscountAmount,
                     DiscountPercent = invoiceData.DiscountPercentage,
-                    DiscountType = invoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
+                    DiscountType = invoiceData.DiscountType,
                     TenantId = TenantId
                 };
 
@@ -236,6 +236,7 @@ public class InvoiceService(
                             UnitPrice = itemDto.UnitPrice,
                             DiscountAmount = itemDto.DiscountAmount,
                             TaxAmount = itemDto.TaxAmount ?? 0,
+                            TaxCodeId = itemDto.TaxCodeId,
                             TenantId = TenantId
                         };
 
@@ -313,6 +314,7 @@ public class InvoiceService(
                     UnitPrice = itemDto.UnitPrice,
                     DiscountAmount = itemDto.DiscountAmount,
                     TaxAmount = itemDto.TaxAmount ?? 0,
+                    TaxCodeId = itemDto.TaxCodeId,
                     TenantId = TenantId
                 };
 
@@ -331,6 +333,7 @@ public class InvoiceService(
                     existingItem.UnitPrice = itemDto.UnitPrice;
                     existingItem.DiscountAmount = itemDto.DiscountAmount;
                     existingItem.TaxAmount = itemDto.TaxAmount ?? 0;
+                    existingItem.TaxCodeId = itemDto.TaxCodeId;
                 }
             }
         }

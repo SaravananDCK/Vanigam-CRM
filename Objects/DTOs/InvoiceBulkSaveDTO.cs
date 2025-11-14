@@ -25,7 +25,7 @@ public class InvoiceBulkSaveDTO
     public decimal IGSTAmount { get; set; } = 0;
 
     public decimal CessAmount { get; set; } = 0;
-
+    public DiscountType DiscountType { get; set; } = DiscountType.Percentage;
     public decimal SubTotal { get; set; }
 
     public decimal TaxAmount { get; set; }

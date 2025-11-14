@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Radzen;
 using Radzen.Blazor;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
@@ -10,35 +11,22 @@ public partial class EditableInvoiceItems
 {
     private Item Item { get; set; }
     [Parameter] public Invoice Invoice { get; set; }
+    [Parameter] public string CurrentState { get; set; }
+    [Parameter] public string TenantAccountingState { get; set; }
     [Parameter] public List<InvoiceItemDTO> Items { get; set; } = new();
     [Parameter] public EventCallback<List<InvoiceItemDTO>> ItemsChanged { get; set; }
-    [Parameter] public EventCallback<decimal> TotalAmountChanged { get; set; }
-    [Parameter] public EventCallback<decimal> TotalTaxChanged { get; set; }
-    [Parameter] public EventCallback<decimal> DiscountChanged { get; set; }
     [Parameter] public EventCallback<decimal> DiscountPercentageChanged { get; set; }
     [Parameter] public EventCallback<DiscountType> DiscountTypeChanged { get; set; }
-    [Parameter] public EventCallback<decimal> SubTotalChanged { get; set; }
     private RadzenDataGrid<InvoiceItemDTO> itemsGrid = null!;
     private InvoiceItemDTO itemBeingEdited;
-    public decimal SubTotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
-    public decimal TaxAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.TaxAmount) ?? 0;
-    public decimal TotalAmount => Items?.Where(i => !i.IsDeleted).Sum(i => i.Total) ?? 0;
-    public decimal DiscountPercentage { get; set; } = 0;
-    public decimal DiscountAmt { get; set; } = 0;
-    public decimal GrandTotalAmount { get; set; } = 0;
-
-    protected override void OnInitialized()
-    {
-        if (Invoice != null)
-        {
-            DiscountPercentage = Invoice.DiscountPercent;
-            DiscountAmt = Invoice.DiscountAmount;
-            GrandTotalAmount = Invoice.TotalAmount;
-        }
-    }
 
     private async Task AddNewItem()
     {
+        if (Invoice.PartyId == null)
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = Localizer["Error"], Detail = Localizer["Customer is Required"] });
+            return;
+        }
         var newItem = new InvoiceItemDTO
         {
             Quantity = 1,
@@ -61,7 +49,19 @@ public partial class EditableInvoiceItems
 
     private async Task SaveRow(InvoiceItemDTO item)
     {
+        if (item.InventoryItemId == null)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = Localizer["Failed"],
+                Detail = Localizer["Invoice Item is required.."]
+            });
+            return;
+        }
         await itemsGrid.UpdateRow(item);
+        var result = Items.FirstOrDefault(i => i.InventoryItemId == null);
+        if (result == null) await AddNewItem();
     }
 
     private async Task CancelEdit(InvoiceItemDTO item)
@@ -95,7 +95,12 @@ public partial class EditableInvoiceItems
 
         await NotifyChanges();
     }
-    
+    private async Task OnDiscountTypeChange(DiscountType args)
+    {
+        Invoice.DiscountType = args;
+        await DiscountTypeChanged.InvokeAsync(Invoice.DiscountType);
+        StateHasChanged();
+    }
     private async Task OnInventoryItemChanged(InvoiceItemDTO item, object value)
     {
         if (value is Guid inventoryItemId)
@@ -110,73 +115,101 @@ public partial class EditableInvoiceItems
                     item.InventoryItemName = Item.Name;
                     item.UnitPrice = Item.UnitPrice;
                     item.TaxCodeId = Item.TaxCodeId;
+                    // Calculate GST breakdown based on TaxCode rates
+                    if (Item.TaxCode != null)
+                    {
+                        if (TenantAccountingState == CurrentState)
+                        {
+                            item.CGSTRate = Item.TaxCode.CGSTRate;
+                            item.SGSTRate = Item.TaxCode.SGSTRate;
+                            item.IGSTRate = 0;
+                        }
+                        else
+                        {
+                            item.CGSTRate = 0;
+                            item.SGSTRate = 0;
+                            item.IGSTRate = Item.TaxCode.IGSTRate;
+                        }
+                        item.CessRate = Item.TaxCode.CessRate;
 
-                    item.TaxAmount = ((decimal)Item.TaxCode?.TaxRate / 100) * Item.UnitPrice;
-                    if (Invoice.DiscountType == DiscountType.Percentage)
-                    {
-                        //quoteItemDTO.DiscountAmount = quoteItemDTO.Total * (decimal)DiscountPercentage / 100;
-                        await CalculateDiscount((decimal)DiscountPercentage);
+                        // Total tax is the sum of all GST components
+                        var totalTaxRate = item.CGSTRate + item.SGSTRate + item.IGSTRate + item.CessRate;
+                        item.TaxAmount = ((decimal)totalTaxRate / 100) * Item.UnitPrice;
                     }
-                    else
-                    {
-                        CalculateTotal(item);
-                    }
+                    await CalculateItemAmount(item);
                 }
             }
-
-            await NotifyChanges();
         }
+    }
+    private async Task CalculateItemAmount(InvoiceItemDTO item)
+    {
+        if (Invoice.DiscountAmount > 0 || Invoice.DiscountPercent > 0)
+        {
+            await CalculateDiscount();
+        }
+        CalculateTotal(item);
+        await NotifyChanges();
     }
     protected string GetExpandString()
     {
         return new ODataExpand<Item>()
-            .Expand(f => f.TaxCode, f => f.TaxCode.TaxRate)
+            .Expand(f => f.TaxCode, f => f.TaxCode.TaxRate, f => f.TaxCode.CessRate, f => f.TaxCode.CGSTRate, f => f.TaxCode.SGSTRate, f => f.TaxCode.IGSTRate)
             .Build();
     }
     private void CalculateTotal(InvoiceItemDTO item)
     {
-        // Total is calculated automatically in the DTO property
-        item.TaxAmount = ((decimal)Item.TaxCode?.TaxRate / 100) * (item.Total - item.DiscountAmount);
-        GrandTotalAmount = Math.Round(SubTotalAmount + TaxAmount - DiscountAmt);
+        if (item.TaxCodeId != null)
+        {
+            item.DiscountAmount = item.Total * (Invoice.DiscountPercent / 100);
+            // Calculate tax on taxable amount (after discount)
+            var taxableAmount = item.Total - item.DiscountAmount;
+            double totalTaxRate;
+            if (TenantAccountingState == CurrentState)
+            {
+                totalTaxRate = item.CGSTRate + item.SGSTRate + item.CessRate;
+            }
+            else
+            {
+                totalTaxRate = item.IGSTRate + item.CessRate;
+            }
+            item.TaxAmount = ((decimal)totalTaxRate / 100) * taxableAmount;
+        }
+        Invoice.TotalAmount = Math.Round(Invoice.SubTotal + Invoice.TaxAmount - Invoice.DiscountAmount);
     }
-    private async Task CalculateDiscount(decimal discount)
+    private async Task CalculateDiscount(bool isCalulateItems = false)
     {
-        var items = Items.Where(i => !i.IsDeleted);
-        if (Invoice.DiscountType == DiscountType.Amount)
+        if (Invoice.DiscountPercent > 100)
         {
-            DiscountPercentage = 0;
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = Localizer["Error"], Detail = Localizer[$"Given Percentage: {Invoice.DiscountPercent} is not more than 100%... "] });
+            Invoice.DiscountPercent = (Invoice.DiscountAmount / Invoice.SubTotal) * 100;
+            return;
         }
-        if (DiscountPercentage != 0)
+
+        var items = Items.Where(i => !i.IsDeleted).ToList();
+
+        if (!items.Any()) return;
+
+        if (Invoice.DiscountType == DiscountType.Percentage && Invoice.DiscountPercent > 0)
         {
-            DiscountAmt = SubTotalAmount * (discount / 100);
+            Invoice.DiscountAmount = Invoice.SubTotal * (Invoice.DiscountPercent / 100);
         }
-        if (items.Any())
+        else if (Invoice.DiscountType == DiscountType.Amount && Invoice.DiscountAmount > 0)
         {
-            var itemCounts = items.Count();
+            Invoice.DiscountPercent = (Invoice.DiscountAmount / Invoice.SubTotal) * 100;
+        }
+        if (isCalulateItems)
+        {
             foreach (var item in items)
             {
-                if (Invoice.DiscountType == DiscountType.Amount)
-                {
-                    item.DiscountAmount = DiscountAmt / itemCounts;
-                }
-                else
-                {
-                    item.DiscountAmount = item.Total * ((decimal)DiscountPercentage / 100);
-                }
+                item.DiscountAmount = item.Total * (Invoice.DiscountPercent / 100);
                 CalculateTotal(item);
             }
         }
-        await NotifyChanges();
+        if (Invoice.DiscountPercent > 0) await DiscountPercentageChanged.InvokeAsync(Invoice.DiscountPercent);
     }
     private async Task NotifyChanges()
     {
-        await SubTotalChanged.InvokeAsync(SubTotalAmount);
         await ItemsChanged.InvokeAsync(Items);
-        await TotalTaxChanged.InvokeAsync(TaxAmount);
-        await DiscountChanged.InvokeAsync(DiscountAmt);
-        await DiscountPercentageChanged.InvokeAsync(DiscountPercentage);
-        await TotalAmountChanged.InvokeAsync(GrandTotalAmount);
-        await DiscountTypeChanged.InvokeAsync(Invoice.DiscountType);
         StateHasChanged();
     }
 }

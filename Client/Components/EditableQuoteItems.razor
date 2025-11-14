@@ -41,7 +41,7 @@
                     </HeaderTemplate>
                     <EditTemplate Context="item">
                         <RadzenNumeric TValue="double" @bind-Value="item.Quantity"
-                                       Min="1"
+                                       Min="1" TextAlign="TextAlign.Right"
                                        Change="@(async (double value) => { item.Quantity = value; await CalculateItemAmount(item); })"
                                        class="w-100" />
                     </EditTemplate>
@@ -56,7 +56,7 @@
                     </Template>
                     <EditTemplate Context="item">
                         <RadzenNumeric TValue="decimal" @bind-Value="item.UnitPrice"
-                                       Format="C"
+                                       Format="C" TextAlign="TextAlign.Right"
                                        Change="@(async (decimal value) => { item.UnitPrice = value; await CalculateItemAmount(item); })"
                                        class="w-100" />
                     </EditTemplate>
