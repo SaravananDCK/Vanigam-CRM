@@ -107,7 +107,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                         return;
                     }
                 }
-                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["SavedSuccessfully!"] });
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["SavedSuccessfully"] });
                 DialogService.CloseDialog(CurrentObject);
             }
             catch (HttpRequestException ex)

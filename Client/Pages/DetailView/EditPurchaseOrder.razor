@@ -117,12 +117,12 @@
                                                     @item.UnitPrice.ToString("C")
                                                 </Template>
                                             </RadzenDataGridColumn>
-                                            <RadzenDataGridColumn TItem="PurchaseOrderItemDTO" Property="@nameof(PurchaseOrderItemDTO.DiscountAmount)" Title="@Localizer["Discount Amt"]" Width="120px" TextAlign="TextAlign.Right">
+                                            <RadzenDataGridColumn TItem="PurchaseOrderItemDTO" Property="@nameof(PurchaseOrderItemDTO.DiscountAmount)" Title="@Localizer["Discount"]" Width="120px" TextAlign="TextAlign.Right">
                                                 <Template Context="item">
                                                     @item.DiscountAmount.ToString("C")
                                                 </Template>
                                             </RadzenDataGridColumn>
-                                            <RadzenDataGridColumn TItem="PurchaseOrderItemDTO" Property="@nameof(PurchaseOrderItemDTO.TaxAmount)" Title="@Localizer["TaxAmount"]" Width="120px" TextAlign="TextAlign.Right">
+                                            <RadzenDataGridColumn TItem="PurchaseOrderItemDTO" Property="@nameof(PurchaseOrderItemDTO.TaxAmount)" Title="@Localizer["Tax"]" Width="120px" TextAlign="TextAlign.Right">
                                                 <Template Context="item">
                                                     @item.TaxAmount?.ToString("C")
                                                 </Template>

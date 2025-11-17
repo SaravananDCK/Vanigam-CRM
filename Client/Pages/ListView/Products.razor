@@ -5,7 +5,7 @@
 @inject ProductApiService ProductApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["InventoryItems"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@Localizer["Products"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="Product" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">

@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Activities" xml:space="preserve">
+    <value>Activities</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
   <data name="AddressInformation" xml:space="preserve">
     <value>Address Information</value>
   </data>
@@ -129,6 +135,18 @@
   <data name="CampaignSource" xml:space="preserve">
     <value>Campaign Source</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="CodeMust" xml:space="preserve">
+    <value>Code is required.</value>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>Comments</value>
+  </data>
   <data name="CompanySize" xml:space="preserve">
     <value>Company Size</value>
   </data>
@@ -138,11 +156,20 @@
   <data name="ConvertToOpportunity" xml:space="preserve">
     <value>Convert to Opportunity</value>
   </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
   <data name="EditLead" xml:space="preserve">
     <value>Edit Lead</value>
   </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
   <data name="EstimatedBudget" xml:space="preserve">
     <value>Estimated Budget</value>
+  </data>
+  <data name="Industry" xml:space="preserve">
+    <value>Industry</value>
   </data>
   <data name="JobTitle" xml:space="preserve">
     <value>Job Title</value>
@@ -156,8 +183,20 @@
   <data name="LinkedInProfile" xml:space="preserve">
     <value>Linked In Profile </value>
   </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="NextFollowUpDate" xml:space="preserve">
     <value>Next Follow Up Date</value>
+  </data>
+  <data name="Organization" xml:space="preserve">
+    <value>Organization</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
   </data>
   <data name="PostalCode" xml:space="preserve">
     <value>Postal Code</value>
@@ -168,10 +207,37 @@
   <data name="ReferredBy" xml:space="preserve">
     <value>Referred By</value>
   </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SaveAlert" xml:space="preserve">
+    <value>Unable to save the record.</value>
+  </data>
+  <data name="SavedSuccessfully" xml:space="preserve">
+    <value>The record was saved successfully.</value>
+  </data>
   <data name="SecondaryPhone" xml:space="preserve">
     <value>Secondary Phone</value>
   </data>
+  <data name="Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
   <data name="StatusAndAssignment" xml:space="preserve">
     <value>Status and Assignment</value>
+  </data>
+  <data name="Timeline" xml:space="preserve">
+    <value>Timeline</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Website</value>
   </data>
 </root>

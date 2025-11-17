@@ -99,11 +99,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         {
             return index switch
             {
-                0 => "ContactInformation",
-                1 => "AddressInformation",
-                2 => "BusinessContext",
-                3 =>  "Comments",
-                4 => "Activities",
+                0 => Localizer["ContactInformation"],
+                1 => Localizer["AddressInformation"],
+                2 => Localizer["BusinessContext"],
+                3 =>  Localizer["Comments"],
+                4 => Localizer["Activities"],
                 _ => ""
             };
         }

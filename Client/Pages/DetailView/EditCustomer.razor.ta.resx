@@ -120,17 +120,47 @@
   <data name="AddCustomer" xml:space="preserve">
     <value>Add Customer</value>
   </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
   <data name="AnnualRevenue" xml:space="preserve">
     <value>Annual Revenue</value>
+  </data>
+  <data name="Basic Info" xml:space="preserve">
+    <value>Basic Info</value>
   </data>
   <data name="BasicInfo" xml:space="preserve">
     <value>Basic Info</value>
   </data>
+  <data name="Business Information" xml:space="preserve">
+    <value>Business Information</value>
+  </data>
   <data name="BusinessInformation" xml:space="preserve">
     <value>Business Information</value>
   </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="CodeMust" xml:space="preserve">
+    <value>Code is required.</value>
+  </data>
+  <data name="Contact Info" xml:space="preserve">
+    <value>Contact Info</value>
+  </data>
   <data name="ContactInfo" xml:space="preserve">
     <value>Contact Info</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="Customer Files" xml:space="preserve">
+    <value>Customer Files</value>
   </data>
   <data name="CustomerContacts" xml:space="preserve">
     <value>Customer Contacts</value>
@@ -141,13 +171,61 @@
   <data name="CustomerSince" xml:space="preserve">
     <value>Customer Since</value>
   </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
   <data name="EditCustomer" xml:space="preserve">
     <value>Edit Customer</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
   </data>
   <data name="EmployeeCount" xml:space="preserve">
     <value>Employee Count</value>
   </data>
+  <data name="File Documents" xml:space="preserve">
+    <value>File Documents</value>
+  </data>
+  <data name="FileDocuments" xml:space="preserve">
+    <value>File Documents</value>
+  </data>
+  <data name="Industry" xml:space="preserve">
+    <value>Industry</value>
+  </data>
+  <data name="Jobs" xml:space="preserve">
+    <value>Jobs</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
   <data name="PostalCode" xml:space="preserve">
     <value>Postal Code</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Rating</value>
+  </data>
+  <data name="SaveAlert" xml:space="preserve">
+    <value>Unable to save the record.</value>
+  </data>
+  <data name="SavedSuccessfully" xml:space="preserve">
+    <value>The record was saved successfully.</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Website</value>
   </data>
 </root>
