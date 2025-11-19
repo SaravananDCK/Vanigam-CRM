@@ -12,7 +12,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditLead
     {
         [Inject] private LeadApiService LeadApiService { get; set; }
-
+        private string Height { get; set; } = "height:calc(100vh - 110px)";
         private int EditTabIndex { get; set; } = 0;
         private int ReadOnlyTabIndex { get; set; } = 0;
         bool IsFullheightTab = false;
