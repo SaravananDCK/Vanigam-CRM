@@ -9,28 +9,34 @@
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
     <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="InventoryItem" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
-        <RadzenStack>
+        <RadzenCard>
             <FluentValidationValidator Validator="new InventoryItemValidator(Localizer)" />
             <ValidationSummary />
-            <VanigamAccountingFormField Text=@Localizer["Name"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["SKU"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.SKU" Name="txt_SKU" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["QuantityOnHand"]>
-                <ChildContent>
-                    <RadzenNumeric @bind-Value="@CurrentObject.QuantityOnHand" Name="numeric_QuantityOnHand" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-        </RadzenStack>
-        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
-        </RadzenStack>
+            <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+                <Tabs>
+                    <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
+                        <VanigamAccountingFormField Text=@Localizer["Name"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["SKU"]>
+                            <ChildContent>
+                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.SKU" Name="txt_SKU" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <VanigamAccountingFormField Text=@Localizer["QuantityOnHand"]>
+                            <ChildContent>
+                                <RadzenNumeric @bind-Value="@CurrentObject.QuantityOnHand" Name="numeric_QuantityOnHand" />
+                            </ChildContent>
+                        </VanigamAccountingFormField>
+                        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                            <VanigamAccountingSaveButton Id="@(IsCreateMode ? "btn_Save" : "btn_Update")" Text="@(IsCreateMode ? Localizer["Save"] : Localizer["Update"])" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                            <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+                        </RadzenStack>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+        </RadzenCard>
     </RadzenTemplateForm>
 </RadzenColumn>

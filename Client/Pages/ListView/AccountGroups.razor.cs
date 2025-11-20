@@ -97,7 +97,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditAccountGroup>(Localizer["AddAccountGroup"], null, 80, 100);
+            await DialogService.OpenDialogAsync<EditAccountGroup>(Localizer["AddAccountGroup"], null, 100, 100);
             await LoadTreeData();
         }
 
@@ -106,7 +106,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
             await DialogService.OpenDialogWithOutHeaderAsync<EditAccountGroup>(
                 Localizer["EditAccountGroup"],
                 new Dictionary<string, object> { { "Oid", accountGroup.Oid } },
-                80, 100);
+                100, 100);
             await LoadTreeData();
         }
 

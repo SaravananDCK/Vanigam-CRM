@@ -46,11 +46,11 @@
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
                                     @if (CurrentObject.IsActive)
                                     {
-                                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] class="rz-p-1" />
                                     }
                                     else
                                     {
-                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] class="rz-p-1" />
                                     }
                                 </RadzenText>
                             </div>

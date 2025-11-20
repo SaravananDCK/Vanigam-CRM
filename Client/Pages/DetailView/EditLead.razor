@@ -20,31 +20,28 @@
                          JustifyContent="JustifyContent.SpaceBetween"
                          Gap="10px">
                 @* Convert to Opportunity Button - Only visible in read-only mode for qualified leads *@
-                @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
-                {
-                    <RadzenStack Orientation="Orientation.Horizontal" Gap="10px">
-                        <RadzenButton Text="@Localizer["ConvertToOpportunity"]"
-                                      Icon="transform"
-                                      ButtonStyle="ButtonStyle.Success"
-                                      Size="ButtonSize.Small"
-                                      Click="@ShowConvertToOpportunityDialog"
-                                      Disabled=@(!CanConvertToOpportunity)
-                                      class="rz-ml-2" Style="bottom: 12px; left: 0px;" />
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="10px">
+                    <RadzenButton Text="@Localizer["ConvertToOpportunity"]"
+                                  Icon="transform"
+                                  ButtonStyle="ButtonStyle.Success"
+                                  Size="ButtonSize.Small"
+                                  Click="@ShowConvertToOpportunityDialog"
+                                  Disabled=@(!CanConvertToOpportunity)
+                                  class="rz-ml-2" Style="bottom: 12px; left: 0px;" />
 
-                    </RadzenStack>
-                }
+                </RadzenStack>
                 @* Floating Edit Button - Only visible in read-only mode *@
-                
-            <RadzenStack Orientation="Orientation.Horizontal" Gap="10px">
-                @if (IsEditButtonVisible && CurrentObject.Status != LeadStatus.Converted)
-                {
-                    <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
-                }
-                else
-                {
-                    <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" Disabled="true" />
-                }
-            </RadzenStack>
+
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="10px">
+                    @if (IsEditButtonVisible && CurrentObject.Status != LeadStatus.Converted)
+                    {
+                        <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
+                    }
+                    else
+                    {
+                        <RadzenFab Style="bottom: 10px; left: 5px;" Icon="edit" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" Disabled="true" />
+                    }
+                </RadzenStack>
             </RadzenStack>
             <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" Change="OnTabChanged" TabPosition="TabPosition.Left">
                 <Tabs>
@@ -83,7 +80,7 @@
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
 
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
-                                    <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.ToString()" />
+                                    <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.ToString()" class="rz-p-1" />
                                     @*@(CurrentObject.Status.ToString())*@
                                 </RadzenText>
                             </div>

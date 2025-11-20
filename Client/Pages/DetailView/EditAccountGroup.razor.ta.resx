@@ -117,11 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccountGroupInformation" xml:space="preserve">
+    <value>Account Group Info</value>
+  </data>
   <data name="AccountGroups" xml:space="preserve">
     <value>Account Groups</value>
   </data>
   <data name="AddAccountGroup" xml:space="preserve">
     <value>Add Account Group</value>
+  </data>
+  <data name="BasicInfo" xml:space="preserve">
+    <value>Basic Info</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
   </data>
   <data name="Count" xml:space="preserve">
     <value>Count</value>
@@ -138,6 +147,24 @@
   <data name="Inactive" xml:space="preserve">
     <value>Inactive</value>
   </data>
+  <data name="LoadParentGroupsFailed" xml:space="preserve">
+    <value>Load Parent Groups Failed</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Nature" xml:space="preserve">
+    <value>Nature</value>
+  </data>
+  <data name="ParentGroup" xml:space="preserve">
+    <value>Parent Group</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
   <data name="Success" xml:space="preserve">
     <value>Success</value>
   </data>
@@ -146,5 +173,8 @@
   </data>
   <data name="UnableDelete" xml:space="preserve">
     <value>Unable to delete this record.</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
   </data>
 </root>

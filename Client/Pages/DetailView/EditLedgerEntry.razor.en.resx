@@ -117,32 +117,62 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BasicInfo" xml:space="preserve">
-    <value>Basic Info</value>
+  <data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Amount</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="EditMaterialUsage" xml:space="preserve">
-    <value>Edit Material Usage</value>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
   </data>
-  <data name="InventoryItem" xml:space="preserve">
-    <value>Inventory Item</value>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
   </data>
-  <data name="JobNumber" xml:space="preserve">
-    <value>Job Number</value>
+  <data name="EditLedgerEntry" xml:space="preserve">
+    <value>Edit Ledger Entry</value>
   </data>
-  <data name="Quantity" xml:space="preserve">
-    <value>Quantity</value>
+  <data name="EntryDate" xml:space="preserve">
+    <value>Entry Date</value>
+  </data>
+  <data name="EntryNumber" xml:space="preserve">
+    <value>Entry Number</value>
+  </data>
+  <data name="EntryNumberMust" xml:space="preserve">
+    <value>Entry Number Must</value>
+  </data>
+  <data name="LedgerEntryInformation" xml:space="preserve">
+    <value>Ledger Entry Information</value>
+  </data>
+  <data name="LoadAccountsFailed" xml:space="preserve">
+    <value>Load Accounts Failed</value>
+  </data>
+  <data name="Reconciled" xml:space="preserve">
+    <value>Reconciled</value>
+  </data>
+  <data name="ReconciledBy" xml:space="preserve">
+    <value>Reconciled By</value>
+  </data>
+  <data name="ReconciledDate" xml:space="preserve">
+    <value>Reconciled Date</value>
+  </data>
+  <data name="Reference" xml:space="preserve">
+    <value>Reference</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
   <data name="SaveAlert" xml:space="preserve">
-    <value>Unable to save due to an error.</value>
+    <value>Unable to save the record.</value>
   </data>
   <data name="SavedSuccessfully" xml:space="preserve">
     <value>The record was saved successfully.</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
   </data>
   <data name="Update" xml:space="preserve">
     <value>Update</value>

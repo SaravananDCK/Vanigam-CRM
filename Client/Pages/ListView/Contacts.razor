@@ -66,7 +66,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="contact">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(contact.Status)" Text="@contact.Status.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(contact.Status)" Text="@contact.Status.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Contact" Property=@nameof(Contact.Type) Title=@Localizer["Type"] Width="100px">

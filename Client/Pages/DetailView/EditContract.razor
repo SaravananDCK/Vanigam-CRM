@@ -75,11 +75,11 @@
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
                                     @if (CurrentObject.IsActive)
                                     {
-                                        <RadzenBadge Text=@Localizer["Active"] BadgeStyle="BadgeStyle.Success" />
+                                        <RadzenBadge Text=@Localizer["Active"] BadgeStyle="BadgeStyle.Success" class="rz-p-1" />
                                     }
                                     else
                                     {
-                                        <RadzenBadge Text=@Localizer["Inactive"] BadgeStyle="BadgeStyle.Secondary" />
+                                        <RadzenBadge Text=@Localizer["Inactive"] BadgeStyle="BadgeStyle.Secondary" class="rz-p-1" />
                                     }
                                 </RadzenText>
                             </div>
@@ -104,11 +104,11 @@
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
                                     @if (CurrentObject.IncludesPartsReplacement)
                                     {
-                                        <RadzenBadge Text=@Localizer["Yes"] BadgeStyle="BadgeStyle.Success" />
+                                        <RadzenBadge Text=@Localizer["Yes"] BadgeStyle="BadgeStyle.Success" class="rz-p-1" />
                                     }
                                     else
                                     {
-                                        <RadzenBadge Text=@Localizer["No"] BadgeStyle="BadgeStyle.Secondary" />
+                                        <RadzenBadge Text=@Localizer["No"] BadgeStyle="BadgeStyle.Secondary" class="rz-p-1" />
                                     }
                                 </RadzenText>
                             </div>

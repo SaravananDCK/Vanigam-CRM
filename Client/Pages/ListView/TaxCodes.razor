@@ -28,7 +28,7 @@
 
                     <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.TaxType) Title=@Localizer["TaxType"] Width="120px">
                         <Template Context="taxcode">
-                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@taxcode.TaxType" />
+                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@taxcode.TaxType" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
 
@@ -80,7 +80,7 @@
                     <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.IsActive) Title=@Localizer["IsActive"] Width="100px">
                         <Template Context="taxcode">
                             <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(taxcode.IsActive)"
-                                         Text="@(taxcode.IsActive ? Localizer["Active"] : Localizer["Inactive"])" />
+                                         Text="@(taxcode.IsActive ? Localizer["Active"] : Localizer["Inactive"])" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
 

@@ -41,7 +41,7 @@
                                         </div>
                                         <div class="read-only-field rz-mb-3">
                                             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
-                                            <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.GetDisplayDescription().ToString()" />
+                                            <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.GetDisplayDescription().ToString()" class="rz-p-1" />
                                         </div>
                                         @if (!string.IsNullOrEmpty(CurrentObject.Notes))
                                         {

@@ -41,7 +41,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.Status) Title=@Localizer["Status"]>
                         <Template Context="appointment">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(appointment.Status)" Text="@appointment.Status.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(appointment.Status)" Text="@appointment.Status.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Appointment" Property=@nameof(Appointment.StartAt) Title=@Localizer["StartTime"]>

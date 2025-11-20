@@ -36,13 +36,13 @@
                                         <div class="read-only-field rz-mb-3">
                                             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Type"]:</strong></RadzenText>
                                             <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
-                                                <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(CurrentObject.Type)" Text="@(CurrentObject.Type.GetDisplayDescription().ToString() ?? "-")" />
+                                                <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(CurrentObject.Type)" Text="@(CurrentObject.Type.GetDisplayDescription().ToString() ?? "-")" class="rz-p-1" />
                                             </RadzenText>
                                         </div>
                                         <div class="read-only-field rz-mb-3">
                                             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
                                             <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
-                                                <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@(CurrentObject.Status.GetDisplayDescription().ToString() ?? "-")" />
+                                                <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@(CurrentObject.Status.GetDisplayDescription().ToString() ?? "-")" class="rz-p-1" />
                                             </RadzenText>
                                         </div>
                                         <div class="read-only-field rz-mb-3">
@@ -61,7 +61,7 @@
                                         <div class="read-only-field rz-mb-3">
                                             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Priority"]:</strong></RadzenText>
                                             <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
-                                                <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(CurrentObject.Priority)" Text="@CurrentObject.Priority.ToString()" />
+                                                <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(CurrentObject.Priority)" Text="@CurrentObject.Priority.ToString()" class="rz-p-1" />
                                             </RadzenText>
                                         </div>
                                     </div>

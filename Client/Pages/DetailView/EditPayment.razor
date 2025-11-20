@@ -199,7 +199,7 @@
                                                     <Template Context="alloc">
                                                         @if (alloc.InvoiceId == Guid.Empty)
                                                         {
-                                                            <RadzenBadge Text="@alloc.InvoiceNumber" BadgeStyle="BadgeStyle.Info" />
+                                                            <RadzenBadge Text="@alloc.InvoiceNumber" BadgeStyle="BadgeStyle.Info" class="rz-p-1" />
                                                         }
                                                         else
                                                         {
@@ -224,14 +224,14 @@
                                                 </RadzenDataGridColumn>
                                                 <RadzenDataGridColumn TItem="PaymentAllocationDTO" Property="BalanceAmount" Title="@Localizer["BalanceAmount"]" Width="130px">
                                                     <Template Context="alloc">
-                                                        <RadzenBadge Text="@alloc.BalanceAmount.ToString("C")" BadgeStyle="BadgeStyle.Warning" />
+                                                        <RadzenBadge Text="@alloc.BalanceAmount.ToString("C")" BadgeStyle="BadgeStyle.Warning" class="rz-p-1" />
                                                     </Template>
                                                 </RadzenDataGridColumn>
                                                 <RadzenDataGridColumn TItem="PaymentAllocationDTO" Property="AllocatedAmount" Title="@Localizer["AllocatedAmount"]" Width="150px">
                                                     <Template Context="alloc">
                                                         @if (alloc.InvoiceId == Guid.Empty)
                                                         {
-                                                            <RadzenBadge Text="@alloc.AllocatedAmount.ToString("C")" BadgeStyle="BadgeStyle.Success" />
+                                                            <RadzenBadge Text="@alloc.AllocatedAmount.ToString("C")" BadgeStyle="BadgeStyle.Success" class="rz-p-1" />
                                                         }
                                                         else
                                                         {

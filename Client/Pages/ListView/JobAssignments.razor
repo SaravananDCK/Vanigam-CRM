@@ -41,7 +41,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.Status) Title=@Localizer["Status"]>
                         <Template Context="jobAssignment">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(jobAssignment.Status)" Text="@jobAssignment.Status.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(jobAssignment.Status)" Text="@jobAssignment.Status.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="JobAssignment" Property=@nameof(JobAssignment.AssignedAt) Title=@Localizer["AssignedAt"]>

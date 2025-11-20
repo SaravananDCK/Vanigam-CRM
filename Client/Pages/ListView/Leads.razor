@@ -63,7 +63,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="lead">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(lead.Status)" Text="@lead.Status.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(lead.Status)" Text="@lead.Status.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.Source) Title=@Localizer["Source"] Width="120px">
@@ -73,7 +73,7 @@
                     <RadzenDataGridColumn TItem="Lead" Property=@nameof(Lead.LeadScore) Title=@Localizer["LeadScore"] Width="100px">
                         <Template Context="lead">
                             <RadzenBadge Text="@lead.LeadScore.ToString()"
-                                         BadgeStyle="@(lead.LeadScore >= 80 ? BadgeStyle.Success : lead.LeadScore >= 60 ? BadgeStyle.Warning : BadgeStyle.Light)" />
+                                         BadgeStyle="@(lead.LeadScore >= 80 ? BadgeStyle.Success : lead.LeadScore >= 60 ? BadgeStyle.Warning : BadgeStyle.Light)" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Lead" Property="@PropertyExtensions.GetPropertyFullPath((Lead l) => l.AssignedTo.UserName)" Title=@Localizer["AssignedTo"] Width="150px">

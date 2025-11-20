@@ -73,7 +73,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="quote">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(quote.Status)" Text="@quote.Status.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(quote.Status)" Text="@quote.Status.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Quote" Property=@nameof(Quote.TotalAmount) Title=@Localizer["TotalAmount"] TextAlign="TextAlign.Right">

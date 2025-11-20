@@ -16,6 +16,7 @@ namespace Vanigam.CRM.Objects.Entities
     public class ServiceItem : Item
     {
         public decimal? HourlyRate { get; set; }
+        public int QuantityOnHand { get; set; }
     }
 
     [JsonDerivedType(typeof(InventoryItem), "#Vanigam.CRM.Objects.Entities.InventoryItem")]

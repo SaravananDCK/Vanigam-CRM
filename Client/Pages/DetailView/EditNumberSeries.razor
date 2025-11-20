@@ -92,7 +92,7 @@
                                 </RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
                                     <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(CurrentObject.IsActive)"
-                                                 Text="@(CurrentObject.IsActive ? Localizer["Active"] : Localizer["Inactive"])" />
+                                                 Text="@(CurrentObject.IsActive ? Localizer["Active"] : Localizer["Inactive"])" class="rz-p-1" />
                                 </RadzenText>
                             </div>
 
@@ -104,7 +104,7 @@
                                     @{
                                         var preview = $"{CurrentObject.Prefix}{CurrentObject.CurrentNo.ToString().PadLeft(CurrentObject.PaddingLength, '0')}{CurrentObject.Suffix}";
                                     }
-                                    <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@preview" />
+                                    <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@preview" class="rz-p-1" />
                                 </RadzenText>
                             </div>
                         </div>
@@ -193,7 +193,7 @@
                                 @{
                                     var formPreview = $"{CurrentObject.Prefix}{CurrentObject.CurrentNo.ToString().PadLeft(CurrentObject.PaddingLength, '0')}{CurrentObject.Suffix}";
                                 }
-                                <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@formPreview" />
+                                <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@formPreview" class="rz-p-1" />
                             </RadzenStack>
                         </RadzenCard>
                     </RadzenStack>
