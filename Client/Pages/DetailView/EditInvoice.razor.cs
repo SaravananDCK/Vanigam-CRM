@@ -17,8 +17,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         [Inject] private CustomerApiService CustomerApiService { get; set; }
         private IEnumerable<Customer> Customers { get; set; } = [];
         private List<InvoiceItemDTO> invoiceItems = new();
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
         public string TenantAccountingState { get; set; }
         private string CurrentState { get; set; }
         private bool HasAnyChanges => HasChanges || (invoiceItems?.Any(i => i.IsNew || i.IsDeleted) ?? false || Form?.EditContext?.IsModified() == true);

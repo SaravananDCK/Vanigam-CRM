@@ -14,8 +14,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditJob
     {
-        private int ReadOnlyTabIndex { get; set; } = 0;
-        private int EditTabIndex { get; set; } = 0;
         [Inject] private JobApiService JobApiService { get; set; }
         [Inject] private CustomerApiService CustomerApiService { get; set; }
         [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }

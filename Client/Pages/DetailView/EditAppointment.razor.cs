@@ -9,10 +9,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditAppointment
     {
         [Parameter] public Guid? JobId { get; set; }
-        private int ReadOnlyTabIndex { get; set; } = 0;
         [Inject] private AppointmentApiService AppointmentApiService { get; set; }
         [Parameter] public bool IsEmbeddedModeActive { get; set; } = false;
-        private int EditTabIndex { get; set; } = 0;
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)

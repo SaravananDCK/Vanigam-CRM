@@ -11,8 +11,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditPurchaseOrder
     {
-        private int ReadOnlyTabIndex { get; set; } = 0;
-        private int EditTabIndex { get; set; } = 0;
         [Inject] private PurchaseOrderApiService PurchaseOrderApiService { get; set; }
         [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }
         [Inject] private VendorApiService VendorApiService { get; set; }

@@ -10,8 +10,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditRecurringJob
     {
-        private int ReadOnlyTabIndex { get; set; } = 0;
-        private int EditTabIndex { get; set; } = 0;
         [Inject] private RecurringJobApiService RecurringJobApiService { get; set; }
         protected override async Task OnInitializedAsync()
         {

@@ -20,8 +20,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private IEnumerable<Customer> Customers { get; set; } = [];
         private IEnumerable<Opportunity> Opportunities { get; set; }
         private int QuotationFor { get; set; }
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
         public string TenantAccountingState { get; set; }
         private string CurrentState { get; set; }
         private List<QuoteItemDTO> quoteItems = new();

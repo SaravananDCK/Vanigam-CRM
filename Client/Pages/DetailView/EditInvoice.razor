@@ -10,76 +10,6 @@
 <DetailPageTitleComponent TitleText="@Localizer["EditInvoice"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid">
 </DetailPageTitleComponent>
 <RadzenColumn SizeMD=12>
-    @* Editable Form Mode *@
-    @if (CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))
-    {
-        @*  @* Invoice Information Section  -Only this section has validation *@
-        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
-            <Tabs>
-                <RadzenTabsItem Text="@Localizer["Invoice Info"]" class="fa-small">
-                    <RadzenStack Style="height:calc(100vh - 110px);">
-                        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
-                        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
-                        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Invoice" Data="@CurrentObject">
-                            <RadzenStack>
-                                <FluentValidationValidator Validator="new InvoiceValidator(Localizer)" />
-                                <ValidationSummary />
-                                <RadzenCard>
-                                    <RadzenStack>
-                                        <VanigamAccountingFormField Text=@Localizer["Number"]>
-                                            <ChildContent>
-                                                @if (string.IsNullOrEmpty(CurrentObject.Number))
-                                                {
-                                                    <RadzenText TextStyle="TextStyle.Button" Text=@Localizer["New Invoice"] class="rz-m-2" Style="color: var(--rz-success);" />
-                                                }
-                                                else
-                                                {
-                                                    <RadzenText Text="@CurrentObject.Number" class="rz-m-2" />
-                                                }
-                                                @*<VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" ReadOnly="true" />*@
-                                            </ChildContent>
-                                        </VanigamAccountingFormField>
-                                        <VanigamAccountingFormField Text=@Localizer["Customer"]>
-                                            <ChildContent>
-                                                <CustomerDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
-                                            </ChildContent>
-                                        </VanigamAccountingFormField>
-                                        <VanigamAccountingFormField Text=@Localizer["Status"]>
-                                            <ChildContent>
-                                                <InvoiceStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                                            </ChildContent>
-                                        </VanigamAccountingFormField>
-                                    </RadzenStack>
-                                </RadzenCard>
-                            </RadzenStack>
-                        </RadzenTemplateForm>
-                        @* Invoice Items Section *@
-                        <RadzenCard class="rz-mb-4">
-                            <EditableInvoiceItems Items="@invoiceItems"
-                                                  ItemsChanged="@OnInvoiceItemsChanged"
-                                                  DiscountPercentageChanged="@OnDiscountPercentageChanged"
-                                                  DiscountTypeChanged="@OnDiscountTypeChanged"
-                                                  Invoice="@CurrentObject"
-                                                  CurrentState="@CurrentState"
-                                                  TenantAccountingState="@TenantAccountingState" />
-                        </RadzenCard>
-                        <RadzenStack Style="margin-top: 0.5rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-                            @if (IsCreateMode)
-                            {
-                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
-                            }
-                            else
-                            {
-                                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
-                                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
-                            }
-                        </RadzenStack>
-                    </RadzenStack>
-                </RadzenTabsItem>
-            </Tabs>
-        </RadzenTabs>
-    }
-
     @* Read-Only Mode Display *@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
@@ -256,6 +186,75 @@
                                 }
                             </RadzenStack>
                         </RadzenCard>
+                    </RadzenStack>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    }
+    @* Editable Form Mode *@
+    @if (CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))
+    {
+        @*  @* Invoice Information Section  -Only this section has validation *@
+        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+            <Tabs>
+                <RadzenTabsItem Text="@Localizer["Invoice Info"]" class="fa-small">
+                    <RadzenStack Style="height:calc(100vh - 110px);">
+                        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+                        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
+                        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Invoice" Data="@CurrentObject">
+                            <RadzenStack>
+                                <FluentValidationValidator Validator="new InvoiceValidator(Localizer)" />
+                                <ValidationSummary />
+                                <RadzenCard>
+                                    <RadzenStack>
+                                        <VanigamAccountingFormField Text=@Localizer["Number"]>
+                                            <ChildContent>
+                                                @if (string.IsNullOrEmpty(CurrentObject.Number))
+                                                {
+                                                    <RadzenText TextStyle="TextStyle.Button" Text=@Localizer["New Invoice"] class="rz-m-2" Style="color: var(--rz-success);" />
+                                                }
+                                                else
+                                                {
+                                                    <RadzenText Text="@CurrentObject.Number" class="rz-m-2" />
+                                                }
+                                                @*<VanigamAccountingTextBox @bind-Value="@CurrentObject.Number" Name="txt_Number" ReadOnly="true" />*@
+                                            </ChildContent>
+                                        </VanigamAccountingFormField>
+                                        <VanigamAccountingFormField Text=@Localizer["Customer"]>
+                                            <ChildContent>
+                                                <CustomerDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
+                                            </ChildContent>
+                                        </VanigamAccountingFormField>
+                                        <VanigamAccountingFormField Text=@Localizer["Status"]>
+                                            <ChildContent>
+                                                <InvoiceStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                                            </ChildContent>
+                                        </VanigamAccountingFormField>
+                                    </RadzenStack>
+                                </RadzenCard>
+                            </RadzenStack>
+                        </RadzenTemplateForm>
+                        @* Invoice Items Section *@
+                        <RadzenCard class="rz-mb-4">
+                            <EditableInvoiceItems Items="@invoiceItems"
+                                                  ItemsChanged="@OnInvoiceItemsChanged"
+                                                  DiscountPercentageChanged="@OnDiscountPercentageChanged"
+                                                  DiscountTypeChanged="@OnDiscountTypeChanged"
+                                                  Invoice="@CurrentObject"
+                                                  CurrentState="@CurrentState"
+                                                  TenantAccountingState="@TenantAccountingState" />
+                        </RadzenCard>
+                        <RadzenStack Style="margin-top: 0.5rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                            @if (IsCreateMode)
+                            {
+                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
+                            }
+                            else
+                            {
+                                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
+                                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
+                            }
+                        </RadzenStack>
                     </RadzenStack>
                 </RadzenTabsItem>
             </Tabs>

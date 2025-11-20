@@ -43,9 +43,9 @@
                     @* Show Technician column only when not embedded by Technician *@
                     @if (!IsEmbeddedMode || !TechnicianId.HasValue)
                     {
-                        <RadzenDataGridColumn TItem="TimeSheet" Property="Technician.Name" Title=@Localizer["Technician"]>
+                        <RadzenDataGridColumn TItem="TimeSheet" Property="Technician.UserName" Title=@Localizer["Technician"]>
                             <Template Context="timesheet">
-                                @timesheet.Technician?.Name
+                                @timesheet.Technician?.UserName
                             </Template>
                         </RadzenDataGridColumn>
                     }

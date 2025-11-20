@@ -10,10 +10,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditContract
     {
         [Inject] private ContractApiService ContractApiService { get; set; }
-
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
-
+        
         private ContractDuration _previousDuration;
         private DateTimeOffset? _previousStartDate;
 

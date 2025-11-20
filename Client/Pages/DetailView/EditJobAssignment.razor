@@ -55,50 +55,53 @@
     }
 
     @* Editable Form Mode *@
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="JobAssignment" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@SaveAndStayInEdit">
-        <RadzenStack>
-            <FluentValidationValidator Validator="new JobAssignmentValidator(Localizer)" />
-            <ValidationSummary />
-            <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left">
-                <Tabs>
-                    @* JobAssignmentInformation Tab *@
-                    <RadzenTabsItem Text="@Localizer["Job Assignment Info"]" class="fa-small">
-                        <VanigamAccountingFormField Text=@Localizer["Job"]>
-                            <ChildContent>
-                                <JobDropDownDataGrid @bind-Value="@CurrentObject.JobId" Disabled="IsEmbeddedModeActive"></JobDropDownDataGrid>
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Status"]>
-                            <ChildContent>
-                                <AssignmentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["AssignedAt"]>
-                            <ChildContent>
-                                <RadzenDatePicker @bind-Value="@CurrentObject.AssignedAt" Name="date_AssignedAt" ShowTime="true"  Max="DateTime.Now"/>
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["AcceptedAt"]>
-                            <ChildContent>
-                                <RadzenDatePicker @bind-Value="@CurrentObject.AcceptedAt" Name="date_AcceptedAt" ShowTime="true" Max="DateTime.Now" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                    </RadzenTabsItem>
-                </Tabs>
-            </RadzenTabs>
-        </RadzenStack>
-
-        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-            @if (IsCreateMode)
-            {
-                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-            }
-            else
-            {
-                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
-            }
-        </RadzenStack>
-    </RadzenTemplateForm>
-
+    @if (CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))
+    {
+        <RadzenCard>
+            <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="JobAssignment" Data="@CurrentObject" Submit="@SaveAndStayInEdit">
+                <RadzenStack>
+                    <FluentValidationValidator Validator="new JobAssignmentValidator(Localizer)" />
+                    <ValidationSummary />
+                    <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+                        <Tabs>
+                            @* JobAssignmentInformation Tab *@
+                            <RadzenTabsItem Text="@Localizer["Job Assignment Info"]" class="fa-small">
+                                <VanigamAccountingFormField Text=@Localizer["Job"]>
+                                    <ChildContent>
+                                        <JobDropDownDataGrid @bind-Value="@CurrentObject.JobId" Disabled="IsEmbeddedModeActive"></JobDropDownDataGrid>
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Status"]>
+                                    <ChildContent>
+                                        <AssignmentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["AssignedAt"]>
+                                    <ChildContent>
+                                        <RadzenDatePicker @bind-Value="@CurrentObject.AssignedAt" Name="date_AssignedAt" ShowTime="true" Max="DateTime.Now" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["AcceptedAt"]>
+                                    <ChildContent>
+                                        <RadzenDatePicker @bind-Value="@CurrentObject.AcceptedAt" Name="date_AcceptedAt" ShowTime="true" Max="DateTime.Now" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                                    @if (IsCreateMode)
+                                    {
+                                        <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                                    }
+                                    else
+                                    {
+                                        <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                                        <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+                                    }
+                                </RadzenStack>
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+                </RadzenStack>
+            </RadzenTemplateForm>
+        </RadzenCard>
+    }
 </RadzenColumn>

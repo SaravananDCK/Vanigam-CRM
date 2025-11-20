@@ -9,8 +9,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditJobReport
     {
         [Parameter] public Guid? JobId { get; set; }
-        private int ReadOnlyTabIndex { get; set; } = 0;
-        private int EditTabIndex { get; set; } = 0;
         [Parameter] public bool IsEmbeddedModeActive { get; set; } = false;
         [Inject] private JobReportApiService JobReportApiService { get; set; }
         protected override async Task OnInitializedAsync()

@@ -17,9 +17,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         // Property to track selected information tab in read-only mode
         private int SelectedInfoTabIndex = 0;
 
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
-
         // Property to determine if the opportunity can be converted to customer
         private bool CanConvertToCustomer => CurrentObject != null &&
             (CurrentObject.Stage == OpportunityStage.Proposal ||

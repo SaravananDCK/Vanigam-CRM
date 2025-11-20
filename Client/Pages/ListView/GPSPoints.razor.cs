@@ -28,9 +28,9 @@ namespace Vanigam.CRM.Client.Pages.ListView
         {
             return new ODataFilter<GPSPoint>()
                 .FilterByAnd(args.Filter)
-                .BeginGroup()
+                //.BeginGroup()
                 // No searchable string properties for GPSPoint
-                .EndGroup()
+                //.EndGroup()
                 .Build();
         }
 

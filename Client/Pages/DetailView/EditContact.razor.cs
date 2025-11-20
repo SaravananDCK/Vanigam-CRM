@@ -10,9 +10,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     {
         [Inject] private ContactApiService ContactApiService { get; set; }
 
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
-
         protected override async Task OnInitializedAsync()
         {
             // Load customers for dropdown

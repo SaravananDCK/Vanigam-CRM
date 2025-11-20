@@ -11,15 +11,18 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     {
         [Inject] private ProductApiService ProductApiService { get; set; }
 
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
-
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
+            {
                 CurrentObject = new Product();
+                IsReadOnlyMode = false;
+            }
             else
-                CurrentObject = (Product)await ProductApiService.GetByOid(oid: Oid);
+            { 
+                CurrentObject = await ProductApiService.GetByOid(oid: Oid);
+                IsReadOnlyMode = true;
+            }
 
             await InitEditContext();
         }
@@ -31,7 +34,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             {
                 if (Oid == Guid.Empty)
                 {
-                    CurrentObject = (Product)await ProductApiService.Create(CurrentObject);
+                    CurrentObject = await ProductApiService.Create(CurrentObject);
                 }
                 else
                 {

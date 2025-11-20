@@ -10,8 +10,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     {
         [Inject] private CustomerApiService CustomerApiService { get; set; }
         bool IsFullheightTab = false;
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)

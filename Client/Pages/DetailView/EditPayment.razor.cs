@@ -16,8 +16,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         [Inject] private CustomerAdvanceApiService CustomerAdvanceApiService { get; set; }
         [Inject] private PaymentAllocationApiService PaymentAllocationApiService { get; set; }
         [Inject] private BankAccountApiService BankAccountApiService { get; set; }
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
+        
         private List<Invoice> pendingInvoices = new();
         private List<PaymentAllocationDTO> allocations = new();
         private List<BankAccount> bankAccounts = new();
