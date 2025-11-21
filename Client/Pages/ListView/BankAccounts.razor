@@ -20,17 +20,15 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.Name) Title=@Localizer["Name"]>
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.Name) Title=@Localizer["BankName"]>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.Code) Title=@Localizer["Code"] Width="100px">
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.BankName) Title=@Localizer["BankName"] Width="150px">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.AccountNumber) Title=@Localizer["AccountNumber"] Width="150px">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.Currency) Title=@Localizer["Currency"] Width="100px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.CurrentBalance) Title=@Localizer["CurrentBalance"] Width="150px">
+                    <RadzenDataGridColumn TItem="BankAccount" Property=@nameof(BankAccount.CurrentBalance) Title=@Localizer["CurrentBalance"] Width="150px" TextAlign="TextAlign.Right">
                         <Template Context="bankaccount">
                             @(bankaccount.CurrentBalance.ToString("C2"))
                         </Template>

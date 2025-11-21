@@ -13,13 +13,27 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
-                CurrentObject = new() { AccountType = Objects.Entities.AccountType.BankAccount };
+            {
+                CurrentObject = new() { AccountType = AccountType.BankAccount };
+                IsReadOnlyMode = false;
+            }
             else
+            {
                 CurrentObject = await BankAccountApiService.GetByOid(oid: Oid);
-
+                IsReadOnlyMode = true;
+            }
             await InitEditContext();
         }
-
+        protected override async Task SaveAndStayInEdit()
+        {
+            await FormSubmit();
+            // After successful save, switch back to read-only mode
+            if (!ErrorVisible && !ShowNotUniqueAlert)
+            {
+                IsReadOnlyMode = true;
+                StateHasChanged();
+            }
+        }
         protected async Task FormSubmit()
         {
             IsBusy = true;

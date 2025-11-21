@@ -117,20 +117,35 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccountHolderName" xml:space="preserve">
+    <value>Account Holder Name</value>
+  </data>
   <data name="AccountNumber" xml:space="preserve">
     <value>Account Number</value>
   </data>
-  <data name="BankAccountInformation" xml:space="preserve">
-    <value>Bank Account Information</value>
+  <data name="AccountNumberRequired" xml:space="preserve">
+    <value>Account Number is Required</value>
+  </data>
+  <data name="BankAccInfo" xml:space="preserve">
+    <value>Bank Account Info</value>
   </data>
   <data name="BankName" xml:space="preserve">
     <value>Bank Name</value>
+  </data>
+  <data name="BankNameRequired" xml:space="preserve">
+    <value>Bank Name is Required</value>
+  </data>
+  <data name="BranchName" xml:space="preserve">
+    <value>Branch Name</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
   <data name="Code" xml:space="preserve">
     <value>Code</value>
+  </data>
+  <data name="CodeRequired" xml:space="preserve">
+    <value>Code is Required</value>
   </data>
   <data name="CreditLimit" xml:space="preserve">
     <value>Credit Limit</value>
@@ -150,8 +165,17 @@
   <data name="Email" xml:space="preserve">
     <value>Email</value>
   </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Invalid Email</value>
+  </data>
+  <data name="IFSCCode" xml:space="preserve">
+    <value>IFSC Code</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
+  </data>
+  <data name="OtherDetails" xml:space="preserve">
+    <value>Other Details</value>
   </data>
   <data name="Phone" xml:space="preserve">
     <value>Phone</value>
