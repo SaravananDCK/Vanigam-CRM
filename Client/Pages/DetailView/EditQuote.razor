@@ -13,9 +13,8 @@
     @* Editable Form Mode - Wrapper for consistent visibility *@
     @if (CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))
     {
-
         @* Quote Information Form - Only this section has validation *@
-        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))">
+        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
             <Tabs>
                 <RadzenTabsItem Text="@Localizer["Quote Info"]" class="fa-small">
                     <RadzenStack Style="height:calc(100vh - 110px);">

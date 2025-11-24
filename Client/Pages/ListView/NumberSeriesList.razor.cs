@@ -26,7 +26,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected override string GetFilterString(LoadDataArgs args)
         {
-            return new ODataFilter<Objects.Entities.NumberSeries>()
+            return new ODataFilter<NumberSeries>()
                 .FilterByAnd(args.Filter)
                 .BeginGroup()
                 .ContainsOr(u => u.EntityType, SearchString)
@@ -38,22 +38,22 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditNumberSeries>(Localizer["AddNumberSeries"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditNumberSeries>(Localizer["AddNumberSeries"], null, 100, 100);
             await GridReload();
         }
 
-        protected async Task EditRow(DataGridRowMouseEventArgs<Objects.Entities.NumberSeries> args)
+        protected async Task EditRow(DataGridRowMouseEventArgs<NumberSeries> args)
         {
             await Open(args.Data);
         }
 
-        private async Task Open(Objects.Entities.NumberSeries numberseries)
+        private async Task Open(NumberSeries numberseries)
         {
-            await DialogService.OpenDialogAsync<EditNumberSeries>(Localizer["EditNumberSeries"], new Dictionary<string, object> { { "Oid", numberseries.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditNumberSeries>(Localizer["EditNumberSeries"], new Dictionary<string, object> { { "Oid", numberseries.Oid } }, 100, 100);
             await GridReload();
         }
 
-        protected async Task GridDeleteButtonClick(Objects.Entities.NumberSeries numberseries)
+        protected async Task GridDeleteButtonClick(NumberSeries numberseries)
         {
             try
             {

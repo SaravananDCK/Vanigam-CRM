@@ -8,29 +8,37 @@
 <RadzenColumn SizeMD=12>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
     <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Notification" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
-        <RadzenStack>
-            <FluentValidationValidator Validator="new NotificationValidator(Localizer)" />
-            <ValidationSummary />
-            <VanigamAccountingFormField Text=@Localizer["Type"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Type" Name="txt_Type" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Message"]>
-                <ChildContent>
-                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Message" Name="txt_Message" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["Sent"]>
-                <ChildContent>
-                    <RadzenSwitch @bind-Value="@CurrentObject.Sent" Name="switch_Sent" />
-                </ChildContent>
-            </VanigamAccountingFormField>
-        </RadzenStack>
-        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-            <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
-        </RadzenStack>
-    </RadzenTemplateForm>
+    <RadzenCard>
+        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Notification" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit)" Submit="@FormSubmit">
+            <RadzenStack>
+                <FluentValidationValidator Validator="new NotificationValidator(Localizer)" />
+                <ValidationSummary />
+                <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+                    <Tabs>
+                        <RadzenTabsItem Text="@Localizer["Notification Info"]" Icon="@FadIcon("fa-bell")" class="fa-small">
+
+                            <VanigamAccountingFormField Text=@Localizer["Type"]>
+                                <ChildContent>
+                                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Type" Name="txt_Type" />
+                                </ChildContent>
+                            </VanigamAccountingFormField>
+                            <VanigamAccountingFormField Text=@Localizer["Message"]>
+                                <ChildContent>
+                                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Message" Name="txt_Message" />
+                                </ChildContent>
+                            </VanigamAccountingFormField>
+                            <RadzenStack Orientation="Orientation.Horizontal" Style="margin-top: 1rem">
+                                <RadzenLabel Text="@Localizer["Sent"]" Component="swt_Sent" Style="width: 80px" />
+                                <RadzenSwitch @bind-Value="@CurrentObject.Sent" Name="swt_Sent" />
+                            </RadzenStack>
+                            <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                                <VanigamAccountingCancelButton Id="btn_Cancel" Text="@Localizer["Cancel"]" Click="@CancelButtonClick" />
+                            </RadzenStack>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+            </RadzenStack>
+        </RadzenTemplateForm>
+        </RadzenCard>
 </RadzenColumn>
