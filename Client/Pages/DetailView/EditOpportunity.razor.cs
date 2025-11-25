@@ -16,7 +16,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         bool IsFullheightTab = false;
         // Property to track selected information tab in read-only mode
         private int SelectedInfoTabIndex = 0;
-
+        private static readonly IList<OpportunityStage> OpportunityStages = [.. Enum.GetValues<OpportunityStage>()];
         // Property to determine if the opportunity can be converted to customer
         private bool CanConvertToCustomer => CurrentObject != null &&
             (CurrentObject.Stage == OpportunityStage.Proposal ||
@@ -128,6 +128,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 StateHasChanged();
                 DialogService.CloseDialog();
             }
+        }
+        private async Task Changed(OpportunityStage Stage)
+        {
+
+            CurrentObject.Stage = Stage;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Stage)));
+            StateHasChanged();
         }
 
     }

@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditCustomer
     {
         [Inject] private CustomerApiService CustomerApiService { get; set; }
+        private static readonly IList<CustomerStatus> CustomerStatuses = [.. Enum.GetValues<CustomerStatus>()];
         bool IsFullheightTab = false;
         protected override async Task OnInitializedAsync()
         {
@@ -25,7 +27,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             await InitEditContext();
         }
-        
+        private async Task Changed(CustomerStatus status)
+        {
+
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         protected async Task FormSubmit()
         {
             IsBusy = true;

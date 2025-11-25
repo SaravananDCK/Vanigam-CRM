@@ -26,6 +26,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private string CustomerState { get; set; }
         private bool HasAnyChanges => HasChanges || (materials?.Any(m => m.IsNew || m.IsDeleted) ?? false);
 
+        private static readonly IList<JobStatus> JobStatuses = [.. Enum.GetValues<JobStatus>()];
+
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -147,7 +149,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 CurrentObject.DiscountType = type;
                 StateHasChanged();
         }
-      
+        private async Task Changed(JobStatus status)
+        {
+
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         private async Task OnDiscountPercentageChanged(decimal discountPercent)
         {
             if (CurrentObject != null && discountPercent != 0)

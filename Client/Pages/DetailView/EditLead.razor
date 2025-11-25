@@ -186,6 +186,16 @@
                         @* Contact Information Tab *@
                         <RadzenTabsItem Text="@Localizer["ContactInformation"]" Icon="@FadIcon("fa-user")" class="fa-small">
                             <RadzenStack Gap="1rem">
+                                <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                                    <RadzenRadioButtonList TValue="LeadStatus" Change="@Changed" Value="@CurrentObject.Status">
+                                        <Items>
+                                            <RadzenRadioButtonListItem Text=@Localizer["New"] Value=LeadStatus.New />
+                                            <RadzenRadioButtonListItem Text=@Localizer["Qualified"] Value=LeadStatus.Qualified />
+                                            <RadzenRadioButtonListItem Text=@Localizer["Contacted"] Value=LeadStatus.Contacted />
+                                            <RadzenRadioButtonListItem Text=@Localizer["Lost"] Value=LeadStatus.Lost />
+                                        </Items>
+                                    </RadzenRadioButtonList>
+                                </RadzenStack>
                                 <VanigamAccountingFormField Text=@Localizer["Name"]>
                                     <ChildContent>
                                         <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
@@ -250,7 +260,6 @@
                                 <VanigamAccountingFormField Text=@Localizer["State"]>
                                     <ChildContent>
                                         <StatesDropDown @bind-Value="@CurrentObject.State" />
-                                        @* <VanigamAccountingTextBox @bind-Value="@CurrentObject.State" Name="txt_State"/> *@
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["PostalCode"]>
@@ -314,13 +323,13 @@
                         </RadzenTabsItem>
 
                         @* Status & Assignment Tab *@
-                        <RadzenTabsItem Text="@Localizer["StatusAndAssignment"]" Icon="@FadIcon("fa-tasks")" class="fa-small">
+                        <RadzenTabsItem Text="@Localizer["Assignment"]" Icon="@FadIcon("fa-tasks")" class="fa-small">
                             <RadzenStack Gap="1rem">
-                                <VanigamAccountingFormField Text=@Localizer["Status"]>
+                                @*<VanigamAccountingFormField Text=@Localizer["Status"]>
                                     <ChildContent>
                                         <LeadStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                                     </ChildContent>
-                                </VanigamAccountingFormField>
+                                </VanigamAccountingFormField>*@
                                 <VanigamAccountingFormField Text=@Localizer["LastContactDate"]>
                                     <ChildContent>
                                         <RadzenDatePicker @bind-Value="@CurrentObject.LastContactDate" Name="date_LastContactDate" />

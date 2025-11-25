@@ -57,7 +57,7 @@
     @* Editable Form Mode *@
     @if (CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))
     {
-        <RadzenCard>
+        <RadzenCard class="rz-my-4">
             <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="JobAssignment" Data="@CurrentObject" Submit="@SaveAndStayInEdit">
                 <RadzenStack>
                     <FluentValidationValidator Validator="new JobAssignmentValidator(Localizer)" />
@@ -66,14 +66,19 @@
                         <Tabs>
                             @* JobAssignmentInformation Tab *@
                             <RadzenTabsItem Text="@Localizer["Job Assignment Info"]" class="fa-small">
+                                <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                                    <RadzenRadioButtonList TValue="AssignmentStatus" Change="@Changed" Value="@CurrentObject.Status">
+                                        <Items>
+                                            @foreach (var status in AssignmentStatuses)
+                                            {
+                                                <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                            }
+                                        </Items>
+                                    </RadzenRadioButtonList>
+                                </RadzenStack>
                                 <VanigamAccountingFormField Text=@Localizer["Job"]>
                                     <ChildContent>
                                         <JobDropDownDataGrid @bind-Value="@CurrentObject.JobId" Disabled="IsEmbeddedModeActive"></JobDropDownDataGrid>
-                                    </ChildContent>
-                                </VanigamAccountingFormField>
-                                <VanigamAccountingFormField Text=@Localizer["Status"]>
-                                    <ChildContent>
-                                        <AssignmentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["AssignedAt"]>

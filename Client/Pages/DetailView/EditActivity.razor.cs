@@ -22,12 +22,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         {
             "Call", "Email", "Meeting", "Task", "Note", "Conversion", "Follow-up"
         };
-
-        private List<string> ActivityStatuses = new()
+        private async Task Changed(ActivityStatus status)
         {
-            "Pending", "Completed", "Cancelled", "In Progress"
-        };
 
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         // Helper property to convert between NodaTime Instant and DateTime for UI binding
         private DateTime ActivityDateForUI
         {

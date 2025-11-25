@@ -16,7 +16,7 @@
         @* Quote Information Form - Only this section has validation *@
         <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
             <Tabs>
-                <RadzenTabsItem Text="@Localizer["Quote Info"]" class="fa-small">
+                <RadzenTabsItem Text="@Localizer["Quote"]" class="fa-small">
                     <RadzenStack Style="height:calc(100vh - 110px);">
                         <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
                         <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
@@ -25,7 +25,21 @@
                             <ValidationSummary />
                             @* Quote Information Section *@
                             <RadzenCard>
-                                <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">@Localizer["QuoteInformation"]</RadzenText>
+                                    <RadzenRow>
+                                        <RadzenColumn SizeMD="3" SizeSM="2">
+                                            <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3" Style="width: fit-content" Text="@Localizer["QuoteInformation"]" />
+                                        </RadzenColumn>
+                                        <RadzenColumn SizeMD="9" SizeSM="10">
+                                            <RadzenRadioButtonList TValue="QuoteStatus" Change="@Changed" Value="@CurrentObject.Status">
+                                                <Items>
+                                                    @foreach (var status in QuoteStatuses)
+                                                    {
+                                                        <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                                    }
+                                                </Items>
+                                            </RadzenRadioButtonList>
+                                        </RadzenColumn>
+                                    </RadzenRow>
                                 <RadzenStack>
                                     <VanigamAccountingFormField Text=@Localizer["Number"]>
                                         <ChildContent>

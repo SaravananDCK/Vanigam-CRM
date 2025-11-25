@@ -165,6 +165,16 @@
                         @* Basic Info Tab *@
 
                         <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
+                            <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                                <RadzenRadioButtonList TValue="CustomerStatus" Change="@Changed" Value="@CurrentObject.Status">
+                                    <Items>
+                                        @foreach (var status in CustomerStatuses)
+                                        {
+                                            <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                        }
+                                    </Items>
+                                </RadzenRadioButtonList>
+                            </RadzenStack>
                             <RadzenStack Gap="1rem">
                                 <VanigamAccountingFormField Text=@Localizer["Code"]>
                                     <ChildContent>
@@ -192,11 +202,6 @@
                                 <VanigamAccountingFormField Text=@Localizer["Industry"]>
                                     <ChildContent>
                                         <VanigamAccountingTextBox @bind-Value="@CurrentObject.Industry" Name="txt_Industry" />
-                                    </ChildContent>
-                                </VanigamAccountingFormField>
-                                <VanigamAccountingFormField Text=@Localizer["Status"]>
-                                    <ChildContent>
-                                        <CustomerStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["Rating"]>

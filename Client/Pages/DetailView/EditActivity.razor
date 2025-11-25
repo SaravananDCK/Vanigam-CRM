@@ -126,14 +126,24 @@
                         <Tabs>
                             @* Basic Info Tab *@
                             <RadzenTabsItem Text="@Localizer["ActivityInformation"]" class="fa-small">
+                                <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                                    <RadzenRadioButtonList TValue="ActivityStatus" Change="@Changed" Value="@CurrentObject.Status">
+                                        <Items>
+                                            <RadzenRadioButtonListItem Text=@Localizer["In Progress"] Value=ActivityStatus.InProgress />
+                                            <RadzenRadioButtonListItem Text=@Localizer["Pending"] Value=ActivityStatus.Pending />
+                                            <RadzenRadioButtonListItem Text=@Localizer["Completed"] Value=ActivityStatus.Completed />
+                                            <RadzenRadioButtonListItem Text=@Localizer["Cancelled"] Value=ActivityStatus.Cancelled />
+                                        </Items>
+                                    </RadzenRadioButtonList>
+                                </RadzenStack>
                                 @if (LeadId == null && OpportunityId == null)
                                 {
                                     <VanigamAccountingFormField Text=@Localizer["Activity For"]>
                                         <ChildContent>
                                             <RadzenRadioButtonList @bind-Value=@ActivityFor TValue="int" JustifyContent="JustifyContent.Start" class="rz-m-2">
                                                 <Items>
-                                                    <RadzenRadioButtonListItem Text="Lead" Value="0" />
-                                                    <RadzenRadioButtonListItem Text="Opportunity" Value="1" />
+                                                    <RadzenRadioButtonListItem Text=@Localizer["Lead"] Value="0" />
+                                                    <RadzenRadioButtonListItem Text=@Localizer["Opportunity"] Value="1" />
                                                 </Items>
                                             </RadzenRadioButtonList>
                                         </ChildContent>
@@ -167,12 +177,6 @@
                                     </ChildContent>
                                 </VanigamAccountingFormField>
 
-                                <VanigamAccountingFormField Text=@Localizer["Status"]>
-                                    <ChildContent>
-                                        <ActivityStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                                    </ChildContent>
-                                </VanigamAccountingFormField>
-
                                 <VanigamAccountingFormField Text=@Localizer["ActivityDate"]>
                                     <ChildContent>
                                         <RadzenDatePicker @bind-Value="@ActivityDateForUI" Name="date_ActivityDate" ShowTime="true" DateFormat="yyyy-MM-dd HH:mm" class="w-100" />
@@ -190,15 +194,9 @@
                                         <PriorityEnumDropDown @bind-Value="@CurrentObject.Priority" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
-                                @if (CurrentObject.Opportunity != null)
-                                {
-                                    <VanigamAccountingFormField Text=@Localizer["Opportunity"]>
-                                        <ChildContent>
-                                            <VanigamAccountingTextBox Value="@(CurrentObject.Opportunity?.Title ?? "")" Name="txt_OpportunityTitle" Disabled="true" />
-                                        </ChildContent>
-                                    </VanigamAccountingFormField>
-                                }
-
+                            </RadzenTabsItem>
+                            
+                            <RadzenTabsItem Text="@Localizer["Notes"]" class="fa-small">
                                 <VanigamAccountingFormField Text=@Localizer["Description"]>
                                     <ChildContent>
                                         <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="txt_Description" Rows="4" class="w-100" />
@@ -216,21 +214,20 @@
                                         <RadzenTextArea @bind-Value="@CurrentObject.Notes" Name="txt_Notes" Rows="4" class="w-100" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
-                                
-                                <RadzenStack Style="margin-top:0.5rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-                                    @if (IsCreateMode)
-                                    {
-                                        <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
-                                    }
-                                    else
-                                    {
-                                        <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
-                                        <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
-                                    }
-                                </RadzenStack>
                             </RadzenTabsItem>
                         </Tabs>
                     </RadzenTabs>
+                    <RadzenStack Style="margin-top:0.5rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                        @if (IsCreateMode)
+                        {
+                            <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+                        }
+                        else
+                        {
+                            <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+                            <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+                        }
+                    </RadzenStack>
                 </RadzenStack>
             </RadzenTemplateForm>
         </RadzenCard>

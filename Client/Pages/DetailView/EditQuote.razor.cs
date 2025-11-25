@@ -25,7 +25,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private List<QuoteItemDTO> quoteItems = new();
         private bool hasItemChanges = false;
         public bool HasAnyChanges => Form?.EditContext?.IsModified() == true || hasItemChanges || (quoteItems?.Any(i => i.IsNew || i.IsDeleted) ?? false);
-
+        private static readonly IList<QuoteStatus> QuoteStatuses = [.. Enum.GetValues<QuoteStatus>()];
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync();
@@ -56,6 +56,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             TenantAccountingState = accSetings?.CompanyState;
             await LoadDropdownData();
             await InitEditContext();
+        }
+        private async Task Changed(QuoteStatus status)
+        {
+
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
         }
         protected string GetExpandString()
         {

@@ -66,14 +66,20 @@
                         <Tabs>
                             @* Appointment Tab *@
                             <RadzenTabsItem Text="@Localizer["Appointment Info"]" class="fa-small">
+                                <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                                    <RadzenRadioButtonList TValue="AppointmentStatus" Change="@Changed" Value="@CurrentObject.Status">
+                                        <Items>
+                                            @foreach (var status in AppointmentStatuses)
+                                            {
+                                                <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                            }
+                                        </Items>
+                                    </RadzenRadioButtonList>
+                                </RadzenStack>
+
                                 <VanigamAccountingFormField Text=@Localizer["Job"]>
                                     <ChildContent>
                                         <JobDropDownDataGrid @bind-Value="@CurrentObject.JobId" Disabled="IsEmbeddedModeActive"></JobDropDownDataGrid>
-                                    </ChildContent>
-                                </VanigamAccountingFormField>
-                                <VanigamAccountingFormField Text=@Localizer["Status"]>
-                                    <ChildContent>
-                                        <AppointmentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["StartAt"]>

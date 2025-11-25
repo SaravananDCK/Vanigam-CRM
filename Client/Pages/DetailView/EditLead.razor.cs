@@ -17,7 +17,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private bool CanConvertToOpportunity => CurrentObject != null &&
             (CurrentObject.Status == LeadStatus.Qualified || CurrentObject.Status == LeadStatus.Contacted) &&
             CurrentObject.Status != LeadStatus.Converted;
-
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -33,7 +32,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             await InitEditContext();
         }
-        
+
         protected async Task FormSubmit()
         {
             IsBusy = true;
@@ -46,7 +45,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 else
                 {
                     var result = await LeadApiService.Update(oid: Oid, CurrentObject);
-                    if(result.IsPreconditionFailed())
+                    if (result.IsPreconditionFailed())
                     {
                         HasChanges = true;
                         CanEdit = false;
@@ -69,7 +68,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             catch (Exception ex)
             {
-                    ErrorVisible = true;
+                ErrorVisible = true;
             }
             IsBusy = false;
         }
@@ -99,7 +98,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 0 => Localizer["ContactInformation"],
                 1 => Localizer["AddressInformation"],
                 2 => Localizer["BusinessContext"],
-                3 =>  Localizer["Comments"],
+                3 => Localizer["Comments"],
                 4 => Localizer["Activities"],
                 _ => ""
             };
@@ -123,6 +122,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 StateHasChanged();
                 DialogService.CloseDialog(CurrentObject);
             }
+        }
+        private async Task Changed(LeadStatus status)
+        {
+            
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
         }
     }
 }

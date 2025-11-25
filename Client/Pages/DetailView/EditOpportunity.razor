@@ -201,19 +201,24 @@
                 <FluentValidationValidator Validator="new OpportunityValidator(Localizer)" />
                 <ValidationSummary />
 
-                <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left" class="rz-mt-4">
+                <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
                     <Tabs>
                         @* Basic Info Tab *@
                         <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-handshake")" class="fa-small">
-                            <RadzenStack Gap="1rem" class="rz-p-4">
+                            <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                                <RadzenRadioButtonList TValue="OpportunityStage" Change="@Changed" Value="@CurrentObject.Stage">
+                                    <Items>
+                                        @foreach (var status in OpportunityStages)
+                                        {
+                                            <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                        }
+                                    </Items>
+                                </RadzenRadioButtonList>
+                            </RadzenStack>
+                            <RadzenStack Gap="1rem" class="rz-p-2">
                                 <VanigamAccountingFormField Text=@Localizer["Title"]>
                                     <ChildContent>
                                         <VanigamAccountingTextBox @bind-Value="@CurrentObject.Title" Name="txt_Title" />
-                                    </ChildContent>
-                                </VanigamAccountingFormField>
-                                <VanigamAccountingFormField Text=@Localizer["Description"]>
-                                    <ChildContent>
-                                        <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="txt_Description" Rows="3" class="w-100" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["EstimatedValue"]>
@@ -226,17 +231,22 @@
                                         <VanigamAccountingTextBox @bind-Value="@CurrentObject.Source" Name="txt_Source" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Description"]>
+                                    <ChildContent>
+                                        <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="txt_Description" Rows="3" class="w-100" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
                             </RadzenStack>
                         </RadzenTabsItem>
 
                         @* Details Tab *@
                         <RadzenTabsItem Text="@Localizer["Details"]" Icon="@FadIcon("fa-list-ul")" class="fa-small">
-                            <RadzenStack Gap="1rem" class="rz-p-4">
-                                <VanigamAccountingFormField Text=@Localizer["Stage"]>
+                            <RadzenStack Gap="1rem" class="rz-p-2">
+                                @*<VanigamAccountingFormField Text=@Localizer["Stage"]>
                                     <ChildContent>
                                         <OpportunityStageEnumDropDown @bind-Value="@CurrentObject.Stage" />
                                     </ChildContent>
-                                </VanigamAccountingFormField>
+                                </VanigamAccountingFormField>*@
                                 <VanigamAccountingFormField Text=@Localizer["Probability"]>
                                     <ChildContent>
                                         <RadzenNumeric @bind-Value="@CurrentObject.Probability" Name="numeric_Probability" Min="0" Max="100" Step="5" />
