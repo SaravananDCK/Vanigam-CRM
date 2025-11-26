@@ -130,7 +130,15 @@
 
                             <VanigamAccountingFormField Text=@Localizer["AccountType"]>
                                 <ChildContent>
-                                    <AccountTypeEnumDropDown @bind-Value="@CurrentObject!.AccountType" />
+                                    @*<AccountTypeEnumDropDown @bind-Value="@CurrentObject!.AccountType" />*@
+                                    <RadzenRadioButtonList @bind-Value=@CurrentObject.AccountType TValue="AccountType" JustifyContent="JustifyContent.Start" class="rz-m-2">
+                                        <Items>
+                                            @foreach (var type in AccountTypes)
+                                            {
+                                                <RadzenRadioButtonListItem Text="@Localizer[type.GetDisplayDescription().ToString()]" Value="type" />
+                                            }
+                                        </Items>
+                                    </RadzenRadioButtonList>
                                 </ChildContent>
                             </VanigamAccountingFormField>
 

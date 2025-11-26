@@ -171,19 +171,21 @@
                             <RadzenStack Gap="1rem">
                                 <VanigamAccountingFormField Text=@Localizer["Customer"]>
                                     <ChildContent>
-                                        <RadzenDropDown @bind-Value="@CurrentObject.CustomerId"
-                                                        Data="@Customers"
-                                                        TextProperty="Name"
-                                                        ValueProperty="Oid"
-                                                        Placeholder="@Localizer["Select Customer"]"
-                                                        AllowClear="true"
-                                                        Name="dropdown_Customer" />
+                                        <CustomerDropDownDataGrid @bind-Value="@CurrentObject.CustomerId" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
 
                                 <VanigamAccountingFormField Text=@Localizer["Type"]>
                                     <ChildContent>
-                                        <ContactTypeEnumDropDown @bind-Value="@CurrentObject.Type" />
+                                        @*<ContactTypeEnumDropDown @bind-Value="@CurrentObject.Type" />*@
+                                        <RadzenRadioButtonList @bind-Value=@CurrentObject.Type TValue="ContactType" JustifyContent="JustifyContent.Start" class="rz-m-2">
+                                            <Items>
+                                                @foreach (var type in ContactTypes)
+                                                {
+                                                    <RadzenRadioButtonListItem Text="@Localizer[type.GetDisplayDescription().ToString()]" Value="type" />
+                                                }
+                                            </Items>
+                                        </RadzenRadioButtonList>
                                     </ChildContent>
                                 </VanigamAccountingFormField>
 

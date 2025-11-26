@@ -11,6 +11,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     {
         [Inject] private CustomerApiService CustomerApiService { get; set; }
         private static readonly IList<CustomerStatus> CustomerStatuses = [.. Enum.GetValues<CustomerStatus>()];
+        private static readonly IList<CustomerType> CustomerTypes = [.. Enum.GetValues<CustomerType>()];
         bool IsFullheightTab = false;
         protected override async Task OnInitializedAsync()
         {

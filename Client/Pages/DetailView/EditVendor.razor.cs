@@ -9,7 +9,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditVendor
     {
         [Inject] private VendorApiService VendorApiService { get; set; }
-
+        private static readonly IList<CustomerType> CustomerTypes = [.. Enum.GetValues<CustomerType>()];
+        private static readonly IList<CustomerStatus> CustomerStatuses = [.. Enum.GetValues<CustomerStatus>()];
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -25,7 +26,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             await InitEditContext();
         }
+        private async Task OnChanged(CustomerStatus status)
+        {
 
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         protected async Task FormSubmit()
         {
             IsBusy = true;

@@ -163,8 +163,15 @@
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["Duration"]>
                                     <ChildContent>
-                                        <ContractDurationEnumDropDown Value="@CurrentObject.Duration"
-                                                                      ValueChanged="@((ContractDuration value) => { OnDurationChanged(value); })" />
+                                        @*<ContractDurationEnumDropDown Value="@CurrentObject.Duration" ValueChanged="@((ContractDuration value) => { OnDurationChanged(value); })" />*@
+                                        <RadzenRadioButtonList @bind-Value=@CurrentObject.Duration TValue="ContractDuration" JustifyContent="JustifyContent.Start" Change="@((ContractDuration value) => { OnDurationChanged(value); })" class="rz-m-2">
+                                            <Items>
+                                                @foreach (var duration in ContractDurations)
+                                                {
+                                                    <RadzenRadioButtonListItem Text="@Localizer[duration.GetDisplayDescription().ToString()]" Value="duration" />
+                                                }
+                                            </Items>
+                                        </RadzenRadioButtonList>
                                     </ChildContent>
                                 </VanigamAccountingFormField>
 
@@ -172,7 +179,7 @@
                                     <ChildContent>
                                         <RadzenDatePicker Value="@CurrentObject.StartDate"
                                                           ValueChanged="@((DateTimeOffset? value) => { OnStartDateChanged(value); })"
-                                                          Name="date_StartDate"
+                                                          Name="date_StartDate" DateFormat="yyyy-MM-dd"
                                                           class="w-100" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
@@ -205,15 +212,17 @@
                             <RadzenStack Gap="1rem" class="rz-p-4">
                                 <VanigamAccountingFormField Text=@Localizer["CoverageType"]>
                                     <ChildContent>
-                                        <ContractCoverageTypeEnumDropDown @bind-Value="@CurrentObject.CoverageType" Style="width: 100%;" />
+                                        @*<ContractCoverageTypeEnumDropDown @bind-Value="@CurrentObject.CoverageType" Style="width: 100%;" />*@
+                                        <RadzenRadioButtonList @bind-Value=@CurrentObject.CoverageType TValue="ContractCoverageType" JustifyContent="JustifyContent.Start" Change="@OnContractCoverageTypeChanged" class="rz-m-2">
+                                            <Items>
+                                                @foreach (var duration in ContractCoverageTypes)
+                                                {
+                                                    <RadzenRadioButtonListItem Text="@Localizer[duration.GetDisplayDescription().ToString()]" Value="duration" />
+                                                }
+                                            </Items>
+                                        </RadzenRadioButtonList>
                                     </ChildContent>
                                 </VanigamAccountingFormField>
-                                
-                                <div class="rz-p-1 rz-text-align-left">
-                                    <RadzenCheckBox @bind-Value=@CurrentObject.IncludesPartsReplacement Name="chk_IncludesPartsReplacement" />
-                                    <RadzenLabel Text=@Localizer["Yes"] Component="chk_IncludesPartsReplacement" class="rz-ms-2" />
-                                </div>
-
                                 <VanigamAccountingFormField Text=@Localizer["PartsReplacementLimit"]>
                                     <ChildContent>
                                         <RadzenNumeric @bind-Value="@CurrentObject.PartsReplacementLimit"
@@ -223,6 +232,10 @@
                                                        Style="width: 100%;" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
+                                <div class="rz-p-1 rz-text-align-left">
+                                    <RadzenCheckBox @bind-Value=@CurrentObject.IncludesPartsReplacement Name="chk_IncludesPartsReplacement" />
+                                    <RadzenLabel Text=@Localizer["Includes Parts Replacement"] Component="chk_IncludesPartsReplacement" class="rz-ms-2" />
+                                </div>
                             </RadzenStack>
                         </RadzenTabsItem>
 

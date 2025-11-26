@@ -105,14 +105,29 @@
                         <RadzenStack>
                             <FluentValidationValidator Validator="new PaymentValidator(Localizer)" />
                             <ValidationSummary />
-                            <VanigamAccountingFormField Text=@Localizer["Customer"]>
-                                <ChildContent>
-                                    <CustomerDropDownDataGrid @bind-Value="@CurrentObject.PartyId" Change="@OnCustomerChanged"></CustomerDropDownDataGrid>
-                                </ChildContent>
-                            </VanigamAccountingFormField>
+                            <RadzenRow>
+                                <RadzenColumn SizeMD="3" SizeSM="2">
+                                    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3" Style="width: fit-content" Text="@Localizer["QuoteInformation"]" />
+                                </RadzenColumn>
+                                <RadzenColumn SizeMD="9" SizeSM="10">
+                                    <RadzenRadioButtonList TValue="PaymentStatus" Change="@PaymentStatusChanged" Value="@CurrentObject.Status">
+                                        <Items>
+                                            @foreach (var status in PaymentStatuses)
+                                            {
+                                                <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                            }
+                                        </Items>
+                                    </RadzenRadioButtonList>
+                                </RadzenColumn>
+                            </RadzenRow>
 
                             <RadzenRow>
                                 <RadzenColumn Size="6">
+                                    <VanigamAccountingFormField Text=@Localizer["Customer"]>
+                                        <ChildContent>
+                                            <CustomerDropDownDataGrid @bind-Value="@CurrentObject.PartyId" Change="@OnCustomerChanged"></CustomerDropDownDataGrid>
+                                        </ChildContent>
+                                    </VanigamAccountingFormField>
                                     <VanigamAccountingFormField Text=@Localizer["PaymentAmount"]>
                                         <ChildContent>
                                             <RadzenNumeric TValue="decimal" @bind-Value="@CurrentObject.PaymentAmount" Name="numeric_PaymentAmount"
@@ -126,54 +141,44 @@
                                             <RadzenDatePicker @bind-Value="@CurrentObject.VoucherDate" Name="date_PaymentDate" ShowTime="true" />
                                         </ChildContent>
                                     </VanigamAccountingFormField>
-                                </RadzenColumn>
-                            </RadzenRow>
-
-                            <RadzenRow>
-                                <RadzenColumn Size="6">
-                                    <VanigamAccountingFormField Text=@Localizer["PaymentMethod"]>
-                                        <ChildContent>
-                                            <PaymentMethodEnumDropDown @bind-Value="@CurrentObject.PaymentMethod" Change="@OnPaymentMethodChanged" />
-                                        </ChildContent>
-                                    </VanigamAccountingFormField>
-                                </RadzenColumn>
-                                <RadzenColumn Size="6">
                                     <VanigamAccountingFormField Text=@Localizer["ReferenceNumber"]>
                                         <ChildContent>
                                             <RadzenTextBox @bind-Value="@CurrentObject.ReferenceNumber" Name="txt_ReferenceNumber" class="w-100" />
                                         </ChildContent>
                                     </VanigamAccountingFormField>
                                 </RadzenColumn>
+                                <RadzenColumn Size="12">
+                                    <VanigamAccountingFormField Text=@Localizer["PaymentMethod"]>
+                                        <ChildContent>
+                                            @*<PaymentMethodEnumDropDown @bind-Value="@CurrentObject.PaymentMethod" Change="@OnPaymentMethodChanged" />*@
+                                            <RadzenRadioButtonList @bind-Value=@CurrentObject.PaymentMethod TValue="PaymentMethod" JustifyContent="JustifyContent.Start" Change="@PaymentMethodChanged" class="rz-m-2">
+                                                <Items>
+                                                    @foreach (var method in PaymentMethods)
+                                                    {
+                                                        <RadzenRadioButtonListItem Text="@Localizer[method.GetDisplayDescription().ToString()]" Value="method" />
+                                                    }
+                                                </Items>
+                                            </RadzenRadioButtonList>
+                                        </ChildContent>
+                                    </VanigamAccountingFormField>
+                                </RadzenColumn>
                             </RadzenRow>
-
+                           
                             @* Show BankAccount field for non-cash payment methods *@
                             @if (RequiresBankAccount())
                             {
                                 <VanigamAccountingFormField Text=@Localizer["BankAccount"]>
                                     <ChildContent>
-                                        <RadzenDropDownDataGrid @bind-Value="@CurrentObject.BankAccountId"
-                                                                Data="@bankAccounts"
-                                                                TextProperty="Name"
-                                                                ValueProperty="Oid"
-                                                                Name="dd_BankAccount"
-                                                                class="w-100"
-                                                                AllowFiltering="true"
-                                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive">
-                                            <Columns>
-                                                <RadzenDropDownDataGridColumn Property="Name" Title="@Localizer["Name"]" Width="200px" />
-                                                <RadzenDropDownDataGridColumn Property="AccountNumber" Title="@Localizer["AccountNumber"]" Width="150px" />
-                                                <RadzenDropDownDataGridColumn Property="BankName" Title="@Localizer["BankName"]" Width="150px" />
-                                            </Columns>
-                                        </RadzenDropDownDataGrid>
+                                        <BankAccountDropDownDataGrid @bind-Value="@CurrentObject.BankAccountId" />
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                             }
 
-                            <VanigamAccountingFormField Text=@Localizer["Status"]>
+                            @*<VanigamAccountingFormField Text=@Localizer["Status"]>
                                 <ChildContent>
                                     <PaymentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
                                 </ChildContent>
-                            </VanigamAccountingFormField>
+                            </VanigamAccountingFormField>*@
 
                             @* Invoice Allocation Section *@
                             @if (pendingInvoices.Any() && CurrentObject.PaymentAmount > 0)

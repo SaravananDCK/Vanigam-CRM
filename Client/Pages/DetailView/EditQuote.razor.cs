@@ -59,7 +59,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         }
         private async Task Changed(QuoteStatus status)
         {
-
             CurrentObject.Status = status;
             EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
             StateHasChanged();

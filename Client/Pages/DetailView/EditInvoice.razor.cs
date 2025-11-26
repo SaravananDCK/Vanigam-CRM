@@ -20,7 +20,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         public string TenantAccountingState { get; set; }
         private string CurrentState { get; set; }
         private bool HasAnyChanges => HasChanges || (invoiceItems?.Any(i => i.IsNew || i.IsDeleted) ?? false || Form?.EditContext?.IsModified() == true);
-
+        private static readonly IList<InvoiceStatus> InvoiceStatuses = [.. Enum.GetValues<InvoiceStatus>()];
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -47,6 +47,12 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 .Expand(f => f.Party, f => f.Party.Name)
                 .Expand(f => f.Quote, f => f.Quote.Number)
                 .Build();
+        }
+        private async Task Changed(InvoiceStatus status)
+        {
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
         }
         private async Task LoadCustomers()
         {

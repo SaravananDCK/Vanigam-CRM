@@ -100,6 +100,7 @@ public class PaymentBulkSaveDTO
 
     [Required]
     public DateTimeOffset VoucherDate { get; set; }
+    public DateTimeOffset? PaidAt { get; set; }
 
     [Required]
     public PaymentMethod PaymentMethod { get; set; }
@@ -109,7 +110,7 @@ public class PaymentBulkSaveDTO
 
     public Guid? BankAccountId { get; set; }
 
-    public PaymentStatus? Status { get; set; }
+    public PaymentStatus Status { get; set; }
 
     public decimal AllocatedAmount { get; set; }
 

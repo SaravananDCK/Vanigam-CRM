@@ -14,6 +14,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         [Inject] private PurchaseOrderApiService PurchaseOrderApiService { get; set; }
         [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }
         [Inject] private VendorApiService VendorApiService { get; set; }
+        private static readonly IList<PurchaseOrderStatus> PurchaseOrderStatuses = [.. Enum.GetValues<PurchaseOrderStatus>()];
         private IEnumerable<Vendor> Vendors { get; set; } = [];
         private List<PurchaseOrderItemDTO> purchaseItems = new();
         private bool hasItemChanges = false;
@@ -49,6 +50,12 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             TenantAccountingState = accSetings?.CompanyState;
             await LoadVendors();
             await InitEditContext();
+        }
+        private async Task OnChanged(PurchaseOrderStatus status)
+        {
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
         }
         protected string GetExpandString()
         {

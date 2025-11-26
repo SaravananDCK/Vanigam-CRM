@@ -23,7 +23,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         public string TenantAccountingState { get; set; }
         private string VendorState { get; set; }
         private bool HasAnyChanges => HasChanges || (purchaseInvoiceItems?.Any(i => i.IsNew || i.IsDeleted) ?? false) || Form?.EditContext?.IsModified() == true;
-
+        private static readonly IList<PurchaseInvoiceStatus> PurchaseInvoiceStatuses = [.. Enum.GetValues<PurchaseInvoiceStatus>()];
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -44,7 +44,12 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             await LoadPurchaseOrders();
             await InitEditContext();
         }
-
+        private async Task OnChanged(PurchaseInvoiceStatus status)
+        {
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         protected string GetExpandString()
         {
             return new ODataExpand<PurchaseInvoice>()

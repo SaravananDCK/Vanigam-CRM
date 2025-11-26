@@ -9,7 +9,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditLedgerAccount
     {
         private IEnumerable<AccountGroup> AccountGroups = Enumerable.Empty<AccountGroup>();
-
+        private static readonly IList<AccountType> AccountTypes = [.. Enum.GetValues<AccountType>()];
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();

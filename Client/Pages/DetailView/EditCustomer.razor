@@ -196,7 +196,15 @@
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["Type"]>
                                     <ChildContent>
-                                        <CustomerTypeEnumDropDown @bind-Value="@CurrentObject.Type" />
+                                        @*<CustomerTypeEnumDropDown @bind-Value="@CurrentObject.Type" />*@
+                                        <RadzenRadioButtonList @bind-Value=@CurrentObject.Type TValue="CustomerType" JustifyContent="JustifyContent.Start" class="rz-m-2">
+                                            <Items>
+                                                @foreach (var type in CustomerTypes)
+                                                {
+                                                    <RadzenRadioButtonListItem Text="@Localizer[type.GetDisplayDescription().ToString()]" Value="type" />
+                                                }
+                                            </Items>
+                                        </RadzenRadioButtonList>
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["Industry"]>

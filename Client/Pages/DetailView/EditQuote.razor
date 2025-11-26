@@ -9,113 +9,6 @@
 @* Custom Header with Edit Button *@
 <DetailPageTitleComponent TitleText="@Localizer["EditQuote"]" DialogService="@DialogService" CanEdit="@CanEdit" HasChanges="@HasChanges" CurrentOid="@Oid" />
 <RadzenColumn SizeMD=12>
-
-    @* Editable Form Mode - Wrapper for consistent visibility *@
-    @if (CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))
-    {
-        @* Quote Information Form - Only this section has validation *@
-        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
-            <Tabs>
-                <RadzenTabsItem Text="@Localizer["Quote"]" class="fa-small">
-                    <RadzenStack Style="height:calc(100vh - 110px);">
-                        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
-                        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
-                        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Quote" Data="@CurrentObject">
-                            <FluentValidationValidator Validator="new QuoteValidator(Localizer)" />
-                            <ValidationSummary />
-                            @* Quote Information Section *@
-                            <RadzenCard>
-                                    <RadzenRow>
-                                        <RadzenColumn SizeMD="3" SizeSM="2">
-                                            <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3" Style="width: fit-content" Text="@Localizer["QuoteInformation"]" />
-                                        </RadzenColumn>
-                                        <RadzenColumn SizeMD="9" SizeSM="10">
-                                            <RadzenRadioButtonList TValue="QuoteStatus" Change="@Changed" Value="@CurrentObject.Status">
-                                                <Items>
-                                                    @foreach (var status in QuoteStatuses)
-                                                    {
-                                                        <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
-                                                    }
-                                                </Items>
-                                            </RadzenRadioButtonList>
-                                        </RadzenColumn>
-                                    </RadzenRow>
-                                <RadzenStack>
-                                    <VanigamAccountingFormField Text=@Localizer["Number"]>
-                                        <ChildContent>
-                                            @if (string.IsNullOrEmpty(CurrentObject.Number))
-                                            {
-                                                <RadzenText TextStyle="TextStyle.Button" Text=@Localizer["New Quote"] class="rz-m-2" Style="color: var(--rz-success);" />
-                                            }
-                                            else
-                                            {
-                                                <RadzenText Text="@CurrentObject.Number" class="rz-m-2" />
-                                            }
-
-                                        </ChildContent>
-                                    </VanigamAccountingFormField>
-                                    <VanigamAccountingFormField Text=@Localizer["Quotation For"]>
-                                        <ChildContent>
-                                            <RadzenRadioButtonList @bind-Value=@QuotationFor TValue="int" JustifyContent="JustifyContent.Start" class="rz-m-2">
-                                                <Items>
-                                                    <RadzenRadioButtonListItem Text="Customer" Value="0" />
-                                                    <RadzenRadioButtonListItem Text="Opportunity" Value="1" />
-                                                </Items>
-                                            </RadzenRadioButtonList>
-                                        </ChildContent>
-                                    </VanigamAccountingFormField>
-                                    @if (QuotationFor == 1)
-                                    {
-                                        <VanigamAccountingFormField Text=@Localizer["Opportunity"]>
-                                            <ChildContent>
-                                                <OpportunityDropDownDataGrid @bind-Value="@CurrentObject.OpportunityId" />
-                                            </ChildContent>
-                                        </VanigamAccountingFormField>
-                                    }
-                                    else
-                                    {
-                                        <VanigamAccountingFormField Text=@Localizer["Customer"]>
-                                            <ChildContent>
-                                                <CustomerDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
-                                            </ChildContent>
-                                        </VanigamAccountingFormField>
-                                    }
-                                    <VanigamAccountingFormField Text=@Localizer["Status"]>
-                                        <ChildContent>
-                                            <QuoteStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                                        </ChildContent>
-                                    </VanigamAccountingFormField>
-                                </RadzenStack>
-                            </RadzenCard>
-                        </RadzenTemplateForm>
-
-                        @* Quote Items Section - Outside form validation context *@
-                        <RadzenCard class="rz-mb-4">
-                            <EditableQuoteItems Items="@quoteItems"
-                                                ItemsChanged="@OnQuoteItemsChanged"
-                                                DiscountPercentageChanged="@OnDiscountPercentageChanged"
-                                                DiscountTypeChanged="OnDiscountTypeChanged"
-                                                Quote="@CurrentObject"
-                                                CurrentState="@CurrentState"
-                                                TenantAccountingState="@TenantAccountingState"
-                                                QuoteFor=@QuotationFor />
-                        </RadzenCard>
-                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-                            @if (IsCreateMode)
-                            {
-                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
-                            }
-                            else
-                            {
-                                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
-                                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
-                            }
-                        </RadzenStack>
-                    </RadzenStack>
-                </RadzenTabsItem>
-            </Tabs>
-        </RadzenTabs>
-    }
     @* Read-Only Mode Display *@
     @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
     {
@@ -296,6 +189,112 @@
                                 </RadzenRow>
                             }
                         </RadzenCard>
+                    </RadzenStack>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    }
+    @* Editable Form Mode - Wrapper for consistent visibility *@
+    @if (CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))
+    {
+        @* Quote Information Form - Only this section has validation *@
+        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+            <Tabs>
+                <RadzenTabsItem Text="@Localizer["Quote"]" class="fa-small">
+                    <RadzenStack Style="height:calc(100vh - 110px);">
+                        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@ErrorVisible">@Localizer["SaveAlert"]</RadzenAlert>
+                        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Warning" Visible="@ShowNotUniqueAlert">@Localizer["CodeMust"]</RadzenAlert>
+                        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Quote" Data="@CurrentObject">
+                            <FluentValidationValidator Validator="new QuoteValidator(Localizer)" />
+                            <ValidationSummary />
+                            @* Quote Information Section *@
+                            <RadzenCard>
+                                <RadzenRow>
+                                    <RadzenColumn SizeMD="3" SizeSM="2">
+                                        <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3" Style="width: fit-content" Text="@Localizer["QuoteInformation"]" />
+                                    </RadzenColumn>
+                                    <RadzenColumn SizeMD="9" SizeSM="10">
+                                        <RadzenRadioButtonList TValue="QuoteStatus" Change="@Changed" Value="@CurrentObject.Status">
+                                            <Items>
+                                                @foreach (var status in QuoteStatuses)
+                                                {
+                                                    <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                                }
+                                            </Items>
+                                        </RadzenRadioButtonList>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                                <RadzenStack>
+                                    <VanigamAccountingFormField Text=@Localizer["Number"]>
+                                        <ChildContent>
+                                            @if (string.IsNullOrEmpty(CurrentObject.Number))
+                                            {
+                                                <RadzenText TextStyle="TextStyle.Button" Text=@Localizer["New Quote"] class="rz-m-2" Style="color: var(--rz-success);" />
+                                            }
+                                            else
+                                            {
+                                                <RadzenText Text="@CurrentObject.Number" class="rz-m-2" />
+                                            }
+
+                                        </ChildContent>
+                                    </VanigamAccountingFormField>
+                                    <VanigamAccountingFormField Text=@Localizer["Quotation For"]>
+                                        <ChildContent>
+                                            <RadzenRadioButtonList @bind-Value=@QuotationFor TValue="int" JustifyContent="JustifyContent.Start" class="rz-m-2">
+                                                <Items>
+                                                    <RadzenRadioButtonListItem Text="Customer" Value="0" />
+                                                    <RadzenRadioButtonListItem Text="Opportunity" Value="1" />
+                                                </Items>
+                                            </RadzenRadioButtonList>
+                                        </ChildContent>
+                                    </VanigamAccountingFormField>
+                                    @if (QuotationFor == 1)
+                                    {
+                                        <VanigamAccountingFormField Text=@Localizer["Opportunity"]>
+                                            <ChildContent>
+                                                <OpportunityDropDownDataGrid @bind-Value="@CurrentObject.OpportunityId" />
+                                            </ChildContent>
+                                        </VanigamAccountingFormField>
+                                    }
+                                    else
+                                    {
+                                        <VanigamAccountingFormField Text=@Localizer["Customer"]>
+                                            <ChildContent>
+                                                <CustomerDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
+                                            </ChildContent>
+                                        </VanigamAccountingFormField>
+                                    }
+                                    @*<VanigamAccountingFormField Text=@Localizer["Status"]>
+                                        <ChildContent>
+                                            <QuoteStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                                        </ChildContent>
+                                    </VanigamAccountingFormField>*@
+                                </RadzenStack>
+                            </RadzenCard>
+                        </RadzenTemplateForm>
+
+                        @* Quote Items Section - Outside form validation context *@
+                        <RadzenCard class="rz-mb-4">
+                            <EditableQuoteItems Items="@quoteItems"
+                                                ItemsChanged="@OnQuoteItemsChanged"
+                                                DiscountPercentageChanged="@OnDiscountPercentageChanged"
+                                                DiscountTypeChanged="OnDiscountTypeChanged"
+                                                Quote="@CurrentObject"
+                                                CurrentState="@CurrentState"
+                                                TenantAccountingState="@TenantAccountingState"
+                                                QuoteFor=@QuotationFor />
+                        </RadzenCard>
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                            @if (IsCreateMode)
+                            {
+                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
+                            }
+                            else
+                            {
+                                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
+                                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
+                            }
+                        </RadzenStack>
                     </RadzenStack>
                 </RadzenTabsItem>
             </Tabs>

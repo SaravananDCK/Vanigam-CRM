@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditContact
     {
         [Inject] private ContactApiService ContactApiService { get; set; }
-
+        private static readonly IList<ContactType> ContactTypes = [.. Enum.GetValues<ContactType>()];
         protected override async Task OnInitializedAsync()
         {
             // Load customers for dropdown

@@ -193,7 +193,14 @@
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["Type"]>
                                     <ChildContent>
-                                        <RadzenDropDown @bind-Value="@CurrentObject.Type" Data="@(Enum.GetValues(typeof(CustomerType)))" Name="dd_Type" class="w-100" />
+                                        <RadzenRadioButtonList @bind-Value=@CurrentObject.Type TValue="CustomerType" JustifyContent="JustifyContent.Start" class="rz-m-2">
+                                            <Items>
+                                                @foreach (var type in CustomerTypes)
+                                                {
+                                                    <RadzenRadioButtonListItem Text="@Localizer[type.GetDisplayDescription().ToString()]" Value="type" />
+                                                }
+                                            </Items>
+                                        </RadzenRadioButtonList>
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["Industry"]>
@@ -203,7 +210,15 @@
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["Status"]>
                                     <ChildContent>
-                                        <CustomerStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                                        @*<CustomerStatusEnumDropDown @bind-Value="@CurrentObject.Status" />*@
+                                        <RadzenRadioButtonList TValue="CustomerStatus" Change="@OnChanged" Value="@CurrentObject.Status" class="rz-m-2">
+                                            <Items>
+                                                @foreach (var status in CustomerStatuses)
+                                                {
+                                                    <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                                }
+                                            </Items>
+                                        </RadzenRadioButtonList>
                                     </ChildContent>
                                 </VanigamAccountingFormField>
                                 <VanigamAccountingFormField Text=@Localizer["Rating"]>
