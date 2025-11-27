@@ -24,7 +24,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.VoucherDate) Title=@Localizer["Date"] Width="120px">
                         <Template Context="purchaseorder">
-                            @(purchaseorder.VoucherDate.ToString("yyyy-MM-dd"))
+                            @(purchaseorder.VoucherDate.ToHumanDateTime())
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="PurchaseOrder" Property="@PropertyExtensions.GetPropertyFullPath((PurchaseOrder p) => p.Party.Name)" Title=@Localizer["Vendor"] Width="200px">
@@ -42,7 +42,7 @@
                             @(purchaseorder.ExpectedDeliveryDate?.ToString("yyyy-MM-dd") ?? "-")
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.TotalAmount) Title=@Localizer["TotalAmount"] Width="150px">
+                    <RadzenDataGridColumn TItem="PurchaseOrder" Property=@nameof(PurchaseOrder.TotalAmount) Title=@Localizer["TotalAmount"] Width="150px" TextAlign="TextAlign.Right">
                         <Template Context="purchaseorder">
                             @(purchaseorder.TotalAmount.ToString("C2"))
                         </Template>

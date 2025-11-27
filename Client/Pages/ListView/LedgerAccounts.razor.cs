@@ -45,7 +45,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditLedgerAccount>(Localizer["AddLedgerAccount"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditLedgerAccount>(Localizer["AddLedgerAccount"], null, 100, 100);
             await GridReload();
         }
 
@@ -56,7 +56,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(LedgerAccount ledgeraccount)
         {
-            await DialogService.OpenDialogAsync<EditLedgerAccount>(Localizer["EditLedgerAccount"], new Dictionary<string, object> { { "Oid", ledgeraccount.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditLedgerAccount>(Localizer["EditLedgerAccount"], new Dictionary<string, object> { { "Oid", ledgeraccount.Oid } }, 100, 100);
             await GridReload();
         }
 

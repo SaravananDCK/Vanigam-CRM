@@ -38,7 +38,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditTaxCode>(Localizer["AddTaxCode"], null, 30, 50);
+            await DialogService.OpenDialogAsync<EditTaxCode>(Localizer["AddTaxCode"], null, 100, 100);
             await GridReload();
         }
 
@@ -49,7 +49,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(TaxCode taxcode)
         {
-            await DialogService.OpenDialogAsync<EditTaxCode>(Localizer["EditTaxCode"], new Dictionary<string, object> { { "Oid", taxcode.Oid } }, 30, 50);
+            await DialogService.OpenDialogAsync<EditTaxCode>(Localizer["EditTaxCode"], new Dictionary<string, object> { { "Oid", taxcode.Oid } }, 100, 100);
             await GridReload();
         }
 

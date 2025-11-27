@@ -37,7 +37,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="purchaseinvoice">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(purchaseinvoice.Status)" Text="@purchaseinvoice.Status.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(purchaseinvoice.Status)" Text="@purchaseinvoice.Status.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="PurchaseInvoice" Property=@nameof(PurchaseInvoice.ReceivedDate) Title=@Localizer["ReceivedDate"] Width="150px">

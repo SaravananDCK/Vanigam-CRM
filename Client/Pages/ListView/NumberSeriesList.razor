@@ -24,7 +24,7 @@
 
                     <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.EntityType) Title=@Localizer["EntityType"] Width="150px">
                         <Template Context="numberseries">
-                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@numberseries.EntityType" />
+                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@numberseries.EntityType" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
 
@@ -44,7 +44,7 @@
 
                     <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.CurrentNo) Title=@Localizer["CurrentNo"] Width="100px">
                         <Template Context="numberseries">
-                            <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="@numberseries.CurrentNo.ToString()" />
+                            <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="@numberseries.CurrentNo.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
 
@@ -62,7 +62,7 @@
                     <RadzenDataGridColumn TItem="NumberSeries" Property=@nameof(NumberSeries.IsActive) Title=@Localizer["IsActive"] Width="100px">
                         <Template Context="numberseries">
                             <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(numberseries.IsActive)"
-                                         Text="@(numberseries.IsActive ? Localizer["Active"] : Localizer["Inactive"])" />
+                                         Text="@(numberseries.IsActive ? Localizer["Active"] : Localizer["Inactive"])" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
 

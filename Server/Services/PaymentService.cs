@@ -149,6 +149,7 @@ public class PaymentService(
                 // Update payment properties
                 payment.PartyId = paymentData.PartyId;
                 payment.PaymentAmount = paymentData.PaymentAmount;
+                payment.PaidAt = paymentData.PaidAt;
                 payment.VoucherDate = paymentData.VoucherDate;
                 payment.PaymentMethod = paymentData.PaymentMethod;
                 payment.ReferenceNumber = paymentData.ReferenceNumber;
@@ -197,6 +198,7 @@ public class PaymentService(
                     PartyId = paymentData.PartyId,
                     PaymentAmount = paymentData.PaymentAmount,
                     VoucherDate = paymentData.VoucherDate,
+                    PaidAt = paymentData.PaidAt,
                     PaymentMethod = paymentData.PaymentMethod,
                     ReferenceNumber = paymentData.ReferenceNumber,
                     BankAccountId = paymentData.BankAccountId,

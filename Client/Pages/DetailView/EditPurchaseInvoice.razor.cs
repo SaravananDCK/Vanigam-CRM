@@ -1,3 +1,4 @@
+using DevExpress.Pdf.Native.BouncyCastle.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
@@ -12,8 +13,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditPurchaseInvoice
     {
-        private int ReadOnlyTabIndex { get; set; } = 0;
-        private int EditTabIndex { get; set; } = 0;
         [Inject] private PurchaseInvoiceApiService PurchaseInvoiceApiService { get; set; }
         [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }
         [Inject] private VendorApiService VendorApiService { get; set; }
@@ -24,7 +23,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         public string TenantAccountingState { get; set; }
         private string VendorState { get; set; }
         private bool HasAnyChanges => HasChanges || (purchaseInvoiceItems?.Any(i => i.IsNew || i.IsDeleted) ?? false) || Form?.EditContext?.IsModified() == true;
-
+        private static readonly IList<PurchaseInvoiceStatus> PurchaseInvoiceStatuses = [.. Enum.GetValues<PurchaseInvoiceStatus>()];
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -45,7 +44,12 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             await LoadPurchaseOrders();
             await InitEditContext();
         }
-
+        private async Task OnChanged(PurchaseInvoiceStatus status)
+        {
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         protected string GetExpandString()
         {
             return new ODataExpand<PurchaseInvoice>()
@@ -100,8 +104,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
         private void OnPurchaseInvoiceItemsChanged(List<PurchaseInvoiceItemDTO> updatedItems)
         {
-            purchaseInvoiceItems = updatedItems;
             VendorState = Vendors.Where(v => v.Oid == CurrentObject.PartyId).Select(v => v.State).FirstOrDefault();
+            
+            if (updatedItems.Any(i => i.InventoryItemId == null)) return;
+            purchaseInvoiceItems = updatedItems;
             CalculateTotalAmount();
         }
 
@@ -152,31 +158,16 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (CurrentObject != null)
             {
                 CurrentObject.DiscountType = type;
-                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountType)));
-                StateHasChanged();
-            }
-        }
-
-        private async Task OnDiscountAmountChanged(decimal discountAmount)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.DiscountAmount = discountAmount;
-                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountAmount)));
                 StateHasChanged();
             }
         }
 
         private async Task OnDiscountPercentageChanged(decimal discountPercent)
         {
-            if (CurrentObject != null)
+            if (CurrentObject != null && discountPercent != 0)
             {
                 CurrentObject.DiscountPercent = discountPercent;
                 EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountPercent)));
-                if (CurrentObject.DiscountPercent > 0)
-                {
-                    await OnDiscountAmountChanged(CurrentObject.DiscountAmount);
-                }
                 StateHasChanged();
             }
         }

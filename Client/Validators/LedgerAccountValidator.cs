@@ -1,11 +1,12 @@
 using FluentValidation;
+using Microsoft.Extensions.Localization;
 using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Validators
 {
     public class LedgerAccountValidator : AbstractValidator<LedgerAccount>
     {
-        public LedgerAccountValidator()
+        public LedgerAccountValidator(IStringLocalizer localizer)
         {
             RuleFor(x => x.Code)
                 .NotEmpty().WithMessage("Code is required")

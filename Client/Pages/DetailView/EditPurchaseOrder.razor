@@ -29,21 +29,21 @@
                         <RadzenTabsItem Text="@Localizer["Purchase Order Info"]" Icon="@FadIcon("fa-file-invoice-dollar")" class="fa-small">
                             <RadzenRow>
                                 <RadzenColumn Size="6">
-                                    <div class="rz-p-4">
+                                    <div class="rz-p-2">
                                         <div class="read-only-field rz-mb-3">
                                             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Number"]:</strong></RadzenText>
                                             <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Number ?? "-")</RadzenText>
                                         </div>
-                                        
+
                                         <div class="read-only-field rz-mb-3">
                                             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Vendor"]:</strong></RadzenText>
                                             <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Party?.Name ?? "-")</RadzenText>
                                         </div>
                                         <div class="read-only-field rz-mb-3">
                                             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
-                                            <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.GetDisplayDescription().ToString()" />
+                                            <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.GetDisplayDescription().ToString()" class="rz-p-1" />
                                         </div>
-                                        
+
                                         @if (!string.IsNullOrEmpty(CurrentObject.ShippingAddress))
                                         {
                                             <div class="read-only-field rz-mb-3">
@@ -62,7 +62,7 @@
                                     </div>
                                 </RadzenColumn>
                                 <RadzenColumn Size="6">
-                                    <div class="rz-p-4">
+                                    <div class="rz-p-2">
                                         <div class="read-only-field rz-mb-3">
                                             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Date"]:</strong></RadzenText>
                                             <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.VoucherDate.ToString("yyyy-MM-dd"))</RadzenText>
@@ -101,8 +101,8 @@
                             </RadzenRow>
                             @if (purchaseItems != null && purchaseItems.Any(i => !i.IsDeleted))
                             {
-                                <div class="rz-p-4">
-                                    <div class="read-only-section-header rz-mt-4">@Localizer["Items"]</div>
+                                <div class="rz-p-2">
+                                    <div class="read-only-section-header rz-mt-3">@Localizer["Items"]</div>
                                     <RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                                                     Data="@purchaseItems.Where(i => !i.IsDeleted)" TItem="PurchaseOrderItemDTO" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" class="rz-mt-3">
                                         <Columns>
@@ -117,12 +117,12 @@
                                                     @item.UnitPrice.ToString("C")
                                                 </Template>
                                             </RadzenDataGridColumn>
-                                            <RadzenDataGridColumn TItem="PurchaseOrderItemDTO" Property="@nameof(PurchaseOrderItemDTO.DiscountAmount)" Title="@Localizer["Discount Amt"]" Width="120px" TextAlign="TextAlign.Right">
+                                            <RadzenDataGridColumn TItem="PurchaseOrderItemDTO" Property="@nameof(PurchaseOrderItemDTO.DiscountAmount)" Title="@Localizer["Discount"]" Width="120px" TextAlign="TextAlign.Right">
                                                 <Template Context="item">
                                                     @item.DiscountAmount.ToString("C")
                                                 </Template>
                                             </RadzenDataGridColumn>
-                                            <RadzenDataGridColumn TItem="PurchaseOrderItemDTO" Property="@nameof(PurchaseOrderItemDTO.TaxAmount)" Title="@Localizer["TaxAmount"]" Width="120px" TextAlign="TextAlign.Right">
+                                            <RadzenDataGridColumn TItem="PurchaseOrderItemDTO" Property="@nameof(PurchaseOrderItemDTO.TaxAmount)" Title="@Localizer["Tax"]" Width="120px" TextAlign="TextAlign.Right">
                                                 <Template Context="item">
                                                     @item.TaxAmount?.ToString("C")
                                                 </Template>
@@ -141,7 +141,7 @@
                                     </RadzenDataGrid>
 
                                     @* Quote Summary Totals *@
-                                    <RadzenRow class="rz-mt-4">
+                                    <RadzenRow class="rz-mt-2">
                                         <RadzenColumn SizeMD="4" />
                                         <RadzenColumn SizeMD="8">
                                             <RadzenCard Variant="Variant.Outlined">
@@ -230,14 +230,29 @@
     @* Editable Form Mode *@
     @if (CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))
     {
-        <RadzenStack>
-            <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))">
-                <Tabs>
-                    <RadzenTabsItem Text="@Localizer["Purchase Order Info"]" class="fa-small">
-                        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="PurchaseOrder" Data="@CurrentObject" Visible="@IsFormVisible" Submit="@SaveBulkQuote">
+        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+            <Tabs>
+                <RadzenTabsItem Text="@Localizer["Purchase Order"]" class="fa-small">
+                    <RadzenStack Style="height:calc(100vh - 110px);">
+                        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="PurchaseOrder" Data="@CurrentObject" Visible="@IsFormVisible">
                             <FluentValidationValidator Validator="new PurchaseOrderValidator(Localizer)" />
                             <ValidationSummary />
-                            <RadzenCard class="rz-mb-4">
+                            <RadzenCard>
+                                <RadzenRow>
+                                    <RadzenColumn SizeMD="3" SizeSM="2">
+                                        <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3" Style="width: fit-content" Text="@Localizer["Purchase Order Information"]" />
+                                    </RadzenColumn>
+                                    <RadzenColumn SizeMD="9" SizeSM="10">
+                                        <RadzenRadioButtonList TValue="PurchaseOrderStatus" Change="@OnChanged" Value="@CurrentObject.Status">
+                                            <Items>
+                                                @foreach (var status in PurchaseOrderStatuses)
+                                                {
+                                                    <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                                }
+                                            </Items>
+                                        </RadzenRadioButtonList>
+                                    </RadzenColumn>
+                                </RadzenRow>
                                 <RadzenStack>
                                     <RadzenRow>
                                         <RadzenColumn Size="12" SizeMD="6">
@@ -245,12 +260,22 @@
                                                 <ChildContent>
                                                     @if (string.IsNullOrEmpty(CurrentObject.Number))
                                                     {
-                                                        <RadzenText TextStyle="TextStyle.Button" Text=@Localizer["NewPurchase"] class="rz-m-2" Style="color: var(--rz-success);" />
+                                                        <RadzenText TextStyle="TextStyle.Button" Text=@Localizer["NewPurchase"] class="rz-m-3" Style="color: var(--rz-success);" />
                                                     }
                                                     else
                                                     {
-                                                        <RadzenText Text="@CurrentObject.Number" class="rz-m-2" />
+                                                        <RadzenText Text="@CurrentObject.Number" class="rz-m-3" />
                                                     }
+                                                </ChildContent>
+                                            </VanigamAccountingFormField>
+                                            <VanigamAccountingFormField Text=@Localizer["Vendor"]>
+                                                <ChildContent>
+                                                    <VendorDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
+                                                </ChildContent>
+                                            </VanigamAccountingFormField>
+                                            <VanigamAccountingFormField Text=@Localizer["ContactPerson"]>
+                                                <ChildContent>
+                                                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.ContactPerson" Name="txt_ContactPerson" />
                                                 </ChildContent>
                                             </VanigamAccountingFormField>
                                         </RadzenColumn>
@@ -260,88 +285,60 @@
                                                     <VanigamAccountingDatePicker @bind-Value="@CurrentObject.VoucherDate" Name="dt_VoucherDate" class="w-100" ReadOnly="true" />
                                                 </ChildContent>
                                             </VanigamAccountingFormField>
-                                        </RadzenColumn>
-                                    </RadzenRow>
-                                    <RadzenRow>
-                                        <RadzenColumn Size="12" SizeMD="6">
-                                            <VanigamAccountingFormField Text=@Localizer["Vendor"]>
-                                                <ChildContent>
-                                                    <VendorDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
-                                                </ChildContent>
-                                            </VanigamAccountingFormField>
-                                        </RadzenColumn>
-                                        <RadzenColumn Size="12" SizeMD="6">
                                             <VanigamAccountingFormField Text=@Localizer["DueDate"]>
                                                 <ChildContent>
                                                     <RadzenDatePicker @bind-Value="@CurrentObject.DueDate" Name="dt_DueDate" class="w-100" />
                                                 </ChildContent>
                                             </VanigamAccountingFormField>
-                                        </RadzenColumn>
-                                    </RadzenRow>
-
-                                    <RadzenRow>
-                                        <RadzenColumn Size="12" SizeMD="6">
-                                            <VanigamAccountingFormField Text=@Localizer["Status"]>
-                                                <ChildContent>
-                                                    <PurchaseOrderStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                                                </ChildContent>
-                                            </VanigamAccountingFormField>
-                                        </RadzenColumn>
-                                        <RadzenColumn Size="12" SizeMD="6">
                                             <VanigamAccountingFormField Text=@Localizer["ExpectedDelivery"]>
                                                 <ChildContent>
                                                     <RadzenDatePicker @bind-Value="@CurrentObject.ExpectedDeliveryDate" Name="dt_ExpectedDeliveryDate" class="w-100" />
                                                 </ChildContent>
                                             </VanigamAccountingFormField>
                                         </RadzenColumn>
-                                    </RadzenRow>
-
-                                    <RadzenRow>
-                                        <RadzenColumn Size="12" SizeMD="6">
-                                            <VanigamAccountingFormField Text=@Localizer["ContactPerson"]>
-                                                <ChildContent>
-                                                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.ContactPerson" Name="txt_ContactPerson" />
-                                                </ChildContent>
-                                            </VanigamAccountingFormField>
-                                        </RadzenColumn>
-                                        <RadzenColumn Size="12" SizeMD="6">
+                                        <RadzenColumn Size="12" SizeMD="12">
                                             <VanigamAccountingFormField Text=@Localizer["Reference"]>
                                                 <ChildContent>
                                                     <VanigamAccountingTextBox @bind-Value="@CurrentObject.Reference" Name="txt_Reference" />
                                                 </ChildContent>
                                             </VanigamAccountingFormField>
                                         </RadzenColumn>
+                                        <RadzenColumn Size="12" SizeMD="12">
+                                            <VanigamAccountingFormField Text=@Localizer["ShippingAddress"]>
+                                                <ChildContent>
+                                                    <RadzenTextArea @bind-Value="@CurrentObject.ShippingAddress" Name="txt_ShippingAddress" Rows="2" class="w-100" />
+                                                </ChildContent>
+                                            </VanigamAccountingFormField>
+                                        </RadzenColumn>
                                     </RadzenRow>
-                                    <VanigamAccountingFormField Text=@Localizer["ShippingAddress"]>
-                                        <ChildContent>
-                                            <RadzenTextArea @bind-Value="@CurrentObject.ShippingAddress" Name="txt_ShippingAddress" Rows="2" class="w-100" />
-                                        </ChildContent>
-                                    </VanigamAccountingFormField>
                                 </RadzenStack>
                             </RadzenCard>
                         </RadzenTemplateForm>
+                        <RadzenCard class="rz-mb-4">
+                            <EditablePurchaseOrderItems Items="@purchaseItems"
+                                                        ItemsChanged="@OnPurchaseOrderItemsChanged"
+                                                        DiscountPercentageChanged="@OnDiscountPercentageChanged"
+                                                        DiscountTypeChanged="@OnDiscountTypeChanged"
+                                                        PurchaseOrder="@CurrentObject"
+                                                        VendorState="@VendorState"
+                                                        TenantAccountingState="@TenantAccountingState" />
+                        </RadzenCard>
+                        <RadzenStack Style="margin-top: 0.5rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                            @if (IsCreateMode)
+                            {
+                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
+                            }
+                            else
+                            {
+                                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@FormSubmit" />
+                                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
+                            }
+                        </RadzenStack>
+                    </RadzenStack>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
 
-                        <EditablePurchaseOrderItems Items="@purchaseItems"
-                                                    ItemsChanged="@OnPurchaseOrderItemsChanged"
-                                                    DiscountChanged="@OnDiscountAmountChanged"
-                                                    DiscountPercentageChanged="@OnDiscountPercentageChanged"
-                                                    DiscountTypeChanged="@OnDiscountTypeChanged"
-                                                    PurchaseOrder="@CurrentObject" />
-                    </RadzenTabsItem>
-                </Tabs>
-            </RadzenTabs>
 
-            <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-                @if (IsCreateMode)
-                {
-                    <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@SaveBulkQuote" />
-                }
-                else
-                {
-                    <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" Click="@SaveBulkQuote" />
-                    <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyModeAsync" />
-                }
-            </RadzenStack>
-        </RadzenStack>
     }
 </RadzenColumn>

@@ -28,11 +28,11 @@
 
                     <RadzenDataGridColumn TItem="LedgerAccount" Property=@nameof(LedgerAccount.AccountType) Title=@Localizer["AccountType"] Width="150px">
                         <Template Context="ledgeraccount">
-                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@ledgeraccount.AccountType.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(ledgeraccount.AccountType)" Text="@ledgeraccount.AccountType.GetDisplayDescription().ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="LedgerAccount" Property=@nameof(LedgerAccount.Balance) Title=@Localizer["Balance"] Width="150px">
+                    <RadzenDataGridColumn TItem="LedgerAccount" Property=@nameof(LedgerAccount.Balance) Title=@Localizer["Balance"] Width="150px" TextAlign="TextAlign.Right">
                         <Template Context="ledgeraccount">
                             @ledgeraccount.Balance.ToString("C")
                         </Template>
@@ -51,12 +51,11 @@
                     <RadzenDataGridColumn TItem="LedgerAccount" Property=@nameof(LedgerAccount.IsActive) Title=@Localizer["IsActive"] Width="100px">
                         <Template Context="ledgeraccount">
                             <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(ledgeraccount.IsActive)"
-                                         Text="@(ledgeraccount.IsActive ? Localizer["Active"] : Localizer["Inactive"])" />
+                                         Text="@(ledgeraccount.IsActive ? Localizer["Active"] : Localizer["Inactive"])" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="LedgerAccount" Property=@nameof(LedgerAccount.Oid) Title=@Localizer["Oid"] Visible="false">
-                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="LedgerAccount" Property=@nameof(LedgerAccount.Oid) Title=@Localizer["Oid"] Visible="false" />
                 </Columns>
             </VanigamAccountingDataGrid>
         </RadzenColumn>

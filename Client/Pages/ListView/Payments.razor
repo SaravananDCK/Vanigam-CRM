@@ -30,7 +30,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="payment">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(payment.Status)" Text="@payment.Status.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(payment.Status)" Text="@payment.Status.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.PaidAt) Title=@Localizer["PaidAt"]>

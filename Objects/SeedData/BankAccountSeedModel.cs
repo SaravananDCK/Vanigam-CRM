@@ -3,7 +3,6 @@ namespace Vanigam.CRM.Objects.SeedData;
 public class BankAccountSeedModel
 {
     public string Code { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
     public string AccountType { get; set; } = "BankAccount";
     public string AccountGroupCode { get; set; } = string.Empty;
     public string? Description { get; set; }

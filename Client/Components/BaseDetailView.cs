@@ -30,6 +30,8 @@ namespace Vanigam.CRM.Client.Components
         protected bool ShowNotUniqueAlert = false;
         protected RadzenTemplateForm<T> Form { get; set; }
         protected EditContext EditContext { get; set; }
+        protected int EditTabIndex { get; set; } = 0;
+        protected int ReadOnlyTabIndex { get; set; } = 0;
         protected int SelectedTabIndex = 0;
         // Read-only mode state management
         protected bool IsReadOnlyMode = false;

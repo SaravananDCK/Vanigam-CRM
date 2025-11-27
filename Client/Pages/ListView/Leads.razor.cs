@@ -81,7 +81,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(Lead lead)
         {
-            await DialogService.OpenDialogAsync<EditLead>(Localizer["Edit Lead: "] + lead.Name, new Dictionary<string, object> { { "Oid", lead.Oid } }, 100, 100);
+            await DialogService.OpenDialogAsync<EditLead>(Localizer["EditLead"] + lead.Name, new Dictionary<string, object> { { "Oid", lead.Oid } }, 100, 100);
             await GridReload();
         }
 

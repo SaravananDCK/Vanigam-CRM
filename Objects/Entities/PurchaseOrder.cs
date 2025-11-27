@@ -32,6 +32,7 @@ namespace Vanigam.CRM.Objects.Entities
         Draft,
         Sent,
         Confirmed,
+        [Display(Description = "Partially Received")]
         PartiallyReceived,
         Received,
         Cancelled

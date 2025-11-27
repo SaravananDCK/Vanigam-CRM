@@ -9,9 +9,6 @@ public partial class EditTenantAccountingSettings
 {
     [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }
 
-    private int EditTabIndex { get; set; } = 0;
-    private int ReadOnlyTabIndex { get; set; } = 0;
-
     // Helper property to convert fiscal month string to/from numeric
     private int FiscalMonthNumeric
     {

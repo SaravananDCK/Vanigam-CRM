@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Vanigam.CRM.Client.Pages.ListView;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
@@ -51,12 +52,16 @@ public class PurchaseOrderService(
                 purchaseOrder.TaxAmount = purchaseData.TaxAmount;
                 purchaseOrder.DiscountAmount = purchaseData.DiscountAmount;
                 purchaseOrder.DiscountPercent = purchaseData.DiscountPercentage;
-                purchaseOrder.DiscountType = purchaseData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
+                purchaseOrder.DiscountType = purchaseData.DiscountType;
                 purchaseOrder.DueDate = purchaseData.DueDate;
                 purchaseOrder.ExpectedDeliveryDate = purchaseData.ExpectedDeliveryDate;
                 purchaseOrder.ShippingAddress = purchaseData.ShippingAddress;
                 purchaseOrder.ContactPerson = purchaseData.ContactPerson;
                 purchaseOrder.Reference = purchaseData.Reference;
+                purchaseOrder.CGSTAmount = purchaseData.CGSTAmount;
+                purchaseOrder.SGSTAmount = purchaseData.SGSTAmount;
+                purchaseOrder.IGSTAmount = purchaseData.IGSTAmount;
+                purchaseOrder.CessAmount = purchaseData.CessAmount;
 
                 // Handle quote items
                 await HandlePurchaseOrderItems(purchaseOrder, purchaseData.Items);
@@ -82,31 +87,38 @@ public class PurchaseOrderService(
                     TaxAmount = purchaseData.TaxAmount,
                     DiscountAmount = purchaseData.DiscountAmount,
                     DiscountPercent = purchaseData.DiscountPercentage,
-                    DiscountType = purchaseData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
+                    DiscountType = purchaseData.DiscountType,
                     DueDate = purchaseData.DueDate,
                     ExpectedDeliveryDate = purchaseData.ExpectedDeliveryDate,
                     ShippingAddress = purchaseData.ShippingAddress,
                     ContactPerson = purchaseData.ContactPerson,
                     Reference = purchaseData.Reference,
-                    TenantId = TenantId
+                    TenantId = TenantId,
+                    CGSTAmount = purchaseData.CGSTAmount,
+                    SGSTAmount = purchaseData.SGSTAmount,
+                    IGSTAmount = purchaseData.IGSTAmount,
+                    CessAmount = purchaseData.CessAmount,
                 };
 
                 // Add quote items
                 foreach (var itemDto in purchaseData.Items.Where(i => !i.IsDeleted))
                 {
-                    var newItem = new PurchaseOrderItem
+                    if (itemDto.InventoryItemId != null)
                     {
-                        Oid = Guid.NewGuid(),
-                        VoucherId = purchaseOrder.Oid,
-                        ItemId = itemDto.InventoryItemId,
-                        Quantity = itemDto.Quantity,
-                        UnitPrice = itemDto.UnitPrice,
-                        TaxCodeId = itemDto.TaxCodeId,
-                        TaxAmount = itemDto.TaxAmount ?? 0,
-                        DiscountAmount = itemDto.DiscountAmount,
-                        TenantId = TenantId
-                    };
-                    Context.PurchaseOrderItems.Add(newItem);
+                        var newItem = new PurchaseOrderItem
+                        {
+                            Oid = Guid.NewGuid(),
+                            VoucherId = purchaseOrder.Oid,
+                            ItemId = itemDto.InventoryItemId,
+                            Quantity = itemDto.Quantity,
+                            UnitPrice = itemDto.UnitPrice,
+                            TaxCodeId = itemDto.TaxCodeId,
+                            TaxAmount = itemDto.TaxAmount ?? 0,
+                            DiscountAmount = itemDto.DiscountAmount,
+                            TenantId = TenantId
+                        };
+                        Context.PurchaseOrderItems.Add(newItem);
+                    }
                 }
 
                 // Call base create without lifecycle hooks to avoid nested transactions
@@ -148,7 +160,7 @@ public class PurchaseOrderService(
         // Add or update items
         foreach (var itemDto in items.Where(i => !i.IsDeleted))
         {
-            if (itemDto.IsNew)
+            if (itemDto.IsNew && itemDto.InventoryItemId != null)
             {
                 // Add new item
                 var newItem = new PurchaseOrderItem

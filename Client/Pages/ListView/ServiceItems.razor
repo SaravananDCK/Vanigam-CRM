@@ -5,7 +5,7 @@
 @inject ServiceItemApiService ServiceItemApiService
 
 <RadzenStack>
-    <ListPageTitleComponent TitleText=@Localizer["InventoryItems"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
+    <ListPageTitleComponent TitleText=@Localizer["ServiceItems"] AddButtonClick=@AddButtonClick SearchButtonClick=@Search />
     <RadzenRow>
         <RadzenColumn SizeMD=12 class="datagrid-container-standard">
             <VanigamAccountingDataGrid @ref="GridControl" AllowColumnPicking="@AllowColPick" Data="@DataSource" Count=Count TItem="ServiceItem" VanigamAccountingLoadData=@GridLoadData RowDoubleClick="@EditRow" @bind-Settings="@Settings" PageSize="@PageSize" PageSizeOptions="@PageSizeOptions" LoadSettings="@LoadSettings">
@@ -24,7 +24,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="ServiceItem" Property=@nameof(Item.SKU) Title=@Localizer["SKU"]>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="ServiceItem" Property=@nameof(InventoryItem.QuantityOnHand) Title=@Localizer["QuantityOnHand"]>
+                    <RadzenDataGridColumn TItem="ServiceItem" Property=@nameof(ServiceItem.QuantityOnHand) Title=@Localizer["QuantityOnHand"] TextAlign="TextAlign.Right">
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="ServiceItem" Property=@nameof(Item.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

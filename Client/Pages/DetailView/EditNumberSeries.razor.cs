@@ -4,60 +4,71 @@ using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
 
-namespace Vanigam.CRM.Client.Pages.DetailView
+namespace Vanigam.CRM.Client.Pages.DetailView;
+public partial class EditNumberSeries
 {
-    public partial class EditNumberSeries
+    [Inject] private NumberSeriesApiService NumberSeriesApiService { get; set; }
+    protected override async Task OnInitializedAsync()
     {
-        [Inject] private NumberSeriesApiService NumberSeriesApiService { get; set; }
-
-        protected override async Task OnInitializedAsync()
+        if (Oid == Guid.Empty)
         {
-            if (Oid == Guid.Empty)
-                CurrentObject = new();
-            else
-                CurrentObject = await NumberSeriesApiService.GetByOid(oid: Oid);
-
-            await InitEditContext();
+            CurrentObject = new();
+            IsReadOnlyMode = false;
+        }
+        else
+        {
+            CurrentObject = await NumberSeriesApiService.GetByOid(oid: Oid);
+            IsReadOnlyMode = true;
         }
 
-        protected async Task FormSubmit()
+        await InitEditContext();
+    }
+    protected override async Task SaveAndStayInEdit()
+    {
+        await FormSubmit();
+        if (!ErrorVisible && !ShowNotUniqueAlert)
         {
-            IsBusy = true;
-            try
+            IsReadOnlyMode = true;
+            StateHasChanged();
+        }
+    }
+    protected async Task FormSubmit()
+    {
+        IsBusy = true;
+        try
+        {
+            if (Oid == Guid.Empty)
             {
-                if (Oid == Guid.Empty)
-                {
-                    CurrentObject = await NumberSeriesApiService.Create(CurrentObject);
-                }
-                else
-                {
-                    var result = await NumberSeriesApiService.Update(oid: Oid, CurrentObject);
-                    if (result.IsPreconditionFailed())
-                    {
-                        HasChanges = true;
-                        CanEdit = false;
-                        return;
-                    }
-                }
-                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["SavedSuccessfully!"] });
-                DialogService.CloseDialog(CurrentObject);
+                CurrentObject = await NumberSeriesApiService.Create(CurrentObject);
             }
-            catch (HttpRequestException ex)
+            else
             {
-                if (ex.StatusCode == HttpStatusCode.Conflict)
+                var result = await NumberSeriesApiService.Update(oid: Oid, CurrentObject);
+                if (result.IsPreconditionFailed())
                 {
-                    ShowNotUniqueAlert = true;
-                }
-                else
-                {
-                    ErrorVisible = true;
+                    HasChanges = true;
+                    CanEdit = false;
+                    return;
                 }
             }
-            catch (Exception ex)
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["SavedSuccessfully!"] });
+            DialogService.CloseDialog(CurrentObject);
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.Conflict)
+            {
+                ShowNotUniqueAlert = true;
+            }
+            else
             {
                 ErrorVisible = true;
             }
-            IsBusy = false;
         }
+        catch (Exception ex)
+        {
+            ErrorVisible = true;
+        }
+        IsBusy = false;
     }
 }

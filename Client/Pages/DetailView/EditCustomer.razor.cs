@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditCustomer
     {
         [Inject] private CustomerApiService CustomerApiService { get; set; }
+        private static readonly IList<CustomerStatus> CustomerStatuses = [.. Enum.GetValues<CustomerStatus>()];
+        private static readonly IList<CustomerType> CustomerTypes = [.. Enum.GetValues<CustomerType>()];
         bool IsFullheightTab = false;
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -27,7 +28,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             await InitEditContext();
         }
-        
+        private async Task Changed(CustomerStatus status)
+        {
+
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         protected async Task FormSubmit()
         {
             IsBusy = true;
@@ -79,13 +86,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         {
             return index switch
             {
-                0 => "Basic Info",
-                1 => "Contact Info",
-                2 => "Address",
-                3 => "Business Information",
-                4 => "Contacts",
-                5 => "Jobs",
-                6 => "FileDocuments",
+                0 => Localizer["Basic Info"],
+                1 => Localizer["Contact Info"],
+                2 => Localizer["Address"],
+                3 => Localizer["Business Information"],
+                4 => Localizer["Contacts"],
+                5 => Localizer["Jobs"],
+                6 => Localizer["FileDocuments"],
                 _ => ""
             };
         }

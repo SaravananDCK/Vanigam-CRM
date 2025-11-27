@@ -33,7 +33,7 @@
                     <RadzenDataGridColumn TItem="CustomerAdvance" Property=@nameof(CustomerAdvance.BalanceAmount) Title=@Localizer["BalanceAmount"] Width="150px">
                         <Template Context="customeradvance">
                             <RadzenBadge Text="@customeradvance.BalanceAmount.ToString("C")"
-                                         BadgeStyle="@(customeradvance.BalanceAmount > 0 ? BadgeStyle.Success : BadgeStyle.Secondary)" />
+                                         BadgeStyle="@(customeradvance.BalanceAmount > 0 ? BadgeStyle.Success : BadgeStyle.Secondary)" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="CustomerAdvance" Property=@nameof(CustomerAdvance.AppliedDate) Title=@Localizer["AppliedDate"] Width="150px">
@@ -47,11 +47,11 @@
                         <Template Context="customeradvance">
                             @if (customeradvance.IsAvailableForAllocation && customeradvance.BalanceAmount > 0)
                             {
-                                <RadzenBadge Text="@Localizer["Yes"]" BadgeStyle="BadgeStyle.Success" />
+                                <RadzenBadge Text="@Localizer["Yes"]" BadgeStyle="BadgeStyle.Success" class="rz-p-1" />
                             }
                             else
                             {
-                                <RadzenBadge Text="@Localizer["No"]" BadgeStyle="BadgeStyle.Secondary" />
+                                <RadzenBadge Text="@Localizer["No"]" BadgeStyle="BadgeStyle.Secondary" class="rz-p-1" />
                             }
                         </Template>
                     </RadzenDataGridColumn>

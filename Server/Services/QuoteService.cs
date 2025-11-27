@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
+using Vanigam.CRM.Client.Pages.ListView;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.DTOs;
 using Vanigam.CRM.Objects.Entities;
@@ -59,7 +60,11 @@ public class QuoteService(
                 quote.TaxAmount = quoteData.TaxAmount;
                 quote.DiscountAmount = quoteData.DiscountAmount;
                 quote.DiscountPercent = quoteData.DiscountPercentage;
-                quote.DiscountType = quoteData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
+                quote.DiscountType = quoteData.DiscountType;
+                quote.CGSTAmount = quoteData.CGSTAmount;
+                quote.SGSTAmount = quoteData.SGSTAmount;
+                quote.IGSTAmount = quoteData.IGSTAmount;
+                quote.CessAmount = quoteData.CessAmount;
 
                 // Handle quote items
                 await HandleQuoteItems(quote, quoteData.Items);
@@ -87,29 +92,34 @@ public class QuoteService(
                     TaxAmount = quoteData.TaxAmount,
                     DiscountAmount = quoteData.DiscountAmount,
                     DiscountPercent = quoteData.DiscountPercentage,
-                    DiscountType = quoteData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
-                    TenantId = TenantId
+                    DiscountType = quoteData.DiscountType,
+                    TenantId = TenantId,
+                    CGSTAmount = quoteData.CGSTAmount,
+                    SGSTAmount = quoteData.SGSTAmount,
+                    IGSTAmount = quoteData.IGSTAmount,
+                    CessAmount = quoteData.CessAmount,
                 };
 
                 // Add quote items
                 foreach (var itemDto in quoteData.Items.Where(i => !i.IsDeleted))
                 {
-                    var newItem = new QuoteItem
+                    if (itemDto.InventoryItemId != null)
                     {
-                        Oid = Guid.NewGuid(),
-                        VoucherId = quote.Oid,
-                        ItemId = itemDto.InventoryItemId,
-                        Quantity = itemDto.Quantity,
-                        UnitPrice = itemDto.UnitPrice,
-                        TaxCodeId = itemDto.TaxCodeId,
-                        TaxAmount = itemDto.TaxAmount ?? 0,
-                        DiscountAmount = itemDto.DiscountAmount,
-                        TenantId = TenantId
-                    };
-
-                    Context.QuoteItems.Add(newItem);
+                        var newItem = new QuoteItem
+                        {
+                            Oid = Guid.NewGuid(),
+                            VoucherId = quote.Oid,
+                            ItemId = itemDto.InventoryItemId,
+                            Quantity = itemDto.Quantity,
+                            UnitPrice = itemDto.UnitPrice,
+                            TaxCodeId = itemDto.TaxCodeId,
+                            TaxAmount = itemDto.TaxAmount ?? 0,
+                            DiscountAmount = itemDto.DiscountAmount,
+                            TenantId = TenantId
+                        };
+                        Context.QuoteItems.Add(newItem);
+                    }
                 }
-
                 // Call base create without lifecycle hooks to avoid nested transactions
                 Context.Quotes.Add(quote);
                 await Context.SaveChangesAsync();
@@ -152,7 +162,7 @@ public class QuoteService(
         // Add or update items
         foreach (var itemDto in items.Where(i => !i.IsDeleted))
         {
-            if (itemDto.IsNew)
+            if (itemDto.IsNew && itemDto.InventoryItemId != null)
             {
                 // Add new item
                 var newItem = new QuoteItem

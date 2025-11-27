@@ -173,7 +173,7 @@ public class InvoiceService(
                 invoice.VoucherDate = invoiceData.VoucherDate;
                 invoice.DiscountAmount = invoiceData.DiscountAmount;
                 invoice.DiscountPercent = invoiceData.DiscountPercentage;
-                invoice.DiscountType = invoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount;
+                invoice.DiscountType = invoiceData.DiscountType;
                 // Handle invoice items
                 await HandleInvoiceItems(invoice, invoiceData.Items);
 
@@ -218,26 +218,30 @@ public class InvoiceService(
                     VoucherDate = invoiceData.VoucherDate,
                     DiscountAmount = invoiceData.DiscountAmount,
                     DiscountPercent = invoiceData.DiscountPercentage,
-                    DiscountType = invoiceData.DiscountPercentage > 0 ? DiscountType.Percentage : DiscountType.Amount,
+                    DiscountType = invoiceData.DiscountType,
                     TenantId = TenantId
                 };
 
                 // Add invoice items
                 foreach (var itemDto in invoiceData.Items.Where(i => !i.IsDeleted))
                 {
-                    var newItem = new InvoiceItem
+                    if (itemDto.InventoryItemId != null)
                     {
-                        Oid = Guid.NewGuid(),
-                        VoucherId = invoice.Oid,
-                        ItemId = itemDto.InventoryItemId,
-                        Quantity = itemDto.Quantity,
-                        UnitPrice = itemDto.UnitPrice,
-                        DiscountAmount = itemDto.DiscountAmount,
-                        TaxAmount = itemDto.TaxAmount ?? 0,
-                        TenantId = TenantId
-                    };
+                        var newItem = new InvoiceItem
+                        {
+                            Oid = Guid.NewGuid(),
+                            VoucherId = invoice.Oid,
+                            ItemId = itemDto.InventoryItemId,
+                            Quantity = itemDto.Quantity,
+                            UnitPrice = itemDto.UnitPrice,
+                            DiscountAmount = itemDto.DiscountAmount,
+                            TaxAmount = itemDto.TaxAmount ?? 0,
+                            TaxCodeId = itemDto.TaxCodeId,
+                            TenantId = TenantId
+                        };
 
-                    Context.InvoiceItems.Add(newItem);
+                        Context.InvoiceItems.Add(newItem);
+                    }
                 }
 
                 // Call base create without lifecycle hooks to avoid nested transactions
@@ -298,7 +302,7 @@ public class InvoiceService(
         // Add or update items
         foreach (var itemDto in items.Where(i => !i.IsDeleted))
         {
-            if (itemDto.IsNew)
+            if (itemDto.IsNew && itemDto.InventoryItemId != null)
             {
                 // Add new item
                 var newItem = new InvoiceItem
@@ -310,6 +314,7 @@ public class InvoiceService(
                     UnitPrice = itemDto.UnitPrice,
                     DiscountAmount = itemDto.DiscountAmount,
                     TaxAmount = itemDto.TaxAmount ?? 0,
+                    TaxCodeId = itemDto.TaxCodeId,
                     TenantId = TenantId
                 };
 
@@ -328,6 +333,7 @@ public class InvoiceService(
                     existingItem.UnitPrice = itemDto.UnitPrice;
                     existingItem.DiscountAmount = itemDto.DiscountAmount;
                     existingItem.TaxAmount = itemDto.TaxAmount ?? 0;
+                    existingItem.TaxCodeId = itemDto.TaxCodeId;
                 }
             }
         }

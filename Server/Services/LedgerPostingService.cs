@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
+using Vanigam.CRM.Client.Pages.ListView;
 using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
-using NodaTime;
 using Vanigam.CRM.Objects.Services;
 
 namespace Vanigam.CRM.Server.Services;
@@ -30,7 +31,7 @@ public class LedgerPostingService(
     {
         try
         {
-            logger.LogInformation("Posting Invoice {InvoiceNumber} to ledger", invoice.Number);
+            logger.LogInformation($"Posting Invoice {invoice.Number} to ledger", invoice.Number);
 
             // Get required accounts
             var salesAccount = await GetDefaultSalesAccount(invoice.TenantId);
@@ -46,8 +47,8 @@ public class LedgerPostingService(
 
             var entries = new List<LedgerEntry>();
 
-            // Calculate gross sales (before discount)
-            var grossSales = invoice.SubTotal;
+            // Calculate gross sales
+            var grossSales = invoice.SubTotal - invoice.DiscountAmount;
 
             // 1. Debit Customer Account (Asset increases) - Full invoice amount including tax
             entries.Add(new LedgerEntry
@@ -80,31 +81,31 @@ public class LedgerPostingService(
             });
 
             // 3. Debit Sales Discount Account (if discount exists) - Contra revenue account
-            if (invoice.DiscountAmount > 0)
-            {
-                var discountAccount = await GetSalesDiscountAccount(invoice.TenantId);
-                if (discountAccount != null)
-                {
-                    entries.Add(new LedgerEntry
-                    {
-                        TenantId = invoice.TenantId,
-                        VoucherId = invoice.Oid,
-                        AccountId = discountAccount.Oid,
-                        EntryType = EntryType.Debit,
-                        Amount = invoice.DiscountAmount,
-                        EntryDate = invoice.VoucherDate,
-                        EntryNumber = invoice.Number,
-                        Description = $"Sales Discount - {invoice.Number}",
-                        Reference = invoice.Number,
-                        IsReconciled = false
-                    });
-                }
-                else
-                {
-                    logger.LogWarning("Sales discount account not configured for tenant {TenantId}. Discount amount {DiscountAmount} not posted separately.",
-                        invoice.TenantId, invoice.DiscountAmount);
-                }
-            }
+            //if (invoice.DiscountAmount > 0)
+            //{
+            //    var discountAccount = await GetSalesDiscountAccount(invoice.TenantId);
+            //    if (discountAccount != null)
+            //    {
+            //        entries.Add(new LedgerEntry
+            //        {
+            //            TenantId = invoice.TenantId,
+            //            VoucherId = invoice.Oid,
+            //            AccountId = discountAccount.Oid,
+            //            EntryType = EntryType.Debit,
+            //            Amount = invoice.DiscountAmount,
+            //            EntryDate = invoice.VoucherDate,
+            //            EntryNumber = invoice.Number,
+            //            Description = $"Sales Discount - {invoice.Number}",
+            //            Reference = invoice.Number,
+            //            IsReconciled = false
+            //        });
+            //    }
+            //    else
+            //    {
+            //        logger.LogWarning($"Sales discount account not configured for tenant {invoice.TenantId}. Discount amount {invoice.DiscountAmount} not posted separately.",
+            //            invoice.TenantId, invoice.DiscountAmount);
+            //    }
+            //}
 
             // 4. Credit SGST Payable Account (if SGST exists)
             if (invoice.SGSTAmount > 0)
@@ -199,26 +200,27 @@ public class LedgerPostingService(
                     });
                 }
             }
-
             await context.LedgerEntries.AddRangeAsync(entries);
 
             // Validate entries balance
             var totalDebits = Math.Round(entries.Where(e => e.EntryType == EntryType.Debit).Sum(e => e.Amount));
             var totalCredits = Math.Round(entries.Where(e => e.EntryType == EntryType.Credit).Sum(e => e.Amount));
+            totalDebits = Math.Round(totalDebits);
+            totalCredits = Math.Round(totalCredits);
 
             if (totalDebits != totalCredits)
             {
-                logger.LogError("Invoice {InvoiceNumber} ledger entries do not balance. Debits: {Debits}, Credits: {Credits}",
+                logger.LogError($"Invoice {invoice.Number} ledger entries do not balance. Debits: {totalDebits}, Credits: {totalCredits}",
                     invoice.Number, totalDebits, totalCredits);
                 throw new InvalidOperationException($"Ledger entries for invoice {invoice.Number} do not balance. Debits: {totalDebits}, Credits: {totalCredits}");
             }
 
-            logger.LogInformation("Successfully posted {EntryCount} ledger entries for Invoice {InvoiceNumber}. Debits: {Debits}, Credits: {Credits}",
+            logger.LogInformation($"Successfully posted {entries.Count} ledger entries for Invoice {invoice.Number}. Debits: {totalDebits}, Credits: {totalCredits}",
                 entries.Count, invoice.Number, totalDebits, totalCredits);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error posting Invoice {InvoiceNumber} to ledger", invoice.Number);
+            logger.LogError(ex, $"Error posting Invoice {invoice.Number} to ledger", invoice.Number);
             throw;
         }
     }
@@ -482,8 +484,8 @@ public class LedgerPostingService(
 
             // Validate entries balance
             var totalDebits = entries.Where(e => e.EntryType == EntryType.Debit).Sum(e => e.Amount);
-            totalDebits = Math.Round(totalDebits);
             var totalCredits = entries.Where(e => e.EntryType == EntryType.Credit).Sum(e => e.Amount);
+            totalDebits = Math.Round(totalDebits);
             totalCredits = Math.Round(totalCredits);
 
             if (totalDebits != totalCredits)

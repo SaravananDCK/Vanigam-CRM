@@ -36,8 +36,8 @@ public class ProductDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<Prod
             builder2.CloseComponent();
 
             builder2.OpenComponent<RadzenDropDownDataGridColumn>(1);
-            builder2.AddAttribute(1, "Property", nameof(Product.Cost));
-            builder2.AddAttribute(2, "Title", "Cost");
+            builder2.AddAttribute(1, "Property", nameof(Product.UnitPrice));
+            builder2.AddAttribute(2, "Title", "Unit Price");
             builder2.CloseComponent();
         };
     }

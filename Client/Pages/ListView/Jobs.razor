@@ -71,12 +71,12 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="job">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(job.Status)" Text="@job.Status.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(job.Status)" Text="@job.Status.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Priority) Title=@Localizer["Priority"] Width="120px">
                         <Template Context="job">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(job.Priority)" Text="@job.Priority.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(job.Priority)" Text="@job.Priority.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Job" Property=@nameof(Job.Description) Title=@Localizer["Description"]>

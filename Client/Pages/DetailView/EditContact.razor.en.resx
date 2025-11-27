@@ -117,14 +117,44 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
   <data name="BasicInfo" xml:space="preserve">
     <value>Basic Info</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="CodeMust" xml:space="preserve">
+    <value>Code is required.</value>
   </data>
   <data name="ContactInfo" xml:space="preserve">
     <value>Contact Info</value>
   </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Edit Contact" xml:space="preserve">
+    <value>Edit Contact</value>
+  </data>
   <data name="FirstName" xml:space="preserve">
     <value>First Name</value>
+  </data>
+  <data name="IsPrimary" xml:space="preserve">
+    <value>Is Primary</value>
   </data>
   <data name="JobTitle" xml:space="preserve">
     <value>Job Title</value>
@@ -135,7 +165,46 @@
   <data name="LinkedInProfile" xml:space="preserve">
     <value>Linked In Profile</value>
   </data>
+  <data name="Mobile" xml:space="preserve">
+    <value>Mobile</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
   <data name="PostalCode" xml:space="preserve">
     <value>Postal Code</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SaveAlert" xml:space="preserve">
+    <value>Unable to save the record.</value>
+  </data>
+  <data name="SavedSuccessfully" xml:space="preserve">
+    <value>The record was saved successfully.</value>
+  </data>
+  <data name="Select Customer" xml:space="preserve">
+    <value>Select Customer</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>

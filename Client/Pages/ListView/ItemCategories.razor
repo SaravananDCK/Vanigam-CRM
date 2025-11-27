@@ -28,11 +28,11 @@
                         <Template Context="itemcategory">
                             @if (itemcategory.IsActive)
                             {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] />
+                                <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@Localizer["Active"] class="rz-p-1" />
                             }
                             else
                             {
-                                <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] />
+                                <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@Localizer["Inactive"] class="rz-p-1" />
                             }
                         </Template>
                     </RadzenDataGridColumn>

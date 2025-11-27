@@ -16,10 +16,10 @@
     @* Read-Only Mode Display *@
     @if (IsReadOnlyModeVisible)
     {
-        <RadzenCard class="rz-my-4">
+        <RadzenCard>
             @if (IsEditButtonVisible)
             {
-                <RadzenStack Orientation="Orientation.Horizontal"AlignItems="AlignItems.Center"
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
                              JustifyContent="JustifyContent.End" Gap="10px">
                     <RadzenFab Style="bottom: 12px; left: 12px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
                 </RadzenStack>
@@ -28,7 +28,7 @@
                 <Tabs>
                     @* Basic Info Tab *@
                     <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
-                        <div class="rz-p-4">
+                        <div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Code"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Code ?? "-")</RadzenText>
@@ -48,7 +48,7 @@
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
-                                    <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.ToString()" />
+                                    <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.ToString()" class="rz-p-1" />
                                 </RadzenText>
                             </div>
                             <div class="read-only-field rz-mb-3">
@@ -67,7 +67,7 @@
 
                     @* Contact Info Tab *@
                     <RadzenTabsItem Text="@Localizer["ContactInfo"]" Icon="@FadIcon("fa-phone")" class="fa-small">
-                        <div class="rz-p-4">
+                        <div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Email"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Email ?? "-")</RadzenText>
@@ -85,7 +85,7 @@
 
                     @* Address Tab *@
                     <RadzenTabsItem Text="@Localizer["Address"]" Icon="@FadIcon("fa-map-marker-alt")" class="fa-small">
-                        <div class="rz-p-4">
+                        <div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Address"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Address ?? "-")</RadzenText>
@@ -111,7 +111,7 @@
 
                     @* Business Information Tab *@
                     <RadzenTabsItem Text="@Localizer["BusinessInformation"]" Icon="@FadIcon("fa-building")" class="fa-small">
-                        <div class="rz-p-4">
+                        <div>
                             <div class="read-only-field rz-mb-3">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["AnnualRevenue"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.AnnualRevenue?.ToString("C0") ?? "-")</RadzenText>
@@ -153,148 +153,167 @@
     }
 
     @* Editable Form Mode *@
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Customer" Data="@CurrentObject" Visible="@IsFormVisible" Submit="@SaveAndStayInEdit">
-        <FluentValidationValidator Validator="new CustomerValidator(Localizer)" />
-        <ValidationSummary />
+    @if (IsFormVisible)
+    {
+        <RadzenCard>
+            <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="Customer" Data="@CurrentObject" Submit="@SaveAndStayInEdit">
+                <FluentValidationValidator Validator="new CustomerValidator(Localizer)" />
+                <ValidationSummary />
 
-        <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left">
-            <Tabs>
-                @* Basic Info Tab *@
-                <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
-                    <RadzenStack Gap="1rem" class="rz-p-4">
-                        <VanigamAccountingFormField Text=@Localizer["Code"]>
-                            <ChildContent>
-                                @if (string.IsNullOrEmpty(CurrentObject.Code))
-                                {
-                                    <RadzenText TextStyle="TextStyle.Button" Text="New Customer" class="rz-m-2" Style="color: var(--rz-success);" />
-                                }
-                                else
-                                {
-                                    <RadzenText Text="@CurrentObject.Code" class="rz-m-2" />
-                                }
+                <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+                    <Tabs>
+                        @* Basic Info Tab *@
 
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Name"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Type"]>
-                            <ChildContent>
-                                <CustomerTypeEnumDropDown @bind-Value="@CurrentObject.Type" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Industry"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Industry" Name="txt_Industry" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Status"]>
-                            <ChildContent>
-                                <CustomerStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Rating"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Rating" Name="txt_Rating" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Description"]>
-                            <ChildContent>
-                                <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="txt_Description" Rows="3" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                    </RadzenStack>
-                </RadzenTabsItem>
+                        <RadzenTabsItem Text="@Localizer["BasicInfo"]" Icon="@FadIcon("fa-info")" class="fa-small">
+                            <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
+                                <RadzenRadioButtonList TValue="CustomerStatus" Change="@Changed" Value="@CurrentObject.Status">
+                                    <Items>
+                                        @foreach (var status in CustomerStatuses)
+                                        {
+                                            <RadzenRadioButtonListItem Text="@Localizer[status.GetDisplayDescription().ToString()]" Value="status" />
+                                        }
+                                    </Items>
+                                </RadzenRadioButtonList>
+                            </RadzenStack>
+                            <RadzenStack Gap="1rem">
+                                <VanigamAccountingFormField Text=@Localizer["Code"]>
+                                    <ChildContent>
+                                        @if (string.IsNullOrEmpty(CurrentObject.Code))
+                                        {
+                                            <RadzenText TextStyle="TextStyle.Button" Text="New Customer" class="rz-m-2" Style="color: var(--rz-success);" />
+                                        }
+                                        else
+                                        {
+                                            <RadzenText Text="@CurrentObject.Code" class="rz-m-2" />
+                                        }
 
-                @* Contact Info Tab *@
-                <RadzenTabsItem Text="@Localizer["ContactInfo"]" Icon="@FadIcon("fa-phone")" class="fa-small">
-                    <RadzenStack Gap="1rem" class="rz-p-4">
-                        <VanigamAccountingFormField Text=@Localizer["Email"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Email" Name="txt_Email" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Phone"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Phone" Name="txt_Phone" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Website"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Website" Name="txt_Website" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                    </RadzenStack>
-                </RadzenTabsItem>
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Name"]>
+                                    <ChildContent>
+                                        <VanigamAccountingTextBox @bind-Value="@CurrentObject.Name" Name="txt_Name" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Type"]>
+                                    <ChildContent>
+                                        @*<CustomerTypeEnumDropDown @bind-Value="@CurrentObject.Type" />*@
+                                        <RadzenRadioButtonList @bind-Value=@CurrentObject.Type TValue="CustomerType" JustifyContent="JustifyContent.Start" class="rz-m-2">
+                                            <Items>
+                                                @foreach (var type in CustomerTypes)
+                                                {
+                                                    <RadzenRadioButtonListItem Text="@Localizer[type.GetDisplayDescription().ToString()]" Value="type" />
+                                                }
+                                            </Items>
+                                        </RadzenRadioButtonList>
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Industry"]>
+                                    <ChildContent>
+                                        <VanigamAccountingTextBox @bind-Value="@CurrentObject.Industry" Name="txt_Industry" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Rating"]>
+                                    <ChildContent>
+                                        <VanigamAccountingTextBox @bind-Value="@CurrentObject.Rating" Name="txt_Rating" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Description"]>
+                                    <ChildContent>
+                                        <RadzenTextArea @bind-Value="@CurrentObject.Description" Name="txt_Description" Rows="3" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                            </RadzenStack>
+                        </RadzenTabsItem>
 
-                @* Address Tab *@
-                <RadzenTabsItem Text="@Localizer["Address"]" Icon="@FadIcon("fa-map-marker-alt")" class="fa-small">
-                    <RadzenStack Gap="1rem" class="rz-p-4">
-                        <VanigamAccountingFormField Text=@Localizer["Address"]>
-                            <ChildContent>
-                                <RadzenTextArea @bind-Value="@CurrentObject.Address" Name="txt_Address" Rows="2" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["City"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.City" Name="txt_City" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["State"]>
-                            <ChildContent>
-                                <StatesDropDown @bind-Value="@CurrentObject.State" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["PostalCode"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.PostalCode" Name="txt_PostalCode" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Country"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Country" Name="txt_Country" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                    </RadzenStack>
-                </RadzenTabsItem>
+                        @* Contact Info Tab *@
+                        <RadzenTabsItem Text="@Localizer["ContactInfo"]" Icon="@FadIcon("fa-phone")" class="fa-small">
+                            <RadzenStack Gap="1rem">
+                                <VanigamAccountingFormField Text=@Localizer["Email"]>
+                                    <ChildContent>
+                                        <VanigamAccountingTextBox @bind-Value="@CurrentObject.Email" Name="txt_Email" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Phone"]>
+                                    <ChildContent>
+                                        <VanigamAccountingTextBox @bind-Value="@CurrentObject.Phone" Name="txt_Phone" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Website"]>
+                                    <ChildContent>
+                                        <VanigamAccountingTextBox @bind-Value="@CurrentObject.Website" Name="txt_Website" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                            </RadzenStack>
+                        </RadzenTabsItem>
 
-                @* Business Information Tab *@
-                <RadzenTabsItem Text="@Localizer["BusinessInformation"]" Icon="@FadIcon("fa-building")" class="fa-small">
-                    <RadzenStack Gap="1rem" class="rz-p-4">
-                        <VanigamAccountingFormField Text=@Localizer["AnnualRevenue"]>
-                            <ChildContent>
-                                <RadzenNumeric @bind-Value="@CurrentObject.AnnualRevenue" Name="numeric_AnnualRevenue" Format="C0" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["EmployeeCount"]>
-                            <ChildContent>
-                                <RadzenNumeric @bind-Value="@CurrentObject.EmployeeCount" Name="numeric_EmployeeCount" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["CustomerSince"]>
-                            <ChildContent>
-                                <RadzenDatePicker @bind-Value="@CurrentObject.CustomerSince" Name="date_CustomerSince" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                    </RadzenStack>
-                </RadzenTabsItem>
-            </Tabs>
-        </RadzenTabs>
+                        @* Address Tab *@
+                        <RadzenTabsItem Text="@Localizer["Address"]" Icon="@FadIcon("fa-map-marker-alt")" class="fa-small">
+                            <RadzenStack Gap="1rem">
+                                <VanigamAccountingFormField Text=@Localizer["Address"]>
+                                    <ChildContent>
+                                        <RadzenTextArea @bind-Value="@CurrentObject.Address" Name="txt_Address" Rows="2" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["City"]>
+                                    <ChildContent>
+                                        <VanigamAccountingTextBox @bind-Value="@CurrentObject.City" Name="txt_City" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["State"]>
+                                    <ChildContent>
+                                        <StatesDropDown @bind-Value="@CurrentObject.State" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["PostalCode"]>
+                                    <ChildContent>
+                                        <VanigamAccountingTextBox @bind-Value="@CurrentObject.PostalCode" Name="txt_PostalCode" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["Country"]>
+                                    <ChildContent>
+                                        <VanigamAccountingTextBox @bind-Value="@CurrentObject.Country" Name="txt_Country" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                            </RadzenStack>
+                        </RadzenTabsItem>
 
-        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-            @if (IsCreateMode)
-            {
-                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
-            }
-            else
-            {
-                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
-                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
-            }
-        </RadzenStack>
-    </RadzenTemplateForm>
+                        @* Business Information Tab *@
+                        <RadzenTabsItem Text="@Localizer["BusinessInformation"]" Icon="@FadIcon("fa-building")" class="fa-small">
+                            <RadzenStack Gap="1rem">
+                                <VanigamAccountingFormField Text=@Localizer["AnnualRevenue"]>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="@CurrentObject.AnnualRevenue" Name="numeric_AnnualRevenue" Format="C0" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["EmployeeCount"]>
+                                    <ChildContent>
+                                        <RadzenNumeric @bind-Value="@CurrentObject.EmployeeCount" Name="numeric_EmployeeCount" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                                <VanigamAccountingFormField Text=@Localizer["CustomerSince"]>
+                                    <ChildContent>
+                                        <RadzenDatePicker @bind-Value="@CurrentObject.CustomerSince" Name="date_CustomerSince" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>
+                            </RadzenStack>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    @if (IsCreateMode)
+                    {
+                        <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+                    }
+                    else
+                    {
+                        <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@IsFormUnmodified" @bind-IsBusy="IsBusy" />
+                        <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+                    }
+                </RadzenStack>
+            </RadzenTemplateForm>
+        </RadzenCard>
+    }
 </RadzenColumn>
 
 

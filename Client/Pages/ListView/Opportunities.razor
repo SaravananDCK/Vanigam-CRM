@@ -64,7 +64,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Stage) Title=@Localizer["Stage"]>
                         <Template Context="opportunity">
-                            <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(opportunity.Stage)" Text="@opportunity.Stage.GetDisplayDescription().ToString()" />
+                            <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(opportunity.Stage)" Text="@opportunity.Stage.GetDisplayDescription().ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Opportunity" Property=@nameof(Opportunity.Source) Title=@Localizer["Source"] Width="120px">

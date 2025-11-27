@@ -8,10 +8,6 @@ namespace Vanigam.CRM.Objects.Entities
     public class BankAccount : LedgerAccount
     {
         [Required]
-        [StringLength(100)]
-        public string BankName { get; set; } = string.Empty;
-
-        [Required]
         [StringLength(50)]
         public string AccountNumber { get; set; } = string.Empty;
 
@@ -31,7 +27,7 @@ namespace Vanigam.CRM.Objects.Entities
         public string? AccountHolderName { get; set; }
 
         [StringLength(50)]
-        public string? Currency { get; set; } = "USD";
+        public string? Currency { get; set; } = "INR";
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal CurrentBalance { get; set; } = 0;

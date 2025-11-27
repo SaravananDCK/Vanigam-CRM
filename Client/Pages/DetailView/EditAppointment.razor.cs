@@ -3,16 +3,16 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
     public partial class EditAppointment
     {
         [Parameter] public Guid? JobId { get; set; }
-        private int ReadOnlyTabIndex { get; set; } = 0;
         [Inject] private AppointmentApiService AppointmentApiService { get; set; }
         [Parameter] public bool IsEmbeddedModeActive { get; set; } = false;
-        private int EditTabIndex { get; set; } = 0;
+        private static readonly IList<AppointmentStatus> AppointmentStatuses = [.. Enum.GetValues<AppointmentStatus>()];
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -33,7 +33,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             await InitEditContext();
         }
-        
+        private async Task Changed(AppointmentStatus status)
+        {
+
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         protected async Task FormSubmit()
         {
             IsBusy = true;

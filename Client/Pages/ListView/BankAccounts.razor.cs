@@ -31,7 +31,6 @@ namespace Vanigam.CRM.Client.Pages.ListView
                 .BeginGroup()
                 .ContainsOr(u => u.Name, SearchString)
                 .ContainsOr(u => u.Code, SearchString)
-                .ContainsOr(u => u.BankName, SearchString)
                 .ContainsOr(u => u.AccountNumber, SearchString)
                 .EndGroup()
                 .Build();
@@ -44,7 +43,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         protected async Task AddButtonClick(MouseEventArgs args)
         {
-            await DialogService.OpenDialogAsync<EditBankAccount>(Localizer["AddBankAccount"], null, 80, 100);
+            await DialogService.OpenDialogAsync<EditBankAccount>(Localizer["AddBankAccount"], null, 100, 100);
             await GridReload();
         }
 
@@ -55,7 +54,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
 
         private async Task Open(BankAccount bankaccount)
         {
-            await DialogService.OpenDialogWithOutHeaderAsync<EditBankAccount>(Localizer["EditBankAccount"], new Dictionary<string, object> { { "Oid", bankaccount.Oid } }, 80, 100);
+            await DialogService.OpenDialogWithOutHeaderAsync<EditBankAccount>(Localizer["EditBankAccount"], new Dictionary<string, object> { { "Oid", bankaccount.Oid } }, 100, 100);
             await GridReload();
         }
 

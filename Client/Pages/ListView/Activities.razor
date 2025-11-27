@@ -60,12 +60,12 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Type) Title=@Localizer["Type"] Width="150px">
                         <Template Context="activity">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Type)" Text="@activity.Type.GetDisplayDescription().ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Type)" Text="@activity.Type.GetDisplayDescription().ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="activity">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Status)" Text="@activity.Status.GetDisplayDescription().ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Status)" Text="@activity.Status.GetDisplayDescription().ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.ActivityDate) Title=@Localizer["ActivityDate"]>
@@ -80,7 +80,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property=@nameof(Activity.Priority) Title=@Localizer["Priority"] Width="120px">
                         <Template Context="activity">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Priority)" Text="@activity.Priority.ToString()" />
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(activity.Priority)" Text="@activity.Priority.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Activity" Property="@PropertyExtensions.GetPropertyFullPath((Activity i) => i.Lead.Name)" Title=@Localizer["Lead"] Visible="@(!IsEmbeddedMode && LeadId == null)">

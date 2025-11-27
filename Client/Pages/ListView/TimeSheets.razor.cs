@@ -53,7 +53,7 @@ namespace Vanigam.CRM.Client.Pages.ListView
         protected override string GetExpandString(LoadDataArgs args)
         {
             return new ODataExpand<TimeSheet>()
-                .Expand(f => f.Technician, f => f.Technician.Name)
+                .Expand(f => f.Technician, f => f.Technician.UserName)
                 .Expand(f => f.Job, f => f.Job.Title)
                 .Build();
         }

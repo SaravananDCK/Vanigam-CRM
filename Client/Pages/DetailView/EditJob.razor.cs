@@ -1,3 +1,5 @@
+using DevExpress.Pdf.Native;
+using DevExpress.Pdf.Native.BouncyCastle.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
@@ -13,19 +15,24 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditJob
     {
         [Inject] private JobApiService JobApiService { get; set; }
+        [Inject] private CustomerApiService CustomerApiService { get; set; }
+        [Inject] private TenantAccountingSettingsApiService TenantAccountingSettingsApiService { get; set; }
         [Parameter] public Guid? CustomerId { get; set; }
-        private int ReadOnlyTabIndex { get; set; } = 0;
-        private int EditTabIndex { get; set; } = 0;
         [Parameter] public bool IsEmbeddedModeActive { get; set; } = false;
+        
         private List<MaterialUsageDTO> materials = new();
-
+        private IEnumerable<Customer> Customers { get; set; } = [];
+        public string TenantAccountingState { get; set; }
+        private string CustomerState { get; set; }
         private bool HasAnyChanges => HasChanges || (materials?.Any(m => m.IsNew || m.IsDeleted) ?? false);
+
+        private static readonly IList<JobStatus> JobStatuses = [.. Enum.GetValues<JobStatus>()];
 
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
             {
-                CurrentObject = new() { VoucherType = Objects.Entities.VoucherType.Job, VoucherDate = DateTimeOffset.UtcNow };
+                CurrentObject = new() { VoucherType = VoucherType.Job, VoucherDate = DateTimeOffset.UtcNow };
 
                 // If CustomerId is provided, set it on the new job
                 if (CustomerId.HasValue)
@@ -41,7 +48,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 IsReadOnlyMode = true; // Edit mode - start in read-only
                 await LoadMaterials();
             }
-
+            var result = await TenantAccountingSettingsApiService.Get(top: 1);
+            var accSetings = result?.Value?.FirstOrDefault(f => !string.IsNullOrEmpty(f.CompanyState));
+            TenantAccountingState = accSetings?.CompanyState;
+            await LoadCustoers();
             await InitEditContext();
         }
 
@@ -73,17 +83,25 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 });
             }
         }
+        private async Task LoadCustoers()
+        {
+            try
+            {
+                var result = await CustomerApiService.Get(filter: null, expand: null, orderBy: "Name", top: null, skip: null, count: false);
+                Customers = result.Value.AsODataEnumerable();
+            }
+            catch (Exception ex)
+            {
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["Error"], Detail = Localizer["LoadCustomersFailed"] });
+            }
+        }
 
         private void OnMaterialsChanged(List<MaterialUsageDTO> updatedMaterials)
         {
+            CustomerState = Customers.FirstOrDefault(c => c.Oid == CurrentObject.PartyId)?.State;
+            if (updatedMaterials.Any(i => i.InventoryItemId == null)) return;
             materials = updatedMaterials;
             CalculateTotalAmount();
-        }
-
-        private void OnTotalAmountChanged(decimal totalAmount)
-        {
-            CurrentObject.TotalAmount = totalAmount;
-            StateHasChanged();
         }
 
         private void CalculateTotalAmount()
@@ -104,71 +122,65 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 var taxableAmount = material.Total - material.DiscountAmount;
 
                 // Calculate GST components based on rates from TaxCode
-                cgstAmount += taxableAmount * (decimal)(material.CGSTRate / 100);
-                sgstAmount += taxableAmount * (decimal)(material.SGSTRate / 100);
-                igstAmount += taxableAmount * (decimal)(material.IGSTRate / 100);
+                if (TenantAccountingState == CustomerState)
+                {
+                    cgstAmount += taxableAmount * (decimal)(material.CGSTRate / 100);
+                    sgstAmount += taxableAmount * (decimal)(material.SGSTRate / 100);
+                }
+                else
+                {
+                    igstAmount += taxableAmount * (decimal)(material.IGSTRate / 100);
+                }
                 cessAmount += taxableAmount * (decimal)(material.CessRate / 100);
             }
 
             CurrentObject.SubTotal = subTotal;
             CurrentObject.DiscountAmount = totalDiscount;
-            CurrentObject.TaxAmount = totalTax;
+            CurrentObject.TaxAmount = Math.Round(totalTax);
             CurrentObject.CGSTAmount = cgstAmount;
             CurrentObject.SGSTAmount = sgstAmount;
             CurrentObject.IGSTAmount = igstAmount;
             CurrentObject.CessAmount = cessAmount;
-            CurrentObject.TotalAmount = subTotal - totalDiscount + totalTax;
-        }
-
-        private async Task OnSubTotalChanged(decimal subTotal)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.SubTotal = subTotal;
-                StateHasChanged();
-            }
+            CurrentObject.TotalAmount = Math.Round(subTotal - totalDiscount + totalTax);
         }
 
         private async Task OnDiscountTypeChanged(DiscountType type)
         {
-            if (CurrentObject != null)
-            {
                 CurrentObject.DiscountType = type;
                 StateHasChanged();
-            }
         }
-
-        private async Task OnTotalTaxAmountChanged(decimal taxAmount)
+        private async Task Changed(JobStatus status)
         {
-            if (CurrentObject != null)
-            {
-                CurrentObject.TaxAmount = taxAmount;
-                StateHasChanged();
-            }
-        }
 
-        private async Task OnDiscountAmountChanged(decimal discountAmount)
-        {
-            if (CurrentObject != null)
-            {
-                CurrentObject.DiscountAmount = discountAmount;
-                StateHasChanged();
-            }
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
         }
-
         private async Task OnDiscountPercentageChanged(decimal discountPercent)
         {
-            if (CurrentObject != null)
+            if (CurrentObject != null && discountPercent != 0)
             {
                 CurrentObject.DiscountPercent = discountPercent;
-                if (CurrentObject.DiscountPercent > 0)
-                {
-                    await OnDiscountAmountChanged(CurrentObject.DiscountAmount);
-                }
+                EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.DiscountPercent)));
                 StateHasChanged();
             }
         }
-
+        protected async Task FormSubmit()
+        {
+            if (materials.Any() && materials.FirstOrDefault().InventoryItemId != null)
+            {
+                await SaveBulkJob();
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Failed"],
+                    Detail = Localizer["At least one Job Item is required.."]
+                });
+            }
+        }
         private async Task SaveBulkJob()
         {
             if (CurrentObject == null) return;
@@ -275,11 +287,6 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             {
                 await LoadMaterials();
             }
-        }
-
-        protected async Task FormSubmit()
-        {
-            await SaveBulkJob();
         }
     }
 }

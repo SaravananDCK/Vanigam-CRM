@@ -208,6 +208,19 @@ namespace Vanigam.CRM.Client.Helpers
             };
         }
         #endregion
+        #region AccountType
+        public static BadgeStyle GetBadgeStyle(AccountType type)
+        {
+            return type switch
+            {
+                AccountType.LedgerAccount => BadgeStyle.Info,
+                AccountType.BankAccount => BadgeStyle.Primary,
+                AccountType.Customer => BadgeStyle.Success,
+                AccountType.Vendor => BadgeStyle.Secondary,
+                _ => BadgeStyle.Light
+            };
+        }
+        #endregion
 
         #region CustomerStatus
         public static BadgeStyle GetBadgeStyle(CustomerStatus status)

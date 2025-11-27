@@ -56,6 +56,11 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
                         DiscountAmount = qi.DiscountAmount,
                         TaxAmount = qi.TaxAmount,
                         UnitPrice = qi.UnitPrice,
+                        TaxCodeId = qi.TaxCodeId,
+                        CGSTRate = qi.TaxCode != null ? qi.TaxCode.CGSTRate : 0,
+                        SGSTRate = qi.TaxCode != null ? qi.TaxCode.SGSTRate : 0,
+                        IGSTRate = qi.TaxCode != null ? qi.TaxCode.IGSTRate : 0,
+                        CessRate = qi.TaxCode != null ? qi.TaxCode.CessRate : 0,
                         InventoryItemName = qi.Item != null ? qi.Item.Name : null
                     })
                     .ToListAsync();

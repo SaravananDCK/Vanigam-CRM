@@ -35,7 +35,7 @@
                             @(vendor.Status.ToString())
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.Balance) Title=@Localizer["Balance"] Width="150px">
+                    <RadzenDataGridColumn TItem="Vendor" Property=@nameof(Vendor.Balance) Title=@Localizer["Balance"] Width="150px" TextAlign="TextAlign.Right">
                         <Template Context="vendor">
                             @(vendor.Balance.ToString("C2"))
                         </Template>

@@ -16,19 +16,19 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private int ActivityFor { get; set; }
         [Parameter] public Guid? LeadId { get; set; }
         [Parameter] public Guid? OpportunityId { get; set; }
-        private int EditTabIndex { get; set; } = 0;
-
+        
         // Dropdown data for form fields
         private List<string> ActivityTypes = new()
         {
             "Call", "Email", "Meeting", "Task", "Note", "Conversion", "Follow-up"
         };
-
-        private List<string> ActivityStatuses = new()
+        private async Task Changed(ActivityStatus status)
         {
-            "Pending", "Completed", "Cancelled", "In Progress"
-        };
 
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         // Helper property to convert between NodaTime Instant and DateTime for UI binding
         private DateTime ActivityDateForUI
         {
@@ -107,7 +107,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                         return;
                     }
                 }
-                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["SavedSuccessfully!"] });
+                NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["SavedSuccessfully"] });
                 DialogService.CloseDialog(CurrentObject);
             }
             catch (HttpRequestException ex)

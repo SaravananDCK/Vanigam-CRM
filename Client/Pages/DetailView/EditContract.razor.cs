@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using NodaTime;
 using Radzen;
 using System.Net;
 using Vanigam.CRM.Helpers;
@@ -10,27 +11,32 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditContract
     {
         [Inject] private ContractApiService ContractApiService { get; set; }
-
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
-
+        
         private ContractDuration _previousDuration;
         private DateTimeOffset? _previousStartDate;
-
+        private static readonly IList<ContractDuration> ContractDurations = [.. Enum.GetValues<ContractDuration>()];
+        private static readonly IList<ContractCoverageType> ContractCoverageTypes = [.. Enum.GetValues<ContractCoverageType>()];
+        
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
-                CurrentObject = new AmcContract(); // Default to AMC contract type for new contracts
+            {
+                CurrentObject = new AmcContract();
+                CurrentObject.StartDate = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
+            }
             else
                 CurrentObject = await ContractApiService.GetByOid(oid: Oid, expand: "Customer");
 
             // Store initial values
             _previousDuration = CurrentObject.Duration;
             _previousStartDate = CurrentObject.StartDate;
-
+            GenerateContractTitle();
             await InitEditContext();
         }
-
+        private async Task OnContractCoverageTypeChanged(ContractCoverageType value)
+        {
+            StateHasChanged();
+        }
         /// <summary>
         /// Generates contract title based on duration and start date
         /// Format: "AMC {Duration} {Year}" or "AMC {Duration} {Year-Month}" for monthly contracts

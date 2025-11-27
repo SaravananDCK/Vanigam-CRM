@@ -16,13 +16,14 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         [Inject] private CustomerAdvanceApiService CustomerAdvanceApiService { get; set; }
         [Inject] private PaymentAllocationApiService PaymentAllocationApiService { get; set; }
         [Inject] private BankAccountApiService BankAccountApiService { get; set; }
-
+        
         private List<Invoice> pendingInvoices = new();
         private List<PaymentAllocationDTO> allocations = new();
         private List<BankAccount> bankAccounts = new();
         private decimal totalAllocated = 0;
         private decimal remainingAmount = 0;
-
+        private static readonly IList<PaymentStatus> PaymentStatuses = [.. Enum.GetValues<PaymentStatus>()];
+        private static readonly IList<PaymentMethod> PaymentMethods = [.. Enum.GetValues<PaymentMethod>()];
         protected override async Task OnInitializedAsync()
         {
             // Load bank accounts
@@ -32,8 +33,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             {
                 CurrentObject = new();
                 CurrentObject.VoucherDate = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
-                CurrentObject.Status = Objects.Entities.PaymentStatus.Pending;
-                CurrentObject.PaymentMethod = Objects.Entities.PaymentMethod.Cash;
+                CurrentObject.Status = PaymentStatus.Pending;
+                CurrentObject.PaymentMethod = PaymentMethod.Cash;
+                CurrentObject.AllocatedAmount = totalAllocated;
+                CurrentObject.PaidAt = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
                 IsReadOnlyMode = false; // Create mode - always editable
             }
             else
@@ -44,7 +47,12 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             await InitEditContext();
         }
-
+        private async Task PaymentStatusChanged(PaymentStatus status)
+        {
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
+        }
         private async Task LoadBankAccounts()
         {
             try
@@ -226,6 +234,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     PartyId = CurrentObject.PartyId,
                     PaymentAmount = CurrentObject.PaymentAmount,
                     VoucherDate = CurrentObject.VoucherDate,
+                    PaidAt = CurrentObject.PaidAt,
                     PaymentMethod = CurrentObject.PaymentMethod,
                     ReferenceNumber = CurrentObject.ReferenceNumber,
                     BankAccountId = CurrentObject.BankAccountId,
@@ -335,6 +344,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         /// <summary>
         /// Handles payment method changes. Clears bank account if cash/wallet selected.
         /// </summary>
+        private async Task PaymentMethodChanged(PaymentMethod value)
+        {
+            OnPaymentMethodChanged(value);
+        }
+
         private void OnPaymentMethodChanged(object value)
         {
             if (!RequiresBankAccount())

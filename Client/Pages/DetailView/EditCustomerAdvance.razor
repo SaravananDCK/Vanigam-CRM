@@ -42,7 +42,7 @@
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["BalanceAmount"]:</strong></RadzenText>
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
                                     <RadzenBadge Text="@CurrentObject.BalanceAmount.ToString("C")"
-                                                 BadgeStyle="@(CurrentObject.BalanceAmount > 0 ? BadgeStyle.Success : BadgeStyle.Secondary)" />
+                                                 BadgeStyle="@(CurrentObject.BalanceAmount > 0 ? BadgeStyle.Success : BadgeStyle.Secondary)" class="rz-p-1" />
                                 </RadzenText>
                             </div>
                         </div>
@@ -62,11 +62,11 @@
                                 <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">
                                     @if (CurrentObject.IsAvailableForAllocation && CurrentObject.BalanceAmount > 0)
                                     {
-                                        <RadzenBadge Text="@Localizer["Yes"]" BadgeStyle="BadgeStyle.Success" />
+                                        <RadzenBadge Text="@Localizer["Yes"]" BadgeStyle="BadgeStyle.Success" class="rz-p-1" />
                                     }
                                     else
                                     {
-                                        <RadzenBadge Text="@Localizer["No"]" BadgeStyle="BadgeStyle.Secondary" />
+                                        <RadzenBadge Text="@Localizer["No"]" BadgeStyle="BadgeStyle.Secondary" class="rz-p-1" />
                                     }
                                 </RadzenText>
                             </div>

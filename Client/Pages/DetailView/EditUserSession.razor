@@ -33,11 +33,10 @@
                     <RadzenDatePicker @bind-Value="@CurrentObject.LogoutTime" Name="date_LogoutTime" ShowTime="true" />
                 </ChildContent>
             </VanigamAccountingFormField>
-            <VanigamAccountingFormField Text=@Localizer["IsActive"]>
-                <ChildContent>
-                    <RadzenSwitch @bind-Value="@CurrentObject.IsActive" Name="switch_IsActive" />
-                </ChildContent>
-            </VanigamAccountingFormField>
+            <RadzenStack Orientation="Orientation.Horizontal" Style="margin-top: 1rem">
+                <RadzenLabel Text="@Localizer["IsActive"]" Component="swt_IsActive" Style="width: 80px" />
+                <RadzenSwitch @bind-Value="@CurrentObject.IsActive" Name="swt_IsActive" />
+            </RadzenStack>
             <VanigamAccountingFormField Text=@Localizer["DeviceInfo"]>
                 <ChildContent>
                     <VanigamAccountingTextBox @bind-Value="@CurrentObject.DeviceInfo" Name="txt_DeviceInfo" />

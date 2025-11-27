@@ -159,6 +159,12 @@
   <data name="CGSTPayable" xml:space="preserve">
     <value>CGST Payable</value>
   </data>
+  <data name="CompanyInfo" xml:space="preserve">
+    <value>Company Info</value>
+  </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>Company Name</value>
+  </data>
   <data name="CostOfGoodsSold" xml:space="preserve">
     <value>Cost Of Goods Sold</value>
   </data>
@@ -213,6 +219,9 @@
   <data name="PaymentMethods" xml:space="preserve">
     <value>Payment Methods</value>
   </data>
+  <data name="PostalCode" xml:space="preserve">
+    <value>Postal Code</value>
+  </data>
   <data name="PurchaseDiscountAccount" xml:space="preserve">
     <value>Purchase Discount Account</value>
   </data>
@@ -221,6 +230,9 @@
   </data>
   <data name="PurchasesAndExpenses" xml:space="preserve">
     <value>Purchases and Expenses</value>
+  </data>
+  <data name="RegistrationNumber" xml:space="preserve">
+    <value>Registration Number</value>
   </data>
   <data name="RoundingAccount" xml:space="preserve">
     <value>Rounding Account</value>
@@ -242,6 +254,9 @@
   </data>
   <data name="SGSTPayable" xml:space="preserve">
     <value>SGST Payable</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
   </data>
   <data name="TenantAccountingSettings" xml:space="preserve">
     <value>Tenant Accounting Settings</value>

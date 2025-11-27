@@ -20,8 +20,12 @@ public class QuoteBulkSaveDTO
     public Guid? JobId { get; set; }
     public decimal DiscountAmount { get; set; }
     public decimal DiscountPercentage { get; set; }
+    public DiscountType DiscountType { get; set; }
     public decimal TotalAmount { get; set; }
-
+    public decimal CGSTAmount { get; set; } = 0;
+    public decimal SGSTAmount { get; set; } = 0;
+    public decimal IGSTAmount { get; set; } = 0;
+    public decimal CessAmount { get; set; } = 0;
     public decimal SubTotal { get; set; }
 
     public decimal TaxAmount { get; set; }
@@ -46,6 +50,10 @@ public class QuoteItemDTO
 
     public decimal Total => (decimal)(Quantity * (double)UnitPrice);
     public decimal TotalIncTax => Total + (TaxAmount ?? 0) - DiscountAmount;
+    public double CGSTRate { get; set; } = 0;
+    public double SGSTRate { get; set; } = 0;
+    public double IGSTRate { get; set; } = 0;
+    public double CessRate { get; set; } = 0;
 
     // For UI display purposes
     public string? InventoryItemName { get; set; }

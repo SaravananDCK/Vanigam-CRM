@@ -12,15 +12,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     public partial class EditLead
     {
         [Inject] private LeadApiService LeadApiService { get; set; }
-
-        private int EditTabIndex { get; set; } = 0;
-        private int ReadOnlyTabIndex { get; set; } = 0;
         bool IsFullheightTab = false;
         // Property to determine if the lead can be converted to opportunity
         private bool CanConvertToOpportunity => CurrentObject != null &&
             (CurrentObject.Status == LeadStatus.Qualified || CurrentObject.Status == LeadStatus.Contacted) &&
             CurrentObject.Status != LeadStatus.Converted;
-
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -36,7 +32,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             await InitEditContext();
         }
-        
+
         protected async Task FormSubmit()
         {
             IsBusy = true;
@@ -49,7 +45,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 else
                 {
                     var result = await LeadApiService.Update(oid: Oid, CurrentObject);
-                    if(result.IsPreconditionFailed())
+                    if (result.IsPreconditionFailed())
                     {
                         HasChanges = true;
                         CanEdit = false;
@@ -72,7 +68,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             catch (Exception ex)
             {
-                    ErrorVisible = true;
+                ErrorVisible = true;
             }
             IsBusy = false;
         }
@@ -99,11 +95,11 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         {
             return index switch
             {
-                0 => "ContactInformation",
-                1 => "AddressInformation",
-                2 => "BusinessContext",
-                3 =>  "Comments",
-                4 => "Activities",
+                0 => Localizer["ContactInformation"],
+                1 => Localizer["AddressInformation"],
+                2 => Localizer["BusinessContext"],
+                3 => Localizer["Comments"],
+                4 => Localizer["Activities"],
                 _ => ""
             };
         }
@@ -126,6 +122,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 StateHasChanged();
                 DialogService.CloseDialog(CurrentObject);
             }
+        }
+        private async Task Changed(LeadStatus status)
+        {
+            
+            CurrentObject.Status = status;
+            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            StateHasChanged();
         }
     }
 }

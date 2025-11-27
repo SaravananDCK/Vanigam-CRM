@@ -24,7 +24,7 @@
             <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
                 <Tabs>
                     @* JobReport Information Display *@
-                    <RadzenTabsItem Text="@Localizer[" Job Report"]" Icon="@FadIcon("fa-file-alt")">
+                    <RadzenTabsItem Text="@Localizer["Job Report"]" Icon="@FadIcon("fa-file-alt")">
                         <RadzenStack>
                             <RadzenRow>
                                 <RadzenColumn Size="6">
@@ -54,43 +54,48 @@
         </RadzenCard>
     }
     @* Editable Form Mode *@
-    <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="JobReport" Data="@CurrentObject" Visible="@(CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))" Submit="@FormSubmit">
-        <RadzenStack>
-            <FluentValidationValidator Validator="new JobReportValidator(Localizer)" />
-            <ValidationSummary />
-            <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" class="rz-mt-4" TabPosition="TabPosition.Left">
-                <Tabs>
-                    @* JobReport Tab *@
-                    <RadzenTabsItem Text="@Localizer["Job Report"]" class="fa-small">
-                        <VanigamAccountingFormField Text=@Localizer["Job"]>
-                            <ChildContent>
-                                <JobDropDownDataGrid @bind-Value="@CurrentObject.JobId" Disabled="IsEmbeddedModeActive"></JobDropDownDataGrid>
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["Notes"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Notes" Name="txt_Notes" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                        <VanigamAccountingFormField Text=@Localizer["SignatureBase64"]>
-                            <ChildContent>
-                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.SignatureBase64" Name="txt_SignatureBase64" />
-                            </ChildContent>
-                        </VanigamAccountingFormField>
-                    </RadzenTabsItem>
-                </Tabs>
-            </RadzenTabs>
-        </RadzenStack>
-        <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-            @if (IsCreateMode)
-            {
-                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-            }
-            else
-            {
-                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
-                <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
-            }
-        </RadzenStack>
-    </RadzenTemplateForm>
+@if (CurrentObject != null && CanEdit && (!IsReadOnlyMode || IsCreateMode))
+{
+    <RadzenCard>
+        <RadzenTemplateForm @ref=Form EditContext="EditContext" TItem="JobReport" Data="@CurrentObject" Submit="@FormSubmit">
+            <RadzenStack>
+                <FluentValidationValidator Validator="new JobReportValidator(Localizer)" />
+                <ValidationSummary />
+                <RadzenTabs @bind-SelectedIndex="EditTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
+                    <Tabs>
+                        @* JobReport Tab *@
+                        <RadzenTabsItem Text="@Localizer["Job Report"]" class="fa-small">
+                            <VanigamAccountingFormField Text=@Localizer["Job"]>
+                                <ChildContent>
+                                    <JobDropDownDataGrid @bind-Value="@CurrentObject.JobId" Disabled="IsEmbeddedModeActive"></JobDropDownDataGrid>
+                                </ChildContent>
+                            </VanigamAccountingFormField>
+                            <VanigamAccountingFormField Text=@Localizer["Notes"]>
+                                <ChildContent>
+                                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.Notes" Name="txt_Notes" />
+                                </ChildContent>
+                            </VanigamAccountingFormField>
+                            <VanigamAccountingFormField Text=@Localizer["SignatureBase64"]>
+                                <ChildContent>
+                                    <VanigamAccountingTextBox @bind-Value="@CurrentObject.SignatureBase64" Name="txt_SignatureBase64" />
+                                </ChildContent>
+                            </VanigamAccountingFormField>
+                            <RadzenStack Style="margin-top: 0.5rem" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                                @if (IsCreateMode)
+                                {
+                                    <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                                }
+                                else
+                                {
+                                    <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                                    <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
+                                }
+                            </RadzenStack>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenCard>
+}
 </RadzenColumn>

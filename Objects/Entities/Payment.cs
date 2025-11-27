@@ -40,7 +40,7 @@ namespace Vanigam.CRM.Objects.Entities
         /// Payment status
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public PaymentStatus? Status { get; set; }
+        public PaymentStatus Status { get; set; }
 
         /// <summary>
         /// Reference number (Cheque No, UTR ID, Transaction ID, etc.)

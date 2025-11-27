@@ -28,17 +28,17 @@
 
                     <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.TaxType) Title=@Localizer["TaxType"] Width="120px">
                         <Template Context="taxcode">
-                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@taxcode.TaxType" />
+                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@taxcode.TaxType" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.TaxRate) Title=@Localizer["TaxRate"] Width="100px">
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.TaxRate) Title=@Localizer["TaxRate"] Width="100px" TextAlign="TextAlign.Right">
                         <Template Context="taxcode">
                             @taxcode.TaxRate.ToString("N2")%
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.CGSTRate) Title=@Localizer["CGST"] Width="80px">
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.CGSTRate) Title=@Localizer["CGST"] Width="80px" TextAlign="TextAlign.Right">
                         <Template Context="taxcode">
                             @if (taxcode.CGSTRate > 0)
                             {
@@ -51,7 +51,7 @@
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.SGSTRate) Title=@Localizer["SGST"] Width="80px">
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.SGSTRate) Title=@Localizer["SGST"] Width="80px" TextAlign="TextAlign.Right">
                         <Template Context="taxcode">
                             @if (taxcode.SGSTRate > 0)
                             {
@@ -64,7 +64,7 @@
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.IGSTRate) Title=@Localizer["IGST"] Width="80px">
+                    <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.IGSTRate) Title=@Localizer["IGST"] Width="80px" TextAlign="TextAlign.Right">
                         <Template Context="taxcode">
                             @if (taxcode.IGSTRate > 0)
                             {
@@ -80,7 +80,7 @@
                     <RadzenDataGridColumn TItem="TaxCode" Property=@nameof(TaxCode.IsActive) Title=@Localizer["IsActive"] Width="100px">
                         <Template Context="taxcode">
                             <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyleForBoolean(taxcode.IsActive)"
-                                         Text="@(taxcode.IsActive ? Localizer["Active"] : Localizer["Inactive"])" />
+                                         Text="@(taxcode.IsActive ? Localizer["Active"] : Localizer["Inactive"])" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
 
