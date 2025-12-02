@@ -24,9 +24,21 @@
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property="Invoice.Number" Title=@Localizer["Invoice"] Visible="@(!IsEmbeddedMode)">
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Number) Title=@Localizer["Number"] Visible="@(!IsEmbeddedMode)" />
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.PaymentAmount) Title=@Localizer["PaymentAmount"] TextAlign="TextAlign.Right">
+                        <Template Context="invoice">
+                            @invoice.PaymentAmount.ToString("C")
+                        </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.AllocatedAmount) Title=@Localizer["Amount"]>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.AllocatedAmount) Title=@Localizer["AllocatedAmount"] TextAlign="TextAlign.Right">
+                        <Template Context="invoice">
+                            @invoice.AllocatedAmount.ToString("C")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.UnallocatedAmount) Title=@Localizer["UnallocatedAmount"] TextAlign="TextAlign.Right">
+                        <Template Context="invoice">
+                            @invoice.UnallocatedAmount.ToString("C")
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Status) Title=@Localizer["Status"] Width="120px">
                         <Template Context="payment">
@@ -34,8 +46,14 @@
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.PaidAt) Title=@Localizer["PaidAt"]>
+                        <Template>
+                            @context.PaidAt.ToHumanDateTime()
+                        </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property="Customer.Name" Title=@Localizer["ProviderReference"]>
+                    <RadzenDataGridColumn TItem="Payment" Property="@PropertyExtensions.GetPropertyFullPath((Payment p) => p.Party.Name)" Title=@Localizer["ProviderReference"]>
+                        <Template Context="payment">
+                            @payment.Party.Name
+                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Oid) Title=@Localizer["Oid"] Visible="false">
                     </RadzenDataGridColumn>

@@ -174,6 +174,7 @@ public class InvoiceService(
                 invoice.DiscountAmount = invoiceData.DiscountAmount;
                 invoice.DiscountPercent = invoiceData.DiscountPercentage;
                 invoice.DiscountType = invoiceData.DiscountType;
+                invoice.BalanceAmount = invoiceData.TotalAmount;
                 // Handle invoice items
                 await HandleInvoiceItems(invoice, invoiceData.Items);
 
@@ -219,6 +220,7 @@ public class InvoiceService(
                     DiscountAmount = invoiceData.DiscountAmount,
                     DiscountPercent = invoiceData.DiscountPercentage,
                     DiscountType = invoiceData.DiscountType,
+                    BalanceAmount = invoiceData.TotalAmount,
                     TenantId = TenantId
                 };
 

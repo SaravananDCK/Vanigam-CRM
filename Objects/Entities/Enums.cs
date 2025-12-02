@@ -8,11 +8,11 @@ namespace Vanigam.CRM.Objects.Entities
     public enum AppointmentStatus { Scheduled, [Display(Description = "Checked-In")] CheckedIn, [Display(Description = "In-Progress")] InProgress, Completed, Missed, Cancelled }
     public enum AssignmentStatus { Pending, Accepted, Rejected, [Display(Description = "En-Route")] EnRoute, Arrived, Paused, Finished }
     public enum TechnicianStatus { Available, Busy, Offline, [Display(Description = "On-Leave")] OnLeave }
-    public enum QuoteStatus { Draft, Sent, Accepted,Converted, Rejected, Expired }
+    public enum QuoteStatus { Draft, Sent, Accepted, Converted, Rejected, Expired }
     public enum InvoiceStatus { Draft,Posted, Sent, Paid, [Display(Description = "Partially-Paid")] PartiallyPaid, Overdue, Cancelled }
     public enum PaymentStatus { Successful, Failed, Pending, Refunded }
-    public enum PaymentMethod { Cash, BankTransfer, Cheque, Card, UPI, Wallet, NetBanking, Other }
-    public enum AssetStatus { Active, InRepair, Decommissioned, UnderWarranty }
+    public enum PaymentMethod { Cash, [Display(Description = "Bank Transfer")] BankTransfer, Cheque, Card, UPI, Wallet, [Display(Description = "Net Banking")] NetBanking, Other }
+    public enum AssetStatus { Active, [Display(Description = "In-Repair")] InRepair, Decommissioned, [Display(Description = "Under Warranty")] UnderWarranty }
     public enum Priority { Low, Normal, High, Critical }
     public enum OpportunityStage { Prospecting, Qualified, Proposal, Negotiation, [Display(Description = "Closed Won")] ClosedWon, [Display(Description = "Closed Lost")] ClosedLost }
     public enum ActivityStatus { NotStarted, [Display(Description = "In-Progress")] InProgress, Pending, Completed, Cancelled }
@@ -49,6 +49,7 @@ namespace Vanigam.CRM.Objects.Entities
         Warranty,        // Free manufacturer/seller warranty
         AMC,             // Annual Maintenance Contract (paid)
         Guarantee,       // Extended guarantee period
+        [Display(Description = "Service Contract")]
         ServiceContract  // General service agreement
     }
 }

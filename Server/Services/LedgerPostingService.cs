@@ -238,16 +238,16 @@ public class LedgerPostingService(
     {
         try
         {
-            logger.LogInformation("Posting Payment {PaymentReference} to ledger", payment.ReferenceNumber);
+            logger.LogInformation($"Posting Payment {payment.Number} to ledger", payment.Number);
 
             if (!payment.BankAccountId.HasValue)
             {
-                throw new InvalidOperationException($"Payment {payment.ReferenceNumber} has no bank account assigned");
+                throw new InvalidOperationException($"Payment {payment.Number} has no bank account assigned");
             }
 
             if (!payment.PartyId.HasValue)
             {
-                throw new InvalidOperationException($"Payment {payment.ReferenceNumber} has no customer assigned");
+                throw new InvalidOperationException($"Payment {payment.Number} has no customer assigned");
             }
 
             var entries = new List<LedgerEntry>();
@@ -261,8 +261,8 @@ public class LedgerPostingService(
                 EntryType = EntryType.Debit,
                 Amount = payment.AllocatedAmount,
                 EntryDate = payment.VoucherDate,
-                EntryNumber = payment.ReferenceNumber,
-                Description = $"Payment Received - {payment.ReferenceNumber}",
+                EntryNumber = payment.Number,
+                Description = $"Payment Received - {payment.Number}",
                 Reference = payment.ReferenceNumber,
                 IsReconciled = false
             });
@@ -276,8 +276,8 @@ public class LedgerPostingService(
                 EntryType = EntryType.Credit,
                 Amount = payment.AllocatedAmount,
                 EntryDate = payment.VoucherDate,
-                EntryNumber = payment.ReferenceNumber,
-                Description = $"Payment Received - {payment.ReferenceNumber}",
+                EntryNumber = payment.Number,
+                Description = $"Payment Received - {payment.Number}",
                 Reference = payment.ReferenceNumber,
                 IsReconciled = false
             });
