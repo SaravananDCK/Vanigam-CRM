@@ -31,19 +31,28 @@ public class CustomerDropDownDataGrid : VanigamAccountingDropDownAddDataGrid<Cus
         this.Columns = (builder2) =>
         {
             builder2.OpenComponent<RadzenDropDownDataGridColumn>(0);
-            builder2.AddAttribute(1, "Property", nameof(Customer.Code));
-            builder2.AddAttribute(2, "Title", "Code");
+            builder2.AddAttribute(1, "Property", nameof(Customer.Name));
+            builder2.AddAttribute(2, "Title", "Name");
             builder2.CloseComponent();
 
             builder2.OpenComponent<RadzenDropDownDataGridColumn>(1);
-            builder2.AddAttribute(1, "Property", nameof(Customer.Name));
-            builder2.AddAttribute(2, "Title", "Name");
+            builder2.AddAttribute(1, "Property", nameof(Customer.Code));
+            builder2.AddAttribute(2, "Title", "Code");
             builder2.CloseComponent();
         };
     }
 
     protected override string GetCustomFilter(LoadDataArgs args)
     {
-        return $"{nameof(Item.SKU).GetContainsFilter(args.Filter)} or {nameof(Item.Name).GetContainsFilter(args.Filter)}";
+        return $"{nameof(Customer.Code).GetContainsFilter(args.Filter)} or {nameof(Customer.Name).GetContainsFilter(args.Filter)}";
+    }
+   
+    protected override LoadDataArgs GetCustomized(LoadDataArgs args)
+    {
+        if (string.IsNullOrWhiteSpace(args.OrderBy))
+        {
+            args.OrderBy = $"{nameof(Customer.Name)} asc";
+        }
+        return args;
     }
 }

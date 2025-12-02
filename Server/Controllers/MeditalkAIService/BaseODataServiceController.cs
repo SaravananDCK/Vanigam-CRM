@@ -30,7 +30,8 @@ public abstract class BaseODataServiceController<T, K> : ODataController where T
 {
     public LoginUserType? UserType { get; private set; }
     public int? TenantId { get; private set; }
-    public ApplicationUser CurrentUser { get; private set; }
+    //public ApplicationUser CurrentUser { get; private set; }
+    public Guid? CurrentUserId { get; private set; }
     protected BaseODataServiceController(VanigamAccountingDbContext context, UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager, K service,
         string expandProperties)
@@ -41,6 +42,7 @@ public abstract class BaseODataServiceController<T, K> : ODataController where T
         RoleManager = roleManager;
         ExpandProperties = expandProperties;
         TenantId = service?.TenantId;
+        CurrentUserId = service?.UserId;
     }
 
     protected VanigamAccountingDbContext Context { get; set; }

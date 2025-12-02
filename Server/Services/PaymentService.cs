@@ -8,6 +8,7 @@ namespace Vanigam.CRM.Server.Services;
 
 public class PaymentService(
     VanigamAccountingDbContext context,
+    NumberSeriesService numberSeriesService,
     ILogger<BaseService<Payment>> logger,
     LedgerPostingService ledgerPostingService)
     : BaseService<Payment>(context, logger)
@@ -191,10 +192,12 @@ public class PaymentService(
             }
             else
             {
+                var paymentNumber = await numberSeriesService.GenerateNextNumber(nameof(Payment), TenantId);
                 // Create new payment
                 payment = new Payment
                 {
                     Oid = Guid.NewGuid(),
+                    Number = paymentNumber,
                     PartyId = paymentData.PartyId,
                     PaymentAmount = paymentData.PaymentAmount,
                     VoucherDate = paymentData.VoucherDate,
@@ -213,11 +216,12 @@ public class PaymentService(
                     IsNotDeleted = true
                 };
 
-                // Handle payment allocations
-                await HandlePaymentAllocations(payment, paymentData.Allocations, currentUserId);
-
                 // Call base create without lifecycle hooks to avoid nested transactions
                 Context.Payments.Add(payment);
+                await Context.SaveChangesAsync();
+
+                // Handle payment allocations
+                await HandlePaymentAllocations(payment, paymentData.Allocations, currentUserId);
                 await Context.SaveChangesAsync();
 
                 // Manually trigger ledger posting

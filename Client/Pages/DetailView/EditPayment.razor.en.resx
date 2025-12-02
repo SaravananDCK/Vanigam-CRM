@@ -144,6 +144,9 @@
   <data name="Customer" xml:space="preserve">
     <value>Customer</value>
   </data>
+  <data name="CustomerRequired" xml:space="preserve">
+    <value>Customer is required</value>
+  </data>
   <data name="DueDate" xml:space="preserve">
     <value>Due Date</value>
   </data>

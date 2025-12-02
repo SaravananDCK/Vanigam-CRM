@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using NodaTime;
 using Radzen;
+using Radzen.Blazor;
 using System.Net;
 using Vanigam.CRM.Helpers;
-using Vanigam.CRM.Objects.Entities;
-using NodaTime;
 using Vanigam.CRM.Objects.DTOs;
+using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.OData;
 
 namespace Vanigam.CRM.Client.Pages.DetailView
 {
@@ -13,22 +15,18 @@ namespace Vanigam.CRM.Client.Pages.DetailView
     {
         [Inject] private PaymentApiService PaymentApiService { get; set; }
         [Inject] private InvoiceApiService InvoiceApiService { get; set; }
-        [Inject] private CustomerAdvanceApiService CustomerAdvanceApiService { get; set; }
-        [Inject] private PaymentAllocationApiService PaymentAllocationApiService { get; set; }
         [Inject] private BankAccountApiService BankAccountApiService { get; set; }
         
-        private List<Invoice> pendingInvoices = new();
-        private List<PaymentAllocationDTO> allocations = new();
-        private List<BankAccount> bankAccounts = new();
+        private List<Invoice> PendingInvoices = new();
+        private List<PaymentAllocationDTO> Allocations = new();
+        private List<BankAccount> BankAccounts = new();
+        private RadzenDataGrid<PaymentAllocationDTO> PaymentsGrid = null!;
         private decimal totalAllocated = 0;
         private decimal remainingAmount = 0;
         private static readonly IList<PaymentStatus> PaymentStatuses = [.. Enum.GetValues<PaymentStatus>()];
         private static readonly IList<PaymentMethod> PaymentMethods = [.. Enum.GetValues<PaymentMethod>()];
         protected override async Task OnInitializedAsync()
         {
-            // Load bank accounts
-            await LoadBankAccounts();
-
             if (Oid == Guid.Empty)
             {
                 CurrentObject = new();
@@ -41,11 +39,20 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
             else
             {
-                CurrentObject = await PaymentApiService.GetByOid(oid: Oid, expand: "Customer,Applications,BankAccount");
+                CurrentObject = await PaymentApiService.GetByOid(oid: Oid, expand: GetExpandString());
                 IsReadOnlyMode = true; // Edit mode - start in read-only
             }
-
+            // Load bank accounts
+            await LoadBankAccounts();
             await InitEditContext();
+        }
+        protected string GetExpandString()
+        {
+            return new ODataExpand<Payment>()
+                .Expand(f => f.Applications)
+                .Expand(f => f.Party, f => f.Party.Name)
+                .Expand(f => f.BankAccount, f => f.BankAccount.AccountNumber)
+                .Build();
         }
         private async Task PaymentStatusChanged(PaymentStatus status)
         {
@@ -58,7 +65,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             try
             {
                 var result = await BankAccountApiService.Get(filter: "IsActive eq true and IsNotDeleted eq true", orderBy: "Name", top: 100);
-                bankAccounts = result.Value.ToList();
+                BankAccounts = result.Value.ToList();
             }
             catch (Exception ex)
             {
@@ -77,25 +84,35 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             if (CurrentObject.PartyId.HasValue && CurrentObject.PartyId.Value != Guid.Empty)
             {
                 await LoadPendingInvoices(CurrentObject.PartyId.Value);
+                await CalculatePaymentAmount();
+                
             }
             else
             {
-                pendingInvoices.Clear();
-                allocations.Clear();
+                PendingInvoices.Clear();
+                Allocations.Clear();
             }
             StateHasChanged();
         }
-
+        private async Task CalculatePaymentAmount()
+        {
+            if (PendingInvoices.Any())
+            {
+                CurrentObject.PaymentAmount = Allocations.Where(a => a.InvoiceId != Guid.Empty).Sum(a => a.BalanceAmount);
+                await OnPaymentAmountChanged(CurrentObject.PaymentAmount);
+            }
+        }
         private async Task LoadPendingInvoices(Guid customerId)
         {
             try
             {
                 var filter = $"PartyId eq {customerId} and BalanceAmount gt 0 and IsNotDeleted eq true";
                 var result = await InvoiceApiService.Get(filter: filter, orderBy: "DueDate", top: 100);
-                pendingInvoices = result.Value.ToList();
-
+                PendingInvoices = result.Value.ToList();
+                
+                
                 // Initialize allocations
-                allocations = pendingInvoices.Select(inv => new PaymentAllocationDTO
+                Allocations = PendingInvoices.Select(inv => new PaymentAllocationDTO
                 {
                     InvoiceId = inv.Oid,
                     InvoiceNumber = inv.Number,
@@ -121,12 +138,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             }
         }
 
-        private void OnPaymentAmountChanged(decimal amount)
+        private async Task OnPaymentAmountChanged(decimal amount)
         {
             CurrentObject.PaymentAmount = amount;
             CurrentObject.UnallocatedAmount = amount;
             AutoAllocate();
-            CalculateTotals();
+            //CalculateTotals();
+            await PaymentsGrid.Reload();
         }
 
         private void AutoAllocate()
@@ -137,7 +155,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             var remainingToAllocate = CurrentObject.PaymentAmount;
 
             // Only allocate to invoice lines (exclude Customer Advance line)
-            foreach (var allocation in allocations.Where(a => a.InvoiceId != Guid.Empty).OrderBy(a => a.DueDate))
+            foreach (var allocation in Allocations.Where(a => a.InvoiceId != Guid.Empty).OrderBy(a => a.DueDate))
             {
                 if (remainingToAllocate <= 0)
                 {
@@ -155,16 +173,16 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
 
             // Remove existing Customer Advance line if present
-            var existingAdvanceLine = allocations.FirstOrDefault(a => a.InvoiceId == Guid.Empty);
+            var existingAdvanceLine = Allocations.FirstOrDefault(a => a.InvoiceId == Guid.Empty);
             if (existingAdvanceLine != null)
             {
-                allocations.Remove(existingAdvanceLine);
+                Allocations.Remove(existingAdvanceLine);
             }
             // If there's excess payment (overpayment), add Customer Advance line
             if (remainingToAllocate > 0)
             {
                 // Add new Customer Advance line for excess amount
-                allocations.Add(new PaymentAllocationDTO
+                Allocations.Add(new PaymentAllocationDTO
                 {
                     InvoiceId = Guid.Empty, // Empty GUID indicates this is a Customer Advance
                     InvoiceNumber = "Customer Advance",
@@ -203,10 +221,10 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             allocation.IsSelected = allocation.AllocatedAmount > 0;
 
             // Remove Customer Advance line if it exists (user is manually allocating)
-            var existingAdvanceLine = allocations.FirstOrDefault(a => a.InvoiceId == Guid.Empty);
+            var existingAdvanceLine = Allocations.FirstOrDefault(a => a.InvoiceId == Guid.Empty);
             if (existingAdvanceLine != null)
             {
-                allocations.Remove(existingAdvanceLine);
+                Allocations.Remove(existingAdvanceLine);
             }
 
             CalculateTotals();
@@ -214,7 +232,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
         private void CalculateTotals()
         {
-            totalAllocated = allocations.Where(a => a.InvoiceId != Guid.Empty).Sum(a => a.AllocatedAmount);
+            totalAllocated = Allocations.Where(a => a.InvoiceId != Guid.Empty).Sum(a => a.AllocatedAmount);
             remainingAmount = CurrentObject.PaymentAmount - totalAllocated;
             CurrentObject.AllocatedAmount = totalAllocated;
             CurrentObject.UnallocatedAmount = remainingAmount;
@@ -241,7 +259,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     Status = CurrentObject.Status,
                     AllocatedAmount = totalAllocated,
                     UnallocatedAmount = remainingAmount,
-                    Allocations = allocations
+                    Allocations = Allocations
                         .Where(a => a.IsSelected && a.AllocatedAmount > 0 && a.InvoiceId != Guid.Empty) // Exclude Customer Advance line
                         .Select(a => new PaymentAllocationDTO
                         {
@@ -272,8 +290,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = Localizer["Success"],
-                        Detail = allocations.Any(a => a.IsSelected)
-                            ? Localizer[$"Payment saved with {allocations.Count(a => a.IsSelected)} allocations"]
+                        Detail = Allocations.Any(a => a.IsSelected)
+                            ? Localizer[$"Payment saved with {Allocations.Count(a => a.IsSelected)} allocations"]
                             : Localizer["PaymentSavedSuccessfully"]
                     });
                 }

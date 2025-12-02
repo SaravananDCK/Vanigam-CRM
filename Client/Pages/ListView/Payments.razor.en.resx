@@ -123,6 +123,9 @@
   <data name="AddPayment" xml:space="preserve">
     <value>Add Payment</value>
   </data>
+  <data name="AllocatedAmount" xml:space="preserve">
+    <value>Allocated Amt</value>
+  </data>
   <data name="Amount" xml:space="preserve">
     <value>Amount</value>
   </data>
@@ -144,6 +147,9 @@
   <data name="PaidAt" xml:space="preserve">
     <value>Paid At</value>
   </data>
+  <data name="PaymentAmount" xml:space="preserve">
+    <value>Payment Amt</value>
+  </data>
   <data name="Payments" xml:space="preserve">
     <value>Payments</value>
   </data>
@@ -158,5 +164,8 @@
   </data>
   <data name="UnableDelete" xml:space="preserve">
     <value>Unable to delete this record.</value>
+  </data>
+  <data name="UnallocatedAmount" xml:space="preserve">
+    <value>Unallocated Amt</value>
   </data>
 </root>

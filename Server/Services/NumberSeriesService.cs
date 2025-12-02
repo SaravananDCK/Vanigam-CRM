@@ -132,6 +132,7 @@ public class NumberSeriesService(
             "Customer" => "CUST-",
             "Vendor" => "VEND-",
             "BankAccount" => "BANK-",
+            "Payment" => "PAY-",
             _ => $"{entityType.ToUpper().Substring(0, Math.Min(3, entityType.Length))}-"
         };
     }

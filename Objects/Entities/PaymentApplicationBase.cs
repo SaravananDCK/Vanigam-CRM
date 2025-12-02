@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Vanigam.CRM.Objects.Contracts;
 
 namespace Vanigam.CRM.Objects.Entities
@@ -8,6 +9,10 @@ namespace Vanigam.CRM.Objects.Entities
     /// Base class for payment applications - supports both invoice allocations and customer advances
     /// Uses Table-Per-Hierarchy (TPH) inheritance with discriminator column
     /// </summary>
+
+    [JsonDerivedType(typeof(CustomerAdvance), "#Vanigam.CRM.Objects.Entities.CustomerAdvance")]
+    [JsonDerivedType(typeof(PaymentAllocation), "#Vanigam.CRM.Objects.Entities.PaymentAllocation")]
+    [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor, TypeDiscriminatorPropertyName = "@odata.type")]
     public abstract class PaymentApplicationBase : BaseClass
     {
         [Required]

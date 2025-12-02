@@ -27,7 +27,7 @@ namespace Vanigam.CRM.Server.Controllers.MeditalkAIService
             try
             {
                 // Use service method which ensures proper ledger posting
-                var savedPayment = await service.BulkSavePaymentWithAllocations(paymentData, CurrentUser.Id.ToString());
+                var savedPayment = await service.BulkSavePaymentWithAllocations(paymentData, CurrentUserId.ToString());
                 return Ok(savedPayment);
             }
             catch (InvalidOperationException ex)
