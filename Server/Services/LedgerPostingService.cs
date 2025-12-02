@@ -239,11 +239,31 @@ public class LedgerPostingService(
         try
         {
             logger.LogInformation($"Posting Payment {payment.Number} to ledger", payment.Number);
-
-            if (!payment.BankAccountId.HasValue)
+            Guid? paymentLedgerId=Guid.Empty;
+            var settings = await GetTenantAccountingSettings(payment.TenantId);
+            switch (payment.PaymentMethod)
             {
-                throw new InvalidOperationException($"Payment {payment.Number} has no bank account assigned");
+                case PaymentMethod.Cash:
+                    paymentLedgerId = settings.DefaultCashAccountId;
+                    break;
+                case PaymentMethod.BankTransfer:
+                case PaymentMethod.Cheque:
+                case PaymentMethod.Card:
+                case PaymentMethod.UPI:
+                case PaymentMethod.NetBanking:
+                case PaymentMethod.Wallet:
+                    if (!payment.BankAccountId.HasValue)
+                    {
+                        throw new InvalidOperationException($"Payment {payment.Number} has no bank account assigned");
+                    }
+                    paymentLedgerId = payment.BankAccountId;
+                    break;
+                case PaymentMethod.Other:
+                    break;
+                default:
+                    break;
             }
+           
 
             if (!payment.PartyId.HasValue)
             {
@@ -257,7 +277,7 @@ public class LedgerPostingService(
             {
                 TenantId = payment.TenantId,
                 VoucherId = payment.Oid,
-                AccountId = payment.BankAccountId.Value,
+                AccountId = paymentLedgerId.Value,
                 EntryType = EntryType.Debit,
                 Amount = payment.AllocatedAmount,
                 EntryDate = payment.VoucherDate,

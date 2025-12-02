@@ -53,9 +53,9 @@ public class LeadApiService(
     /// <param name="leadId">ID of the Lead to convert</param>
     /// <param name="opportunityTitle">Title for the new Opportunity</param>
     /// <param name="estimatedValue">Estimated value for the Opportunity</param>
-    /// <param name="expectedCloseDate">Expected close date for the Opportunity</param>
+    /// <param name="expectedCloseDate">Expected close date for the Opportunity (must be UTC)</param>
     /// <returns>The created Opportunity</returns>
-    public async Task<Opportunity?> ConvertLeadToOpportunityAsync(Guid leadId, string opportunityTitle, decimal estimatedValue, DateTime expectedCloseDate)
+    public async Task<Opportunity?> ConvertLeadToOpportunityAsync(Guid leadId, string opportunityTitle, decimal estimatedValue, DateTimeOffset expectedCloseDate)
     {
         try
         {

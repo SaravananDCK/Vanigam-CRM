@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using NodaTime;
 using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Objects.DTOs;
@@ -34,7 +35,7 @@ public class JobBulkSaveDTO
     public decimal SubTotal { get; set; }
     public decimal TaxAmount { get; set; }
 
-    public DateTimeOffset VoucherDate { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset VoucherDate { get; set; } = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
 
     public List<MaterialUsageDTO> Materials { get; set; } = new List<MaterialUsageDTO>();
 }

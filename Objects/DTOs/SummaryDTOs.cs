@@ -73,9 +73,9 @@ namespace Vanigam.CRM.Objects.DTOs
         public decimal EstimatedValue { get; set; }
 
         /// <summary>
-        /// Expected close date for the Opportunity
+        /// Expected close date for the Opportunity (must be UTC)
         /// </summary>
-        public DateTime ExpectedCloseDate { get; set; }
+        public DateTimeOffset ExpectedCloseDate { get; set; }
     }
 
     /// <summary>

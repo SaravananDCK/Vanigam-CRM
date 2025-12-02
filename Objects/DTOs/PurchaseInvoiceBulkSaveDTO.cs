@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using NodaTime;
 using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Objects.DTOs;
@@ -31,7 +32,7 @@ public class PurchaseInvoiceBulkSaveDTO
     public decimal SubTotal { get; set; }
     public decimal TaxAmount { get; set; }
 
-    public DateTimeOffset VoucherDate { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset VoucherDate { get; set; } = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
     public DateTimeOffset? DueDate { get; set; }
 
     public Guid? PurchaseOrderId { get; set; }

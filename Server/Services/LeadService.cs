@@ -22,9 +22,9 @@ public class LeadService(
     /// <param name="leadId">ID of the Lead to convert</param>
     /// <param name="opportunityTitle">Title for the new Opportunity</param>
     /// <param name="estimatedValue">Estimated value for the Opportunity</param>
-    /// <param name="expectedCloseDate">Expected close date for the Opportunity</param>
+    /// <param name="expectedCloseDate">Expected close date for the Opportunity (must be UTC)</param>
     /// <returns>The created Opportunity</returns>
-    public async Task<Opportunity> ConvertLeadToOpportunityAsync(Guid leadId, string opportunityTitle, decimal estimatedValue, DateTime expectedCloseDate)
+    public async Task<Opportunity> ConvertLeadToOpportunityAsync(Guid leadId, string opportunityTitle, decimal estimatedValue, DateTimeOffset expectedCloseDate)
     {
         Logger.LogInformation("Converting Lead {LeadId} to Opportunity", leadId);
 
@@ -57,7 +57,7 @@ public class LeadService(
                 Probability = 75, // Default probability for qualified opportunities
                 Source = lead.Source ?? "Lead Conversion",
                 Stage = OpportunityStage.Qualified,
-                ExpectedCloseDate = expectedCloseDate.ToDateTimeOffset(),
+                ExpectedCloseDate = expectedCloseDate, // Already DateTimeOffset (UTC)
                 Comments = $"Converted from lead on {DateTime.UtcNow:yyyy-MM-dd}. Original lead score: {lead.LeadScore}",
                 CreatedByUserId = lead.CreatedByUserId,
                 CreatedAtUtc = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset(),
