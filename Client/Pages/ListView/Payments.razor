@@ -25,24 +25,9 @@
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Number) Title=@Localizer["Number"] Visible="@(!IsEmbeddedMode)" />
-                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.PaymentAmount) Title=@Localizer["PaymentAmount"] TextAlign="TextAlign.Right">
-                        <Template Context="invoice">
-                            @invoice.PaymentAmount.ToString("C")
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.AllocatedAmount) Title=@Localizer["AllocatedAmount"] TextAlign="TextAlign.Right">
-                        <Template Context="invoice">
-                            @invoice.AllocatedAmount.ToString("C")
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.UnallocatedAmount) Title=@Localizer["UnallocatedAmount"] TextAlign="TextAlign.Right">
-                        <Template Context="invoice">
-                            @invoice.UnallocatedAmount.ToString("C")
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Status) Title=@Localizer["Status"] Width="120px">
+                    <RadzenDataGridColumn TItem="Payment" Property="@PropertyExtensions.GetPropertyFullPath((Payment p) => p.Party.Name)" Title=@Localizer["ProviderReference"]>
                         <Template Context="payment">
-                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(payment.Status)" Text="@payment.Status.ToString()" class="rz-p-1" />
+                            @payment.Party.Name
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.PaidAt) Title=@Localizer["PaidAt"]>
@@ -50,9 +35,29 @@
                             @context.PaidAt.ToHumanDateTime()
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Payment" Property="@PropertyExtensions.GetPropertyFullPath((Payment p) => p.Party.Name)" Title=@Localizer["ProviderReference"]>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.PaymentAmount) Title=@Localizer["PaymentAmount"] TextAlign="TextAlign.Right">
                         <Template Context="payment">
-                            @payment.Party.Name
+                            @payment.PaymentAmount.ToString("C")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.AllocatedAmount) Title=@Localizer["AllocatedAmount"] TextAlign="TextAlign.Right">
+                        <Template Context="payment">
+                            @payment.AllocatedAmount.ToString("C")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.UnallocatedAmount) Title=@Localizer["UnallocatedAmount"] TextAlign="TextAlign.Right">
+                        <Template Context="payment">
+                            @payment.UnallocatedAmount.ToString("C")
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.PaymentMethod) Title=@Localizer["Pay Method"] Width="120px">
+                        <Template Context="payment">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(payment.PaymentMethod)" Text="@payment.PaymentMethod.GetDisplayDescription().ToString()" class="rz-p-1" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Status) Title=@Localizer["Status"] Width="120px">
+                        <Template Context="payment">
+                            <RadzenBadge BadgeStyle="@BadgeHelper.GetBadgeStyle(payment.Status)" Text="@payment.Status.ToString()" class="rz-p-1" />
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Payment" Property=@nameof(Payment.Oid) Title=@Localizer["Oid"] Visible="false">

@@ -16,7 +16,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         [Inject] private PaymentApiService PaymentApiService { get; set; }
         [Inject] private InvoiceApiService InvoiceApiService { get; set; }
         [Inject] private BankAccountApiService BankAccountApiService { get; set; }
-        
+        private bool HasStatusChanged = false;
+
         private List<Invoice> PendingInvoices = new();
         private List<PaymentAllocationDTO> Allocations = new();
         private List<BankAccount> BankAccounts = new();
@@ -25,6 +26,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private decimal remainingAmount = 0;
         private static readonly IList<PaymentStatus> PaymentStatuses = [.. Enum.GetValues<PaymentStatus>()];
         private static readonly IList<PaymentMethod> PaymentMethods = [.. Enum.GetValues<PaymentMethod>()];
+        private bool HasAnyChanges => HasChanges || (PendingInvoices?.Any() ?? false || Form?.EditContext?.IsModified() == true);
         protected override async Task OnInitializedAsync()
         {
             if (Oid == Guid.Empty)
@@ -51,13 +53,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             return new ODataExpand<Payment>()
                 .Expand(f => f.Applications)
                 .Expand(f => f.Party, f => f.Party.Name)
-                .Expand(f => f.BankAccount, f => f.BankAccount.AccountNumber)
+                .Expand(f => f.BankAccount, f => f.BankAccount.AccountNumber, f => f.BankAccount.Name)
                 .Build();
         }
         private async Task PaymentStatusChanged(PaymentStatus status)
         {
             CurrentObject.Status = status;
-            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            HasStatusChanged = true;
             StateHasChanged();
         }
         private async Task LoadBankAccounts()
@@ -85,7 +87,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             {
                 await LoadPendingInvoices(CurrentObject.PartyId.Value);
                 await CalculatePaymentAmount();
-                
+
             }
             else
             {
@@ -102,15 +104,30 @@ namespace Vanigam.CRM.Client.Pages.DetailView
                 await OnPaymentAmountChanged(CurrentObject.PaymentAmount);
             }
         }
+
+        protected string GetInvoiceFilterString(Guid customerId)
+        {
+            return new ODataFilter<Invoice>()
+                .FilterByAnd(i => i.Status == InvoiceStatus.Posted)
+                .FilterByAnd(i => i.Status == InvoiceStatus.PartiallyPaid)
+                .FilterByAnd(i => i.PartyId == customerId)
+                .FilterByAnd(i => i.BalanceAmount > 0)
+                .FilterByAnd(i => i.IsNotDeleted == true)
+                .Build();
+        }
         private async Task LoadPendingInvoices(Guid customerId)
         {
             try
             {
-                var filter = $"PartyId eq {customerId} and BalanceAmount gt 0 and IsNotDeleted eq true";
+                //var filter = $"PartyId eq {customerId} and BalanceAmount gt 0 and IsNotDeleted eq true";
+
+                var filter = $"PartyId eq {customerId} and BalanceAmount gt 0 and IsNotDeleted eq true " + 
+                    $"and ({nameof(Invoice.Status)} eq Vanigam.CRM.Objects.Entities.InvoiceStatus'{InvoiceStatus.Posted}' " + 
+                    $"or {nameof(Invoice.Status)} eq Vanigam.CRM.Objects.Entities.InvoiceStatus'{InvoiceStatus.PartiallyPaid}')";
                 var result = await InvoiceApiService.Get(filter: filter, orderBy: "DueDate", top: 100);
                 PendingInvoices = result.Value.ToList();
-                
-                
+
+
                 // Initialize allocations
                 Allocations = PendingInvoices.Select(inv => new PaymentAllocationDTO
                 {
@@ -245,6 +262,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
             IsBusy = true;
             try
             {
+                CurrentObject.Status = PaymentStatus.Successful;
                 // Prepare bulk save DTO with payment and allocations
                 var bulkData = new PaymentBulkSaveDTO
                 {
@@ -350,12 +368,13 @@ namespace Vanigam.CRM.Client.Pages.DetailView
 
             return CurrentObject.PaymentMethod switch
             {
-                Objects.Entities.PaymentMethod.BankTransfer => true,
-                Objects.Entities.PaymentMethod.Cheque => true,
-                Objects.Entities.PaymentMethod.Card => true,
-                Objects.Entities.PaymentMethod.UPI => true,
-                Objects.Entities.PaymentMethod.NetBanking => true,
-                _ => false // Cash, Wallet, Other don't require bank account
+                PaymentMethod.BankTransfer => true,
+                PaymentMethod.Cheque => true,
+                PaymentMethod.Card => true,
+                PaymentMethod.UPI => true,
+                PaymentMethod.NetBanking => true,
+                PaymentMethod.Wallet => true,
+                _ => false // Cash, Other don't require bank account
             };
         }
 

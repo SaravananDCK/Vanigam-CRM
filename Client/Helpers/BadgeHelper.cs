@@ -132,6 +132,21 @@ namespace Vanigam.CRM.Client.Helpers
             };
         }
         #endregion
+        #region PaymentMethod
+        public static BadgeStyle GetBadgeStyle(PaymentMethod? status)
+        {
+            return status switch
+            {
+                PaymentMethod.Cash => BadgeStyle.Success,
+                PaymentMethod.UPI => BadgeStyle.Info,
+                PaymentMethod.Cheque => BadgeStyle.Secondary,
+                PaymentMethod.BankTransfer => BadgeStyle.Warning,
+                PaymentMethod.Card => BadgeStyle.Primary,
+                PaymentMethod.NetBanking => BadgeStyle.Base,
+                _ => BadgeStyle.Light
+            };
+        }
+        #endregion
 
         #region AssetStatus
         public static BadgeStyle GetBadgeStyle(AssetStatus status)
