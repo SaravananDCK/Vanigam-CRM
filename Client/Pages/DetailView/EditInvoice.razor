@@ -56,7 +56,7 @@
                                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
                                                          JustifyContent="JustifyContent.End" Gap="10px">
                                                 <RadzenFab Style="bottom: 12px; left: 12px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]"
-                                                           Disabled="@(CurrentObject.Status == InvoiceStatus.Paid || CurrentObject.Status != InvoiceStatus.PartiallyPaid)"/>
+                                                           Disabled="@(CurrentObject.Status == InvoiceStatus.Paid || CurrentObject.Status == InvoiceStatus.PartiallyPaid)"/>
                                             </RadzenStack>
                                         }
                                     </RadzenColumn>
