@@ -147,6 +147,9 @@
   <data name="TotalAmount" xml:space="preserve">
     <value>Total Amount</value>
   </data>
+  <data name="TotalAmountMustBeNonNegative" xml:space="preserve">
+    <value>Total Amount Must Be Non Negative</value>
+  </data>
   <data name="UnitPrice" xml:space="preserve">
     <value>Unit Price</value>
   </data>

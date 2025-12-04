@@ -126,11 +126,20 @@
   <data name="EntityName" xml:space="preserve">
     <value>Entity Name</value>
   </data>
+  <data name="EntityNameRequired" xml:space="preserve">
+    <value>The name of the entity is mandatory.</value>
+  </data>
   <data name="FieldName" xml:space="preserve">
     <value>Field Name</value>
   </data>
+  <data name="FieldNameRequired" xml:space="preserve">
+    <value>Field name cannot be empty.</value>
+  </data>
   <data name="FieldType" xml:space="preserve">
     <value>Field Type</value>
+  </data>
+  <data name="FieldTypeRequired" xml:space="preserve">
+    <value>Field type cannot be empty.</value>
   </data>
   <data name="MetadataJson" xml:space="preserve">
     <value>Metadata Json</value>

@@ -129,6 +129,9 @@
   <data name="EditTechnician" xml:space="preserve">
     <value>Edit Technician</value>
   </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Your email address is invalid.</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
@@ -146,5 +149,8 @@
   </data>
   <data name="Update" xml:space="preserve">
     <value>Update</value>
+  </data>
+  <data name="UserNameRequired" xml:space="preserve">
+    <value>User Name is Required</value>
   </data>
 </root>

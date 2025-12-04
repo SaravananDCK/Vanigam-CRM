@@ -132,14 +132,29 @@
   <data name="IsActive" xml:space="preserve">
     <value>Is Active</value>
   </data>
+  <data name="LastActivityTimeRequired" xml:space="preserve">
+    <value>Last Activity Time is Required</value>
+  </data>
+  <data name="LatitudeMustBeBetweenMinus90And90" xml:space="preserve">
+    <value>Latitude Must Be Between Minus 90 And 90</value>
+  </data>
   <data name="Location" xml:space="preserve">
     <value>Location</value>
   </data>
   <data name="LoginTime" xml:space="preserve">
     <value>Login Time</value>
   </data>
+  <data name="LoginTimeRequired" xml:space="preserve">
+    <value>Login Time is Required</value>
+  </data>
   <data name="LogoutTime" xml:space="preserve">
     <value>Logout Time</value>
+  </data>
+  <data name="LogoutTimeMustBeAfterLoginTime" xml:space="preserve">
+    <value>Logout Time Must Be After Login Time</value>
+  </data>
+  <data name="LongitudeMustBeBetweenMinus180And180" xml:space="preserve">
+    <value>Longitude Must Be Between Minus 180 And 180</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
@@ -152,6 +167,9 @@
   </data>
   <data name="UserId" xml:space="preserve">
     <value>User Id</value>
+  </data>
+  <data name="UserIdRequired" xml:space="preserve">
+    <value>User Id is Required</value>
   </data>
   <data name="UserName" xml:space="preserve">
     <value>User Name</value>

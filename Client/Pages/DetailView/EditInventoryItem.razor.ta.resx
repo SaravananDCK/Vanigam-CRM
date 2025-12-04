@@ -129,6 +129,9 @@
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Name is Required</value>
+  </data>
   <data name="QuantityOnHand" xml:space="preserve">
     <value>Quantity On Hand</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="SavedSuccessfully" xml:space="preserve">
     <value>Inventory Items Saved Successfully</value>
+  </data>
+  <data name="QuantityMustBeNonNegative" xml:space="preserve">
+    <value>Quantity must be non-negative.</value>
   </data>
   <data name="Update" xml:space="preserve">
     <value>Update</value>

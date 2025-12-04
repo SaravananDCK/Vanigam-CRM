@@ -126,6 +126,9 @@
   <data name="AnnualRevenue" xml:space="preserve">
     <value>Annual Revenue</value>
   </data>
+  <data name="AnnualRevenueMustBeNonNegative" xml:space="preserve">
+    <value>It is required that annual revenue is non-negative.</value>
+  </data>
   <data name="Basic Info" xml:space="preserve">
     <value>Basic Info</value>
   </data>
@@ -183,8 +186,14 @@
   <data name="Email" xml:space="preserve">
     <value>Email</value>
   </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>The email address is invalid</value>
+  </data>
   <data name="EmployeeCount" xml:space="preserve">
     <value>Employee Count</value>
+  </data>
+  <data name="EmployeeCountMustBeNonNegative" xml:space="preserve">
+    <value>Employee count must not be less than zero.</value>
   </data>
   <data name="File Documents" xml:space="preserve">
     <value>File Documents</value>
@@ -201,11 +210,17 @@
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Name is required.</value>
+  </data>
   <data name="Phone" xml:space="preserve">
     <value>Phone</value>
   </data>
   <data name="PostalCode" xml:space="preserve">
     <value>Postal Code</value>
+  </data>
+  <data name="PostalCodeMustBe6Digits" xml:space="preserve">
+    <value>Postal code must consist of 6 numeric digits.</value>
   </data>
   <data name="Rating" xml:space="preserve">
     <value>Rating</value>
@@ -227,5 +242,8 @@
   </data>
   <data name="Website" xml:space="preserve">
     <value>Website</value>
+  </data>
+  <data name="WebsiteInvalid" xml:space="preserve">
+    <value>The website URL is invalid.</value>
   </data>
 </root>

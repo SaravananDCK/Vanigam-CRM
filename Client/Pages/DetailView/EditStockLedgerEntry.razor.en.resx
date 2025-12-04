@@ -117,44 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Active" xml:space="preserve">
-    <value>Active</value>
-  </data>
-  <data name="Address" xml:space="preserve">
-    <value>Address</value>
-  </data>
   <data name="Balance" xml:space="preserve">
     <value>Balance</value>
   </data>
-  <data name="BasicInfo" xml:space="preserve">
-    <value>Basic Info</value>
-  </data>
-  <data name="BusinessDetails" xml:space="preserve">
-    <value>Business Details</value>
+  <data name="BatchNumber" xml:space="preserve">
+    <value>Batch Number</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="City" xml:space="preserve">
-    <value>City</value>
-  </data>
-  <data name="Code" xml:space="preserve">
-    <value>Code</value>
-  </data>
-  <data name="ContactInfo" xml:space="preserve">
-    <value>Contact Info</value>
-  </data>
-  <data name="ContactPerson" xml:space="preserve">
-    <value>Contact Person</value>
-  </data>
-  <data name="Country" xml:space="preserve">
-    <value>Country</value>
-  </data>
-  <data name="CreditLimit" xml:space="preserve">
-    <value>Credit Limit</value>
-  </data>
-  <data name="CustomerFiles" xml:space="preserve">
-    <value>Customer Files</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
@@ -162,79 +132,58 @@
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
   </data>
-  <data name="EditVendor" xml:space="preserve">
-    <value>Edit Vendor</value>
+  <data name="EditStockLedgerEntry" xml:space="preserve">
+    <value>Edit Stock Ledger Entry</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>Email</value>
+  <data name="EntryDate" xml:space="preserve">
+    <value>Entry Date</value>
   </data>
-  <data name="EmailInvalid" xml:space="preserve">
-    <value>Your email address is invalid.</value>
+  <data name="EntryNumberRequired" xml:space="preserve">
+    <value>Entry Number is Required</value>
   </data>
-  <data name="FileDocuments" xml:space="preserve">
-    <value>File Documents</value>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Expiry Date</value>
   </data>
-  <data name="Financial" xml:space="preserve">
-    <value>Financial</value>
+  <data name="InventoryItemRequired" xml:space="preserve">
+    <value>Inventory Item is Required</value>
   </data>
-  <data name="Inactive" xml:space="preserve">
-    <value>Inactive</value>
+  <data name="Item" xml:space="preserve">
+    <value>Item</value>
   </data>
-  <data name="Industry" xml:space="preserve">
-    <value>Industry</value>
+  <data name="LoadLocationsFailed" xml:space="preserve">
+    <value>Load Locations Failed</value>
   </data>
-  <data name="IsActive" xml:space="preserve">
-    <value>Is-Active</value>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
   </data>
-  <data name="Name" xml:space="preserve">
-    <value>Name</value>
+  <data name="MovementType" xml:space="preserve">
+    <value>Movement Type</value>
   </data>
-  <data name="NameRequired" xml:space="preserve">
-    <value>Name is Required</value>
+  <data name="QuantityIn" xml:space="preserve">
+    <value>Quantity In</value>
   </data>
-  <data name="New Vendor" xml:space="preserve">
-    <value>New Vendor</value>
+  <data name="QuantityOut" xml:space="preserve">
+    <value>Quantity Out</value>
   </data>
-  <data name="PaymentTerms" xml:space="preserve">
-    <value>Payment Terms</value>
-  </data>
-  <data name="Phone" xml:space="preserve">
-    <value>Phone</value>
-  </data>
-  <data name="PostalCode" xml:space="preserve">
-    <value>Postal Code</value>
-  </data>
-  <data name="Rating" xml:space="preserve">
-    <value>Rating</value>
+  <data name="Reference" xml:space="preserve">
+    <value>Reference</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
-  <data name="SaveAlert" xml:space="preserve">
-    <value>Unable to save due to an error.</value>
-  </data>
   <data name="SavedSuccessfully" xml:space="preserve">
-    <value>The record was saved successfully.</value>
+    <value>Stock Ledger Entry Saved Successfully</value>
   </data>
-  <data name="State" xml:space="preserve">
-    <value>State</value>
+  <data name="StockLedgerEntryInformation" xml:space="preserve">
+    <value>Stock Ledger Entry Information</value>
   </data>
-  <data name="Status" xml:space="preserve">
-    <value>Status</value>
+  <data name="TotalValue" xml:space="preserve">
+    <value>Total Value</value>
   </data>
-  <data name="TaxId" xml:space="preserve">
-    <value>Tax Id</value>
-  </data>
-  <data name="Type" xml:space="preserve">
-    <value>Type</value>
+  <data name="UnitCost" xml:space="preserve">
+    <value>Unit Cost</value>
   </data>
   <data name="Update" xml:space="preserve">
     <value>Update</value>
-  </data>
-  <data name="Website" xml:space="preserve">
-    <value>Website</value>
-  </data>
-  <data name="WebsiteInvalid" xml:space="preserve">
-    <value>Your Website URL is invalid.</value>
   </data>
 </root>

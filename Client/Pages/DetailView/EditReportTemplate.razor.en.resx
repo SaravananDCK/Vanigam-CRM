@@ -120,8 +120,17 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="ContentRequired" xml:space="preserve">
+    <value>Content is Required</value>
+  </data>
   <data name="EditReportTemplate" xml:space="preserve">
     <value>Edit Report Template</value>
+  </data>
+  <data name="FileNameRequired" xml:space="preserve">
+    <value>File Name is Required</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Name is Required</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>

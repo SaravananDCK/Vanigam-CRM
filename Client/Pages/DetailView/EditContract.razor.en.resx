@@ -189,4 +189,22 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="CustomerRequired" xml:space="preserve">
+    <value>Customer field is required.</value>
+  </data>
+  <data name="TitleRequired" xml:space="preserve">
+    <value>The title field is required.</value>
+  </data>
+  <data name="TitleMaxLength" xml:space="preserve">
+    <value>The title exceeds the maximum length.</value>
+  </data>
+  <data name="StartDateRequired" xml:space="preserve">
+    <value>Start date is required.</value>
+  </data>
+  <data name="DurationRequired" xml:space="preserve">
+    <value>Duration is required.</value>
+  </data>
+  <data name="PartsReplacementLimitMustBePositive" xml:space="preserve">
+    <value>Parts Replacement Limit Must Be Positive.</value>
+  </data>
 </root>

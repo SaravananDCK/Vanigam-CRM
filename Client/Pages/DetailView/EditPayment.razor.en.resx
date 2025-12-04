@@ -123,6 +123,9 @@
   <data name="AllocatedAmount" xml:space="preserve">
     <value>Allocated Amount</value>
   </data>
+  <data name="AllocatedAmountMustBeGreaterThanZero" xml:space="preserve">
+    <value>Allocated Amount Must Be Greater Than Zero</value>
+  </data>
   <data name="AllocateToInvoices" xml:space="preserve">
     <value>Allocate To Invoices</value>
   </data>
@@ -167,6 +170,9 @@
   </data>
   <data name="PaidAt" xml:space="preserve">
     <value>Paid At</value>
+  </data>
+  <data name="PaidAtRequired" xml:space="preserve">
+    <value>Paid At Required</value>
   </data>
   <data name="PaymentAmount" xml:space="preserve">
     <value>Payment Amount</value>

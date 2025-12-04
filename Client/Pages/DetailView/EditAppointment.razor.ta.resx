@@ -135,8 +135,17 @@
   <data name="EndAt" xml:space="preserve">
     <value>End At</value>
   </data>
+  <data name="EndTimeMustBeAfterStartTime" xml:space="preserve">
+    <value>End Time Must Be After Start Time</value>
+  </data>
+  <data name="EndTimeRequired" xml:space="preserve">
+    <value>End Time is Required</value>
+  </data>
   <data name="Job" xml:space="preserve">
     <value>Job</value>
+  </data>
+  <data name="JobRequired" xml:space="preserve">
+    <value>Job is Required</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
@@ -149,6 +158,9 @@
   </data>
   <data name="StartAt" xml:space="preserve">
     <value>Start At</value>
+  </data>
+  <data name="StartTimeRequired" xml:space="preserve">
+    <value>Start Time is Required</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>

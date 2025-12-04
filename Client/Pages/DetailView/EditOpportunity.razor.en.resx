@@ -168,6 +168,9 @@
   <data name="LeadInformation" xml:space="preserve">
     <value>Lead Information</value>
   </data>
+  <data name="LeadRequired" xml:space="preserve">
+    <value>Lead is Required</value>
+  </data>
   <data name="LeadScore" xml:space="preserve">
     <value>Lead Score</value>
   </data>
@@ -207,10 +210,25 @@
   <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
+  <data name="DescriptionRequired" xml:space="preserve">
+    <value>Description cannot be empty.</value>
+  </data>
   <data name="Title" xml:space="preserve">
     <value>Title</value>
   </data>
+  <data name="TitleRequired" xml:space="preserve">
+    <value>Title is Required</value>
+  </data>
   <data name="Update" xml:space="preserve">
     <value>Update</value>
+  </data>
+  <data name="EstimatedValueMustBeNonNegative" xml:space="preserve">
+    <value>Estimated Value Must Be Non Negative</value>
+  </data>
+  <data name="ProbabilityMustBeBetween0And100" xml:space="preserve">
+    <value>Probability Must Be Between 0 And 100</value>
+  </data>
+  <data name="ExpectedCloseDateRequired" xml:space="preserve">
+    <value>Expected Close Date is Required</value>
   </data>
 </root>
