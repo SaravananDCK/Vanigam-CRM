@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
 using Vanigam.CRM.Client;
+using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.Helpers;
 
@@ -13,7 +14,7 @@ public class FileDocumentApiService(
     AuthenticationStateProvider authenticationStateProvider,
     IConfiguration configuration)
     : BaseApiService<FileDocument>(navigationManager, httpClient, authenticationStateProvider, configuration,
-        "FileDocuments")
+        nameof(VanigamAccountingDbContext.FileDocuments))
 {
     public async Task<ODataServiceResult<FileDocument>> GetFileDocumentsByPatient(string filter = default, string orderby = default,
        string expand = default, int? top = default, int? skip = default, bool? count = default,

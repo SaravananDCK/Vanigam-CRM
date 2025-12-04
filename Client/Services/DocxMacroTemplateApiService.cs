@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Vanigam.CRM.Client;
+using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client.Services
@@ -11,7 +12,7 @@ namespace Vanigam.CRM.Client.Services
         AuthenticationStateProvider authenticationStateProvider,
         IConfiguration configuration)
         : BaseApiService<DocxMacroTemplate>(navigationManager, httpClient, authenticationStateProvider, configuration,
-            "DocxMacroTemplates");
+            nameof(VanigamAccountingDbContext.DocxMacroTemplates));
     
 }
 
