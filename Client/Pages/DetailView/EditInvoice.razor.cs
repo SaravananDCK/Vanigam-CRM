@@ -19,6 +19,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private List<InvoiceItemDTO> invoiceItems = new();
         public string TenantAccountingState { get; set; }
         private string CurrentState { get; set; }
+        private bool HasStatusChanged = false;
         private bool HasAnyChanges => HasChanges || (invoiceItems?.Any(i => i.IsNew || i.IsDeleted) ?? false || Form?.EditContext?.IsModified() == true);
         private static readonly IList<InvoiceStatus> InvoiceStatuses = [.. Enum.GetValues<InvoiceStatus>()];
         protected override async Task OnInitializedAsync()
@@ -51,7 +52,8 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         private async Task Changed(InvoiceStatus status)
         {
             CurrentObject.Status = status;
-            EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            //EditContext.NotifyFieldChanged(EditContext.Field(nameof(CurrentObject.Status)));
+            HasStatusChanged = true;
             StateHasChanged();
         }
         private async Task LoadCustomers()

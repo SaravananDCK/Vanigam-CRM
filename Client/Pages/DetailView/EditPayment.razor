@@ -14,19 +14,23 @@
 @if (CurrentObject != null && IsReadOnlyMode && !IsCreateMode)
 {
     <RadzenCard class="rz-my-4">
-        @if (IsEditButtonVisible)
-        {
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
-                         JustifyContent="JustifyContent.End" Gap="10px">
-                <RadzenFab Style="bottom: 12px; left: 12px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Title="@Localizer["Edit"]" />
-            </RadzenStack>
-        }
         <RadzenStack>
             <RadzenTabs @bind-SelectedIndex="ReadOnlyTabIndex" RenderMode="TabRenderMode.Client" TabPosition="TabPosition.Left">
                 <Tabs>
                     @* Invoice Information Display *@
                     <RadzenTabsItem Text="@Localizer["Payment"]" Icon="@FadIcon("fa-file-invoice")" class="fa-small">
-                        <div class="read-only-section-header">@Localizer["Payment Information"]</div>
+                        <RadzenStack Orientation="Orientation.Horizontal"
+                                     AlignItems="AlignItems.Center"
+                                     JustifyContent="JustifyContent.SpaceBetween"
+                                     Gap="10px">
+                            <RadzenStack Orientation="Orientation.Horizontal" Gap="10px">
+                                <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3" Style="width: fit-content" Text="@Localizer["Payment Information"]" />
+                            </RadzenStack>
+                            <RadzenStack Orientation="Orientation.Horizontal" Gap="10px">
+                                <RadzenFab Style="bottom: 12px; left: 12px;" Icon="edit" Click="@EnableEditMode" Size="ButtonSize.Medium" Visible="IsEditButtonVisible" 
+                                           Title="@Localizer["Edit"]" Disabled="CurrentObject.Status == PaymentStatus.Successful" />
+                            </RadzenStack>
+                        </RadzenStack>
                         <RadzenRow>
                             <RadzenColumn Size="6">
                                 <RadzenStack>
@@ -44,9 +48,10 @@
                                             <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.UnallocatedAmount.ToString("C"))</RadzenText>
                                         </div>
                                         <div class="read-only-field rz-mb-3">
-                                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
-                                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject.Status.ToString())</RadzenText>
+                                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["PaymentMethod"]:</strong></RadzenText>
+                                            <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.PaymentMethod)" Text="@CurrentObject.PaymentMethod.ToString()" class="rz-p-1" />
                                         </div>
+
                                     </div>
                                 </RadzenStack>
                             </RadzenColumn>
@@ -63,19 +68,17 @@
                                             <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@(CurrentObject?.Party?.Name ?? "-")</RadzenText>
                                         </div>
 
-                                        <div class="read-only-field rz-mb-3">
-                                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["PaymentMethod"]:</strong></RadzenText>
-                                            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@CurrentObject.PaymentMethod.ToString()</RadzenText>
-                                        </div>
-
                                         @if (CurrentObject.BankAccount != null)
                                         {
                                             <div class="read-only-field rz-mb-3">
                                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["BankAccount"]:</strong></RadzenText>
-                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@CurrentObject.BankAccount.Name</RadzenText>
+                                                <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Span" class="field-value">@($"{CurrentObject.BankAccount.Name} {CurrentObject.BankAccount.AccountNumber}")</RadzenText>
                                             </div>
                                         }
-
+                                        <div class="read-only-field rz-mb-3">
+                                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Span" class="field-label"><strong>@Localizer["Status"]:</strong></RadzenText>
+                                            <RadzenBadge BadgeStyle="@Vanigam.CRM.Client.Helpers.BadgeHelper.GetBadgeStyle(CurrentObject.Status)" Text="@CurrentObject.Status.ToString()" class="rz-p-1" />
+                                        </div>
                                         @if (!string.IsNullOrEmpty(CurrentObject.ReferenceNumber))
                                         {
                                             <div class="read-only-field rz-mb-3">
@@ -163,7 +166,7 @@
                                     </VanigamAccountingFormField>
                                 </RadzenColumn>
                             </RadzenRow>
-                           
+
                             @* Show BankAccount field for non-cash payment methods *@
                             @if (RequiresBankAccount())
                             {
@@ -175,10 +178,10 @@
                             }
 
                             @*<VanigamAccountingFormField Text=@Localizer["Status"]>
-                                <ChildContent>
-                                    <PaymentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
-                                </ChildContent>
-                            </VanigamAccountingFormField>*@
+                                    <ChildContent>
+                                        <PaymentStatusEnumDropDown @bind-Value="@CurrentObject.Status" />
+                                    </ChildContent>
+                                </VanigamAccountingFormField>*@
 
                             @* Invoice Allocation Section *@
                             @if (PendingInvoices.Any() && CurrentObject.PaymentAmount > 0)
@@ -277,11 +280,11 @@
                         <RadzenStack Style="margin-top:1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
                             @if (IsCreateMode)
                             {
-                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                                <VanigamAccountingSaveButton Id="btn_Save" Text="@Localizer["Save"]" Disabled="@(!HasAnyChanges)" @bind-IsBusy="IsBusy" />
                             }
                             else
                             {
-                                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(Form.EditContext.IsModified()))" @bind-IsBusy="IsBusy" />
+                                <VanigamAccountingSaveButton Id="btn_Update" Text="@Localizer["Update"]" Disabled="@(!(HasAnyChanges || HasStatusChanged))" @bind-IsBusy="IsBusy" />
                                 <VanigamAccountingCancelButton Text="@Localizer["Cancel"]" Click="@EnableReadOnlyMode" />
                             }
                         </RadzenStack>
