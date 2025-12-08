@@ -141,7 +141,7 @@ public class PdfApiService
                         { "DialogService", DialogService},
 
                     },
-                    90, 90);
+                    90, 100);
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {

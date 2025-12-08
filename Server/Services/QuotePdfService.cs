@@ -39,12 +39,31 @@ public class QuotePdfService(
 
             row.RelativeItem().Column(col =>
             {
-                col.Item().Text($"Quote #: {quote.Number}").SemiBold();
-                col.Item().Text($"Date: {quote.CreatedAtUtc?.ToString("MM/dd/yyyy") ?? DateTime.Now.ToString("MM/dd/yyyy")}");
-                col.Item().Text($"Status: {quote.Status}");
+                col.Item().Row(row =>
+                {
+                    row.ConstantItem(45).Text("Quote #:").SemiBold();
+                    row.AutoItem().Text($"{quote.Number}");
+                });
+
+                col.Item().Row(row =>
+                {
+                    row.ConstantItem(45).Text("Date:").SemiBold();
+                    row.AutoItem().Text($"{quote.CreatedAtUtc:MM/dd/yyyy}");
+                });
+
+                col.Item().Row(row =>
+                {
+                    row.ConstantItem(45).Text("Status:").SemiBold();
+                    row.AutoItem().Text($"{quote.Status}");
+                });
+
                 if (quote.Job != null)
                 {
-                    col.Item().Text($"Job: {quote.Job.Title}");
+                    col.Item().Row(row =>
+                    {
+                        row.ConstantItem(45).Text("Job:").SemiBold();
+                        row.AutoItem().Text($"{quote.Job.Title}");
+                    });
                 }
             });
         });
@@ -77,46 +96,94 @@ public class QuotePdfService(
             );
         }
 
-        // Summary Section (SubTotal, Discount, Tax, Total)
-        column.Item().PaddingTop(20).AlignRight().Column(col =>
+        // GST LEFT + SUBTOTAL/DISCOUNT RIGHT
+        column.Item().PaddingTop(20).Row(row =>
         {
-            // SubTotal
-            col.Item().Row(row =>
+            // LEFT SIDE - GST
+            row.ConstantItem(200).AlignRight().Column(left =>
             {
-                row.AutoItem().Width(150).Text("SubTotal:").FontSize(11);
-                row.AutoItem().Width(100).AlignRight().Text($"₹{quote.SubTotal:N2}").FontSize(11);
+                if (quote.CGSTAmount > 0)
+                {
+                    left.Item().Row(r =>
+                    {
+                        r.AutoItem().Text("CGST:").FontSize(11);
+                        r.AutoItem().Width(100).AlignRight().Text($"₹{quote.CGSTAmount:N2}").FontSize(11);
+                    });
+                }
+
+                if (quote.SGSTAmount > 0)
+                {
+                    left.Item().PaddingTop(5).Row(r =>
+                    {
+                        r.AutoItem().Text("SGST:").FontSize(11);
+                        r.AutoItem().Width(100).AlignRight().Text($"₹{quote.SGSTAmount:N2}").FontSize(11);
+                    });
+                }
+
+                if (quote.IGSTAmount > 0)
+                {
+                    left.Item().PaddingTop(5).Row(r =>
+                    {
+                        r.AutoItem().Text("IGST:").FontSize(11);
+                        r.AutoItem().Width(100).AlignRight().Text($"₹{quote.IGSTAmount:N2}").FontSize(11);
+                    });
+                }
+
+                if (quote.CessAmount > 0)
+                {
+                    left.Item().PaddingTop(5).Row(r =>
+                    {
+                        r.AutoItem().Text("CESS:").FontSize(11);
+                        r.AutoItem().Width(100).AlignRight().Text($"₹{quote.CessAmount:N2}").FontSize(11);
+                    });
+                }
             });
 
-            // Discount Amount
-            if (quote.DiscountAmount > 0)
+            // RIGHT SIDE - SUBTOTAL + DISCOUNT
+            row.RelativeItem().AlignRight().Column(right =>
             {
-                col.Item().PaddingTop(5).Row(row =>
+                right.Item().Row(r =>
                 {
-                    row.AutoItem().Width(150).Text("Discount:").FontSize(11);
-                    row.AutoItem().Width(100).AlignRight().Text($"- ₹{quote.DiscountAmount:N2}").FontSize(11);
+                    r.AutoItem().Width(120).AlignRight().Text("Sub Total:").FontSize(11);
+                    r.AutoItem().Width(130).AlignRight().Text($"₹{quote.SubTotal:N2}").FontSize(11);
                 });
-            }
 
-            // Tax Amount
-            if (quote.TaxAmount > 0)
-            {
-                col.Item().PaddingTop(5).Row(row =>
+                if (quote.DiscountAmount > 0)
                 {
-                    row.AutoItem().Width(150).Text("Tax:").FontSize(11);
-                    row.AutoItem().Width(100).AlignRight().Text($"₹{quote.TaxAmount:N2}").FontSize(11);
-                });
-            }
-
-            // Separator line
-            col.Item().PaddingTop(10).PaddingBottom(5).Width(250).LineHorizontal(1);
-
-            // Total Amount
-            col.Item().Row(row =>
-            {
-                row.AutoItem().Width(150).Text("Total Amount:").FontSize(14).SemiBold();
-                row.AutoItem().Width(100).AlignRight().Text($"₹{quote.TotalAmount:N2}").FontSize(14).SemiBold();
+                    right.Item().PaddingTop(5).Row(r =>
+                    {
+                        r.AutoItem().Width(120).AlignRight().Text("Discount:").FontSize(11);
+                        r.AutoItem().Width(130).AlignRight().Text($"-₹{quote.DiscountAmount:N2}").FontSize(11);
+                    });
+                }
+                if (quote.TaxAmount > 0)
+                {
+                    right.Item().PaddingTop(5).Row(r =>
+                    {
+                        r.AutoItem().Width(120).AlignRight().Text("Tax:").FontSize(11);
+                        r.AutoItem().Width(130).AlignRight().Text($"₹{quote.TaxAmount:N2}").FontSize(11);
+                    });
+                }
             });
         });
+
+
+        // FULL-WIDTH LINE (LEFT + RIGHT)  ✔
+        column.Item().PaddingTop(10).PaddingBottom(5).LineHorizontal(1);
+
+
+        // TOTAL AMOUNT (RIGHT)
+        column.Item().AlignRight().Row(r =>
+        {
+            r.AutoItem().Width(120).Text("Total Amount:")
+                .FontSize(14).SemiBold();
+            r.AutoItem().Width(100).AlignRight()
+                .Text($"₹{quote.TotalAmount:N2}")
+                .FontSize(14).SemiBold();
+        });
+
+
+
     }
 
     public override void BuildDocumentFooter(Quote quote, ColumnDescriptor column)

@@ -70,7 +70,7 @@ public abstract class BasePdfService<T>(
                             .Text(x =>
                             {
                                 x.Span("Generated on ");
-                                x.Span(DateTime.Now.ToString("MM/dd/yyyy")).SemiBold();
+                                x.Span(DateTimeOffset.Now.ToString("MM/dd/yyyy hh:mm tt", System.Globalization.CultureInfo.InvariantCulture)).SemiBold();
                             });
                     });
             });
@@ -164,10 +164,19 @@ public abstract class BasePdfService<T>(
                 addressLine += $" {customer.PostalCode}";
             column.Item().Text(addressLine);
         }
+
         if (!string.IsNullOrEmpty(customer.Email))
-            column.Item().Text($"Email: {customer.Email}");
+            column.Item().Row(row =>
+            {
+                row.ConstantItem(35).Text("Email:").SemiBold();
+                row.AutoItem().Text(customer.Email);
+            });
         if (!string.IsNullOrEmpty(customer.Phone))
-            column.Item().Text($"Phone: {customer.Phone}");
+            column.Item().Row(row =>
+            {
+                row.ConstantItem(35).Text("Phone:").SemiBold();
+                row.AutoItem().Text(customer.Phone);
+            });
     }
 
     protected void BuildItemsTable<TItem>(IEnumerable<TItem> items, ColumnDescriptor column,
@@ -181,8 +190,8 @@ public abstract class BasePdfService<T>(
         {
             table.ColumnsDefinition(columns =>
             {
-                columns.ConstantColumn(50);  // Qty
                 columns.RelativeColumn();   // Description
+                columns.ConstantColumn(50);  // Qty
                 columns.ConstantColumn(80); // Unit Price
                 columns.ConstantColumn(80); // Total
             });
@@ -190,17 +199,19 @@ public abstract class BasePdfService<T>(
             // Header
             table.Header(header =>
             {
-                header.Cell().Element(CellStyle).Text("Qty").SemiBold();
-                header.Cell().Element(CellStyle).Text("Description").SemiBold();
-                header.Cell().Element(CellStyle).Text("Unit Price").SemiBold();
-                header.Cell().Element(CellStyle).Text("Total").SemiBold();
+                header.Cell().Element(CellStyle).Text("Item Name").SemiBold();
+                header.Cell().Element(CellStyle).PaddingRight(10).AlignRight().Text("Qty").SemiBold();
+                header.Cell().Element(CellStyle).AlignRight().Text("Unit Price").SemiBold();
+                header.Cell().Element(CellStyle).AlignRight().Text("Total").SemiBold();
 
                 static IContainer CellStyle(IContainer container)
                 {
                     return container.DefaultTextStyle(x => x.SemiBold())
-                                  .PaddingVertical(5)
-                                  .BorderBottom(1)
-                                  .BorderColor(Colors.Black);
+                    .MinHeight(20)
+                    .PaddingVertical(1)
+                    .BorderBottom(1).BorderTop(1)
+                    .BorderColor(Colors.Black)
+                    .AlignMiddle();
                 }
             });
 
@@ -211,16 +222,18 @@ public abstract class BasePdfService<T>(
                 var unitPrice = getUnitPrice(item);
                 var total = (decimal)quantity * unitPrice;
 
-                table.Cell().Element(CellStyle).Text(quantity.ToString());
                 table.Cell().Element(CellStyle).Text(getDescription(item));
-                table.Cell().Element(CellStyle).Text($"${unitPrice:F2}");
-                table.Cell().Element(CellStyle).Text($"${total:F2}");
+                table.Cell().Element(CellStyle).PaddingRight(10).AlignRight().Text(quantity.ToString());
+                table.Cell().Element(CellStyle).AlignRight().Text($"${unitPrice:F2}");
+                table.Cell().Element(CellStyle).AlignRight().Text($"${total:F2}");
 
                 static IContainer CellStyle(IContainer container)
                 {
-                    return container.PaddingVertical(3)
-                                  .BorderBottom(1)
-                                  .BorderColor(Colors.Grey.Lighten2);
+                    return container.PaddingVertical(1)
+                    .MinHeight(20)
+                    .BorderBottom(1)
+                    .BorderColor(Colors.Grey.Lighten2)
+                    .AlignMiddle();
                 }
             }
         });
