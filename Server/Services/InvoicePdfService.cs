@@ -176,9 +176,9 @@ public class InvoicePdfService(
             // TOTAL AMOUNT (RIGHT)
             column.Item().AlignRight().Row(r =>
             {
-                r.AutoItem().Width(120).Text("Total Amount:")
+                r.AutoItem().Width(120).AlignRight().Text("Total Amount:")
                     .FontSize(14).SemiBold();
-                r.AutoItem().Width(100).AlignRight()
+                r.AutoItem().Width(130).AlignRight()
                     .Text($"${invoice.TotalAmount:N2}")
                     .FontSize(14).SemiBold();
             });
@@ -190,17 +190,14 @@ public class InvoicePdfService(
                 var balance = invoice.TotalAmount - totalPaid;
                 column.Item().PaddingTop(10).AlignRight().Row(r =>
                 {
-                    r.AutoItem().Width(120).Text("Payments:").FontSize(14).SemiBold().FontColor(Colors.Green.Medium);
-                    r.AutoItem().Width(100).AlignRight().Text($"${totalPaid:F2}").FontSize(14).SemiBold().FontColor(Colors.Green.Medium);
+                    r.AutoItem().Width(120).AlignRight().Text("Payments:").FontSize(14).SemiBold().FontColor(Colors.Green.Medium);
+                    r.AutoItem().Width(130).AlignRight().Text($"${totalPaid:F2}").FontSize(14).SemiBold().FontColor(Colors.Green.Medium);
                 });
                 column.Item().PaddingTop(10).AlignRight().Row(r =>
                 {
-                    r.AutoItem().Width(120).Text("Balance Due:").FontSize(14).SemiBold().FontColor(balance > 0 ? Colors.Red.Medium : Colors.Green.Medium); 
-                    r.AutoItem().Width(100).AlignRight().Text($"${balance:F2}").FontSize(14).SemiBold().FontColor(balance > 0 ? Colors.Red.Medium : Colors.Green.Medium); 
+                    r.AutoItem().Width(120).AlignRight().Text("Balance Due:").FontSize(14).SemiBold().FontColor(balance > 0 ? Colors.Red.Medium : Colors.Green.Medium); 
+                    r.AutoItem().Width(130).AlignRight().Text($"${balance:F2}").FontSize(14).SemiBold().FontColor(balance > 0 ? Colors.Red.Medium : Colors.Green.Medium); 
                 });
-                //col.Item().PaddingTop(10).Text($"Payments: ${totalPaid:F2}");
-                //col.Item().Text($"Balance Due: ${balance:F2}").FontSize(14).SemiBold()
-                //    .FontColor(balance > 0 ? Colors.Red.Medium : Colors.Green.Medium);
             }
         });
     }
