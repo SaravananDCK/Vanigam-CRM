@@ -37,7 +37,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.Phone) Title=@Localizer["Phone"] Width="150px">
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.AnnualRevenue) Title=@Localizer["AnnualRevenue"] Width="130px">
+                    <RadzenDataGridColumn TItem="Customer" Property=@nameof(Customer.AnnualRevenue) Title=@Localizer["AnnualRevenue"] Width="130px" TextAlign="TextAlign.Right">
                         <Template Context="customer">
                             @if (customer.AnnualRevenue.HasValue)
                             {

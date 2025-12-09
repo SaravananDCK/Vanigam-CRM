@@ -117,6 +117,7 @@ builder.Services.AddScoped<ContractCoverageService>();
 // Register PDF generation services
 builder.Services.AddScoped<QuotePdfService>();
 builder.Services.AddScoped<InvoicePdfService>();
+builder.Services.AddScoped<PurchaseOrderPdfService>();
 
 // Register GST Report services
 builder.Services.AddScoped<GSTR1ReportService>();
