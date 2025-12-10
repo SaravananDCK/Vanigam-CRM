@@ -1,14 +1,17 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
-using Vanigam.CRM.Objects.OData;
-using Vanigam.CRM.Objects.Entities;
-using Vanigam.CRM.Helpers;
 using Vanigam.CRM.Client.Pages.DetailView;
+using Vanigam.CRM.Client.Services;
+using Vanigam.CRM.Helpers;
+using Vanigam.CRM.Objects.Entities;
+using Vanigam.CRM.Objects.OData;
 
 namespace Vanigam.CRM.Client.Pages.ListView
 {
     public partial class PurchaseInvoices
     {
+        [Inject] private PdfApiService PdfApiService { get; set; }
         protected async Task GridLoadData(LoadDataArgs args)
         {
             try
@@ -61,7 +64,38 @@ namespace Vanigam.CRM.Client.Pages.ListView
             await DialogService.OpenDialogWithOutHeaderAsync<EditPurchaseInvoice>(Localizer["EditPurchaseInvoice"], new Dictionary<string, object> { { "Oid", purchaseinvoice.Oid } }, 100, 100);
             await GridReload();
         }
-
+        protected async Task PreviewPdf(PurchaseInvoice invoice)
+        {
+            try
+            {
+                await PdfApiService.PreviewPurchaseInvoicePdfAsync(invoice.Oid);
+            }
+            catch (Exception ex)
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Error"],
+                    Detail = Localizer["ErrorPreviewingPdf"]
+                });
+            }
+        }
+        protected async Task DownloadPdf(PurchaseInvoice invoice)
+        {
+            try
+            {
+                await PdfApiService.DownloadPurchaseInvoicePdfAsync(invoice.Oid);
+            }
+            catch (Exception ex)
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Localizer["Error"],
+                    Detail = Localizer["ErrorDownloadingPdf"]
+                });
+            }
+        }
         protected async Task GridDeleteButtonClick(PurchaseInvoice purchaseinvoice)
         {
             try

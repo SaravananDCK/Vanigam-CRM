@@ -233,11 +233,11 @@
                                                 <VendorDropDownDataGrid @bind-Value="@CurrentObject.PartyId" />
                                             </ChildContent>
                                         </VanigamAccountingFormField>
-                                        <VanigamAccountingFormField Text=@Localizer["PurchaseOrder"]>
-                                            <ChildContent>
-                                                <PurchaseOrderDropDownDataGrid @bind-Value="@CurrentObject.PurchaseOrderId" />
-                                            </ChildContent>
-                                        </VanigamAccountingFormField>
+                                        @*<VanigamAccountingFormField Text=@Localizer["PurchaseOrder"]>
+                <ChildContent>
+                    <PurchaseOrderDropDownDataGrid @bind-Value="@CurrentObject.PurchaseOrderId" />
+                </ChildContent>
+            </VanigamAccountingFormField>*@
                                         <VanigamAccountingFormField Text=@Localizer["DueDate"]>
                                             <ChildContent>
                                                 <RadzenDatePicker @bind-Value="@CurrentObject.DueDate" Name="dt_DueDate" class="w-100" />
@@ -255,11 +255,7 @@
                                                 <VanigamAccountingTextBox @bind-Value="@CurrentObject.VendorInvoiceNumber" Name="txt_VendorInvoiceNumber" />
                                             </ChildContent>
                                         </VanigamAccountingFormField>
-                                        <VanigamAccountingFormField Text=@Localizer["Reference"]>
-                                            <ChildContent>
-                                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Reference" Name="txt_Reference" />
-                                            </ChildContent>
-                                        </VanigamAccountingFormField>
+
                                         <VanigamAccountingFormField Text=@Localizer["ReceivedDate"]>
                                             <ChildContent>
                                                 <RadzenDatePicker @bind-Value="@CurrentObject.ReceivedDate" Name="dt_ReceivedDate" class="w-100" />
@@ -277,6 +273,13 @@
                                         <VanigamAccountingFormField Text=@Localizer["Terms"]>
                                             <ChildContent>
                                                 <RadzenTextArea @bind-Value="@CurrentObject.Terms" Name="txt_Terms" Rows="3" class="w-100" />
+                                            </ChildContent>
+                                        </VanigamAccountingFormField>
+                                    </RadzenColumn>
+                                    <RadzenColumn SizeMD="12">
+                                        <VanigamAccountingFormField Text=@Localizer["Reference"]>
+                                            <ChildContent>
+                                                <VanigamAccountingTextBox @bind-Value="@CurrentObject.Reference" Name="txt_Reference" />
                                             </ChildContent>
                                         </VanigamAccountingFormField>
                                     </RadzenColumn>

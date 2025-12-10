@@ -44,6 +44,6 @@ public class PurchaseOrderDropDownDataGrid : VanigamAccountingDropDownAddDataGri
 
     protected override string GetCustomFilter(LoadDataArgs args)
     {
-        return $"{nameof(Item.SKU).GetContainsFilter(args.Filter)} or {nameof(Item.Name).GetContainsFilter(args.Filter)}";
+        return $"{nameof(PurchaseOrder.Number).GetContainsFilter(args.Filter)} or {nameof(PurchaseOrder.TotalAmount).GetContainsFilter(args.Filter)}";
     }
 }

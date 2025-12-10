@@ -117,6 +117,34 @@ public class PdfApiService
             Console.WriteLine($"Error downloading purchase order PDF: {ex.Message}");
         }
     }
+    public async Task DownloadPurchaseInvoicePdfAsync(Guid purchaseInvoiceId)
+    {
+
+        try
+        {
+            var response = await HttpClient.GetAsync($"api/pdf/purchaseInvoice/{purchaseInvoiceId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var pdfBytes = await response.Content.ReadAsByteArrayAsync();
+                var fileName = $"Purchase Invoice_{purchaseInvoiceId:N}.pdf";
+
+                await JSRuntime.InvokeVoidAsync("downloadFileFromBytes", fileName, "application/pdf", pdfBytes);
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                NavigationManager.NavigateTo("/authentication/login");
+            }
+            else
+            {
+                Console.WriteLine($"Error downloading purchase invoice PDF: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error downloading purchase invoice PDF: {ex.Message}");
+        }
+    }
 
     public async Task PreviewQuotePdfAsync(Guid quoteId)
     {
@@ -215,6 +243,38 @@ public class PdfApiService
         catch (Exception ex)
         {
             Console.WriteLine($"Error previewing Purchase Order PDF: {ex.Message}");
+        }
+    }
+    public async Task PreviewPurchaseInvoicePdfAsync(Guid purchaseInvoiceId)
+    {
+        try
+        {
+            var response = await HttpClient.GetAsync($"api/pdf/purchaseInvoice/{purchaseInvoiceId}/preview");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var pdfBytes = await response.Content.ReadAsByteArrayAsync();
+
+                await DialogService.OpenDialogWithOutHeaderAsync<Client.Components.Dialogs.PdfPreviewDialog>("Purchase Invoice PDF Preview",
+                    new Dictionary<string, object>
+                    {
+                        { "PdfBytes", pdfBytes },
+                        { "DialogService", DialogService},
+                    },
+                    90, 100);
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                NavigationManager.NavigateTo("/authentication/login");
+            }
+            else
+            {
+                Console.WriteLine($"Error previewing Purchase Invoice PDF: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error previewing Purchase Invoice PDF: {ex.Message}");
         }
     }
 }

@@ -12,6 +12,7 @@ public class PdfController(
     QuotePdfService quotePdfService,
     InvoicePdfService invoicePdfService,
     PurchaseOrderPdfService purchaseOrderPdfService,
+    PurchaseInvoicePdfService purchaseInvoicePdfService,
     ILogger<PdfController> logger) : ControllerBase
 {
     [HttpGet("quote/{quoteId}")]
@@ -151,6 +152,53 @@ public class PdfController(
         catch (Exception ex)
         {
             logger.LogError(ex, "Error generating PDF preview for Purchase Order {PurchaseOrderId}", purchaseOrderId);
+            return StatusCode(500, "An error occurred while generating the PDF preview");
+        }
+    }
+
+    [HttpGet("purchaseInvoice/{purchaseInvoiceId}")]
+    public async Task<ActionResult> GeneratePurchaseInvoicePdf(Guid purchaseInvoiceId)
+    {
+        try
+        {
+            logger.LogInformation("Generating PDF for Purchase Invoice {PurchaseInvoiceId}", purchaseInvoiceId);
+
+            var pdfBytes = await purchaseInvoicePdfService.GeneratePdfAsync(purchaseInvoiceId);
+
+            return File(pdfBytes, "application/pdf", $"Purchase Invoice_{purchaseInvoiceId:N}.pdf");
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning("Purchase Invoice {PurchaseInvoiceId} not found: {Message}", purchaseInvoiceId, ex.Message);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error generating PDF for Purchase Invoice {PurchaseInvoiceId}", purchaseInvoiceId);
+            return StatusCode(500, "An error occurred while generating the PDF");
+        }
+    }
+
+    [HttpGet("purchaseInvoice/{purchaseInvoiceId}/preview")]
+    public async Task<ActionResult> PreviewPurchaseInvoicePdf(Guid purchaseInvoiceId)
+    {
+        try
+        {
+            logger.LogInformation("Generating PDF preview for Purchase Invoice {PurchaseInvoiceId}", purchaseInvoiceId);
+
+            var pdfBytes = await purchaseInvoicePdfService.GeneratePdfAsync(purchaseInvoiceId);
+
+            Response.Headers.Add("Content-Disposition", "inline");
+            return File(pdfBytes, "application/pdf");
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning("Purchase Invoice {PurchaseInvoiceId} not found: {Message}", purchaseInvoiceId, ex.Message);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error generating PDF preview for Purchase Invoice {PurchaseInvoiceId}", purchaseInvoiceId);
             return StatusCode(500, "An error occurred while generating the PDF preview");
         }
     }
