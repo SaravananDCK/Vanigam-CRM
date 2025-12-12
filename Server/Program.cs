@@ -47,6 +47,7 @@ using Vanigam.CRM.Server.Components;
 using Vanigam.CRM.Server.HangFire;
 using Vanigam.CRM.Server.Services.Reporting;
 using Vanigam.CRM.Client;
+using Vanigam.CRM.Server.Services.Pdf;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.

@@ -7,7 +7,7 @@ using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.Contracts;
 using Vanigam.CRM.Objects.Services;
 
-namespace Vanigam.CRM.Server.Services;
+namespace Vanigam.CRM.Server.Services.Pdf;
 
 public abstract class BasePdfService<T>(
     VanigamAccountingDbContext context,
@@ -18,7 +18,7 @@ public abstract class BasePdfService<T>(
     protected ILogger<BasePdfService<T>> Logger = logger;
     protected ICurrentUserService CurrentUserService = currentUserService;
 
-    public abstract Task<T?> GetEntityWithIncludesAsync(Guid entityId);
+    public abstract Task<T> GetEntityWithIncludesAsync(Guid entityId);
     public abstract string GetDocumentTitle();
     public abstract Color GetDocumentColor();
     public abstract void BuildDocumentHeader(T entity, ColumnDescriptor column);
@@ -124,7 +124,7 @@ public abstract class BasePdfService<T>(
         }
     }
 
-    private string BuildCityStateZip(string? city, string? state, string? postalCode)
+    private string BuildCityStateZip(string city, string state, string postalCode)
     {
         var parts = new List<string>();
 
@@ -147,7 +147,7 @@ public abstract class BasePdfService<T>(
         return result;
     }
 
-    protected void BuildCustomerInfo(LedgerAccount? customer, ColumnDescriptor column)
+    protected void BuildCustomerInfo(LedgerAccount customer, ColumnDescriptor column)
     {
         if (customer == null) return;
 

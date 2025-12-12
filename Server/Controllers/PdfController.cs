@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Vanigam.CRM.Server.Services;
+using Vanigam.CRM.Server.Services.Pdf;
 
 namespace Vanigam.CRM.Server.Controllers;
 
