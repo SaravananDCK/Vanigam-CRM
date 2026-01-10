@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
 using System.Net.Http.Json;
+using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
 using Vanigam.CRM.Objects.Helpers;
 
@@ -12,7 +13,8 @@ public class UserSessionApiService(
     HttpClient httpClient,
     AuthenticationStateProvider authenticationStateProvider,
     IConfiguration configuration)
-    : BaseApiService<UserSession>(navigationManager, httpClient, authenticationStateProvider, configuration, "UserSession")
+    : BaseApiService<UserSession>(navigationManager, httpClient, authenticationStateProvider, configuration,
+        nameof(VanigamAccountingDbContext.UserSessions))
 {
     public async Task<ODataServiceResult<UserSession>> GetActiveSessionsAsync()
     {

@@ -47,6 +47,7 @@ using Vanigam.CRM.Server.Components;
 using Vanigam.CRM.Server.HangFire;
 using Vanigam.CRM.Server.Services.Reporting;
 using Vanigam.CRM.Client;
+using Vanigam.CRM.Server.Services.Pdf;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -117,6 +118,8 @@ builder.Services.AddScoped<ContractCoverageService>();
 // Register PDF generation services
 builder.Services.AddScoped<QuotePdfService>();
 builder.Services.AddScoped<InvoicePdfService>();
+builder.Services.AddScoped<PurchaseOrderPdfService>();
+builder.Services.AddScoped<PurchaseInvoicePdfService>();
 
 // Register GST Report services
 builder.Services.AddScoped<GSTR1ReportService>();

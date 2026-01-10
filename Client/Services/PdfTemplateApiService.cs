@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
 using Vanigam.CRM.Client;
+using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
 namespace Vanigam.CRM.AI.Client;
 
@@ -11,7 +12,7 @@ public class PdfTemplateApiService(
     AuthenticationStateProvider authenticationStateProvider,
     IConfiguration configuration)
     : BaseApiService<PdfTemplate>(navigationManager, httpClient, authenticationStateProvider, configuration,
-        "PdfTemplates")
+        nameof(VanigamAccountingDbContext.PdfTemplates))
 {
     public async Task<PdfTemplate?> GetPdfTemplate(string expand = default, Guid templateId = default)
     {

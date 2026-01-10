@@ -120,8 +120,14 @@
   <data name="Account" xml:space="preserve">
     <value>Account</value>
   </data>
+  <data name="AccountRequired" xml:space="preserve">
+    <value>Account is Required</value>
+  </data>
   <data name="Amount" xml:space="preserve">
     <value>Amount</value>
+  </data>
+  <data name="AmountMustBeGreaterThanZero" xml:space="preserve">
+    <value>Amount Must Be Greater Than Zero</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
@@ -143,6 +149,12 @@
   </data>
   <data name="EntryNumberMust" xml:space="preserve">
     <value>Entry Number Must</value>
+  </data>
+  <data name="EntryNumberRequired" xml:space="preserve">
+    <value>Entry Number is Required</value>
+  </data>
+  <data name="EntryTypeRequired" xml:space="preserve">
+    <value>Entry Type is Required</value>
   </data>
   <data name="LedgerEntryInformation" xml:space="preserve">
     <value>Ledger Entry Information</value>

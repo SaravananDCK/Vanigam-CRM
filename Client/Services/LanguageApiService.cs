@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Vanigam.CRM.Client;
+using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client;
@@ -10,4 +11,4 @@ public class LanguageApiService(
     HttpClient httpClient,
     AuthenticationStateProvider authenticationStateProvider,
     IConfiguration configuration)
-    : BaseApiService<Language>(navigationManager, httpClient, authenticationStateProvider, configuration, "Languages");
+    : BaseApiService<Language>(navigationManager, httpClient, authenticationStateProvider, configuration, nameof(VanigamAccountingDbContext.Languages));

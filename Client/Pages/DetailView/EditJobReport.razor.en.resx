@@ -135,6 +135,9 @@
   <data name="Job Report" xml:space="preserve">
     <value>Job Report</value>
   </data>
+  <data name="JobRequired" xml:space="preserve">
+    <value>Job is Required</value>
+  </data>
   <data name="Notes" xml:space="preserve">
     <value>Notes</value>
   </data>

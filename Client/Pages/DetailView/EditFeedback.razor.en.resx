@@ -123,11 +123,17 @@
   <data name="Comments" xml:space="preserve">
     <value>Comments</value>
   </data>
+  <data name="CustomerRequired" xml:space="preserve">
+    <value>Customer cannot be empty.</value>
+  </data>
   <data name="EditFeedback" xml:space="preserve">
     <value>Edit Feedback</value>
   </data>
   <data name="Rating" xml:space="preserve">
     <value>Rating</value>
+  </data>
+  <data name="RatingMustBeBetween1And5" xml:space="preserve">
+    <value>Rating cannot be less than 1 or greater than 5.</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>

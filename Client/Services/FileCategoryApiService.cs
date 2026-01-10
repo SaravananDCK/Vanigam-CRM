@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Vanigam.CRM.Client;
+using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
 
 namespace Vanigam.CRM.Client;
@@ -11,4 +12,4 @@ public class FileCategoryApiService(
     AuthenticationStateProvider authenticationStateProvider,
     IConfiguration configuration)
     : BaseApiService<FileCategory>(navigationManager, httpClient, authenticationStateProvider, configuration,
-        "FileCategories");
+        nameof(VanigamAccountingDbContext.FileCategories));

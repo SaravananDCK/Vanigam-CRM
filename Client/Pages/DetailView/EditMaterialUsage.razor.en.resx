@@ -129,11 +129,20 @@
   <data name="InventoryItem" xml:space="preserve">
     <value>Inventory Item</value>
   </data>
+  <data name="InventoryItemRequired" xml:space="preserve">
+    <value>Inventory Item is Required</value>
+  </data>
   <data name="JobNumber" xml:space="preserve">
     <value>Job Number</value>
   </data>
+  <data name="JobRequired" xml:space="preserve">
+    <value>Job is Required</value>
+  </data>
   <data name="Quantity" xml:space="preserve">
     <value>Quantity</value>
+  </data>
+  <data name="QuantityMustBeGreaterThanZero" xml:space="preserve">
+    <value>Quantity Must Be Greater Than Zero</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>

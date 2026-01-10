@@ -120,6 +120,9 @@
   <data name="Address" xml:space="preserve">
     <value>Address</value>
   </data>
+  <data name="AddressTooLong" xml:space="preserve">
+    <value>The address field exceeds the allowed limit.</value>
+  </data>
   <data name="BasicInfo" xml:space="preserve">
     <value>Basic Info</value>
   </data>
@@ -128,6 +131,9 @@
   </data>
   <data name="City" xml:space="preserve">
     <value>City</value>
+  </data>
+  <data name="CityTooLong" xml:space="preserve">
+    <value>The provided city name is too long.</value>
   </data>
   <data name="CodeMust" xml:space="preserve">
     <value>Code is required.</value>
@@ -138,11 +144,20 @@
   <data name="Country" xml:space="preserve">
     <value>Country</value>
   </data>
+  <data name="CountryTooLong" xml:space="preserve">
+    <value>The provided country name is too long.</value>
+  </data>
   <data name="Customer" xml:space="preserve">
     <value>Customer</value>
   </data>
+  <data name="CustomerRequired" xml:space="preserve">
+    <value>Customer is Required</value>
+  </data>
   <data name="Department" xml:space="preserve">
     <value>Department</value>
+  </data>
+  <data name="DepartmentTooLong" xml:space="preserve">
+    <value>The department name is too long.</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
@@ -150,8 +165,14 @@
   <data name="Edit Contact" xml:space="preserve">
     <value>Edit Contact</value>
   </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Email is Invalid</value>
+  </data>
   <data name="FirstName" xml:space="preserve">
     <value>First Name</value>
+  </data>
+  <data name="FirstNameRequired" xml:space="preserve">
+    <value>First Name is Required</value>
   </data>
   <data name="IsPrimary" xml:space="preserve">
     <value>Is Primary</value>
@@ -159,14 +180,26 @@
   <data name="JobTitle" xml:space="preserve">
     <value>Job Title</value>
   </data>
+  <data name="JobTitleTooLong" xml:space="preserve">
+    <value>Job Title is Too Long</value>
+  </data>
   <data name="LastName" xml:space="preserve">
     <value>Last Name</value>
+  </data>
+  <data name="LastNameRequired" xml:space="preserve">
+    <value>Last Name is Required</value>
   </data>
   <data name="LinkedInProfile" xml:space="preserve">
     <value>Linked In Profile</value>
   </data>
+  <data name="LinkedInProfileInvalid" xml:space="preserve">
+    <value>The provided LinkedIn profile is not valid.</value>
+  </data>
   <data name="Mobile" xml:space="preserve">
     <value>Mobile</value>
+  </data>
+  <data name="MobileInvalid" xml:space="preserve">
+    <value>The mobile number is invalid.</value>
   </data>
   <data name="No" xml:space="preserve">
     <value>No</value>
@@ -174,11 +207,20 @@
   <data name="Notes" xml:space="preserve">
     <value>Notes</value>
   </data>
+  <data name="NotesTooLong" xml:space="preserve">
+    <value>The provided notes are too long.</value>
+  </data>
   <data name="Phone" xml:space="preserve">
     <value>Phone</value>
   </data>
+  <data name="PhoneInvalid" xml:space="preserve">
+    <value>The phone number is invalid.</value>
+  </data>
   <data name="PostalCode" xml:space="preserve">
     <value>Postal Code</value>
+  </data>
+  <data name="PostalCodeTooLong" xml:space="preserve">
+    <value>The provided postal code is too long.</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
@@ -194,6 +236,9 @@
   </data>
   <data name="State" xml:space="preserve">
     <value>State</value>
+  </data>
+  <data name="StateTooLong" xml:space="preserve">
+    <value>The provided state name is too long.</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>

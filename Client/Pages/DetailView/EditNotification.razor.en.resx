@@ -141,4 +141,7 @@
   <data name="Type" xml:space="preserve">
     <value>Type</value>
   </data>
+  <data name="TypeRequired" xml:space="preserve">
+    <value>Type is Required</value>
+  </data>
 </root>

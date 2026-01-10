@@ -129,6 +129,9 @@
   <data name="CurrentNoHelper" xml:space="preserve">
     <value>Current No Helper</value>
   </data>
+  <data name="CurrentNoMustBeGreaterThanZero" xml:space="preserve">
+    <value>Current no must be Greater Than Zero</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
   </data>
@@ -140,6 +143,12 @@
   </data>
   <data name="EntityTypeHelper" xml:space="preserve">
     <value>Entity Type Helper</value>
+  </data>
+  <data name="EntityTypeMaxLength" xml:space="preserve">
+    <value>Entity Type exceeds maximum length.</value>
+  </data>
+  <data name="EntityTypeRequired" xml:space="preserve">
+    <value>Entity Type is Required</value>
   </data>
   <data name="Inactive" xml:space="preserve">
     <value>Inactive</value>
@@ -156,11 +165,17 @@
   <data name="PaddingLengthHelper" xml:space="preserve">
     <value>Padding Length Helper</value>
   </data>
+  <data name="PaddingLengthRange" xml:space="preserve">
+    <value>Padding Length Range between 1 to 10</value>
+  </data>
   <data name="Prefix" xml:space="preserve">
     <value>Prefix</value>
   </data>
   <data name="PrefixHelper" xml:space="preserve">
     <value>Prefix Helper</value>
+  </data>
+  <data name="PrefixMaxLength" xml:space="preserve">
+    <value>Prefix exceeds Maximum Length</value>
   </data>
   <data name="Preview" xml:space="preserve">
     <value>Preview</value>
@@ -180,11 +195,17 @@
   <data name="StartNoHelper" xml:space="preserve">
     <value>Start No Helper</value>
   </data>
+  <data name="StartNoMustBeGreaterThanZero" xml:space="preserve">
+    <value>Start no must be Greater Than Zero</value>
+  </data>
   <data name="Suffix" xml:space="preserve">
     <value>Suffix</value>
   </data>
   <data name="SuffixHelper" xml:space="preserve">
     <value>Suffix Helper</value>
+  </data>
+  <data name="SuffixMaxLength" xml:space="preserve">
+    <value>Suffix exceeds Maximum Length</value>
   </data>
   <data name="Update" xml:space="preserve">
     <value>Update</value>

@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
 using Vanigam.CRM.Client;
+using Vanigam.CRM.Objects;
 using Vanigam.CRM.Objects.Entities;
-using Vanigam.CRM.Objects.Helpers;
 using Vanigam.CRM.Objects.Enums;
+using Vanigam.CRM.Objects.Helpers;
 
 namespace Vanigam.CRM.Client;
 
@@ -14,7 +15,7 @@ public class DocumentTemplateApiService(
     AuthenticationStateProvider authenticationStateProvider,
     IConfiguration configuration)
     : BaseApiService<DocumentTemplate>(navigationManager, httpClient, authenticationStateProvider, configuration,
-        "DocumentTemplates")
+        nameof(VanigamAccountingDbContext.DocumentTemplates))
 {
     public async Task<ODataServiceResult<DocxTemplate>> GetDocxTemplates(string dbSet,  string filter = default,
         string orderby = default,
@@ -22,7 +23,7 @@ public class DocumentTemplateApiService(
         string format = default, string select = default)
     {
         filter = $"{nameof(DocumentTemplate.DbSet)} eq '{dbSet}' AND ({nameof(DocumentTemplate.TemplateType)} eq Vanigam.CRM.Objects.Entities.TemplateTypes'{TemplateTypes.DocxTemplate.ToString()}')";
-        var uri = new Uri(BaseUri, "DocumentTemplates");
+        var uri = new Uri(BaseUri, nameof(VanigamAccountingDbContext.DocumentTemplates));
         uri = uri.GetODataUri(filter, top, skip, orderby, expand, select, count: count);
 
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
@@ -36,7 +37,7 @@ public class DocumentTemplateApiService(
         string format = default, string select = default)
     {
         filter = $"{nameof(DocumentTemplate.DbSet)} eq '{dbSet}' AND ({nameof(DocumentTemplate.TemplateType)} eq Vanigam.CRM.Objects.Entities.TemplateTypes'{TemplateTypes.DocxMacroTemplate.ToString()}')";
-        var uri = new Uri(BaseUri, "DocumentTemplates");
+        var uri = new Uri(BaseUri, nameof(VanigamAccountingDbContext.DocumentTemplates));
         uri = uri.GetODataUri(filter, top, skip, orderby, expand, select, count: count);
 
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);

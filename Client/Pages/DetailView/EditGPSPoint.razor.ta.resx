@@ -126,11 +126,20 @@
   <data name="Latitude" xml:space="preserve">
     <value>Latitude</value>
   </data>
+  <data name="LatitudeMustBeBetweenMinus90And90" xml:space="preserve">
+    <value>Latitude must be between -90 and 90.</value>
+  </data>
   <data name="Longitude" xml:space="preserve">
     <value>Longitude</value>
   </data>
+  <data name="LongitudeMustBeBetweenMinus180And180" xml:space="preserve">
+    <value>The longitude value you entered is invalid. Please provide a number between -180 and 180.</value>
+  </data>
   <data name="RecordedAt" xml:space="preserve">
     <value>Recorded At</value>
+  </data>
+  <data name="RecordedAtRequired" xml:space="preserve">
+    <value>The 'Recorded At' field is required.</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
@@ -143,5 +152,8 @@
   </data>
   <data name="Speed" xml:space="preserve">
     <value>Speed</value>
+  </data>
+  <data name="SpeedMustBeNonNegative" xml:space="preserve">
+    <value>Speed values cannot be negative.</value>
   </data>
 </root>

@@ -123,11 +123,17 @@
   <data name="ContentType" xml:space="preserve">
     <value>Content Type</value>
   </data>
+  <data name="ContentTypeRequired" xml:space="preserve">
+    <value>Content Type is Required</value>
+  </data>
   <data name="EditAttachment" xml:space="preserve">
     <value>Edit Attachment</value>
   </data>
   <data name="FileName" xml:space="preserve">
     <value>File Name</value>
+  </data>
+  <data name="FileNameRequired" xml:space="preserve">
+    <value>File Name is Required</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>

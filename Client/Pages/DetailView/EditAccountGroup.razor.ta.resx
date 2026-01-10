@@ -132,6 +132,9 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="CodeMaxLength" xml:space="preserve">
+    <value>Code is exceed Max Length</value>
+  </data>
   <data name="Count" xml:space="preserve">
     <value>Count</value>
   </data>
@@ -147,11 +150,20 @@
   <data name="Inactive" xml:space="preserve">
     <value>Inactive</value>
   </data>
+  <data name="InvalidAccountNature" xml:space="preserve">
+    <value>The account nature is invalid.</value>
+  </data>
   <data name="LoadParentGroupsFailed" xml:space="preserve">
     <value>Load Parent Groups Failed</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
+  </data>
+  <data name="NameMaxLength" xml:space="preserve">
+    <value>Name is exceed Max Length</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Name is Required</value>
   </data>
   <data name="Nature" xml:space="preserve">
     <value>Nature</value>

@@ -120,6 +120,9 @@
   <data name="AcceptedAt" xml:space="preserve">
     <value>Accepted At</value>
   </data>
+  <data name="AcceptedAtMustBeAfterAssignedAt" xml:space="preserve">
+    <value>Accepted At must be after Assigned At</value>
+  </data>
   <data name="AssignedAt" xml:space="preserve">
     <value>Assigned At</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="Job Assignment Info" xml:space="preserve">
     <value>Job Assignment Info</value>
+  </data>
+  <data name="JobRequired" xml:space="preserve">
+    <value>Job is Required</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>

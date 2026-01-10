@@ -168,6 +168,9 @@
   <data name="Email" xml:space="preserve">
     <value>Email</value>
   </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Your email address is invalid.</value>
+  </data>
   <data name="FileDocuments" xml:space="preserve">
     <value>File Documents</value>
   </data>
@@ -185,6 +188,9 @@
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Name is Required</value>
   </data>
   <data name="New Vendor" xml:space="preserve">
     <value>New Vendor</value>
@@ -227,5 +233,8 @@
   </data>
   <data name="Website" xml:space="preserve">
     <value>Website</value>
+  </data>
+  <data name="WebsiteInvalid" xml:space="preserve">
+    <value>Your Website URL is invalid.</value>
   </data>
 </root>

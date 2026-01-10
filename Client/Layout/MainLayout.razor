@@ -50,36 +50,36 @@
             <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal"
                 JustifyContent="JustifyContent.End" Style="height: 70px;">
                 <AuthorizeView Roles="@ApplicationRole.SuperUserRole">
-                    <RadzenButton Click="@SwapTenantClick" Icon="@FadIcon("fa-starship")"
+                    <RadzenButton Click="@SwapTenantClick" Icon="@(FontAwesomeIconMapping.GetUnicode("fa-starship"))"
                         ButtonStyle="ButtonStyle.Primary" Style="margin-right:5px" class="fa-small"/>
                 </AuthorizeView>
                 <CulturePicker />
                 <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick"
                     Style="background-color:transparent !important">
                     <ChildContent>
-                        <RadzenProfileMenuItem Path="profile" Icon="@FaIcon("fa-user-cog")" Text=@Localizer["Profile"]
+                        <RadzenProfileMenuItem Path="profile" Icon="@(FontAwesomeIconMapping.GetUnicode("fa-user-cog"))" Text=@Localizer["Profile"]
                             Visible="@(Security.IsAuthenticated() || Security.User?.Name == ApplicationUser.TenantsAdmin)" />
-                        <RadzenProfileMenuItem Path="changepassword" Icon="@FaIcon("fa-key")"
+                        <RadzenProfileMenuItem Path="changepassword" Icon="@(FontAwesomeIconMapping.GetUnicode("fa-key"))"
                             Text=@Localizer["ChangePassword"]
                             Visible="@(Security.IsAuthenticated() || Security.User?.Name == ApplicationUser.TenantsAdmin)" />
                         <AuthorizeView Roles="@string.Join(",", ApplicationRole.AdministratorRoles)">
-                            <RadzenProfileMenuItem Path="application-users" Icon="@FaIcon("fa-user")"
+                            <RadzenProfileMenuItem Path="application-users" Icon="@(FontAwesomeIconMapping.GetUnicode("fa-user"))"
                                 Text=@Localizer["Users"]
                                 Visible="@(Security.IsAuthenticated() && Security.Tenant != null)" />
                         </AuthorizeView>
-                        <RadzenProfileMenuItem Path="application-roles" Icon="@FaIcon("fa-user-shield")"
+                        <RadzenProfileMenuItem Path="application-roles" Icon="@(FontAwesomeIconMapping.GetUnicode("fa-user-shield"))"
                             Text=@Localizer["Roles"]
                             Visible="@(Security.IsAuthenticated() && Security.Tenant != null)" />
                         <AuthorizeView Roles="@ApplicationRole.SuperUserRole">
-                            <RadzenProfileMenuItem Path="permissions" Icon="@FaIcon("fa-user-unlock")"
+                            <RadzenProfileMenuItem Path="permissions" Icon="@(FontAwesomeIconMapping.GetUnicode("fa-user-unlock"))"
                                 Text=@Localizer["Permission"]
                                 Visible="@(Security.IsAuthenticated() && Security.Tenant != null)" />
                         </AuthorizeView>
-                        <RadzenProfileMenuItem Path="application-tenants" Icon="account_balance_wallet"
+                        <RadzenProfileMenuItem Path="application-tenants" Icon="@(FontAwesomeIconMapping.GetUnicode("account_balance_wallet"))"
                             Text=@Localizer["Tenants"]
                             Visible="@(Security.User?.Name == ApplicationUser.TenantsAdmin)" />
                         <RadzenProfileMenuItem Text=@Localizer["Logout"] Value="Logout"
-                            Icon="@FaIcon("fa-power-off")" />
+                            Icon="@(FontAwesomeIconMapping.GetUnicode("fa-power-off"))" />
                     </ChildContent>
                     <Template>
                         <RadzenText TextStyle="TextStyle.H6"><b>@Security.User?.Name</b>

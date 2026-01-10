@@ -120,6 +120,9 @@
   <data name="Action" xml:space="preserve">
     <value>Action</value>
   </data>
+  <data name="ActionRequired" xml:space="preserve">
+    <value>Action is Required</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -129,8 +132,14 @@
   <data name="EditAuditLog" xml:space="preserve">
     <value>Edit Audit Log</value>
   </data>
+  <data name="EntityIdRequired" xml:space="preserve">
+    <value>Entity Id is Required</value>
+  </data>
   <data name="EntityName" xml:space="preserve">
     <value>Entity Name</value>
+  </data>
+  <data name="EntityNameRequired" xml:space="preserve">
+    <value>Entity Name is Required</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>

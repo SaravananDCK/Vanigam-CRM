@@ -14,10 +14,16 @@
                     <NoRecordComponent ShowAddButton="false" />
                 </EmptyTemplate>
                 <Columns>
-                    <RadzenDataGridColumn TItem="PurchaseInvoice" Filterable="false" Sortable="false" Width="120px" Title="@Localizer["Actions"]">
+                    <RadzenDataGridColumn TItem="PurchaseInvoice" Filterable="false" Sortable="false" Width="200px" Title="@Localizer["Actions"]">
                         <Template Context="purchaseinvoice">
-                            <OpenPageCommonComponent T="PurchaseInvoice" OpenObject="@purchaseinvoice" Open="@Open"></OpenPageCommonComponent>
-                            <DeletePageCommonComponent T="PurchaseInvoice" UsingObject="@purchaseinvoice" GridDeleteButtonClick="@GridDeleteButtonClick"></DeletePageCommonComponent>
+                            <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
+                                <OpenPageCommonComponent T="PurchaseInvoice" OpenObject="@purchaseinvoice" Open="@Open" />
+                                <DeletePageCommonComponent T="PurchaseInvoice" UsingObject="@purchaseinvoice" GridDeleteButtonClick="@GridDeleteButtonClick" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="preview" Size="ButtonSize.ExtraSmall"
+                                              Click="@(() => PreviewPdf(purchaseinvoice))" Title="@Localizer["Preview PDF"]" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="download" Size="ButtonSize.ExtraSmall"
+                                              Click="@(() => DownloadPdf(purchaseinvoice))" Title="@Localizer["Download PDF"]" />
+                            </RadzenStack>
                         </Template>
                         <FooterTemplate>@Localizer["Count"]: <b>@Count</b></FooterTemplate>
                     </RadzenDataGridColumn>

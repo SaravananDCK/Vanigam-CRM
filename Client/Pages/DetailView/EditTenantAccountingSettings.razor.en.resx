@@ -159,17 +159,50 @@
   <data name="CGSTPayable" xml:space="preserve">
     <value>CGST Payable</value>
   </data>
+  <data name="CompanyAddressMaxLength500" xml:space="preserve">
+    <value>Company Address Max Length 500</value>
+  </data>
+  <data name="CompanyCityMaxLength100" xml:space="preserve">
+    <value>Company City Max Length 100</value>
+  </data>
+  <data name="CompanyCountryMaxLength100" xml:space="preserve">
+    <value>Company Country Max Length 100</value>
+  </data>
   <data name="CompanyInfo" xml:space="preserve">
     <value>Company Info</value>
   </data>
   <data name="CompanyName" xml:space="preserve">
     <value>Company Name</value>
   </data>
+  <data name="CompanyNameMaxLength200" xml:space="preserve">
+    <value>Company Name Max Length 200</value>
+  </data>
+  <data name="CompanyPhoneMaxLength50" xml:space="preserve">
+    <value>Company Phone Max Length 50</value>
+  </data>
+  <data name="CompanyPostalCodeMaxLength20" xml:space="preserve">
+    <value>Company Postal Code Max Length 20</value>
+  </data>
+  <data name="CompanyRegistrationNumberMaxLength50" xml:space="preserve">
+    <value>Company Registration Number Max Length 50</value>
+  </data>
+  <data name="CompanyStateMaxLength100" xml:space="preserve">
+    <value>Company State Max Length 100</value>
+  </data>
+  <data name="CompanyTaxIdMaxLength50" xml:space="preserve">
+    <value>Company Tax Id Max Length 50</value>
+  </data>
+  <data name="CompanyWebsiteMaxLength200" xml:space="preserve">
+    <value>Company Website Max Length 200</value>
+  </data>
   <data name="CostOfGoodsSold" xml:space="preserve">
     <value>Cost Of Goods Sold</value>
   </data>
   <data name="DefaultCurrency" xml:space="preserve">
     <value>Default Currency</value>
+  </data>
+  <data name="DefaultCurrencyMaxLength50" xml:space="preserve">
+    <value>Default Currency Max Length 50</value>
   </data>
   <data name="DefaultPurchasesAccount" xml:space="preserve">
     <value>Default Purchases Account</value>
@@ -185,6 +218,9 @@
   </data>
   <data name="FiscalYearStartMonth" xml:space="preserve">
     <value>Fiscal Year Start Month</value>
+  </data>
+  <data name="FiscalYearStartMonthMustBeBetween1And12" xml:space="preserve">
+    <value>Fiscal Year Start Month Must Be Between 1 And 12</value>
   </data>
   <data name="FreightCharges" xml:space="preserve">
     <value>Freight Charges</value>
@@ -207,6 +243,9 @@
   <data name="IsActive" xml:space="preserve">
     <value>Is-Active</value>
   </data>
+  <data name="NotesMaxLength500" xml:space="preserve">
+    <value>Notes Max Length 500</value>
+  </data>
   <data name="OtherAccounts" xml:space="preserve">
     <value>Other Accounts</value>
   </data>
@@ -228,6 +267,9 @@
   <data name="PurchaseReturnAccount" xml:space="preserve">
     <value>Purchase Return Account</value>
   </data>
+  <data name="PurchasesAccountRequiredForAutoPosting" xml:space="preserve">
+    <value>Purchases Account Required For Auto Posting</value>
+  </data>
   <data name="PurchasesAndExpenses" xml:space="preserve">
     <value>Purchases and Expenses</value>
   </data>
@@ -236,6 +278,9 @@
   </data>
   <data name="RoundingAccount" xml:space="preserve">
     <value>Rounding Account</value>
+  </data>
+  <data name="SalesAccountRequiredForAutoPosting" xml:space="preserve">
+    <value>Sales Account Required For Auto Posting</value>
   </data>
   <data name="SalesAndRevenue" xml:space="preserve">
     <value>Sales and Revenue</value>
@@ -269,6 +314,9 @@
   </data>
   <data name="UseJobCosting" xml:space="preserve">
     <value>Use Job Costing</value>
+  </data>
+  <data name="ValidEmailRequired" xml:space="preserve">
+    <value>Valid Email Required</value>
   </data>
   <data name="WorkInProgress" xml:space="preserve">
     <value>Work In Progress</value>

@@ -54,7 +54,7 @@ namespace Vanigam.CRM.Client.Pages.DetailView
         {
             return new ODataExpand<PurchaseInvoice>()
                 .Expand(f => f.VoucherLines)
-                .Expand(f => f.Party, f => f.Party.Name)
+                .Expand(f => f.Party, f => f.Party.Code)
                 .Expand(f => f.PurchaseOrder, f => f.PurchaseOrder.Number)
                 .Build();
         }

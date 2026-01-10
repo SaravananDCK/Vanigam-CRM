@@ -132,6 +132,9 @@
   <data name="RegistrationNumber" xml:space="preserve">
     <value>Registration Number</value>
   </data>
+  <data name="RegistrationNumberRequired" xml:space="preserve">
+    <value>Registration Number is Required</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
